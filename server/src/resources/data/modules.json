@@ -1,0 +1,19 @@
+[
+  {
+    "name": "System Administration",
+    "settings": [
+      {
+        "name": "User Management",
+        "id": "User"
+      },
+      {
+        "name": "Role Management",
+        "id": "Role"
+      },
+      {
+        "name": "Appointment Management",
+        "id": "Appointment"
+      }
+    ]
+  }
+]

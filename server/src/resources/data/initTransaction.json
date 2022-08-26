@@ -1,0 +1,21 @@
+{
+  "customer": {
+    "email": "primeguage.solutions@gmail.com",
+    "phone": "08111322797",
+    "district": "Gwarinpa",
+    "firstName": "John",
+    "lastName": "Smith",
+    "subscriptionName": "Family & Friends",
+    "planCategory": "Hybrid",
+    "paymentPlan": "One Time Payment",
+    "amount": 40680,
+    "vehicle": {
+      "make": "Toyota",
+      "model": "Highlander",
+      "modelYear": "2013",
+      "engineCylinders": "4 cylinders",
+      "engineModel": "2700CC 16-VALVE DOHC EFI",
+      "vin": "5TDZA3EH4DS037009"
+    }
+  }
+}

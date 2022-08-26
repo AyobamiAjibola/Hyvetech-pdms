@@ -1,0 +1,76 @@
+definitions:
+  SignUp:
+    type: object
+    required:
+      - firstName
+      - lastname
+      - email
+      - phone
+      - username
+      - password
+      - confirmPassword
+      - role
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      confirmPassword:
+        type: string
+      role:
+        type: string
+
+  SignIn:
+    type: object
+    required:
+      - username
+      - password
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+
+  ErrorResponse:
+    type: object
+      - code
+      - message
+    properties:
+      code:
+        type: number
+      message:
+        type: string
+
+
+  SignInSuccessResponse:
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+      timestamp:
+        type: string
+      result:
+        type: string
+
+  SignUpSuccessResponse:
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+      timestamp:
+        type: string
+      result:
+        type: object
+        ref: '#/definitions/SignUp'

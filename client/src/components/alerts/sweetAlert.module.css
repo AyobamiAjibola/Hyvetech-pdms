@@ -1,0 +1,15 @@
+.btn {
+  box-shadow: none !important;
+  text-transform: none !important;
+  font-size: 16px !important;
+  padding: 6px 12px !important;
+  line-height: 1.5 !important;
+}
+
+.confirmBtn .btn {
+  background-color: #0063cc;
+}
+
+.cancelBtn .btn {
+  background-color: #0063cc;
+}
