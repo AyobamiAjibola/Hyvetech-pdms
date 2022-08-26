@@ -11,7 +11,7 @@ export default async function startup(server: Server) {
 
   await dataStore.init({ flush: true });
   await database.init();
-  await database.sequelize.sync();
+  await database.sequelize.sync({ alter: true });
   await CommandLineRunner.run();
 
   server.listen(port, () => logger.info(`Server running on port: ${port}`));
