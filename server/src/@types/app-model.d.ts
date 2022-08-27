@@ -5,7 +5,6 @@ import {
   CreationAttributes,
   DestroyOptions,
   FindOptions,
-  InferAttributes,
   SyncOptions,
   UpdateOptions,
 } from "sequelize";
@@ -34,17 +33,14 @@ export declare namespace appModelTypes {
 
     /**
      * @name exist
-     * @param values
+     * @param t
      * @param options
      * @desc
      * Checks if an instance of a model exist in the database.
      * This method calls sequelize find one method.
      * Pass optional config, to control the query outcome
      */
-    exist(
-      values: InferAttributes<M>,
-      options?: FindOptions<Attributes<M>>
-    ): Promise<boolean>;
+    exist(t: M, options?: FindOptions<Attributes<M>>): Promise<boolean>;
 
     /**
      * @name findById

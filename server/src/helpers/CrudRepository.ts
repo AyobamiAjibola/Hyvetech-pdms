@@ -56,10 +56,10 @@ export default class CrudRepository<M extends Model, Id extends number>
     });
   }
 
-  exist(values: M, options?: FindOptions<Attributes<M>>): Promise<boolean> {
+  exist(t: M, options?: FindOptions<Attributes<M>>): Promise<boolean> {
     return this.sequelize.transaction(async () => {
       const models = await this.repository.findAll(options);
-      return models.includes(values);
+      return models.includes(t);
     });
   }
 

@@ -52,7 +52,7 @@ export default class CustomerController {
 
     try {
       const customer = await dataSources.customerDAOService.findById(
-        +value.customerId
+        +value?.customerId
       );
 
       if (!customer) {

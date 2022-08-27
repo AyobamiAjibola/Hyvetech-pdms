@@ -86,7 +86,7 @@ export default class AppointmentController {
 
     try {
       const appointment = await dataSources.appointmentDAOService.findById(
-        +value.appointmentId,
+        +value?.appointmentId,
         {
           include: [
             { model: Vehicle },
