@@ -7,10 +7,10 @@
     "name": "Jiffix Tech"
   },
   "private": true,
-  "main": "build/server.js",
+  "main": "build/src/server.js",
   "scripts": {
     "start:dev": "nodemon",
-    "start": "node build/server.js",
+    "start": "node build/src/server.js",
     "test": "jest --watchAll",
     "pretest": "cross-env NODE_ENV=test PORT=5001",
     "build": "tsc -b"
