@@ -20,10 +20,15 @@ const app = express();
 const openapiSpecification = swaggerJsdoc(config.swagger); //configure swagger API documentation
 const corsOptions = {
   origin: [
-    settings.client.host,
-    settings.client.ip,
-    settings.customer.host,
-    settings.customer.ip,
+    <string>process.env.CLIENT_HOST,
+    <string>process.env.CLIENT_HOST_WWW,
+    <string>process.env.CLIENT_IP,
+    <string>process.env.CUSTOMER_APP_HOST,
+    <string>process.env.CUSTOMER_APP_HOST_WWW,
+    <string>process.env.CUSTOMER_APP_IP,
+    <string>process.env.WEBSITE_HOST,
+    <string>process.env.WEBSITE_HOST_WWW,
+    <string>process.env.WEBSITE_IP,
   ],
   credentials: true,
 };

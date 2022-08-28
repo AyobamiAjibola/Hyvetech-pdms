@@ -1,7 +1,3 @@
-import { Fields, Files } from "formidable";
-import { Attributes } from "sequelize";
-import Permission from "../models/Permission";
-
 declare namespace NodeJS {
   interface ProcessEnv {
     //Environment configuration
@@ -37,10 +33,13 @@ declare namespace NodeJS {
     JWT_KEY: string; // JWT key
     JWT_EXPIRY: string; // JWT key
     CLIENT_HOST: string;
+    CLIENT_HOST_WWW: string;
     CLIENT_IP: string;
     CUSTOMER_APP_HOST: string;
+    CUSTOMER_APP_HOST_WWW: string;
     CUSTOMER_APP_IP: string;
     WEBSITE_HOST: string;
+    WEBSITE_HOST_WWW: string;
     WEBSITE_IP: string;
 
     PAYMENT_GW_NAME: string;
@@ -76,15 +75,5 @@ declare namespace NodeJS {
     SMTP_EMAIL_FROM_NAME: string;
 
     BCRYPT_SALT: string;
-  }
-}
-
-declare global {
-  namespace Express {
-    export interface Request {
-      files: Files;
-      fields: Fields;
-      permissions: Attributes<Permission>[];
-    }
   }
 }
