@@ -30,14 +30,9 @@ declare namespace NodeJS {
     REDIS_PROD_DB_NAME: string;
     REDIS_TEST_DB_NAME: string;
 
-    MONGO_DIALECT: string;
-    MONGO_HOST: string;
-    MONGO_USERNAME: string;
-    MONGO_PASSWORD: string;
-    MONGO_PORT: string;
-    MONGO_DEV_DB_NAME: string;
-    MONGO_PROD_DB_NAME: string;
-    MONGO_TEST_DB_NAME: string;
+    MONGO_DEV_HOST: string;
+    MONGO_PROD_HOST: string;
+    MONGO_TEST_HOST: string;
 
     JWT_KEY: string; // JWT key
     JWT_EXPIRY: string; // JWT key

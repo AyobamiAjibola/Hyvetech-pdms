@@ -28,3 +28,19 @@ export const MONTHS = [
 export const MESSAGES = {
   txn_init: "Authorization URL created",
 };
+
+export const MOBILE_PLAN = "Mobile";
+export const DRIVE_IN_PLAN = "Drive-in";
+export const HYBRID_PLAN = "Hybrid";
+export const MAIN_OFFICE = "No. 10, 45 Road, off 1st Avenue Gwarimpa";
+export const INVENTORY = "Inventory";
+export const REPORT = "Report";
+export const ESTIMATE = "Estimate";
+
+export const APPOINTMENT_STATUS = {
+  pending: "Pending",
+  complete: "Complete",
+  inProgress: "In-Progress",
+  reject: "Rejected",
+  cancel: "Cancelled",
+};

@@ -41,10 +41,10 @@ export const VIN_FILTER_CONSTRAINTS = [
 
 export const APPOINTMENT_STATUS = {
   pending: "Pending",
-  complete: "Completed",
-  inProgress: "In-progress",
+  complete: "Complete",
+  inProgress: "In-Progress",
   reject: "Rejected",
-  cancel: "Canceled",
+  cancel: "Cancelled",
 };
 
 export const CUSTOMER_SUBSCRIPTION_STATUS = {

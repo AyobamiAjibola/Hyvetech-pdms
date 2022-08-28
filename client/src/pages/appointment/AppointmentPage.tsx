@@ -1,6 +1,7 @@
 import React, {
   ChangeEvent,
   MouseEvent,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -16,6 +17,8 @@ import {
   CardActions,
   CardMedia,
   Chip,
+  DialogActions,
+  DialogContentText,
   Divider,
   FormControl,
   Grid,
@@ -40,6 +43,7 @@ import { Assignment, Delete, Download, UploadFile } from "@mui/icons-material";
 import pdfImg from "../../assets/images/pdf4.jpg";
 import styles from "./appointmentPage.module.css";
 import {
+  cancelInspectionAction,
   getAppointmentAction,
   IAppointmentUpdate,
   updateAppointmentAction,
@@ -50,10 +54,17 @@ import axiosClient from "../../config/axiosClient";
 import useAppSelector from "../../hooks/useAppSelector";
 import AppModal from "../../components/modal/AppModal";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack5";
-
-interface ILocationState {
-  appointment?: IAppointment;
-}
+import { AppContext } from "../../context/AppContextProvider";
+import { AppContextProperties } from "@app-interfaces";
+import {
+  APPOINTMENT_STATUS,
+  ESTIMATE,
+  INVENTORY,
+  REPORT,
+} from "../../config/constants";
+import BookingModal from "../../components/modal/BookingModal";
+import BookingForm from "../../components/forms/booking/BookingForm";
+import useTimeslot from "../../hooks/useTimeslot";
 
 interface IImageListProps {
   img: string;
@@ -74,28 +85,30 @@ function AppointmentPage() {
   const [imageUrl, setImageUrl] = useState<string>();
   const [pdfFilename, setPdfFilename] = useState<string>("");
   const [_timeout, _setTimeout] = useState<any>();
+  const [cancel, setCancel] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
 
-  const location = useLocation();
-  const urlParams = useParams();
   const inventoryRef = useRef<HTMLInputElement>(null);
   const reportRef = useRef<HTMLInputElement>(null);
   const estimateRef = useRef<HTMLInputElement>(null);
 
+  const location = useLocation();
+  const urlParams = useParams();
+  useTimeslot();
+
+  const { showBooking, setShowBooking } = useContext(
+    AppContext
+  ) as AppContextProperties;
+
   const appointmentReducer = useAppSelector(
     (state) => state.appointmentReducer
   );
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (location.state) {
-      const state = location.state as ILocationState;
-      const _appointment = state.appointment;
-
-      setAppointment(_appointment);
-    } else {
-      //@ts-ignore
-      dispatch(getAppointmentAction(+urlParams.id));
-    }
+    //@ts-ignore
+    dispatch(getAppointmentAction(+urlParams.id));
   }, [location.state, dispatch, urlParams.id]);
 
   useEffect(() => {
@@ -165,9 +178,9 @@ function AppointmentPage() {
     } else
       setImageList([{ img: pdfImg, title: file.name, showDeleteIcon: true }]);
 
-    if (name === "Inventory") setInventoryFile(file);
-    if (name === "Report") setReportFile(file);
-    if (name === "Estimate") setEstimateFile(file);
+    if (name === INVENTORY) setInventoryFile(file);
+    if (name === REPORT) setReportFile(file);
+    if (name === ESTIMATE) setEstimateFile(file);
   };
 
   const handleResetImage = (title?: string) => {
@@ -243,6 +256,26 @@ function AppointmentPage() {
 
     setImageUrl(imageUrl);
     setViewImage(true);
+  };
+
+  const handleShowCancel = () => {
+    setMessage(`By cancelling this appointments, you will not be able to undo this action. 
+      Are you sure you want to cancel?.`);
+    setCancel(true);
+  };
+
+  const handleHideCancel = () => setCancel(false);
+
+  const handleConfirmCancel = () => {
+    const data = { id: appointment?.id, customerId: appointment?.customerId };
+
+    //@ts-ignore
+    dispatch(cancelInspectionAction(data));
+    setCancel(false);
+  };
+
+  const handleReschedule = () => {
+    if (!showBooking) setShowBooking(true);
   };
 
   return (
@@ -415,10 +448,24 @@ function AppointmentPage() {
                   columns={{ xs: 4, sm: 8, md: 12 }}
                 >
                   <Grid item xs>
-                    <Button size="small" variant="outlined" color="info">
+                    <Button
+                      disabled={
+                        appointment.status === APPOINTMENT_STATUS.cancel ||
+                        appointment.status === APPOINTMENT_STATUS.complete
+                      }
+                      onClick={handleReschedule}
+                      size="small"
+                      variant="outlined"
+                      color="info"
+                    >
                       Reschedule
                     </Button>
                     <Button
+                      disabled={
+                        appointment.status === APPOINTMENT_STATUS.cancel ||
+                        appointment.status === APPOINTMENT_STATUS.complete
+                      }
+                      onClick={handleShowCancel}
                       size="small"
                       sx={{ ml: 1 }}
                       variant="outlined"
@@ -478,7 +525,7 @@ function AppointmentPage() {
                               hidden
                               onClick={() => handleResetImage()}
                               onChange={handleUploadFile}
-                              name="Inventory"
+                              name={INVENTORY}
                               //@ts-ignore
                               ref={inventoryRef}
                               accept="application/pdf"
@@ -499,7 +546,7 @@ function AppointmentPage() {
                           <Button startIcon={<UploadFile />} component="label">
                             Report
                             <input
-                              name="Report"
+                              name={REPORT}
                               onClick={() => handleResetImage()}
                               onChange={handleUploadFile}
                               //@ts-ignore
@@ -523,7 +570,7 @@ function AppointmentPage() {
                           <Button startIcon={<UploadFile />} component="label">
                             Estimate
                             <input
-                              name="Estimate"
+                              name={ESTIMATE}
                               onClick={() => handleResetImage()}
                               onChange={handleUploadFile}
                               //@ts-ignore
@@ -613,6 +660,25 @@ function AppointmentPage() {
         size="sm"
         Content={<img width="100%" src={imageUrl} alt="complaint" />}
         onClose={() => setViewImage(false)}
+      />
+      <AppModal
+        show={cancel}
+        title="Cancel Appointment"
+        size="sm"
+        Content={<DialogContentText>{message}</DialogContentText>}
+        onClose={handleHideCancel}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={handleHideCancel}>Disagree</Button>
+            <Button onClick={handleConfirmCancel}>Agree</Button>
+          </DialogActions>
+        }
+      />
+      <BookingModal
+        fullScreen
+        open={showBooking}
+        Content={<BookingForm appointment={appointment} />}
+        onClose={() => setShowBooking(false)}
       />
     </React.Fragment>
   );

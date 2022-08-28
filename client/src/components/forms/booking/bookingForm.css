@@ -1,0 +1,231 @@
+.timePickerContainer {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.radio-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  height: auto;
+}
+
+.bookingFormContainer {
+  min-height: 65vh !important;
+  /*height: 100% !important;*/
+  width: 60vw;
+  margin: 50px auto !important;
+  border-radius: 25px !important;
+}
+
+.radio-btn {
+  width: 100%;
+  flex: 20%;
+  margin: 2px;
+}
+
+.time-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  border-radius: 3px;
+  width: 100% !important;
+  margin: 1px !important;
+  height: auto;
+  transition: 0.3s ease-in-out;
+}
+
+.time-btn {
+  background-color: #dddddd !important;
+  color: #000000 !important;
+  border-radius: 3px;
+  cursor: pointer !important;
+  width: 100% !important;
+  margin: 1px !important;
+  height: auto;
+  transition: 0.3s ease-in-out;
+}
+
+.slot-img {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: green;
+  cursor: pointer;
+}
+
+.time-btn .time-slot-btn-title {
+  font-size: 0.65rem !important;
+  font-family: "Montserrat", sans-serif !important;
+  font-weight: bolder !important;
+}
+
+.time-btn:hover {
+  background-color: #2196f3 !important;
+  cursor: pointer !important;
+}
+
+.time-btn > label {
+  width: 100% !important;
+}
+
+input[type="radio"]:checked + .time-btn {
+  background-color: #2196f3 !important;
+  color: #000;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+.submit-book-btn {
+  background: #fba91a !important;
+  font-family: "Montserrat", sans-serif !important;
+  transition: 0.3s ease-in-out;
+  text-transform: capitalize;
+  font-size: 10px !important;
+  color: #16222c !important;
+  padding: 0 !important;
+  font-weight: bold;
+  height: 40px !important;
+  width: 100% !important;
+  border-radius: 20px !important;
+}
+
+.submit-book-btn:hover {
+  background-color: #2196f3 !important;
+  color: #000 !important;
+  font-weight: bolder !important;
+}
+
+.time-header {
+  font-family: "Montserrat" !important;
+  font-weight: bold !important;
+  color: #000 !important;
+  margin-bottom: 15px !important;
+}
+
+/*
+@media all and (max-width: 600px) {
+  .radio-container {
+    flex-direction: row;
+  }
+
+  .slot-img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .time-btn .time-slot-btn-title {
+    font-size: 0.5rem !important;
+    font-family: "Montserrat", sans-serif !important;
+    font-weight: bolder !important;
+  }
+
+
+  .submit-book-btn:hover {
+    font-weight: 400 !important;
+  }
+}
+
+@media all and (min-width: 481px) and (max-width: 768px) {
+} */
+
+.time-header-schedule {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 650px) {
+  .bookingFormContainer {
+    display: block !important;
+    position: relative;
+    height: 86vh !important;
+    overflow-y: scroll;
+    width: 100%;
+    margin: 50px auto !important;
+    border-radius: 15px !important;
+    padding: 20px !important;
+    padding-top: 0px !important;
+    background-color: #ffffff !important;
+  }
+
+  .bookingFormContainer::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .bottomDiv {
+    height: 20px !important;
+    width: 100% !important;
+  }
+
+  .time-header-schedule {
+    /* color: red !important; */
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #383838;
+  }
+
+  .time-header {
+    margin-top: 20px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #383838 !important;
+  }
+
+  .vehicleFaultTextField {
+    /* height: 40px !important; */
+  }
+
+  .locationTextField {
+    /* width: 60% !important; */
+  }
+
+  .timePickerContainer {
+    width: auto !important;
+    display: block !important;
+    flex-direction: column;
+    /* align-items: center !important;
+                                                    justify-content: center !important; */
+  }
+
+  .radio-container {
+    /* display: flex;
+                                                    flex-direction: row;
+                                                    flex-wrap: wrap;
+                                                    width: 100%;
+                                                    height: auto; */
+    display: block !important;
+  }
+
+  .radio-btn {
+    /* width: auto;
+                                                    flex: 0.5 ;
+                                                    margin: 2px; */
+    display: inline-block;
+    width: 47%;
+    margin: 4px;
+  }
+
+  .submit-book-btn {
+    margin-bottom: 64px !important;
+    width: 100% !important;
+    word-wrap: break-word !important;
+    padding: 26px !important;
+    margin-left: 12px;
+    border-radius: 25px !important;
+    /* height: 30px !important; */
+  }
+}

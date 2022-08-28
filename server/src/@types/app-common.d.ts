@@ -190,8 +190,8 @@ export declare namespace appCommonTypes {
   }
 
   interface ISchedule {
-    date?: string;
-    slots?: any[];
+    date: string;
+    slots: any[];
   }
 
   interface PlanInspectionsOptions {

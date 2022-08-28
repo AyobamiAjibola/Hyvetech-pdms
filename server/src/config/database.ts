@@ -11,6 +11,7 @@ import DatabaseEnv = appCommonTypes.DatabaseEnv;
 const env = process.env.NODE_ENV as DatabaseEnv;
 
 const postgresConfig = settings.postgres[env];
+export const mongoUrl = <string>settings.mongo[env].host;
 
 const models = path.resolve(__dirname, "../models");
 

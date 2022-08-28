@@ -79,7 +79,7 @@ declare module "@app-models" {
     customerId: number;
     appointment: IAppointment;
     appointmentId: number;
-    subscription: ISubscription;
+    subscription: ICustomerSubscription;
     customerSubscriptionId: number;
     tags: ITag;
     createdAt: Date;
@@ -151,7 +151,7 @@ declare module "@app-models" {
     updatedAt: Date;
   }
 
-  interface ISubscription {
+  interface ICustomerSubscription {
     id: number;
     status: string;
     planType: string;
@@ -177,6 +177,54 @@ declare module "@app-models" {
     vehicles: IVehicle[];
     createdAt: Date;
     updatedAt: Date;
+  }
+
+  interface IDefaultSubscription {
+    id: number;
+    name: string;
+    description: string;
+    active: boolean;
+    plans: IPlan[];
+  }
+
+  interface IPlan {
+    id: number;
+    label: string;
+    validity: string;
+    minVehicles: number;
+    maxVehicles: number;
+    inspections: number;
+    paymentPlans: IPaymentPlan[];
+    paymentTerms: IPaymentTerm[];
+    categories: Category[];
+    active: boolean;
+  }
+
+  interface IPaymentPlan {
+    id: number;
+    name: string;
+    label: string;
+    discount: number;
+    value: number;
+    hasPromo: boolean;
+    descriptions: string[];
+  }
+
+  interface IPaymentTerm {
+    id: number;
+    name: string;
+    interest: number;
+    split: number;
+    discount: number;
+    quota: string;
+  }
+
+  interface Category {
+    id: number;
+    name: string;
+    description: string;
+    plans: IPlan[];
+    paymentPlans: IPaymentPlan[];
   }
 
   interface IPermission {
@@ -236,9 +284,25 @@ declare module "@app-models" {
     vehicles: IVehicle[];
     transactions: ITransaction[];
     appointments: IAppointment[];
-    subscriptions: ISubscription[];
+    subscriptions: ICustomerSubscription[];
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
+  }
+
+  interface ISchedule {
+    id: number;
+    name: string;
+    status: string;
+    default: boolean;
+    date?: string;
+    timeSlots: ITimeSlot[];
+  }
+
+  interface ITimeSlot {
+    id: number;
+    time: string;
+    label: string;
+    available: boolean;
   }
 }

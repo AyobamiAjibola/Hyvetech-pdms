@@ -175,28 +175,13 @@ const settings: AppSettings = {
   },
   mongo: {
     development: {
-      database: <string>process.env.MONGO_DEV_DB_NAME,
-      host: <string>process.env.MONGO_HOST,
-      username: <string>process.env.MONGO_USERNAME,
-      password: <string>process.env.MONGO_PASSWORD,
-      dialect: <string>process.env.MONGO_DIALECT,
-      port: <string>process.env.MONGO_PORT,
+      host: <string>process.env.MONGO_DEV_HOST,
     },
     production: {
-      database: <string>process.env.MONGO_PROD_DB_NAME,
-      host: <string>process.env.MONGO_HOST,
-      username: <string>process.env.MONGO_USERNAME,
-      password: <string>process.env.MONGO_PASSWORD,
-      dialect: <string>process.env.MONGO_DIALECT,
-      port: <string>process.env.MONGO_PORT,
+      host: <string>process.env.MONGO_PROD_HOST,
     },
     test: {
-      database: <string>process.env.MONGO_TEST_DB_NAME,
-      host: <string>process.env.MONGO_HOST,
-      username: <string>process.env.MONGO_USERNAME,
-      password: <string>process.env.MONGO_PASSWORD,
-      dialect: <string>process.env.MONGO_DIALECT,
-      port: <string>process.env.MONGO_PORT,
+      host: <string>process.env.MONGO_TEST_HOST,
     },
   },
 };

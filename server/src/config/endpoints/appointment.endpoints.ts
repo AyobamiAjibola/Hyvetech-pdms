@@ -29,14 +29,14 @@ const appointmentEndpoints: RouteEndpoints = [
   },
   {
     name: "appointments",
-    method: "post",
-    path: "/appointments/cancel",
+    method: "patch",
+    path: "/appointments/:appointmentId/cancel",
     handler: cancelAppointmentHandler,
   },
   {
     name: "appointments",
-    method: "post",
-    path: "/appointments/reschedule",
+    method: "patch",
+    path: "/appointments/:appointmentId/reschedule",
     handler: rescheduleAppointmentHandler,
   },
 ];

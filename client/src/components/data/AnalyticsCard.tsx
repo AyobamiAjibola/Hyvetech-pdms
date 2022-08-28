@@ -33,7 +33,7 @@ function AnalyticsCard(props: IProps) {
         <Box
           component={Timelapse}
           sx={{
-            color: "success.dark",
+            color: (theme) => (theme.palette.mode === "dark" ? "#ddd" : "#333"),
             fontSize: 16,
             verticalAlign: "sub",
           }}
@@ -41,7 +41,7 @@ function AnalyticsCard(props: IProps) {
       ) : null}
       <Box
         sx={{
-          color: "success.dark",
+          color: (theme) => (theme.palette.mode === "dark" ? "#ddd" : "#333"),
           display: "inline",
           fontWeight: "medium",
           mx: 0.5,

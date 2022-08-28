@@ -11,7 +11,7 @@ import AppDataGrid from "../../components/tables/AppDataGrid";
 import { useNavigate } from "react-router-dom";
 
 function AppointmentsPage() {
-  const [_appointments, _setAppointments] = useState<IAppointment[]>([]);
+  const [appointments, setAppointments] = useState<IAppointment[]>([]);
 
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ function AppointmentsPage() {
 
   useEffect(() => {
     if (appointmentReducer.getAppointmentsStatus === "completed") {
-      _setAppointments(appointmentReducer.appointments);
+      setAppointments(appointmentReducer.appointments);
     }
   }, [
     appointmentReducer.appointments,
@@ -48,7 +48,7 @@ function AppointmentsPage() {
       </Typography>
       <Box>
         <AppDataGrid
-          rows={_appointments}
+          rows={appointments}
           columns={columns({ onView: handleView })}
           checkboxSelection
           disableSelectionOnClick

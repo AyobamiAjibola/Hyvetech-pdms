@@ -23,8 +23,7 @@ import Vehicle from "./Vehicle";
 import AppointmentJob from "./AppointmentJob";
 import Joi from "joi";
 
-export const $rescheduleSchema = {
-  id: Joi.number().required().label("Appointment Id"),
+export const $rescheduleInspectionSchema = {
   customerId: Joi.number().required().label("Customer Id"),
   time: Joi.date().iso().required().label("Appointment Date"),
   timeSlot: Joi.string().allow("").label("Time Slot"),
@@ -35,8 +34,7 @@ export const $rescheduleSchema = {
   video: Joi.string().allow("").label("Vehicle Fault Video"),
 };
 
-export const $cancelSchema = {
-  id: Joi.number().required().label("Appointment Id"),
+export const $cancelInspectionSchema = {
   customerId: Joi.number().required().label("Customer Id"),
 };
 

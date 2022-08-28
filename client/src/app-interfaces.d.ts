@@ -10,12 +10,28 @@ declare module "@app-interfaces" {
     transactions: { name: string; data: GenericObjectType[] };
   }
 
+  interface IThunkAPIPayloadError {
+    message: string;
+  }
+
   interface IDashboardData {
     dailyData: IModule;
     monthlyData: IModule;
   }
 
   interface AppContextProperties {
+    showBooking: boolean;
+    setShowBooking: React.Dispatch<React.SetStateAction<boolean>>;
+    showBookingBtn: boolean;
+    setShowBookingBtn: React.Dispatch<React.SetStateAction<boolean>>;
+    checkedSlot: boolean;
+    setCheckedSlot: React.Dispatch<React.SetStateAction<boolean>>;
+    planTab: number;
+    setPlanTab: React.Dispatch<React.SetStateAction<number>>;
+    mobileDate: boolean;
+    setMobileDate: React.Dispatch<React.SetStateAction<boolean>>;
+    showTime: boolean;
+    setShowTime: React.Dispatch<React.SetStateAction<boolean>>;
     isSignedIn: boolean;
     setIsSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
   }

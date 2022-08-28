@@ -8,12 +8,30 @@ export const AppContext = createContext<AppContextProperties | null>(null);
 
 function AppContextProvider() {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [showBooking, setShowBooking] = useState<boolean>(false);
+  const [showBookingBtn, setShowBookingBtn] = useState<boolean>(false);
+  const [checkedSlot, setCheckedSlot] = useState<boolean>(false);
+  const [planTab, setPlanTab] = useState<number>(0);
+  const [mobileDate, setMobileDate] = useState<boolean>(false);
+  const [showTime, setShowTime] = useState<boolean>(false);
 
   return (
     <AppContext.Provider
       value={{
         isSignedIn,
         setIsSignedIn,
+        showBooking,
+        setShowBooking,
+        showBookingBtn,
+        setShowBookingBtn,
+        checkedSlot,
+        setCheckedSlot,
+        planTab,
+        setPlanTab,
+        mobileDate,
+        setMobileDate,
+        showTime,
+        setShowTime,
       }}
     >
       <AbilityContext.Provider value={ability}>

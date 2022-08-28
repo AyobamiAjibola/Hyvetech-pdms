@@ -1,10 +1,5 @@
 import React, { ReactNode } from "react";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import TransitionUp from "../transitions/TransitionUp";
 
 interface IProps {
@@ -33,9 +28,7 @@ function AppModal(props: IProps) {
       >
         <DialogTitle>{props.title}</DialogTitle>
         <DialogContent>{props.Content}</DialogContent>
-        {props.ActionComponent && (
-          <DialogActions>{props.ActionComponent}</DialogActions>
-        )}
+        {props.ActionComponent && props.ActionComponent}
       </Dialog>
     </div>
   );

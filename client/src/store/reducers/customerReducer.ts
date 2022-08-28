@@ -6,7 +6,13 @@ import {
   getCustomerTransactionsAction,
   getCustomerVehiclesAction,
 } from "../actions/customerActions";
-import { IAppointment, ICustomer, ITransaction, IVehicle } from "@app-models";
+import {
+  IAppointment,
+  IContact,
+  ICustomer,
+  ITransaction,
+  IVehicle,
+} from "@app-models";
 
 interface ICustomerState {
   getCustomersStatus: IThunkAPIStatus;
@@ -25,6 +31,7 @@ interface ICustomerState {
   getCustomerTransactionsSuccess: string;
   getCustomerTransactionsError: string;
 
+  contacts: IContact[];
   customers: ICustomer[];
   vehicles: IVehicle[];
   appointments: IAppointment[];
@@ -48,6 +55,7 @@ const initialState: ICustomerState = {
   getCustomerTransactionsSuccess: "",
   getCustomerTransactionsError: "",
 
+  contacts: [],
   customers: [],
   vehicles: [],
   appointments: [],

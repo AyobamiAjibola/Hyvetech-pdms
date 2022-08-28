@@ -6,6 +6,8 @@ import axiosClient from "../../config/axiosClient";
 const GET_APPOINTMENTS = "appointment:GET_APPOINTMENTS";
 const GET_APPOINTMENT = "appointment:GET_APPOINTMENT";
 const UPLOAD_FILE = "appointment:UPLOAD_FILE";
+const RESCHEDULE_APPOINTMENT = "appointment:RESCHEDULE_APPOINTMENT";
+const CANCEL_APPOINTMENT = "appointment:CANCEL_APPOINTMENT";
 const API_ROOT = settings.api.rest;
 
 export const getAppointmentsAction = createAsyncThunk(
@@ -64,6 +66,28 @@ export const getAppointmentAction = createAsyncThunk(
   GET_APPOINTMENT,
   asyncThunkErrorWrapper(async (id: number) => {
     const response = await axiosClient.get(`${API_ROOT}/appointments/${id}`);
+    return response.data;
+  })
+);
+
+export const rescheduleInspectionAction = createAsyncThunk(
+  RESCHEDULE_APPOINTMENT,
+  asyncThunkErrorWrapper(async (args: any) => {
+    const response = await axiosClient.patch(
+      `${API_ROOT}/appointments/${args.id}/reschedule`,
+      args.data
+    );
+    return response.data;
+  })
+);
+
+export const cancelInspectionAction = createAsyncThunk(
+  CANCEL_APPOINTMENT,
+  asyncThunkErrorWrapper(async (args: any) => {
+    const response = await axiosClient.patch(
+      `${API_ROOT}/appointments/${args.id}/cancel`,
+      { customerId: args.customerId }
+    );
     return response.data;
   })
 );

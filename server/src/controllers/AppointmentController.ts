@@ -9,8 +9,8 @@ import { appCommonTypes } from "../@types/app-common";
 import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
 import Appointment, {
-  $cancelSchema,
-  $rescheduleSchema,
+  $cancelInspectionSchema,
+  $rescheduleInspectionSchema,
 } from "../models/Appointment";
 
 import CustomAPIError from "../exceptions/CustomAPIError";
@@ -18,6 +18,8 @@ import Vehicle from "../models/Vehicle";
 import VehicleFault from "../models/VehicleFault";
 import Customer from "../models/Customer";
 import {
+  APPOINTMENT_STATUS,
+  CANCEL_APPOINTMENT,
   DRIVE_IN_CATEGORY,
   HYBRID_CATEGORY,
   MAIN_OFFICE,
@@ -203,7 +205,9 @@ export default class AppointmentController {
   public static async rescheduleInspection(req: Request) {
     try {
       //validate request body
-      const { error, value } = Joi.object($rescheduleSchema).validate(req.body);
+      const { error, value } = Joi.object($rescheduleInspectionSchema).validate(
+        req.body
+      );
 
       if (error) {
         return Promise.reject(
@@ -214,8 +218,8 @@ export default class AppointmentController {
         );
       }
 
-      const id = value.id;
-      const customerId = value.customerId;
+      const id = req.params?.appointmentId as string;
+      const customerId = value?.customerId;
 
       const customer = await dataSources.customerDAOService.findById(
         customerId
@@ -231,9 +235,12 @@ export default class AppointmentController {
       }
 
       //find appointment by id
-      const appointment = await dataSources.appointmentDAOService.findById(id, {
-        include: [VehicleFault],
-      });
+      const appointment = await dataSources.appointmentDAOService.findById(
+        +id,
+        {
+          include: [VehicleFault, Vehicle],
+        }
+      );
 
       if (!appointment) {
         return Promise.reject(
@@ -444,7 +451,9 @@ export default class AppointmentController {
   public static async cancelInspection(req: Request) {
     try {
       //validate request body
-      const { error, value } = Joi.object($cancelSchema).validate(req.body);
+      const { error, value } = Joi.object($cancelInspectionSchema).validate(
+        req.body
+      );
 
       if (error) {
         return Promise.reject(
@@ -455,8 +464,8 @@ export default class AppointmentController {
         );
       }
 
-      const id = value.id;
-      const customerId = value.customerId;
+      const id = req.params?.appointmentId as string;
+      const customerId = value?.customerId;
 
       const customer = await dataSources.customerDAOService.findById(
         customerId
@@ -472,9 +481,12 @@ export default class AppointmentController {
       }
 
       //find appointment by id
-      const appointment = await dataSources.appointmentDAOService.findById(id, {
-        include: [Vehicle, VehicleFault],
-      });
+      const appointment = await dataSources.appointmentDAOService.findById(
+        +id,
+        {
+          include: [Vehicle, VehicleFault],
+        }
+      );
 
       if (!appointment) {
         return Promise.reject(
@@ -512,7 +524,7 @@ export default class AppointmentController {
 
       //update appointment
       await appointment.update({
-        status: "Cancelled",
+        status: APPOINTMENT_STATUS.cancel,
       });
 
       const mailText = booking_cancel_email({
@@ -552,7 +564,7 @@ export default class AppointmentController {
         },
       });
 
-      appEventEmitter.emit(RESCHEDULE_APPOINTMENT, {
+      appEventEmitter.emit(CANCEL_APPOINTMENT, {
         appointment,
       });
 
