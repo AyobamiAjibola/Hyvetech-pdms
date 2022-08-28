@@ -211,11 +211,11 @@ export default function BookingForm(props: IBookingProps) {
       );
     }
 
-    const now = moment();
-    const inspectionTime = moment(date);
-
-    if (inspectionTime.isBefore(now))
-      return alert("You cannot choose a previous time.");
+    // const now = moment();
+    // const inspectionTime = moment(date);
+    //
+    // if (inspectionTime.isBefore(now))
+    //   return alert("You cannot choose a previous time.");
 
     const id = bookingData?.id;
     const data = {
