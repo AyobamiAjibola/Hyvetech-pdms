@@ -48,7 +48,7 @@ export default class AppLogger {
         }),
       };
 
-      return new transports.DailyRotateFile({
+      return new DailyRotateFile({
         ...options,
         filename: "logs/app-%DATE%.log",
       });
