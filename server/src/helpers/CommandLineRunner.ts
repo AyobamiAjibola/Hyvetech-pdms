@@ -300,9 +300,7 @@ export default class CommandLineRunner {
   }
 
   async loadDefaultPaymentGateway() {
-    const gateways = await this.paymentGatewayRepository.findAll();
-
-    if (gateways.length) return;
+    await this.paymentGatewayRepository.deleteAll({ force: true });
 
     //create payStack gateway
     await this.paymentGatewayRepository.save({
