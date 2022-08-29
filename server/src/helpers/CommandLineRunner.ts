@@ -187,9 +187,7 @@ export default class CommandLineRunner {
   }
 
   async loadDefaultEmailConfig() {
-    const emailConfig = await this.emailConfigRepository.findAll();
-
-    if (emailConfig.length) return;
+    await this.emailConfigRepository.deleteAll({ force: true });
 
     await this.emailConfigRepository.save({
       name: settings.email.name,
