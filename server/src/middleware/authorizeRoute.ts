@@ -24,7 +24,9 @@ export default async function authorizeRoute(req: Request) {
         ability.can("read", "customer");
       break;
     case "/dashboard":
+    case "/states":
     case "/appointments":
+    case "/partners":
     case path.match("/appointments/(\\d+)")?.input:
     case path.match("/appointments/(\\d+)/reschedule")?.input:
     case path.match("/appointments/(\\d+)/cancel")?.input:

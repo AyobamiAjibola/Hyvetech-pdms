@@ -22,7 +22,7 @@ export default class StateDAOService implements ICrudDAO<State> {
 
   create(
     values: CreationAttributes<State>,
-    options?: CreateOptions<State>
+    options?: CreateOptions<Attributes<State>>
   ): Promise<State> {
     return this.stateRepository.save(values, options);
   }

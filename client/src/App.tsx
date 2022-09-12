@@ -7,6 +7,7 @@ import MainLayout from "./components/layouts/MainLayout";
 
 function App() {
   const { theme } = useAppTheme();
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

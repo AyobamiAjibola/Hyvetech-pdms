@@ -22,7 +22,7 @@ export default class PlanDAOService implements ICrudDAO<Plan> {
 
   create(
     values: CreationAttributes<Plan>,
-    options?: CreateOptions<Plan>
+    options?: CreateOptions<Attributes<Plan>>
   ): Promise<Plan> {
     return this.planRepository.save(values, options);
   }

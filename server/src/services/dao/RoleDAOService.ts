@@ -22,7 +22,7 @@ export default class RoleDAOService implements ICrudDAO<Role> {
 
   create(
     values: CreationAttributes<Role>,
-    options?: CreateOptions<Role>
+    options?: CreateOptions<Attributes<Role>>
   ): Promise<Role> {
     return this.roleRepository.save(values, options);
   }

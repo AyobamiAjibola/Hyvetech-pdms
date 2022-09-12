@@ -22,7 +22,7 @@ export default class ContactDAOService implements ICrudDAO<Contact> {
 
   create(
     values: CreationAttributes<Contact>,
-    options?: CreateOptions<Contact>
+    options?: CreateOptions<Attributes<Contact>>
   ): Promise<Contact> {
     return this.contactRepository.save(values, options);
   }

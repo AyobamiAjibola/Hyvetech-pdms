@@ -4,8 +4,9 @@ import {
   Dashboard,
   Groups,
   Payments,
-  SportsMotorsports,
+  PeopleTwoTone,
 } from "@mui/icons-material";
+import { FaCar } from "react-icons/fa";
 
 const SignInPage = React.lazy(
   () => import("../pages/authentication/SignInPage")
@@ -20,7 +21,8 @@ export const sideNavs = [
   { name: "Appointments", path: "/appointments", Icon: BookOnline },
   { name: "Customers", path: "/customers", Icon: Groups },
   { name: "Transactions", path: "/transactions", Icon: Payments },
-  { name: "Vehicles", path: "/vehicles", Icon: SportsMotorsports },
+  { name: "Vehicles", path: "/vehicles", Icon: FaCar },
+  { name: "Partners", path: "/partners", Icon: PeopleTwoTone },
 ];
 
 export const routes = [

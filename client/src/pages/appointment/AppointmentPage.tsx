@@ -316,7 +316,7 @@ function AppointmentPage() {
               spacing={{ xs: 2, md: 3 }}
               columns={{ xs: 4, sm: 8, md: 12 }}
             >
-              <Grid item xs={6} md={4}>
+              <Grid item xs={12} md={4}>
                 <Paper
                   elevation={5}
                   sx={{
@@ -356,7 +356,7 @@ function AppointmentPage() {
                   </Grid>
                 </Paper>
               </Grid>
-              <Grid item xs={6} md={8}>
+              <Grid item xs={12} md={8}>
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   spacing={{ xs: 1, sm: 2, md: 2 }}

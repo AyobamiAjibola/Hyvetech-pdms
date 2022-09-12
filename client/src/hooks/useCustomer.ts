@@ -12,7 +12,7 @@ export default function useCustomer() {
   const [sortModel, setSortModel] = useState<GridSortItem[]>([
     {
       field: "id",
-      sort: "desc",
+      sort: "asc",
     },
   ]);
 

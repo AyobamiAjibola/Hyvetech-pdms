@@ -61,7 +61,7 @@ export default class Generic {
 
   public static generateRandomString(limit: number) {
     const letters =
-      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz@#!$%^&+=";
     let randomString = "";
     for (let i = 0; i < limit; i++) {
       const randomNum = Math.floor(Math.random() * letters.length);

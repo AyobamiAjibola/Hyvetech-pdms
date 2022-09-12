@@ -21,7 +21,7 @@ export default class TagDAOService implements ICrudDAO<Tag> {
 
   create(
     values: CreationAttributes<Tag>,
-    options?: CreateOptions<Tag>
+    options?: CreateOptions<Attributes<Tag>>
   ): Promise<Tag> {
     return this.tagRepository.save(values, options);
   }

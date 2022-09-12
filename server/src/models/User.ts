@@ -1,8 +1,10 @@
 import {
   AutoIncrement,
+  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
+  ForeignKey,
   HasMany,
   Model,
   PrimaryKey,
@@ -22,6 +24,7 @@ import {
   InferCreationAttributes,
   NonAttribute,
 } from "sequelize";
+import Partner from "./Partner";
 
 export const $userSchema = {
   firstName: Joi.string().required().label("First Name"),
@@ -108,4 +111,11 @@ export default class User extends Model<
 
   @BelongsToMany(() => Role, () => UserRole)
   declare roles: NonAttribute<Array<Role & { UserRole: UserRole }>>;
+
+  @BelongsTo(() => Partner)
+  declare partner: NonAttribute<Partner>;
+
+  @ForeignKey(() => Partner)
+  @Column(DataType.INTEGER)
+  declare partnerId: NonAttribute<number>;
 }

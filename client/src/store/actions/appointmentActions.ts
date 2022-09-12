@@ -10,7 +10,7 @@ const RESCHEDULE_APPOINTMENT = "appointment:RESCHEDULE_APPOINTMENT";
 const CANCEL_APPOINTMENT = "appointment:CANCEL_APPOINTMENT";
 const API_ROOT = settings.api.rest;
 
-export const getAppointmentsAction = createAsyncThunk(
+export const getAppointmentsAction = createAsyncThunk<any, void>(
   GET_APPOINTMENTS,
   asyncThunkErrorWrapper(async () => {
     const response = await axiosClient.get(`${API_ROOT}/appointments`);
@@ -62,7 +62,7 @@ export const updateAppointmentAction = createAsyncThunk(
   })
 );
 
-export const getAppointmentAction = createAsyncThunk(
+export const getAppointmentAction = createAsyncThunk<any, number>(
   GET_APPOINTMENT,
   asyncThunkErrorWrapper(async (id: number) => {
     const response = await axiosClient.get(`${API_ROOT}/appointments/${id}`);

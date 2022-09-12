@@ -64,3 +64,4 @@ build
 *.rdb
 .DS_Store
 yarn.lock
+*.sh

@@ -1,4 +1,5 @@
 import {
+  Attributes,
   CreateOptions,
   CreationAttributes,
   DestroyOptions,
@@ -63,7 +64,7 @@ export default class UserDAOService implements ICrudDAO<User> {
 
   async create(
     values: CreationAttributes<User>,
-    options?: CreateOptions<User>
+    options?: CreateOptions<Attributes<User>>
   ): Promise<User> {
     values.password = await this.passwordEncoder.encode(values.password);
 

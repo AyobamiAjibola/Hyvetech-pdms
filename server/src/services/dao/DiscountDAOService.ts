@@ -22,7 +22,7 @@ export default class DiscountDAOService implements ICrudDAO<Discount> {
 
   create(
     values: CreationAttributes<Discount>,
-    options?: CreateOptions<Discount>
+    options?: CreateOptions<Attributes<Discount>>
   ): Promise<Discount> {
     return this.discountRepository.save(values, options);
   }

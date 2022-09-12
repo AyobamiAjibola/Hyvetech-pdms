@@ -1,4 +1,5 @@
 import {
+  Attributes,
   CreateOptions,
   CreationAttributes,
   DestroyOptions,
@@ -77,7 +78,7 @@ export default class CustomerDAOService implements ICrudDAO<Customer> {
 
   async create(
     values: CreationAttributes<Customer>,
-    options?: CreateOptions<Customer>
+    options?: CreateOptions<Attributes<Customer>>
   ): Promise<Customer> {
     let rawPassword: string;
 

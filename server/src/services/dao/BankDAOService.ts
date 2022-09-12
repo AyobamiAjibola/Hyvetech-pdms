@@ -22,7 +22,7 @@ export default class BankDAOService implements ICrudDAO<Bank> {
 
   create(
     values: CreationAttributes<Bank>,
-    options?: CreateOptions<Bank>
+    options?: CreateOptions<Attributes<Bank>>
   ): Promise<Bank> {
     return this.bankRepository.save(values, options);
   }

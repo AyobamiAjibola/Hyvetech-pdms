@@ -31,7 +31,7 @@ export default class AppointmentDAOService implements ICrudDAO<Appointment> {
 
   create(
     values: CreationAttributes<Appointment>,
-    options?: CreateOptions<Appointment>
+    options?: CreateOptions<Attributes<Appointment>>
   ): Promise<Appointment> {
     return this.appointmentRepository.save(values, options);
   }

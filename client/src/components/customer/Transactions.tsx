@@ -27,11 +27,10 @@ function Transactions() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (customerReducer.getCustomerTransactionsStatus === "idle" && customer) {
-      //@ts-ignore
+    if (customer) {
       dispatch(getCustomerTransactionsAction(customer.id));
     }
-  }, [dispatch, customerReducer.getCustomerTransactionsStatus, customer]);
+  }, [dispatch, customer]);
 
   useEffect(() => {
     if (customerReducer.getCustomerTransactionsStatus === "completed") {
@@ -55,6 +54,7 @@ function Transactions() {
           checkboxSelection
           disableSelectionOnClick
           showToolbar
+          loading={customerReducer.getCustomerTransactionsStatus === "loading"}
         />
       </Stack>
     </Box>

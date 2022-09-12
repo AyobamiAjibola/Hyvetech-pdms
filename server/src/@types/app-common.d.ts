@@ -5,11 +5,20 @@ import Permission from "../models/Permission";
 import { Fields, Files } from "formidable";
 import { Attributes } from "sequelize";
 import IncomingForm from "formidable/Formidable";
+import User from "../models/User";
 
 export declare namespace appCommonTypes {
   import ICrudDAO = appModelTypes.ICrudDAO;
   type DatabaseEnv = "development" | "production" | "test";
-  type Roles = "ADMIN_ROLE" | "GUEST_ROLE" | "USER_ROLE" | "CUSTOMER_ROLE";
+  type Roles =
+    | "ADMIN_ROLE"
+    | "GUEST_ROLE"
+    | "USER_ROLE"
+    | "CUSTOMER_ROLE"
+    | "GARAGE_ADMIN_ROLE"
+    | "GARAGE_TECHNICIAN_ROLE"
+    | "RIDE_SHARE_ADMIN_ROLE"
+    | "RIDE_SHARE_DRIVER_ROLE";
   type Permissions =
     | "manage_all"
     | "create_booking"
@@ -32,6 +41,14 @@ export declare namespace appCommonTypes {
     | "read_plan"
     | "update_plan"
     | "delete_plan"
+    | "create_technician"
+    | "read_technician"
+    | "update_technician"
+    | "delete_technician"
+    | "create_driver"
+    | "read_driver"
+    | "update_driver"
+    | "delete_driver"
     | "read_guest";
   type VINProvider = {
     name: string;
@@ -214,6 +231,7 @@ declare global {
       files: Files;
       fields: Fields;
       permissions: Attributes<Permission>[];
+      user: User;
       form: IncomingForm;
     }
   }

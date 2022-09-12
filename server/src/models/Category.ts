@@ -15,6 +15,8 @@ import Plan from "./Plan";
 import PaymentPlan from "./PaymentPlan";
 import PlanCategory from "./PlanCategory";
 import PaymentPlanCategory from "./PaymentPlanCategory";
+import Partner from "./Partner";
+import PartnerCategory from "./PartnerCategory";
 
 @Table({
   tableName: "categories",
@@ -40,6 +42,11 @@ export default class Category extends Model<
 
   @BelongsToMany(() => Plan, () => PlanCategory)
   declare plans: NonAttribute<Array<Plan & { PlanCategory: PlanCategory }>>;
+
+  @BelongsToMany(() => Partner, () => PartnerCategory)
+  declare partners: NonAttribute<
+    Array<Partner & { PartnerCategory: PartnerCategory }>
+  >;
 
   @BelongsToMany(() => PaymentPlan, () => PaymentPlanCategory)
   declare paymentPlans: NonAttribute<

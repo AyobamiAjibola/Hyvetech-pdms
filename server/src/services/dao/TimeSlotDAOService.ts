@@ -9,6 +9,7 @@ import {
   InferAttributes,
   UpdateOptions,
 } from "sequelize/types";
+import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class TimeSlotDAOService implements ICrudDAO<TimeSlot> {
@@ -20,7 +21,7 @@ export default class TimeSlotDAOService implements ICrudDAO<TimeSlot> {
 
   create(
     values: CreationAttributes<TimeSlot>,
-    options?: CreateOptions<TimeSlot>
+    options?: CreateOptions<Attributes<TimeSlot>>
   ): Promise<TimeSlot> {
     return this.timeSlotRepository.save(values, options);
   }

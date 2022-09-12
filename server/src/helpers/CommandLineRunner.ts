@@ -56,7 +56,7 @@ import DiscountRepository from "../repositories/DiscountRepository";
 import StateRepository from "../repositories/StateRepository";
 import TagRepository from "../repositories/TagRepository";
 
-import statesAndDistrictsJson from "../resources/data/statesAndDistricts.json";
+import statesAndDistrictsJson from "../resources/data/states_and_districts.json";
 import adminJson from "../resources/data/admin.json";
 import UserRepository from "../repositories/UserRepository";
 import PasswordEncoder from "../utils/PasswordEncoder";
@@ -225,7 +225,7 @@ export default class CommandLineRunner {
     for (const roleName of settings.roles) {
       await this.roleRepository.save({
         slug: roleName,
-        name: roleName.replace("_", " "),
+        name: roleName.replaceAll("_", " "),
       });
     }
 
@@ -246,6 +246,46 @@ export default class CommandLineRunner {
           { name: settings.permissions[9] },
           { name: settings.permissions[10] },
         ],
+      },
+    });
+
+    //garage admin permissions
+    const garageAdminPermissions = await this.permissionRepository.findAll({
+      where: {
+        [Op.or]: [
+          { name: settings.permissions[21] },
+          { name: settings.permissions[22] },
+          { name: settings.permissions[23] },
+          { name: settings.permissions[24] },
+        ],
+      },
+    });
+
+    //garage driver permissions
+    const garageTechnicianPermissions = await this.permissionRepository.findAll(
+      {
+        where: {
+          [Op.or]: [{ name: settings.permissions[22] }],
+        },
+      }
+    );
+
+    //ride share permissions
+    const rideShareAdminPermissions = await this.permissionRepository.findAll({
+      where: {
+        [Op.or]: [
+          { name: settings.permissions[25] },
+          { name: settings.permissions[26] },
+          { name: settings.permissions[27] },
+          { name: settings.permissions[28] },
+        ],
+      },
+    });
+
+    //ride share permissions
+    const rideShareDriverPermissions = await this.permissionRepository.findAll({
+      where: {
+        [Op.or]: [{ name: settings.permissions[26] }],
       },
     });
 
@@ -292,11 +332,38 @@ export default class CommandLineRunner {
       where: { slug: settings.roles[0] },
     });
 
+    //get garage admin role
+    const garageAdminRole = await this.roleRepository.findOne({
+      where: { slug: settings.roles[4] },
+    });
+
+    //get ride share admin role
+    const rideShareAdminRole = await this.roleRepository.findOne({
+      where: { slug: settings.roles[6] },
+    });
+
+    //get garage technician role
+    const garageTechnicianRole = await this.roleRepository.findOne({
+      where: { slug: settings.roles[5] },
+    });
+
+    //get ride share driver role
+    const rideShareDriverRole = await this.roleRepository.findOne({
+      where: { slug: settings.roles[7] },
+    });
+
     //associate roles to their respective permissions
     await guestRole?.$add("permissions", guestPermissions);
     await userRole?.$add("permissions", userPermissions);
     await customerRole?.$add("permissions", customerPermissions);
     await adminRole?.$add("permissions", adminPermissions);
+    await garageAdminRole?.$add("permissions", garageAdminPermissions);
+    await garageTechnicianRole?.$add(
+      "permissions",
+      garageTechnicianPermissions
+    );
+    await rideShareAdminRole?.$add("permissions", rideShareAdminPermissions);
+    await rideShareDriverRole?.$add("permissions", rideShareDriverPermissions);
   }
 
   async loadDefaultPaymentGateway() {

@@ -45,7 +45,10 @@ import UserDAOService from "./UserDAOService";
 import PermissionRepository from "../../repositories/PermissionRepository";
 import RoleDAOService from "./RoleDAOService";
 import PermissionDAOService from "./PermissionDAOService";
-import { appCommonTypes } from "../../@types/app-common";
+import PartnerRepository from "../../repositories/PartnerRepository";
+import PartnerDAOService from "./PartnerDAOService";
+import CategoryRepository from "../../repositories/CategoryRepository";
+import CategoryDAOService from "./CategoryDAOService";
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -71,6 +74,8 @@ const tagRepository = new TagRepository();
 const vinRepository = new VINRepository();
 const userRepository = new UserRepository();
 const permissionRepository = new PermissionRepository();
+const partnerRepository = new PartnerRepository();
+const categoryRepository = new CategoryRepository();
 
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
@@ -110,6 +115,8 @@ const tagDAOService = new TagDAOService(tagRepository);
 const userDAOService = new UserDAOService(userRepository);
 const roleDAOService = new RoleDAOService(roleRepository);
 const permissionDAOService = new PermissionDAOService(permissionRepository);
+const partnerDAOService = new PartnerDAOService(partnerRepository);
+const categoryDAOService = new CategoryDAOService(categoryRepository);
 
 export default {
   customerDAOService,
@@ -134,4 +141,6 @@ export default {
   userDAOService,
   roleDAOService,
   permissionDAOService,
+  partnerDAOService,
+  categoryDAOService,
 };

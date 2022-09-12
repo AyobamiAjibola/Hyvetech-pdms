@@ -6,6 +6,7 @@ import { createNamespace } from "cls-hooked";
 
 import settings from "./settings";
 import { appCommonTypes } from "../@types/app-common";
+import mongoose from "mongoose";
 import DatabaseEnv = appCommonTypes.DatabaseEnv;
 
 const env = process.env.NODE_ENV as DatabaseEnv;
@@ -38,6 +39,7 @@ const sequelize = new Sequelize({
 
 const database = {
   init: async () => sequelize.authenticate(),
+  mongodb: async () => mongoose.connect(mongoUrl),
   sequelize,
 };
 

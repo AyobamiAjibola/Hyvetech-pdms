@@ -71,8 +71,6 @@ function ServiceLocationAndCalendar({
   const { handleBlur, handleChange, errors, touched, values, setErrors } =
     useFormikContext<IBookingFormValues>();
 
-  console.log(image);
-
   useEffect(() => {
     setErrors({});
   }, [planTab, setErrors]);

@@ -9,7 +9,7 @@ import {
 } from "../config/constants";
 import EventEmitter from "events";
 
-export default function eventManager(emitter: EventEmitter) {
+export default function agendaManager(emitter: EventEmitter) {
   emitter.on(BOOK_APPOINTMENT, ({ appointment }) => {
     let startTime = appointment.timeSlot.split("-")[0].trim();
     startTime = moment(startTime, "HH: a");

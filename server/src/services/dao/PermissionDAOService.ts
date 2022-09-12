@@ -22,7 +22,7 @@ export default class PermissionDAOService implements ICrudDAO<Permission> {
 
   create(
     values: CreationAttributes<Permission>,
-    options?: CreateOptions<Permission>
+    options?: CreateOptions<Attributes<Permission>>
   ): Promise<Permission> {
     return this.permissionRepository.save(values, options);
   }

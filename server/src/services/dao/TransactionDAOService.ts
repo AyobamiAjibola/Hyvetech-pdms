@@ -13,10 +13,11 @@ import {
 import { NullishPropertiesOf } from "sequelize/types/utils";
 import moment from "moment/moment";
 import Generic from "../../utils/Generic";
+import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class TransactionDAOService implements ICrudDAO<Transaction> {
-  private transactionRepository: TransactionRepository;
+  private readonly transactionRepository: TransactionRepository;
 
   private declare readonly startDate;
   private declare readonly endDate;
@@ -33,7 +34,7 @@ export default class TransactionDAOService implements ICrudDAO<Transaction> {
       InferCreationAttributes<Transaction>,
       NullishPropertiesOf<InferCreationAttributes<Transaction>>
     >,
-    options?: CreateOptions<Transaction>
+    options?: CreateOptions<Attributes<Transaction>>
   ): Promise<Transaction> {
     return this.transactionRepository.save(values, options);
   }

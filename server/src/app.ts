@@ -1,24 +1,23 @@
 import express, { json, static as _static } from "express";
 import path from "path";
+import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
 import swaggerJsdoc from "swagger-jsdoc";
 import { serve, setup } from "swagger-ui-express";
+import bodyParser from "body-parser";
 
 import settings from "./config/settings";
 import globalExceptionHandler from "./middleware/globalExceptionHandler";
 import config from "./config";
 import authenticateRoute from "./middleware/authenticateRoute";
 import router from "./routes";
-import helmet from "helmet";
 import fileUploadMiddleware from "./middleware/fileUploadMiddleware";
 import { UPLOAD_BASE_PATH } from "./config/constants";
-import bodyParser from "body-parser";
 
 const app = express();
-
 const openapiSpecification = swaggerJsdoc(config.swagger); //configure swagger API documentation
-const corsOptions = {
+export const corsOptions = {
   origin: [
     <string>process.env.CLIENT_HOST,
     <string>process.env.CLIENT_HOST_WWW,

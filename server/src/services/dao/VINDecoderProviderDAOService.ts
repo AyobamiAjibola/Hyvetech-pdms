@@ -20,6 +20,7 @@ import Generic from "../../utils/Generic";
 import { VIN_FILTER_CONSTRAINTS } from "../../config/constants";
 import VINRepository from "../../repositories/VINRepository";
 import VIN from "../../models/VIN";
+import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 import VINProvider = appCommonTypes.VINProvider;
 
@@ -47,7 +48,7 @@ export default class VINDecoderProviderDAOService
       InferCreationAttributes<VINDecoderProvider>,
       NullishPropertiesOf<InferCreationAttributes<VINDecoderProvider>>
     >,
-    options?: CreateOptions<VINDecoderProvider>
+    options?: CreateOptions<Attributes<VINDecoderProvider>>
   ): Promise<VINDecoderProvider> {
     return this.vinDecoderProviderRepository.save(values, options);
   }

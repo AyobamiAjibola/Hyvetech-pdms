@@ -24,7 +24,7 @@ export default class PaymentGatewayDAOService
 
   create(
     values: CreationAttributes<PaymentGateway>,
-    options?: CreateOptions<PaymentGateway>
+    options?: CreateOptions<Attributes<PaymentGateway>>
   ): Promise<PaymentGateway> {
     return this.paymentGateway.save(values, options);
   }

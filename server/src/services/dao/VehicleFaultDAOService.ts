@@ -9,6 +9,7 @@ import {
   InferAttributes,
   UpdateOptions,
 } from "sequelize/types";
+import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class VehicleFaultDAOService implements ICrudDAO<VehicleFault> {
@@ -20,7 +21,7 @@ export default class VehicleFaultDAOService implements ICrudDAO<VehicleFault> {
 
   create(
     values: CreationAttributes<VehicleFault>,
-    options?: CreateOptions<VehicleFault>
+    options?: CreateOptions<Attributes<VehicleFault>>
   ): Promise<VehicleFault> {
     return this.carFaultRepository.save(values, options);
   }

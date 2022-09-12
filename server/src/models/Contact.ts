@@ -17,6 +17,7 @@ import {
   NonAttribute,
 } from "sequelize";
 import User from "./User";
+import Partner from "./Partner";
 
 export const $contactSchema = {
   address: Joi.string().required().label("Address"),
@@ -61,17 +62,27 @@ export default class Contact extends Model<
   @Column(DataType.STRING)
   declare country: string;
 
+  @Column(DataType.STRING)
+  declare mapUrl: string;
+
   @BelongsTo(() => Customer)
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
-  declare customerId: number;
+  declare customerId: NonAttribute<number>;
 
   @BelongsTo(() => User)
   declare user: NonAttribute<User>;
 
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
-  declare userId: number;
+  declare userId: NonAttribute<number>;
+
+  @BelongsTo(() => Partner)
+  declare partner: NonAttribute<Partner>;
+
+  @ForeignKey(() => Partner)
+  @Column(DataType.INTEGER)
+  declare partnerId: NonAttribute<number>;
 }

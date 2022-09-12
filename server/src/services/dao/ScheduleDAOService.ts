@@ -9,6 +9,7 @@ import {
   InferAttributes,
   UpdateOptions,
 } from "sequelize/types";
+import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class ScheduleDAOService implements ICrudDAO<Schedule> {
@@ -20,7 +21,7 @@ export default class ScheduleDAOService implements ICrudDAO<Schedule> {
 
   create(
     values: CreationAttributes<Schedule>,
-    options?: CreateOptions<Schedule>
+    options?: CreateOptions<Attributes<Schedule>>
   ): Promise<Schedule> {
     return this.scheduleRepository.save(values, options);
   }

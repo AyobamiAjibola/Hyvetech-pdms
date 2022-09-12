@@ -21,7 +21,7 @@ export default class VINDAOService implements ICrudDAO<VIN> {
 
   create(
     values: CreationAttributes<VIN>,
-    options?: CreateOptions<VIN>
+    options?: CreateOptions<Attributes<VIN>>
   ): Promise<VIN> {
     return this.vinRepository.save(values, options);
   }

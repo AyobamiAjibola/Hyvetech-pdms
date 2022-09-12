@@ -22,7 +22,7 @@ export default class SubscriptionDAOService implements ICrudDAO<Subscription> {
 
   create(
     values: CreationAttributes<Subscription>,
-    options?: CreateOptions<Subscription>
+    options?: CreateOptions<Attributes<Subscription>>
   ): Promise<Subscription> {
     return this.subscriptionRepository.save(values, options);
   }

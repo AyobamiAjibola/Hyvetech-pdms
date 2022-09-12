@@ -23,7 +23,7 @@ function AnalyticsCard(props: IProps) {
         minWidth: 300,
       }}
     >
-      <Box sx={{ color: "text.secondary" }}>{`${props.data?.name}${
+      <Box sx={{ color: "grey" }}>{`${props.data?.name}${
         props.data?.y && props.data?.y > 1 ? "(s)" : ""
       }`}</Box>
       <Box sx={{ color: "text.primary", fontSize: 34, fontWeight: "medium" }}>
@@ -33,7 +33,7 @@ function AnalyticsCard(props: IProps) {
         <Box
           component={Timelapse}
           sx={{
-            color: (theme) => (theme.palette.mode === "dark" ? "#ddd" : "#333"),
+            color: "grey",
             fontSize: 16,
             verticalAlign: "sub",
           }}
@@ -41,7 +41,7 @@ function AnalyticsCard(props: IProps) {
       ) : null}
       <Box
         sx={{
-          color: (theme) => (theme.palette.mode === "dark" ? "#ddd" : "#333"),
+          color: "grey",
           display: "inline",
           fontWeight: "medium",
           mx: 0.5,
@@ -49,7 +49,7 @@ function AnalyticsCard(props: IProps) {
       >
         {props.data?.y ? `today, ${timestamp}` : null}
       </Box>
-      <Box sx={{ color: "text.secondary", display: "inline", fontSize: 12 }} />
+      <Box sx={{ color: "grey", display: "inline", fontSize: 12 }} />
     </Box>
   );
 }

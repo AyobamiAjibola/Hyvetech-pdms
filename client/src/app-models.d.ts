@@ -41,6 +41,35 @@ declare module "@app-models" {
     updatedAt: Date;
   }
 
+  interface IState {
+    id: number;
+    name: string;
+    alias: string;
+    districts: IDistrict[];
+    createdAt: Date;
+    updatedAt: Date;
+  }
+
+  interface IDistrict {
+    id: number;
+    name: string;
+    discounts: IDiscount[];
+    state: IState;
+    stateId: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }
+
+  interface IDiscount {
+    id: number;
+    label: string;
+    description: string;
+    value: number;
+    districts: IDistrict[];
+    createdAt: Date;
+    updatedAt: Date;
+  }
+
   interface IPaymentDetail {
     id: number;
     channel: string;
@@ -100,6 +129,8 @@ declare module "@app-models" {
     amount: number;
     status: string;
     authorizationUrl: string;
+    serviceStatus: string;
+    purpose: string;
     isRequestForInspection: boolean;
     last4: string;
     expMonth: string;
@@ -185,6 +216,33 @@ declare module "@app-models" {
     description: string;
     active: boolean;
     plans: IPlan[];
+  }
+
+  interface IPartner {
+    id: CreationOptional<number>;
+    name: string;
+    slug: string;
+    phone: string;
+    email: string;
+    totalStaff: number;
+    totalTechnicians: number;
+    brands: string[];
+    images: string[];
+    yearOfIncorporation: number;
+    cac: string;
+    workingHours: string[];
+    users: IUser[];
+    categories: ICategory[];
+    contact: IContact;
+  }
+
+  interface ICategory {
+    id: number;
+    name: string;
+    description: string;
+    plans: IPlan[];
+    partners: IPartner[];
+    paymentPlans: IPaymentPlan[];
   }
 
   interface IPlan {

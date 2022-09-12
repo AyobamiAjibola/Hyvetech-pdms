@@ -436,6 +436,8 @@ export default class AppointmentController {
 
       appEventEmitter.emit(RESCHEDULE_APPOINTMENT, {
         appointment,
+        customer,
+        user: req.user,
       });
 
       return Promise.resolve({

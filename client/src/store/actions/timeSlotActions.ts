@@ -13,7 +13,7 @@ const API_ROOT = settings.api.rest;
 
 const db = getIndexDB();
 
-export const getTimeslotsAction = createAsyncThunk(
+export const getTimeslotsAction = createAsyncThunk<any, void>(
   GET_TIME_SLOTS,
   asyncThunkErrorWrapper(async () => {
     const response = await axiosClient.get(`${API_ROOT}/timeslots`);

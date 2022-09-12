@@ -32,6 +32,8 @@ import withErrorBoundary from "../../hoc/withErrorBoundary";
 import ErrorPage from "../../pages/error/ErrorPage";
 import useAppSelector from "../../hooks/useAppSelector";
 import AppLoader from "../loader/AppLoader";
+import PartnersPage from "../../pages/partner/PartnersPage";
+import PartnerPage from "../../pages/partner/PartnerPage";
 
 const drawerWidth = 240;
 
@@ -222,6 +224,8 @@ function PrivateLayout() {
             <Route path="/transactions/:id" element={<TransactionPage />} />
             <Route path="/vehicles" element={<VehiclePages />} />
             <Route path="/vehicles/:id" element={<VehiclePage />} />
+            <Route path="/partners" element={<PartnersPage />} />
+            <Route path="/partner/:id" element={<PartnerPage />} />
             <Route path="/error" element={<ErrorPage />} />
           </Routes>
         </Box>

@@ -14,7 +14,7 @@ import Generic from "../../utils/Generic";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class VehicleDAOService implements ICrudDAO<Vehicle> {
-  private declare vehicleRepository: VehicleRepository;
+  private declare readonly vehicleRepository: VehicleRepository;
 
   private declare readonly startDate;
   private declare readonly endDate;
@@ -28,7 +28,7 @@ export default class VehicleDAOService implements ICrudDAO<Vehicle> {
 
   create(
     values: CreationAttributes<Vehicle>,
-    options?: CreateOptions<Vehicle>
+    options?: CreateOptions<Attributes<Vehicle>>
   ): Promise<Vehicle> {
     return this.vehicleRepository.save(values, options);
   }

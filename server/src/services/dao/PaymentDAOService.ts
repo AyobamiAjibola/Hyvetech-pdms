@@ -22,7 +22,7 @@ export default class PaymentTermDAOService implements ICrudDAO<PaymentTerm> {
 
   create(
     values: CreationAttributes<PaymentTerm>,
-    options?: CreateOptions<PaymentTerm>
+    options?: CreateOptions<Attributes<PaymentTerm>>
   ): Promise<PaymentTerm> {
     return this.paymentTerm.save(values, options);
   }

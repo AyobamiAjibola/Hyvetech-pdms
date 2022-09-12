@@ -62,6 +62,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
     }
 
     req.permissions = payload.permissions;
+    req.user = user;
 
     const authorised = await authorizeRoute(req);
 

@@ -26,11 +26,10 @@ function Vehicles() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (customerReducer.getCustomerVehiclesStatus === "idle" && customer) {
-      //@ts-ignore
+    if (customer) {
       dispatch(getCustomerVehiclesAction(customer.id));
     }
-  }, [dispatch, customerReducer.getCustomerVehiclesStatus, customer]);
+  }, [customer, dispatch]);
 
   useEffect(() => {
     if (customerReducer.getCustomerVehiclesStatus === "completed") {
@@ -51,6 +50,7 @@ function Vehicles() {
           checkboxSelection
           disableSelectionOnClick
           showToolbar
+          loading={customerReducer.getCustomerVehiclesStatus === "loading"}
         />
       </Stack>
     </Box>

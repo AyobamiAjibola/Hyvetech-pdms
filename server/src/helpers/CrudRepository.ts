@@ -81,7 +81,10 @@ export default class CrudRepository<M extends Model, Id extends number>
     });
   }
 
-  save(values: CreationAttributes<M>, options?: CreateOptions): Promise<M> {
+  save(
+    values: CreationAttributes<M>,
+    options?: CreateOptions<Attributes<M>>
+  ): Promise<M> {
     return this.sequelize.transaction(async () => {
       return this.repository.create(values, options);
     });

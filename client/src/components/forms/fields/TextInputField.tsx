@@ -8,6 +8,7 @@ interface ITextInputFieldProps {
   textInputStyle?: { [p: string]: string };
   helperStyle?: { [p: string]: string };
   fullWidth?: boolean;
+  size?: "small" | "medium";
   onChange: (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
@@ -25,9 +26,10 @@ function TextInputField(props: ITextInputFieldProps) {
   return (
     <FormGroup sx={props.inputGroupStyle}>
       <TextField
+        size={props.size}
         onBlur={props.onBlur}
         sx={props.textInputStyle}
-        fullWidth
+        fullWidth={props.fullWidth}
         // @ts-ignore
         error={errors[props.name] && touched[props.name]}
         {...props}

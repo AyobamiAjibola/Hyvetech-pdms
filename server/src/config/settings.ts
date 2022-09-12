@@ -30,9 +30,28 @@ const settings: AppSettings = {
     "update_plan",
     "delete_plan",
 
+    "create_technician",
+    "read_technician",
+    "update_technician",
+    "delete_technician",
+
+    "create_driver",
+    "read_driver",
+    "update_driver",
+    "delete_driver",
+
     "read_guest",
   ],
-  roles: ["ADMIN_ROLE", "CUSTOMER_ROLE", "GUEST_ROLE", "USER_ROLE"],
+  roles: [
+    "ADMIN_ROLE",
+    "CUSTOMER_ROLE",
+    "GUEST_ROLE",
+    "USER_ROLE",
+    "GARAGE_ADMIN_ROLE",
+    "GARAGE_TECHNICIAN_ROLE",
+    "RIDE_SHARE_ADMIN_ROLE",
+    "RIDE_SHARE_DRIVER_ROLE",
+  ],
   vinProviders: [
     {
       name: <string>process.env.VIN_PROVIDER1,

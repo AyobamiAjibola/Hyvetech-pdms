@@ -7,25 +7,6 @@ export const PASSWORD_PATTERN =
 
 export const UPLOAD_BASE_PATH = "uploads";
 
-export const DEFAULT_SYSTEM_PERMISSIONS = [
-  { action: "create", subject: "user", inverted: true },
-  { action: "read", subject: "user", inverted: true },
-  { action: "update", subject: "user", inverted: true },
-  { action: "delete", subject: "user", inverted: true },
-  { action: "create", subject: "role", inverted: true },
-  { action: "read", subject: "role", inverted: true },
-  { action: "update", subject: "role", inverted: true },
-  { action: "delete", subject: "role", inverted: true },
-  { action: "create", subject: "booking", inverted: true },
-  { action: "read", subject: "booking", inverted: true },
-  { action: "update", subject: "booking", inverted: true },
-  { action: "delete", subject: "booking", inverted: true },
-  { action: "create", subject: "plan", inverted: true },
-  { action: "read", subject: "plan", inverted: true },
-  { action: "update", subject: "plan", inverted: true },
-  { action: "delete", subject: "plan", inverted: true },
-];
-
 export const VIN_FILTER_CONSTRAINTS = [
   "vin",
   "model",
@@ -47,10 +28,6 @@ export const APPOINTMENT_STATUS = {
   cancel: "Cancelled",
 };
 
-export const CUSTOMER_SUBSCRIPTION_STATUS = {
-  active: "Active",
-  expired: "Expired",
-};
 export const LOG_LEVEL_COLORS = {
   silly: "rainbow",
   input: "grey",
@@ -87,12 +64,25 @@ export const DRIVE_IN_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug(
 export const MOBILE_CATEGORY = "Mobile";
 export const DRIVE_IN_CATEGORY = "Drive-in";
 export const HYBRID_CATEGORY = "Hybrid";
+export const GARAGE_CATEGORY = "Garage";
+export const RIDE_SHARE_CATEGORY = "Ride-Share";
 
 export const HOUSE_HOLD_MOBILE_PLAN = Generic.generateSlug("house hold mobile");
 export const HOUSE_HOLD_DRIVE_IN_PLAN = Generic.generateSlug(
   "house hold drive-in"
 );
 export const HOUSE_HOLD_HYBRID_PLAN = Generic.generateSlug("house hold hybrid");
+
+export const FAF_MOBILE_PLAN = Generic.generateSlug("family & friends mobile");
+export const FAF_DRIVE_IN_PLAN = Generic.generateSlug(
+  "family & friends drive-in"
+);
+export const FAF_HYBRID_PLAN = Generic.generateSlug("family & friends hybrid");
+
+export const PICK_ME_UP_DRIVE_IN_PLAN = Generic.generateSlug(
+  "pick me up drive-in"
+);
+
 export const MOBILE_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug(
   "mobile house hold payment plan"
 );
@@ -102,12 +92,6 @@ export const DRIVE_IN_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug(
 export const HYBRID_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug(
   "hybrid house hold payment plan"
 );
-
-export const FAF_MOBILE_PLAN = Generic.generateSlug("family & friends mobile");
-export const FAF_DRIVE_IN_PLAN = Generic.generateSlug(
-  "family & friends drive-in"
-);
-export const FAF_HYBRID_PLAN = Generic.generateSlug("family & friends hybrid");
 export const MOBILE_FAF_PAYMENT_PLAN = Generic.generateSlug(
   "mobile family & friends payment plan"
 );
@@ -117,6 +101,9 @@ export const DRIVE_IN_FAF_PAYMENT_PLAN = Generic.generateSlug(
 export const HYBRID_FAF_PAYMENT_PLAN = Generic.generateSlug(
   "hybrid family & friends payment plan"
 );
+export const DRIVE_IN_PICK_ME_UP_PAYMENT_PLAN = Generic.generateSlug(
+  "drive-in pick me up payment plan"
+);
 
 export const INSPECTIONS_SERVICE = "Inspection";
 export const MAINTENANCE_SERVICE = "Maintenance";
@@ -125,6 +112,7 @@ export const REPAIRS_SERVICE = "Repairs";
 export const ONE_TIME_SUBSCRIPTION = Generic.generateSlug("One Time");
 export const HOUSE_HOLD_SUBSCRIPTION = Generic.generateSlug("House Hold");
 export const FAF_SUBSCRIPTION = Generic.generateSlug("Family & Friends");
+export const PICK_ME_UP = Generic.generateSlug("Pick Me Up");
 
 export const SERVICES = [
   {
@@ -144,12 +132,15 @@ export const SUBSCRIPTIONS = [
   { name: "One Time", slug: ONE_TIME_SUBSCRIPTION },
   { name: "House Hold", slug: HOUSE_HOLD_SUBSCRIPTION },
   { name: "Family & Friends", slug: FAF_SUBSCRIPTION },
+  { name: "Pick Me Up", slug: PICK_ME_UP },
 ];
 
 export const CATEGORIES = [
   { name: MOBILE_CATEGORY },
   { name: DRIVE_IN_CATEGORY },
   { name: HYBRID_CATEGORY },
+  { name: GARAGE_CATEGORY },
+  { name: RIDE_SHARE_CATEGORY },
 ];
 
 const VEHICLE_RISK_TEXT = "Vehicle Health & Risk Report";
@@ -283,7 +274,6 @@ export const PAYMENT_PLANS = {
         PLAN_DESC_REPORT,
       ],
     },
-
     {
       name: ANNUAL_PAYMENT_PLAN,
       label: DRIVE_IN_FAF_PAYMENT_PLAN,
@@ -398,6 +388,17 @@ export const PLANS = [
       driveIn: 9,
     },
   ],
+  // [
+  //   {
+  //     label: PICK_ME_UP_DRIVE_IN_PLAN,
+  //     minVehicles: 1,
+  //     maxVehicles: 1,
+  //     validity: "12months",
+  //     inspections: 2,
+  //     mobile: 0,
+  //     driveIn: 2,
+  //   },
+  // ],
 ];
 
 export const PAYMENT_TERMS = [
@@ -456,4 +457,4 @@ export const PAYMENT_TYPE = {
 export const BOOK_APPOINTMENT = "event:BOOK_APPOINTMENT";
 export const RESCHEDULE_APPOINTMENT = "event:RESCHEDULE_APPOINTMENT";
 export const CANCEL_APPOINTMENT = "event:CANCEL_APPOINTMENT";
-export const AGENDA_COLLECTION_NAME = "appointmentJobs";
+export const AGENDA_COLLECTION_NAME = "appointment_jobs";

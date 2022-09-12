@@ -9,6 +9,7 @@ import {
   InferAttributes,
   UpdateOptions,
 } from "sequelize/types";
+import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class DistrictDAOService implements ICrudDAO<District> {
@@ -20,7 +21,7 @@ export default class DistrictDAOService implements ICrudDAO<District> {
 
   create(
     values: CreationAttributes<District>,
-    options?: CreateOptions<District>
+    options?: CreateOptions<Attributes<District>>
   ): Promise<District> {
     return this.districtRepository.save(values, options);
   }

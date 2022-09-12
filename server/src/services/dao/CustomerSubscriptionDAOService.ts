@@ -24,7 +24,7 @@ export default class CustomerSubscriptionDAOService
 
   create(
     values: CreationAttributes<CustomerSubscription>,
-    options?: CreateOptions<CustomerSubscription>
+    options?: CreateOptions<Attributes<CustomerSubscription>>
   ): Promise<CustomerSubscription> {
     return this.customerSubscriptionRepository.save(values, options);
   }

@@ -1,10 +1,18 @@
 import React, { ReactNode } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import {
+  AppBar,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Toolbar,
+} from "@mui/material";
 import TransitionUp from "../transitions/TransitionUp";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface IProps {
   show: boolean;
-  title: string;
+  title?: string;
   Content: ReactNode;
   ActionComponent?: ReactNode;
   onClose: () => void;
@@ -26,6 +34,18 @@ function AppModal(props: IProps) {
         fullWidth={props.fullWidth}
         fullScreen={props.fullScreen}
       >
+        <AppBar sx={{ position: "relative" }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={props.onClose}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
         <DialogTitle>{props.title}</DialogTitle>
         <DialogContent>{props.Content}</DialogContent>
         {props.ActionComponent && props.ActionComponent}

@@ -26,11 +26,10 @@ function Appointments() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (customerReducer.getCustomerAppointmentsStatus === "idle" && customer) {
-      //@ts-ignore
+    if (customer) {
       dispatch(getCustomerAppointmentsAction(customer.id));
     }
-  }, [dispatch, customerReducer.getCustomerAppointmentsStatus, customer]);
+  }, [dispatch, customer]);
 
   useEffect(() => {
     if (customerReducer.getCustomerAppointmentsStatus === "completed") {
@@ -53,6 +52,7 @@ function Appointments() {
         checkboxSelection
         disableSelectionOnClick
         showToolbar
+        loading={customerReducer.getCustomerAppointmentsStatus === "loading"}
       />
     </Box>
   );
