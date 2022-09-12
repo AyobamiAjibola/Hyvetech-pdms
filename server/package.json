@@ -13,7 +13,7 @@
     "start": "node build/src/server.js",
     "test": "jest --watchAll",
     "pretest": "cross-env NODE_ENV=test PORT=5001",
-    "build": "tsc"
+    "build": "tsc -b"
   },
   "dependencies": {
     "@casl/ability": "^5.4.3",

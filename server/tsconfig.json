@@ -2,8 +2,13 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "ESNext",
-    "lib": ["ESNext"],
-    "typeRoots": ["node_modules/@types", "src/@types"],
+    "lib": [
+      "ESNext"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "src/@types"
+    ],
     "sourceMap": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -17,11 +22,20 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "./build",
-    "rootDirs": ["src", "test"],
+    "rootDirs": [
+      "src",
+      "test"
+    ],
     "strict": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "alwaysStrict": true
   },
-  "include": ["src", "test"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src",
+    "test"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
