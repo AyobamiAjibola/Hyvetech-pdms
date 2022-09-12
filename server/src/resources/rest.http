@@ -1,0 +1,5 @@
+GET http://localhost:5400/api/v1/partners
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInBlcm1pc3Npb25zIjpbeyJhY3Rpb24iOiJyZWFkIiwic3ViamVjdCI6Imd1ZXN0IiwiUm9sZVBlcm1pc3Npb24iOnsiaWQiOjEsInJvbGVJZCI6MywicGVybWlzc2lvbklkIjozMH19XSwiaWF0IjoxNjYyOTgzMTIyLCJleHAiOjE2NjMwNjk1MjJ9.Q2NLi6WpcPZrMDAZTWZ6_BPlNx1qjgO6BpL3cogpC4g
+
+###
+GET http://localhost:5400/api/v1/bootstrap

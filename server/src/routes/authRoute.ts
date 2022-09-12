@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import AuthenticationController from "../controllers/AuthenticationController";
+import PasswordEncoder from "../utils/PasswordEncoder";
+
+const passwordEncoder = new PasswordEncoder();
+const authenticationController = new AuthenticationController(passwordEncoder);
 
 /**
  * @swagger
@@ -33,7 +37,7 @@ import AuthenticationController from "../controllers/AuthenticationController";
  *        $ref: '#/definitions/ErrorResponse'
  */
 export const signupHandler = async (req: Request, res: Response) => {
-  const response = await AuthenticationController.signup(req);
+  const response = await authenticationController.signup(req);
 
   res.status(response.code).json(response);
 };
@@ -70,7 +74,13 @@ export const signupHandler = async (req: Request, res: Response) => {
  *          $ref: '#/definitions/ErrorResponse'
  */
 export const signInHandler = async (req: Request, res: Response) => {
-  const response = await AuthenticationController.signIn(req);
+  const response = await authenticationController.signIn(req);
+
+  res.status(response.code).json(response);
+};
+
+export const bootstrapHandler = async (req: Request, res: Response) => {
+  const response = await authenticationController.bootstrap();
 
   res.status(response.code).json(response);
 };

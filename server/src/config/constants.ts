@@ -6,6 +6,7 @@ export const PASSWORD_PATTERN =
   "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$";
 
 export const UPLOAD_BASE_PATH = "uploads";
+export const BOOTSTRAP_PASS = "BOOTSTRAP_PASS";
 
 export const VIN_FILTER_CONSTRAINTS = [
   "vin",

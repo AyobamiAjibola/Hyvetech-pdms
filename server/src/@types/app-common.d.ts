@@ -62,6 +62,7 @@ export declare namespace appCommonTypes {
     permissions: Attributes<Permission>[];
     userId: number;
     customer?: number;
+    pass?: string;
   };
 
   type CustomJwtPayload = JwtPayload & AuthPayload;

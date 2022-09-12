@@ -1,4 +1,8 @@
-import { signInHandler, signupHandler } from "../../routes/authRoute";
+import {
+  bootstrapHandler,
+  signInHandler,
+  signupHandler,
+} from "../../routes/authRoute";
 import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 
@@ -14,6 +18,12 @@ const authEndpoints: RouteEndpoints = [
     method: "post",
     path: "/sign-up",
     handler: signupHandler,
+  },
+  {
+    name: "bootstrap",
+    method: "get",
+    path: "/bootstrap",
+    handler: bootstrapHandler,
   },
 ];
 

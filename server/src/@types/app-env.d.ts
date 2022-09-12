@@ -75,5 +75,6 @@ declare namespace NodeJS {
     SMTP_EMAIL_FROM_NAME: string;
 
     BCRYPT_SALT: string;
+    BOOTSTRAP_PASS: string;
   }
 }

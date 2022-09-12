@@ -248,14 +248,16 @@ declare module "@app-models" {
   interface IPlan {
     id: number;
     label: string;
-    validity: string;
     minVehicles: number;
     maxVehicles: number;
     inspections: number;
+    mobile: number;
+    driveIn: number;
+    validity: string;
+    subscriptions: IDefaultSubscription[];
+    subscriptionId: number;
     paymentPlans: IPaymentPlan[];
-    paymentTerms: IPaymentTerm[];
-    categories: Category[];
-    active: boolean;
+    categories: ICategory[];
   }
 
   interface IPaymentPlan {

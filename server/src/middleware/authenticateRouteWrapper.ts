@@ -18,33 +18,40 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
   return async function (req: Request, res: Response, next: NextFunction) {
     const headers = req.headers;
 
-    if (!headers.cookie) {
-      logger.error("authorization missing in header");
-
-      return next(
-        CustomAPIError.response(
-          HttpStatus.UNAUTHORIZED.value,
-          HttpStatus.UNAUTHORIZED.code
-        )
-      );
-    }
-
     const cookie = headers.cookie;
+    const authorization = headers.authorization;
+    const key = settings.jwt.key;
+    let jwt = "";
 
-    if (cookie && !cookie.split("=")[0].startsWith("_admin_auth")) {
-      logger.error("malformed authorization: '_admin_auth' missing");
+    if (cookie) {
+      if (!cookie.split("=")[0].startsWith("_admin_auth")) {
+        logger.error("malformed authorization: '_admin_auth' missing");
 
-      return next(
-        CustomAPIError.response(
-          HttpStatus.UNAUTHORIZED.value,
-          HttpStatus.UNAUTHORIZED.code
-        )
-      );
+        return next(
+          CustomAPIError.response(
+            HttpStatus.UNAUTHORIZED.value,
+            HttpStatus.UNAUTHORIZED.code
+          )
+        );
+      }
+
+      jwt = cookie.split("=")[1];
     }
 
-    const jwt = cookie.split("=")[1];
+    if (authorization) {
+      if (!authorization.startsWith("Bearer")) {
+        logger.error("malformed authorization: 'Bearer' missing");
 
-    const key = settings.jwt.key;
+        return next(
+          CustomAPIError.response(
+            HttpStatus.UNAUTHORIZED.value,
+            HttpStatus.UNAUTHORIZED.code
+          )
+        );
+      }
+
+      jwt = authorization.split(" ")[1].trim();
+    }
 
     const payload = verify(jwt, key) as CustomJwtPayload;
 

@@ -24,12 +24,14 @@ export default async function authorizeRoute(req: Request) {
         ability.can("read", "customer");
       break;
     case "/dashboard":
+    case "/boostrap":
     case "/states":
     case "/appointments":
-    case "/partners":
     case path.match("/appointments/(\\d+)")?.input:
     case path.match("/appointments/(\\d+)/reschedule")?.input:
     case path.match("/appointments/(\\d+)/cancel")?.input:
+    case "/partners":
+    case path.match("/partners/(\\d+)")?.input:
     case "/customers":
     case path.match("/customers/(\\d+)/vehicles")?.input:
     case path.match("/customers/(\\d+)/appointments")?.input:
@@ -37,8 +39,13 @@ export default async function authorizeRoute(req: Request) {
     case "/timeslots":
       authorized = ability.can("manage", "all");
       break;
-    default:
-      authorized = false;
+  }
+
+  switch (path) {
+    case "/partners":
+    case path.match("/partners/(\\d+)")?.input:
+      authorized = ability.can("read", "guest");
+      break;
   }
 
   return authorized;

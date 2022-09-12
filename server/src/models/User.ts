@@ -27,20 +27,13 @@ import {
 import Partner from "./Partner";
 
 export const $userSchema = {
+  companyName: Joi.string().required().label("Company Name"),
   firstName: Joi.string().required().label("First Name"),
   lastName: Joi.string().required().label("Last Name"),
   email: Joi.string().email().required().label("Email"),
   username: Joi.string().required().label("Username"),
   role: Joi.string().required().label("User Role"),
   phone: Joi.string().max(11).allow("").label("Phone Number"),
-  password: Joi.string()
-    .pattern(new RegExp(PASSWORD_PATTERN))
-    .required()
-    .label("Password"),
-  confirmPassword: Joi.string()
-    .valid(Joi.ref("password"))
-    .required()
-    .label("Confirm Password"),
 };
 
 export const $loginSchema = {
