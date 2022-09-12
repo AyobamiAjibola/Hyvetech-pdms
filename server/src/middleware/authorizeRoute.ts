@@ -43,6 +43,7 @@ export default async function authorizeRoute(req: Request) {
 
   switch (path) {
     case "/partners":
+    case "/states":
     case path.match("/partners/(\\d+)")?.input:
       authorized = ability.can("read", "guest");
       break;

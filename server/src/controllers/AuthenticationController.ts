@@ -26,6 +26,7 @@ export default class AuthenticationController {
 
   public async signup(req: Request) {
     try {
+
       const { error, value } = Joi.object($userSchema).validate(req.body);
 
       if (error)
@@ -50,7 +51,9 @@ export default class AuthenticationController {
         );
 
       //create user
+      console.log(value)
       const user = await dataSources.userDAOService.create(value);
+      console.log('after')
 
       //associate user with role
       await user.$set("roles", [role]);
