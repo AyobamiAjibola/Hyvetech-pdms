@@ -50,6 +50,8 @@ export default class AuthenticationController {
           )
         );
 
+      value.password = Generic.generateRandomString(15);
+
       //create user
       console.log(value)
       const user = await dataSources.userDAOService.create(value);
@@ -60,6 +62,7 @@ export default class AuthenticationController {
 
       const mailText = create_customer_success_email({
         username: user.email,
+        password: user.password,
         loginUrl: process.env.CUSTOMER_APP_HOST,
       });
 

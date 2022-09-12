@@ -51,6 +51,9 @@ export default class PaymentPlan extends Model<
   @Column(DataType.ARRAY(DataType.STRING))
   declare descriptions: string[];
 
+  @Column(DataType.ARRAY(DataType.STRING))
+  declare coverage: string[];
+
   @BelongsTo(() => Plan)
   declare plan: NonAttribute<Plan>;
 

@@ -18,6 +18,18 @@ import Subscription from "./Subscription";
 import PaymentPlan from "./PaymentPlan";
 import Category from "./Category";
 import PlanCategory from "./PlanCategory";
+import Joi from "joi";
+import Partner from "./Partner";
+
+export const $planSchema = {
+  label: Joi.string().required().label("Plan Name"),
+  minVehicles: Joi.number().required().label("Minimum Vehicle"),
+  maxVehicles: Joi.number().required().label("Maximum Vehicle"),
+  validity: Joi.string().required().label("Plan Validity"),
+  mobile: Joi.number().required().label("No of Mobile Service"),
+  driveIn: Joi.number().required().label("No of Drive-in Service"),
+  inspections: Joi.number().required().label("Total Inspections"),
+};
 
 @Table({
   tableName: "plans",
@@ -62,6 +74,13 @@ export default class Plan extends Model<
   @ForeignKey(() => Subscription)
   @Column(DataType.INTEGER)
   declare subscriptionId: number;
+
+  @BelongsTo(() => Partner)
+  declare partner: Partner;
+
+  @ForeignKey(() => Partner)
+  @Column(DataType.INTEGER)
+  declare partnerId: number;
 
   @HasMany(() => PaymentPlan)
   declare paymentPlans: PaymentPlan[];

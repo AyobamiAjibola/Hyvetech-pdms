@@ -1,137 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Form, Formik, FormikHelpers, useFormikContext } from "formik";
-import { Button, Grid, Stack, Typography } from "@mui/material";
+import { Formik, FormikHelpers } from "formik";
+import { Button, Divider, Grid, Stack } from "@mui/material";
 import AppDataGrid from "../../components/tables/AppDataGrid";
 import useAppSelector from "../../hooks/useAppSelector";
 import useAppDispatch from "../../hooks/useAppDispatch";
-import { getPartnerAction } from "../../store/actions/partnerActions";
-import { IPartner } from "@app-models";
+import {
+  addPlanAction,
+  getPartnerAction,
+  getPlansAction,
+} from "../../store/actions/partnerActions";
+import { IPartner, IPlan } from "@app-models";
 import AppModal from "../../components/modal/AppModal";
-import TextInputField from "../../components/forms/fields/TextInputField";
-import { LoadingButton } from "@mui/lab";
-import { Save } from "@mui/icons-material";
-
-interface IPlanValues {
-  label: string;
-  minVehicles: string;
-  maxVehicles: string;
-  validity: string;
-  mobile: string;
-  driveIn: string;
-}
-
-const planInitialValues: IPlanValues = {
-  label: "",
-  minVehicles: "0",
-  maxVehicles: "0",
-  validity: "1",
-  mobile: "0",
-  driveIn: "0",
-};
-
-const paymentPlanInitialValues = {
-  name: "",
-  label: "",
-  discount: "",
-  value: "",
-  hasPromo: "",
-  descriptions: "",
-};
-
-function AddPlanForm() {
-  const { handleChange, values } = useFormikContext<IPlanValues>();
-  return (
-    <Form>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        justifyContent="center"
-        alignItems="center"
-        sx={{ p: 1 }}
-      >
-        <Grid item xs={12}>
-          <TextInputField
-            fullWidth
-            onChange={handleChange}
-            value={values.label}
-            name="label"
-            label="Name of Plan"
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextInputField
-            fullWidth
-            type="number"
-            onChange={handleChange}
-            value={values.minVehicles}
-            name="minVehicles"
-            label="Min Vehicles"
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextInputField
-            fullWidth
-            type="number"
-            onChange={handleChange}
-            value={values.maxVehicles}
-            name="maxVehicles"
-            label="Max Vehicles"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextInputField
-            fullWidth
-            type="number"
-            min="1"
-            max="12"
-            onChange={handleChange}
-            value={values.validity}
-            name="validity"
-            label="Plan Validity (Month)"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextInputField
-            fullWidth
-            type="number"
-            onChange={handleChange}
-            value={values.driveIn}
-            name="driveIn"
-            label="No of Drive-in"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextInputField
-            fullWidth
-            type="number"
-            onChange={handleChange}
-            value={values.mobile}
-            name="mobile"
-            label="No of Mobile"
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <Typography>
-            Total Inspections:{" "}
-            {parseInt(values.driveIn) + parseInt(values.mobile)}
-          </Typography>
-        </Grid>
-        <Grid item xs mt={1} sx={{ mx: "auto" }}>
-          <LoadingButton
-            variant="contained"
-            color="info"
-            fullWidth
-            endIcon={<Save />}
-          >
-            Save
-          </LoadingButton>
-        </Grid>
-      </Grid>
-    </Form>
-  );
-}
+import AddPlanForm from "../../components/forms/partner/AddPlanForm";
+import planModel, { IPlanModel } from "../../components/forms/models/planModel";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { Delete, Visibility } from "@mui/icons-material";
 
 function AddPaymentPlanForm() {
   return null;
@@ -156,6 +40,14 @@ function PartnerPage() {
   }, [dispatch, params.id, partnerReducer.getPartnerStatus]);
 
   useEffect(() => {
+    if (partnerReducer.getPlansStatus === "idle") {
+      const id = params.id as unknown as string;
+
+      dispatch(getPlansAction(+id));
+    }
+  }, [dispatch, params.id, partnerReducer.getPlansStatus]);
+
+  useEffect(() => {
     if (partnerReducer.getPartnerStatus === "completed") {
       setPartner(partnerReducer.partner);
     }
@@ -178,18 +70,30 @@ function PartnerPage() {
   };
 
   const handleAddPlan = (
-    values: IPlanValues,
-    formikHelper: FormikHelpers<IPlanValues>
+    values: IPlanModel,
+    formikHelper: FormikHelpers<IPlanModel>
   ) => {
-    //todo:
-    console.log(values);
+    const data = {
+      label: values.label,
+      minVehicles: +values.minVehicles,
+      maxVehicles: +values.maxVehicles,
+      validity: `${values.validity}months`,
+      mobile: +values.mobile,
+      driveIn: +values.driveIn,
+      inspections: parseInt(values.driveIn) + parseInt(values.mobile),
+    };
+
+    if (undefined === params.id) throw Error("Partner ID is required");
+
+    dispatch(addPlanAction({ plan: data, partnerId: params.id }));
+
     formikHelper.resetForm();
   };
 
   return (
     <React.Fragment>
       <h1>{partner?.name}</h1>
-      <Stack>
+      <Stack divider={<Divider orientation="horizontal" sx={{ my: 1 }} />}>
         <Grid
           container
           spacing={{ xs: 2, md: 3 }}
@@ -209,7 +113,12 @@ function PartnerPage() {
                 </Button>
               </Grid>
             </Grid>
-            <AppDataGrid showToolbar rows={[]} columns={[]} />
+            <AppDataGrid
+              loading={partnerReducer.getPlansStatus === "loading"}
+              showToolbar
+              rows={partnerReducer.plans}
+              columns={planColumns()}
+            />
           </Grid>
           <Grid item xs={12} md={6}>
             <Grid container justifyContent="space-between" mb={1}>
@@ -234,7 +143,11 @@ function PartnerPage() {
         size="md"
         show={openAddPlan}
         Content={
-          <Formik initialValues={planInitialValues} onSubmit={handleAddPlan}>
+          <Formik
+            validationSchema={planModel.schema}
+            initialValues={planModel.initialValues}
+            onSubmit={handleAddPlan}
+          >
             <AddPlanForm />
           </Formik>
         }
@@ -248,5 +161,60 @@ function PartnerPage() {
     </React.Fragment>
   );
 }
+
+const planColumns = (options?: any) =>
+  [
+    {
+      field: "id",
+      headerName: "ID",
+      headerAlign: "center",
+      align: "center",
+      sortable: true,
+      type: "number",
+    },
+    {
+      field: "label",
+      headerName: "Plan Name",
+      headerAlign: "left",
+      width: 300,
+      align: "left",
+      type: "string",
+      sortable: true,
+      valueFormatter: (params) => {
+        return params.value ? params.value.replaceAll("_", " ") : "";
+      },
+    },
+    {
+      field: "validity",
+      headerName: "Validity",
+      headerAlign: "center",
+      width: 150,
+      align: "center",
+      type: "string",
+      sortable: true,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      align: "center",
+      headerAlign: "center",
+      getActions: (params: any) => [
+        <GridActionsCellItem
+          key={0}
+          icon={<Visibility sx={{ color: "dodgerblue" }} />}
+          onClick={() => options.onView(params.row)}
+          label="View"
+          showInMenu={false}
+        />,
+        <GridActionsCellItem
+          key={1}
+          icon={<Delete sx={{ color: "red" }} />}
+          onClick={() => options.onDelete(params.row)}
+          label="Delete"
+          showInMenu={false}
+        />,
+      ],
+    },
+  ] as GridColDef<IPlan>[];
 
 export default PartnerPage;

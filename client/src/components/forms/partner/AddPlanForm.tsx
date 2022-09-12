@@ -22,7 +22,7 @@ export default function AddPlanForm() {
         alignItems="center"
         sx={{ p: 1 }}
       >
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <TextInputField
             fullWidth
             onChange={handleChange}
@@ -31,7 +31,7 @@ export default function AddPlanForm() {
             label="Name of Plan"
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={3}>
           <TextInputField
             fullWidth
             type="number"
@@ -42,7 +42,7 @@ export default function AddPlanForm() {
             label="Min Vehicles"
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={3}>
           <TextInputField
             fullWidth
             type="number"

@@ -85,22 +85,22 @@ const initialValues = {
 
 const schema = Yup.object().shape({
   name: Yup.string()
-    .required(fields.name.error.required)
-    .label(fields.name.label),
+      .required(fields.name.error.required)
+      .label(fields.name.label),
   phone: Yup.string()
-    .max(11)
-    .required(fields.phone.error.required)
-    .label(fields.phone.label),
+      .max(11)
+      .required(fields.phone.error.required)
+      .label(fields.phone.label),
   email: Yup.string()
-    .email()
-    .required(fields.email.error.required)
-    .label(fields.email.label),
+      .email()
+      .required(fields.email.error.required)
+      .label(fields.email.label),
   category: Yup.string()
-    .required(fields.category.error.required)
-    .label(fields.category.label),
+      .required(fields.category.error.required)
+      .label(fields.category.label),
   state: Yup.string()
-    .required(fields.state.error.required)
-    .label(fields.state.label),
+      .required(fields.state.error.required)
+      .label(fields.state.label),
 });
 
 const partnerModel = {

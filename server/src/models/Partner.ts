@@ -15,6 +15,7 @@ import { InferCreationAttributes, NonAttribute } from "sequelize";
 import User from "./User";
 import PartnerCategory from "./PartnerCategory";
 import Category from "./Category";
+import Plan from "./Plan";
 
 @Table({
   timestamps: true,
@@ -67,6 +68,9 @@ export default class Partner extends Model<
 
   @HasMany(() => User)
   declare users: NonAttribute<Array<User>>;
+
+  @HasMany(() => Plan)
+  declare partners: NonAttribute<Array<Plan>>;
 
   @BelongsToMany(() => Category, () => PartnerCategory)
   declare categories: NonAttribute<

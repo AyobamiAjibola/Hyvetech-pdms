@@ -11,7 +11,6 @@ import {
   Box,
   Button,
   ButtonBase,
-  ButtonGroup,
   Card,
   CardActionArea,
   CardActions,
@@ -482,45 +481,44 @@ function AppointmentPage() {
                     alignItems="center"
                   >
                     <Grid item xs>
-                      <FormControl
-                        size="small"
-                        sx={{ maxWidth: 100, width: "100%" }}
-                      >
-                        <InputLabel id="demo-select-small">Status</InputLabel>
-                        <Select
-                          labelId="demo-select-small"
-                          id="demo-select-small"
-                          value={$status}
-                          label="Status"
-                          onChange={(e) => $setStatus(e.target.value)}
+                      <Stack direction="row" spacing={1}>
+                        <FormControl
+                          size="small"
+                          sx={{ maxWidth: 100, width: "100%" }}
                         >
-                          <MenuItem value="">
-                            <em>...</em>
-                          </MenuItem>
-                          <MenuItem value="Pending">Pending</MenuItem>
-                          <MenuItem value="In-Progress">In-Progress</MenuItem>
-                          <MenuItem value="Complete">Complete</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs>
-                      <ButtonGroup
-                        variant="outlined"
-                        size="small"
-                        aria-label="outlined primary button group"
-                      >
+                          <InputLabel id="demo-select-small">Status</InputLabel>
+                          <Select
+                            labelId="demo-select-small"
+                            id="demo-select-small"
+                            value={$status}
+                            label="Status"
+                            onChange={(e) => $setStatus(e.target.value)}
+                          >
+                            <MenuItem value="">
+                              <em>...</em>
+                            </MenuItem>
+                            <MenuItem value="Pending">Pending</MenuItem>
+                            <MenuItem value="In-Progress">In-Progress</MenuItem>
+                            <MenuItem value="Complete">Complete</MenuItem>
+                          </Select>
+                        </FormControl>
                         {appointment.inventoryFile ? (
                           <Button
+                            variant="outlined"
                             onClick={(evt) =>
                               downloadFile(evt, appointment?.inventoryFile)
                             }
                             startIcon={<Download />}
                           >
-                            Inventory
+                            {INVENTORY}
                           </Button>
                         ) : (
-                          <Button startIcon={<UploadFile />} component="label">
-                            Inventory
+                          <Button
+                            variant="outlined"
+                            startIcon={<UploadFile />}
+                            component="label"
+                          >
+                            {INVENTORY}
                             <input
                               hidden
                               onClick={() => handleResetImage()}
@@ -535,16 +533,21 @@ function AppointmentPage() {
                         )}
                         {appointment.reportFile ? (
                           <Button
+                            variant="outlined"
                             onClick={(evt) =>
                               downloadFile(evt, appointment?.reportFile)
                             }
                             startIcon={<Download />}
                           >
-                            Report
+                            {REPORT}
                           </Button>
                         ) : (
-                          <Button startIcon={<UploadFile />} component="label">
-                            Report
+                          <Button
+                            variant="outlined"
+                            startIcon={<UploadFile />}
+                            component="label"
+                          >
+                            {REPORT}
                             <input
                               name={REPORT}
                               onClick={() => handleResetImage()}
@@ -559,16 +562,21 @@ function AppointmentPage() {
                         )}
                         {appointment.estimateFile ? (
                           <Button
+                            variant="outlined"
                             onClick={(evt) =>
                               downloadFile(evt, appointment?.estimateFile)
                             }
                             startIcon={<Download />}
                           >
-                            Report
+                            {ESTIMATE}
                           </Button>
                         ) : (
-                          <Button startIcon={<UploadFile />} component="label">
-                            Estimate
+                          <Button
+                            variant="outlined"
+                            startIcon={<UploadFile />}
+                            component="label"
+                          >
+                            {ESTIMATE}
                             <input
                               name={ESTIMATE}
                               onClick={() => handleResetImage()}
@@ -581,7 +589,7 @@ function AppointmentPage() {
                             />
                           </Button>
                         )}
-                      </ButtonGroup>
+                      </Stack>
                     </Grid>
                   </Grid>
                 </Grid>

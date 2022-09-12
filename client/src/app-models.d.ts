@@ -268,6 +268,10 @@ declare module "@app-models" {
     value: number;
     hasPromo: boolean;
     descriptions: string[];
+    coverage: string[];
+    plan: IPlan;
+    planId: number;
+    categories: ICategory[];
   }
 
   interface IPaymentTerm {
