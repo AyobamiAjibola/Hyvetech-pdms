@@ -129,7 +129,7 @@ const columns = (options?: any) =>
       sortable: true,
       width: 160,
       valueFormatter: (params) => {
-        return moment(params.value).format("LLL");
+        return moment(params.value).utc(true).format("LLL");
       },
     },
     {
@@ -141,7 +141,7 @@ const columns = (options?: any) =>
       sortable: true,
       width: 160,
       valueFormatter: (params) => {
-        return moment(params.value).format("LLL");
+        return moment(params.value).utc(true).format("LLL");
       },
     },
     {

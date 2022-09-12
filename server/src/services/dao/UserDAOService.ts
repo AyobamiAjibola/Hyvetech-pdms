@@ -66,7 +66,9 @@ export default class UserDAOService implements ICrudDAO<User> {
     values: CreationAttributes<User>,
     options?: CreateOptions<Attributes<User>>
   ): Promise<User> {
-    values.password = await this.passwordEncoder.encode(values.password);
+    if (values.password) {
+      values.password = await this.passwordEncoder.encode(values.password);
+    }
 
     return this.userRepository.save(values, options);
   }
