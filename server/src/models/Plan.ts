@@ -20,6 +20,7 @@ import Category from "./Category";
 import PlanCategory from "./PlanCategory";
 import Joi from "joi";
 import Partner from "./Partner";
+import { v4 } from "uuid";
 
 export const $planSchema = {
   label: Joi.string().required().label("Plan Name"),
@@ -29,6 +30,8 @@ export const $planSchema = {
   mobile: Joi.number().required().label("No of Mobile Service"),
   driveIn: Joi.number().required().label("No of Drive-in Service"),
   inspections: Joi.number().required().label("Total Inspections"),
+  programme: Joi.string().required().label("Programme"),
+  serviceMode: Joi.string().required().label("Service Mode"),
 };
 
 @Table({
@@ -46,6 +49,9 @@ export default class Plan extends Model<
     autoIncrement: true,
   })
   declare id: CreationOptional<number>;
+
+  @Column({ defaultValue: v4() })
+  declare code: string;
 
   @Column(DataType.STRING)
   declare label: string;
@@ -67,6 +73,9 @@ export default class Plan extends Model<
 
   @Column(DataType.STRING)
   declare validity: string;
+
+  @Column(DataType.STRING)
+  declare serviceMode: string;
 
   @BelongsTo(() => Subscription)
   declare subscriptions: Subscription;

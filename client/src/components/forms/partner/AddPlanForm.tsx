@@ -1,16 +1,33 @@
+import React, { useEffect, useMemo } from "react";
 import { Form, useFormikContext } from "formik";
 import { Grid, Typography } from "@mui/material";
-import TextInputField from "../fields/TextInputField";
 import { LoadingButton } from "@mui/lab";
 import { Save } from "@mui/icons-material";
-import React from "react";
-import { IPlanModel } from "../models/planModel";
+import TextInputField from "../fields/TextInputField";
+import planModel, { IPlanModel } from "../models/planModel";
 import useAppSelector from "../../../hooks/useAppSelector";
+import RadioButtonField from "../fields/RadioButtonField";
 
 export default function AddPlanForm() {
-  const { handleChange, values } = useFormikContext<IPlanModel>();
+  const { handleChange, values, setFieldValue } =
+    useFormikContext<IPlanModel>();
+
+  useEffect(() => {
+    if (
+      values.serviceMode === "Mobile" ||
+      values.serviceMode === "Drive-in" ||
+      values.serviceMode === "Hybrid"
+    ) {
+      setFieldValue("mobile", "0");
+      setFieldValue("driveIn", "0");
+    }
+  }, [setFieldValue, values.serviceMode]);
 
   const partnerReducer = useAppSelector((state) => state.partnerReducer);
+
+  const computeInspections = useMemo(() => {
+    return parseInt(values.driveIn) + parseInt(values.mobile);
+  }, [values.driveIn, values.mobile]);
 
   return (
     <Form>
@@ -22,13 +39,41 @@ export default function AddPlanForm() {
         alignItems="center"
         sx={{ p: 1 }}
       >
+        <Grid item xs={12} md={6}>
+          <RadioButtonField
+            row
+            name={planModel.fields.programme.name}
+            label={planModel.fields.programme.label}
+            value={values.programme}
+            buttons={[
+              { label: "Inspection", value: "Inspection" },
+              { label: "Maintenance", value: "Maintenance" },
+            ]}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <RadioButtonField
+            row
+            name={planModel.fields.serviceMode.name}
+            label={planModel.fields.serviceMode.label}
+            value={values.serviceMode}
+            buttons={[
+              { label: "Mobile", value: "Mobile" },
+              { label: "Drive-in", value: "Drive-in" },
+              { label: "Hybrid", value: "Hybrid" },
+            ]}
+            onChange={handleChange}
+          />
+        </Grid>
+
         <Grid item xs={6}>
           <TextInputField
             fullWidth
             onChange={handleChange}
             value={values.label}
-            name="label"
-            label="Name of Plan"
+            name={planModel.fields.label.name}
+            label={planModel.fields.label.label}
           />
         </Grid>
         <Grid item xs={3}>
@@ -38,8 +83,8 @@ export default function AddPlanForm() {
             inputProps={{ min: "0" }}
             onChange={handleChange}
             value={values.minVehicles}
-            name="minVehicles"
-            label="Min Vehicles"
+            name={planModel.fields.minVehicles.name}
+            label={planModel.fields.minVehicles.label}
           />
         </Grid>
         <Grid item xs={3}>
@@ -49,8 +94,8 @@ export default function AddPlanForm() {
             inputProps={{ min: "0" }}
             onChange={handleChange}
             value={values.maxVehicles}
-            name="maxVehicles"
-            label="Max Vehicles"
+            name={planModel.fields.maxVehicles.name}
+            label={planModel.fields.maxVehicles.label}
           />
         </Grid>
         <Grid item xs={3}>
@@ -60,36 +105,37 @@ export default function AddPlanForm() {
             inputProps={{ min: "0", max: "12" }}
             onChange={handleChange}
             value={values.validity}
-            name="validity"
-            label="Plan Validity (Month)"
+            name={planModel.fields.validity.name}
+            label={planModel.fields.validity.label}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid hidden={values.serviceMode === "Mobile"} item xs={3}>
           <TextInputField
             fullWidth
             type="number"
             inputProps={{ min: "0" }}
             onChange={handleChange}
             value={values.driveIn}
-            name="driveIn"
-            label="No of Drive-in"
+            name={planModel.fields.driveIn.name}
+            label={planModel.fields.driveIn.label}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid hidden={values.serviceMode === "Drive-in"} item xs={3}>
           <TextInputField
             fullWidth
             type="number"
             inputProps={{ min: "0" }}
             onChange={handleChange}
             value={values.mobile}
-            name="mobile"
-            label="No of Mobile"
+            name={planModel.fields.mobile.name}
+            label={planModel.fields.mobile.label}
           />
         </Grid>
         <Grid item xs={3}>
           <Typography>
-            Total Inspections:{" "}
-            {parseInt(values.driveIn) + parseInt(values.mobile)}
+            Total{" "}
+            {values.programme === "Maintenance" ? "Services" : "Inspections"}:{" "}
+            {computeInspections}
           </Typography>
         </Grid>
         <Grid item xs mt={1} sx={{ mx: "auto" }}>

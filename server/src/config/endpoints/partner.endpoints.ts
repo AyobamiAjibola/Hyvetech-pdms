@@ -1,8 +1,10 @@
 import {
+  addPaymentPlanHandler,
   addPlanHandler,
   createPartnerHandler,
   getPartnerHandler,
   getPartnersHandler,
+  getPaymentPlansHandler,
   getPlansHandler,
 } from "../../routes/partnerHandler";
 import { appCommonTypes } from "../../@types/app-common";
@@ -32,6 +34,18 @@ const partnerEndpoints: RouteEndpoints = [
     method: "post",
     path: "/partners/:partnerId/plans",
     handler: addPlanHandler,
+  },
+  {
+    name: "partners",
+    method: "post",
+    path: "/partners/:partnerId/payment-plans",
+    handler: addPaymentPlanHandler,
+  },
+  {
+    name: "partners",
+    method: "get",
+    path: "/partners/:partnerId/payment-plans",
+    handler: getPaymentPlansHandler,
   },
   {
     name: "partners",

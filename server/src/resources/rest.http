@@ -1,5 +1,34 @@
 GET http://localhost:5400/api/v1/partners
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInBlcm1pc3Npb25zIjpbeyJhY3Rpb24iOiJyZWFkIiwic3ViamVjdCI6Imd1ZXN0IiwiUm9sZVBlcm1pc3Npb24iOnsiaWQiOjEsInJvbGVJZCI6MywicGVybWlzc2lvbklkIjozMH19XSwiaWF0IjoxNjYyOTgzMTIyLCJleHAiOjE2NjMwNjk1MjJ9.Q2NLi6WpcPZrMDAZTWZ6_BPlNx1qjgO6BpL3cogpC4g
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInBlcm1pc3Npb25zIjpbeyJhY3Rpb24iOiJyZWFkIiwic3ViamVjdCI6Imd1ZXN0IiwiUm9sZVBlcm1pc3Npb24iOnsiaWQiOjEsInJvbGVJZCI6MywicGVybWlzc2lvbklkIjozMH19XSwiaWF0IjoxNjYzMzIzODU4LCJleHAiOjE2NjM0MTAyNTh9.OGPtEs-AzEPlP7Gh5TtpnnY2WGFzME45UFCmLy-p_zg
 
 ###
 GET http://localhost:5400/api/v1/bootstrap
+
+###
+POST http://localhost:5400/api/v1/partners/1/payment-plans
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInBlcm1pc3Npb25zIjpbeyJhY3Rpb24iOiJyZWFkIiwic3ViamVjdCI6Imd1ZXN0IiwiUm9sZVBlcm1pc3Npb24iOnsiaWQiOjEsInJvbGVJZCI6MywicGVybWlzc2lvbklkIjozMH19XSwiaWF0IjoxNjYzMzIzODU4LCJleHAiOjE2NjM0MTAyNTh9.OGPtEs-AzEPlP7Gh5TtpnnY2WGFzME45UFCmLy-p_zg
+
+{
+  "name": "Drive-in Payment Plan",
+  "discount": "",
+  "value": 3000,
+  "plan": "DRIVER_INSPECTION_PLAN",
+  "coverage": "NATION_WIDE",
+  "descriptions": [
+    {
+      "value": ""
+    }
+  ],
+  "parameters": [
+    {
+      "name": "",
+      "unit": "",
+      "value": ""
+    }
+  ]
+}
+
+###
+GET  http://localhost:5400/api/v1/partners/1/payment-plans
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInBlcm1pc3Npb25zIjpbeyJhY3Rpb24iOiJyZWFkIiwic3ViamVjdCI6Imd1ZXN0IiwiUm9sZVBlcm1pc3Npb24iOnsiaWQiOjEsInJvbGVJZCI6MywicGVybWlzc2lvbklkIjozMH19XSwiaWF0IjoxNjYzMzIzODU4LCJleHAiOjE2NjM0MTAyNTh9.OGPtEs-AzEPlP7Gh5TtpnnY2WGFzME45UFCmLy-p_zg

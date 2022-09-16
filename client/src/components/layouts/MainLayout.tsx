@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { routes } from "../../routes";
 import PrivateRoute from "../auth/PrivateRoute";
+import ErrorPage from "../../pages/error/ErrorPage";
 
 function MainLayout() {
   return (
@@ -36,6 +37,7 @@ function MainLayout() {
               />
             );
           })}
+          <Route path="/error" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
     </Box>

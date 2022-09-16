@@ -16,6 +16,17 @@ import {
 import Plan from "./Plan";
 import Category from "./Category";
 import PaymentPlanCategory from "./PaymentPlanCategory";
+import Joi from "joi";
+
+export const $paymentPlanSchema = {
+  name: Joi.string().required().label("Payment Plan Name"),
+  discount: Joi.string().allow("").label("Discount"),
+  plan: Joi.string().required().label("Plan Name"),
+  coverage: Joi.string().required().label("Coverage"),
+  descriptions: Joi.array().allow().label("Payment Plan Description"),
+  parameters: Joi.array().allow().label("Payment Plan Coverage"),
+  pricing: Joi.array().allow().label("Payment Plan Pricing"),
+};
 
 @Table({
   tableName: "payment_plans",
@@ -39,6 +50,9 @@ export default class PaymentPlan extends Model<
   @Column(DataType.STRING)
   declare label: string;
 
+  @Column(DataType.STRING)
+  declare coverage: string;
+
   @Column(DataType.DOUBLE)
   declare value: number;
 
@@ -52,14 +66,17 @@ export default class PaymentPlan extends Model<
   declare descriptions: string[];
 
   @Column(DataType.ARRAY(DataType.STRING))
-  declare coverage: string[];
+  declare parameters: string[];
+
+  @Column(DataType.ARRAY(DataType.STRING))
+  declare pricing: string[];
 
   @BelongsTo(() => Plan)
   declare plan: NonAttribute<Plan>;
 
   @ForeignKey(() => Plan)
   @Column(DataType.INTEGER)
-  declare planId: number;
+  declare planId: NonAttribute<number>;
 
   @BelongsToMany(() => Category, () => PaymentPlanCategory)
   declare categories: NonAttribute<

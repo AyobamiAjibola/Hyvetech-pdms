@@ -24,9 +24,12 @@ export default class AuthenticationController {
     this.passwordEncoder = passwordEncoder;
   }
 
+  /**
+   * @name signup
+   * @param req
+   */
   public async signup(req: Request) {
     try {
-
       const { error, value } = Joi.object($userSchema).validate(req.body);
 
       if (error)
@@ -52,10 +55,7 @@ export default class AuthenticationController {
 
       value.password = Generic.generateRandomString(15);
 
-      //create user
-      console.log(value)
       const user = await dataSources.userDAOService.create(value);
-      console.log('after')
 
       //associate user with role
       await user.$set("roles", [role]);
@@ -102,6 +102,10 @@ export default class AuthenticationController {
     }
   }
 
+  /**
+   * @name signIn
+   * @param req
+   */
   public async signIn(req: Request) {
     try {
       //validate request body
@@ -183,6 +187,10 @@ export default class AuthenticationController {
     }
   }
 
+  /**
+   * @name bootstrap
+   * @description generate authentication token for anonymous users
+   */
   public async bootstrap() {
     try {
       const user = await dataSources.userDAOService.findByAny({
@@ -192,10 +200,35 @@ export default class AuthenticationController {
       });
 
       if (user) {
+        const roles = await user.$get("roles");
+
+        const permissions = [];
+
+        for (const role of roles) {
+          const _permissions = await role.$get("permissions", {
+            attributes: ["action", "subject"],
+          });
+
+          for (const _permission of _permissions) {
+            permissions.push(_permission.toJSON());
+          }
+        }
+
+        //generate JWT
+        const jwt = Generic.generateJwt({
+          userId: user.id,
+          permissions,
+        });
+
+        await user.update({
+          loginDate: new Date(),
+          loginToken: jwt,
+        });
+
         const response: HttpResponse<string> = {
           message: HttpStatus.OK.value,
           code: HttpStatus.OK.code,
-          result: <string>user?.loginToken,
+          result: jwt,
         };
 
         return Promise.resolve(response);

@@ -285,9 +285,9 @@ function AppointmentPage() {
             <div>
               <span className={styles.title}>Appointment</span> -{" "}
               <span className={styles.subtitle}>
-                {appointment?.customer.firstName}{" "}
-                {appointment?.customer.lastName} | {appointment?.customer.email}{" "}
-                | {appointment?.customer.phone}
+                {appointment?.customer?.firstName}{" "}
+                {appointment?.customer?.lastName} |{" "}
+                {appointment?.customer?.email} | {appointment?.customer?.phone}
               </span>
             </div>
           </Grid>

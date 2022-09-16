@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 
-import PartnerController from "../controllers/PartnerController";
+import PartnerController, {
+  ICreatePaymentPlanBody,
+  ICreatePlanBody,
+} from "../controllers/PartnerController";
 import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
 import PasswordEncoder from "../utils/PasswordEncoder";
-import { Attributes } from "sequelize";
-import Plan from "../models/Plan";
 
 const passwordEncoder = new PasswordEncoder();
 
@@ -39,9 +40,20 @@ export const getPartnerHandler = authenticateRouteWrapper(
 export const addPlanHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
     const partnerId = req.params.partnerId as unknown as string;
-    const body = req.body as Attributes<Plan>;
+    const body = req.body as ICreatePlanBody;
 
     const result = await partnerController.addPlan(body, +partnerId);
+
+    res.status(result.code).json(result);
+  }
+);
+
+export const addPaymentPlanHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const partnerId = req.params.partnerId as unknown as string;
+    const body = req.body as ICreatePaymentPlanBody;
+
+    const result = await partnerController.addPaymentPlan(body, +partnerId);
 
     res.status(result.code).json(result);
   }
@@ -52,6 +64,16 @@ export const getPlansHandler = authenticateRouteWrapper(
     const partnerId = req.params.partnerId as unknown as string;
 
     const result = await partnerController.getPlans(+partnerId);
+
+    res.status(result.code).json(result);
+  }
+);
+
+export const getPaymentPlansHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const partnerId = req.params.partnerId as unknown as string;
+
+    const result = await partnerController.getPaymentPlans(+partnerId);
 
     res.status(result.code).json(result);
   }

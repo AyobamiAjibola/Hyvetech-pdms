@@ -49,6 +49,8 @@ import PartnerRepository from "../../repositories/PartnerRepository";
 import PartnerDAOService from "./PartnerDAOService";
 import CategoryRepository from "../../repositories/CategoryRepository";
 import CategoryDAOService from "./CategoryDAOService";
+import PaymentPlanRepository from "../../repositories/PaymentPlanRepository";
+import PaymentPlanDAOService from "./PaymentPlanDAOService";
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -76,6 +78,7 @@ const userRepository = new UserRepository();
 const permissionRepository = new PermissionRepository();
 const partnerRepository = new PartnerRepository();
 const categoryRepository = new CategoryRepository();
+const paymentPlanRepository = new PaymentPlanRepository();
 
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
@@ -117,6 +120,7 @@ const roleDAOService = new RoleDAOService(roleRepository);
 const permissionDAOService = new PermissionDAOService(permissionRepository);
 const partnerDAOService = new PartnerDAOService(partnerRepository);
 const categoryDAOService = new CategoryDAOService(categoryRepository);
+const paymentPlanDAOService = new PaymentPlanDAOService(paymentPlanRepository);
 
 export default {
   customerDAOService,
@@ -143,4 +147,5 @@ export default {
   permissionDAOService,
   partnerDAOService,
   categoryDAOService,
+  paymentPlanDAOService,
 };

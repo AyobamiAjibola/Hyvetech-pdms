@@ -70,7 +70,7 @@ export default class Partner extends Model<
   declare users: NonAttribute<Array<User>>;
 
   @HasMany(() => Plan)
-  declare partners: NonAttribute<Array<Plan>>;
+  declare plans: NonAttribute<Array<Plan>>;
 
   @BelongsToMany(() => Category, () => PartnerCategory)
   declare categories: NonAttribute<

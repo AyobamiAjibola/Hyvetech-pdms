@@ -1,13 +1,15 @@
 import { IThunkAPIStatus } from "@app-types";
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  addPaymentPlanAction,
   addPlanAction,
   createPartnerAction,
   getPartnerAction,
   getPartnersAction,
+  getPaymentPlansAction,
   getPlansAction,
 } from "../actions/partnerActions";
-import { IPartner, IPlan } from "@app-models";
+import { IPartner, IPaymentPlan, IPlan } from "@app-models";
 
 interface IPartnerState {
   createPartnerStatus: IThunkAPIStatus;
@@ -18,9 +20,17 @@ interface IPartnerState {
   addPlanSuccess: string;
   addPlanError?: string;
 
+  addPaymentPlanStatus: IThunkAPIStatus;
+  addPaymentPlanSuccess: string;
+  addPaymentPlanError?: string;
+
   getPlansStatus: IThunkAPIStatus;
   getPlansSuccess: string;
   getPlansError?: string;
+
+  getPaymentPlansStatus: IThunkAPIStatus;
+  getPaymentPlansSuccess: string;
+  getPaymentPlansError?: string;
 
   getPartnersStatus: IThunkAPIStatus;
   getPartnersSuccess: string;
@@ -33,7 +43,9 @@ interface IPartnerState {
   partner: IPartner | null;
   partners: IPartner[];
   plan: IPlan | null;
+  paymentPlan: IPaymentPlan | null;
   plans: IPlan[];
+  paymentPlans: IPaymentPlan[];
 }
 
 const initialState: IPartnerState = {
@@ -45,9 +57,17 @@ const initialState: IPartnerState = {
   addPlanStatus: "idle",
   addPlanSuccess: "",
 
+  addPaymentPlanError: "",
+  addPaymentPlanStatus: "idle",
+  addPaymentPlanSuccess: "",
+
   getPlansError: "",
   getPlansStatus: "idle",
   getPlansSuccess: "",
+
+  getPaymentPlansError: "",
+  getPaymentPlansStatus: "idle",
+  getPaymentPlansSuccess: "",
 
   getPartnersError: "",
   getPartnersStatus: "idle",
@@ -60,7 +80,9 @@ const initialState: IPartnerState = {
   partner: null,
   partners: [],
   plan: null,
+  paymentPlan: null,
   plans: [],
+  paymentPlans: [],
 };
 
 const partnerSlice = createSlice({
@@ -160,6 +182,38 @@ const partnerSlice = createSlice({
         if (action.payload) {
           state.getPlansError = action.payload.message;
         } else state.getPlansError = action.error.message;
+      });
+
+    builder
+      .addCase(addPaymentPlanAction.pending, (state) => {
+        state.addPaymentPlanStatus = "idle";
+      })
+      .addCase(addPaymentPlanAction.fulfilled, (state, action) => {
+        state.addPaymentPlanStatus = "completed";
+        state.paymentPlans = action.payload.results as IPaymentPlan[];
+      })
+      .addCase(addPaymentPlanAction.rejected, (state, action) => {
+        state.addPaymentPlanStatus = "failed";
+
+        if (action.payload) {
+          state.addPaymentPlanError = action.payload.message;
+        } else state.addPaymentPlanError = action.error.message;
+      });
+
+    builder
+      .addCase(getPaymentPlansAction.pending, (state) => {
+        state.getPaymentPlansStatus = "idle";
+      })
+      .addCase(getPaymentPlansAction.fulfilled, (state, action) => {
+        state.getPaymentPlansStatus = "completed";
+        state.paymentPlans = action.payload.results as IPaymentPlan[];
+      })
+      .addCase(getPaymentPlansAction.rejected, (state, action) => {
+        state.getPaymentPlansStatus = "failed";
+
+        if (action.payload) {
+          state.getPaymentPlansError = action.payload.message;
+        } else state.getPaymentPlansError = action.error.message;
       });
   },
 });

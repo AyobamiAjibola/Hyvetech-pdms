@@ -6,7 +6,6 @@ export const PASSWORD_PATTERN =
   "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$";
 
 export const UPLOAD_BASE_PATH = "uploads";
-export const BOOTSTRAP_PASS = "BOOTSTRAP_PASS";
 
 export const VIN_FILTER_CONSTRAINTS = [
   "vin",
@@ -316,7 +315,7 @@ export const PLANS = [
       label: ONE_TIME_MOBILE_PLAN,
       minVehicles: 1,
       maxVehicles: 1,
-      validity: "12months",
+      validity: "12 months",
       inspections: 1,
       mobile: 1,
       driveIn: 0,
@@ -325,7 +324,7 @@ export const PLANS = [
       label: ONE_TIME_DRIVE_IN_PLAN,
       minVehicles: 1,
       maxVehicles: 1,
-      validity: "12months",
+      validity: "12 months",
       inspections: 1,
       mobile: 0,
       driveIn: 1,
@@ -336,7 +335,7 @@ export const PLANS = [
       label: HOUSE_HOLD_MOBILE_PLAN,
       minVehicles: 1,
       maxVehicles: 3,
-      validity: "12months",
+      validity: "12 months",
       inspections: 7,
       mobile: 7,
       driveIn: 0,
@@ -345,7 +344,7 @@ export const PLANS = [
       label: HOUSE_HOLD_DRIVE_IN_PLAN,
       minVehicles: 1,
       maxVehicles: 3,
-      validity: "12months",
+      validity: "12 months",
       inspections: 7,
       mobile: 0,
       driveIn: 7,
@@ -354,7 +353,7 @@ export const PLANS = [
       label: HOUSE_HOLD_HYBRID_PLAN,
       minVehicles: 1,
       maxVehicles: 3,
-      validity: "12months",
+      validity: "12 months",
       inspections: 7,
       mobile: 2,
       driveIn: 5,
@@ -365,7 +364,7 @@ export const PLANS = [
       label: FAF_MOBILE_PLAN,
       minVehicles: 4,
       maxVehicles: 6,
-      validity: "12months",
+      validity: "12 months",
       inspections: 13,
       mobile: 13,
       driveIn: 0,
@@ -374,7 +373,7 @@ export const PLANS = [
       label: FAF_DRIVE_IN_PLAN,
       minVehicles: 4,
       maxVehicles: 6,
-      validity: "12months",
+      validity: "12 months",
       inspections: 13,
       mobile: 0,
       driveIn: 13,
@@ -383,23 +382,12 @@ export const PLANS = [
       label: FAF_HYBRID_PLAN,
       minVehicles: 4,
       maxVehicles: 6,
-      validity: "12months",
+      validity: "12 months",
       inspections: 13,
       mobile: 4,
       driveIn: 9,
     },
   ],
-  // [
-  //   {
-  //     label: PICK_ME_UP_DRIVE_IN_PLAN,
-  //     minVehicles: 1,
-  //     maxVehicles: 1,
-  //     validity: "12months",
-  //     inspections: 2,
-  //     mobile: 0,
-  //     driveIn: 2,
-  //   },
-  // ],
 ];
 
 export const PAYMENT_TERMS = [

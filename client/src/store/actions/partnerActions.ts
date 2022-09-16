@@ -8,7 +8,9 @@ const CREATE_PARTNER = "partner:CREATE_PARTNER";
 const GET_PARTNERS = "partner:GET_PARTNERS";
 const GET_PARTNER = "partner:GET_PARTNER";
 const CREATE_PLAN = "partner:CREATE_PLAN";
+const CREATE_PAYMENT_PLAN = "partner:CREATE_PAYMENT_PLAN";
 const GET_PLANS = "partner:GET_PLANS";
+const GET_PAYMENT_PLANS = "partner:GET_PAYMENT_PLANS";
 const API_ROOT = settings.api.rest;
 
 export const createPartnerAction = createAsyncThunk<
@@ -67,6 +69,26 @@ export const addPlanAction = createAsyncThunk<
   })
 );
 
+interface AddPaymentPlanArgs {
+  paymentPlan: any;
+  partnerId: string;
+}
+
+export const addPaymentPlanAction = createAsyncThunk<
+  any,
+  AddPaymentPlanArgs,
+  { rejectValue: { message: string } }
+>(
+  CREATE_PAYMENT_PLAN,
+  asyncThunkErrorWrapper(async (args: AddPaymentPlanArgs) => {
+    const response = await axiosClient.post(
+      `${API_ROOT}/partners/${args.partnerId}/payment-plans`,
+      args.paymentPlan
+    );
+    return response.data;
+  })
+);
+
 export const getPlansAction = createAsyncThunk<
   any,
   number,
@@ -76,6 +98,20 @@ export const getPlansAction = createAsyncThunk<
   asyncThunkErrorWrapper(async (partnerId: number) => {
     const response = await axiosClient.get(
       `${API_ROOT}/partners/${partnerId}/plans`
+    );
+    return response.data;
+  })
+);
+
+export const getPaymentPlansAction = createAsyncThunk<
+  any,
+  number,
+  { rejectValue: { message: string } }
+>(
+  GET_PAYMENT_PLANS,
+  asyncThunkErrorWrapper(async (partnerId: number) => {
+    const response = await axiosClient.get(
+      `${API_ROOT}/partners/${partnerId}/payment-plans`
     );
     return response.data;
   })

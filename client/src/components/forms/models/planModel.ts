@@ -1,6 +1,8 @@
 import * as Yup from "yup";
 
 export interface IPlanModel {
+  programme: string;
+  serviceMode: string;
   label: string;
   minVehicles: string;
   maxVehicles: string;
@@ -12,6 +14,8 @@ export interface IPlanModel {
 }
 
 const schema = Yup.object().shape({
+  programme: Yup.string().required().label("Programme"),
+  serviceMode: Yup.string().required().label("Service Mode"),
   label: Yup.string().required().label("Plan Name"),
   minVehicles: Yup.string().required().label("Minimum Vehicle"),
   maxVehicles: Yup.string().required().label("Maximum  Vehicle"),
@@ -21,16 +25,34 @@ const schema = Yup.object().shape({
 });
 
 const initialValues: IPlanModel = {
+  programme: "Inspection",
+  serviceMode: "Mobile",
   label: "",
   minVehicles: "0",
   maxVehicles: "0",
-  validity: "1",
+  validity: "",
   mobile: "0",
   driveIn: "0",
 };
 
 const fields = {
-  name: {
+  programme: {
+    name: "programme",
+    label: "Choose Programme*",
+    error: {
+      invalid: `Programme is invalid`,
+      required: "Programme is required",
+    },
+  },
+  serviceMode: {
+    name: "serviceMode",
+    label: "Choose Service Mode*",
+    error: {
+      invalid: `Service Mode is invalid`,
+      required: "Service Mode is required",
+    },
+  },
+  label: {
     name: "label",
     label: "Plan Name*",
     error: {
@@ -40,42 +62,42 @@ const fields = {
   },
   minVehicles: {
     name: "minVehicles",
-    label: "Phone*",
+    label: "Min Vehicle(s)*",
     error: {
-      invalid: `Phone number is invalid`,
-      required: "Phone is required",
+      invalid: `Min Vehicle(s) is invalid`,
+      required: "Min Vehicle(s) is required",
     },
   },
   maxVehicles: {
     name: "maxVehicles",
-    label: "Email*",
+    label: "Max Vehicle(s)*",
     error: {
-      invalid: `Email is invalid`,
-      required: "Email is required",
+      invalid: `Max Vehicle(s) is invalid`,
+      required: "Max Vehicle(s) is required",
     },
   },
   validity: {
     name: "validity",
-    label: "Category*",
+    label: "Interval*",
     error: {
-      invalid: `Category is invalid`,
-      required: "Category is required",
+      invalid: `Payment Interval is invalid`,
+      required: "Payment Interval is required",
     },
   },
   mobile: {
     name: "mobile",
-    label: "District*",
+    label: "No of Mobile Service*",
     error: {
-      invalid: "District is invalid",
-      required: "Please choose district.",
+      invalid: "Mobile Service is invalid.",
+      required: "Mobile Service is required.",
     },
   },
   driveIn: {
     name: "driveIn",
-    label: "State*",
+    label: "No of Drive-in Service*",
     error: {
-      invalid: "State is invalid",
-      required: "Please choose state.",
+      invalid: "Drive-in Service is invalid",
+      required: "Drive-in Service is required.",
     },
   },
 };

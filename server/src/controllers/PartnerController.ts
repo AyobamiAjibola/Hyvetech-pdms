@@ -1,9 +1,11 @@
 import { Request } from "express";
 import Joi from "joi";
+import capitalize from "capitalize";
+import { Op } from "sequelize";
+
 import CustomAPIError from "../exceptions/CustomAPIError";
 import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
-import { Attributes, Op } from "sequelize";
 import { CATEGORIES, SUBSCRIPTIONS } from "../config/constants";
 import Generic from "../utils/Generic";
 import { appCommonTypes } from "../@types/app-common";
@@ -13,15 +15,53 @@ import Category from "../models/Category";
 import User from "../models/User";
 import Contact from "../models/Contact";
 import Plan, { $planSchema } from "../models/Plan";
+import PaymentPlan, { $paymentPlanSchema } from "../models/PaymentPlan";
+import axiosClient from "../services/api/axiosClient";
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 
-interface ICreatePartnerBody {
+interface IPaymentPlanModelDescription {
+  value: string;
+}
+
+interface IPaymentPlanModelCoverage {
+  name: string;
+  unit: string;
+  value: string;
+}
+
+export interface IPricing {
+  interval: string;
+  amount: string;
+}
+
+export interface ICreatePartnerBody {
   category: string;
   email: string;
   name: string;
   phone: string;
   state: string;
+}
+
+export interface ICreatePaymentPlanBody {
+  name: string;
+  discount: string;
+  plan: string;
+  coverage: string;
+  descriptions: IPaymentPlanModelDescription[];
+  parameters: IPaymentPlanModelCoverage[];
+  pricing: IPricing[];
+}
+
+export interface ICreatePlanBody {
+  programme: string;
+  serviceMode: string;
+  label: string;
+  minVehicles: string;
+  maxVehicles: string;
+  validity: string;
+  mobile: string;
+  driveIn: string;
 }
 
 export default class PartnerController {
@@ -31,6 +71,11 @@ export default class PartnerController {
     this.passwordEncoder = passwordEncoder;
   }
 
+  /**
+   * @name createPartner
+   * @description Create partners
+   * @param req
+   */
   public async createPartner(req: Request) {
     try {
       const body = req.body as ICreatePartnerBody;
@@ -131,14 +176,14 @@ export default class PartnerController {
 
       //Ride-Share Partner
       if (value?.category === CATEGORIES[4].name) {
-        //find ride share category
+        //find ride-share category
         category = await dataSources.categoryDAOService.findByAny({
           where: {
             name: value?.category,
           },
         });
 
-        //find ride share admin role
+        //find ride-share admin role
         role = await dataSources.roleDAOService.findByAny({
           where: { slug: settings.roles[6] },
         });
@@ -185,6 +230,9 @@ export default class PartnerController {
     }
   }
 
+  /**
+   * @name getPartners
+   */
   public async getPartners() {
     try {
       const partners = await dataSources.partnerDAOService.findAll({
@@ -202,6 +250,11 @@ export default class PartnerController {
       return Promise.reject(e);
     }
   }
+
+  /**
+   * @name getPartner
+   * @param id
+   */
 
   public async getPartner(id: number) {
     try {
@@ -229,10 +282,14 @@ export default class PartnerController {
     }
   }
 
-  public async addPlan(body: Attributes<Plan>, partnerId: number) {
+  /**
+   * @name addPlan
+   * @param body
+   * @param partnerId
+   */
+  public async addPlan(body: ICreatePlanBody, partnerId: number) {
     try {
-      const { error, value } =
-        Joi.object<Attributes<Plan>>($planSchema).validate(body);
+      const { error, value } = Joi.object($planSchema).validate(body);
 
       if (error)
         return Promise.reject(
@@ -241,14 +298,23 @@ export default class PartnerController {
             HttpStatus.BAD_REQUEST.code
           )
         );
+
+      if (undefined === value)
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.BAD_REQUEST.value,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
       const planExist = await dataSources.planDAOService.findByAny({
-        where: { label: value?.label },
+        where: { label: value.label },
       });
 
       if (planExist)
         return Promise.reject(
           CustomAPIError.response(
-            `Plan with name ${value?.label} already exist.`,
+            `Plan with name ${value.label} already exist.`,
             HttpStatus.BAD_REQUEST.code
           )
         );
@@ -263,6 +329,20 @@ export default class PartnerController {
           )
         );
 
+      const category = await dataSources.categoryDAOService.findByAny({
+        where: { name: value.serviceMode },
+      });
+
+      if (!category)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Category with ${value.serviceMode} does not exist.`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      //todo: use type of programme to find subscription
+
       const subscription = await dataSources.subscriptionDAOService.findByAny({
         where: { slug: SUBSCRIPTIONS[3].slug },
       });
@@ -276,13 +356,14 @@ export default class PartnerController {
         );
 
       Object.assign(value, {
-        label: Generic.generateSlug(value?.label),
+        label: Generic.generateSlug(value.label),
       });
 
       const plan = await dataSources.planDAOService.create(value);
 
       await plan.$set("partner", partner);
       await plan.$set("subscriptions", subscription);
+      await plan.$add("categories", [category]);
 
       const plans = await dataSources.planDAOService.findAll({
         include: [{ model: Partner, where: { id: partnerId } }],
@@ -300,6 +381,147 @@ export default class PartnerController {
     }
   }
 
+  /**
+   * @name addPaymentPlan
+   * @param body
+   * @param partnerId
+   */
+  public async addPaymentPlan(body: ICreatePaymentPlanBody, partnerId: number) {
+    try {
+      const { value, error } =
+        Joi.object<ICreatePaymentPlanBody>($paymentPlanSchema).validate(body);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      if (undefined === value)
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.BAD_REQUEST.value,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const partner = await dataSources.partnerDAOService.findById(partnerId);
+
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Partner with ${partnerId} does not exist.`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const plan = await dataSources.planDAOService.findByAny({
+        where: { label: value.plan },
+      });
+
+      if (!plan)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Plan with ${value.plan} does not exist.`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const serviceMode = plan.serviceMode;
+
+      const serviceModeCategory =
+        await dataSources.categoryDAOService.findByAny({
+          where: { name: serviceMode },
+        });
+
+      if (!serviceModeCategory)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Service Mode Category with ${serviceMode} does not exist.`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const paymentPlanData: any = {
+        discount: +value.discount,
+        hasPromo: value.discount.length !== 0,
+        name: value.name,
+        label: Generic.generateSlug(value.name),
+        coverage: value.coverage,
+        descriptions: value.descriptions.map((value) =>
+          JSON.stringify({ ...value })
+        ),
+        parameters: value.parameters.map((value) =>
+          JSON.stringify({ ...value })
+        ),
+        pricing: value.pricing.map((value) => JSON.stringify({ ...value })),
+      };
+
+      //link payment plan categories
+      const paymentPlan = await dataSources.paymentPlanDAOService.create(
+        paymentPlanData
+      );
+
+      //link plan payment plans
+      await plan.$add("paymentPlans", [paymentPlan]);
+
+      const pricing = value.pricing;
+
+      const paymentGateway =
+        await dataSources.paymentGatewayDAOService.findByAny({
+          where: { default: true },
+        });
+
+      if (!paymentGateway)
+        return Promise.reject(
+          CustomAPIError.response(
+            `No default payment gateway available.`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const responses = pricing.map(async (price) => {
+        const payload = {
+          name: capitalize.words(`${value.name} ${price.interval} plan`),
+          interval: price.interval,
+          amount: `${+price.amount * 100}`,
+        };
+
+        const response = await axiosClient.post(
+          `${paymentGateway.baseUrl}/plan`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${paymentGateway.secretKey}`,
+            },
+          }
+        );
+
+        return response.data;
+      });
+
+      const paymentPlans = await dataSources.paymentPlanDAOService.findAll({
+        include: [{ model: Plan, where: { partnerId: partnerId } }],
+      });
+
+      const response: HttpResponse<PaymentPlan> = {
+        message: HttpStatus.OK.value,
+        code: HttpStatus.OK.code,
+        results: paymentPlans,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  /**
+   * @name getPlans
+   * @param partnerId
+   */
   public async getPlans(partnerId: number) {
     try {
       const plans = await dataSources.planDAOService.findAll({
@@ -310,6 +532,40 @@ export default class PartnerController {
         message: HttpStatus.OK.value,
         code: HttpStatus.OK.code,
         results: plans,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  /**
+   * @name getPaymentPlans
+   * @param partnerId
+   */
+  public async getPaymentPlans(partnerId: number) {
+    try {
+      const partner = await dataSources.partnerDAOService.findById(partnerId, {
+        include: [Plan],
+      });
+
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Partner with ${partnerId} does not exist.`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const paymentPlans = await dataSources.paymentPlanDAOService.findAll({
+        include: [{ model: Plan, where: { partnerId: partnerId } }],
+      });
+
+      const response: HttpResponse<PaymentPlan> = {
+        message: HttpStatus.OK.value,
+        code: HttpStatus.OK.code,
+        results: paymentPlans,
       };
 
       return Promise.resolve(response);

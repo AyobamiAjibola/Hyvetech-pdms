@@ -70,6 +70,13 @@ declare module "@app-interfaces" {
     setCustomer: React.Dispatch<React.SetStateAction<ICustomer | undefined>>;
   }
 
+  interface PartnerPageContextProps {
+    programme?: string;
+    setProgramme: React.Dispatch<React.SetStateAction<string>>;
+    modeOfService?: string;
+    setModeOfService: React.Dispatch<React.SetStateAction<string>>;
+  }
+
   export interface IComponentErrorState {
     hasError: boolean;
     errorMessage: string;
