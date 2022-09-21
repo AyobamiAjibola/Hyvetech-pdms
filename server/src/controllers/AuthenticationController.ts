@@ -14,6 +14,7 @@ import create_customer_success_email from "../resources/templates/email/create_c
 import { QUEUE_EVENTS } from "../config/constants";
 import dataSources from "../services/dao";
 import settings from "../config/settings";
+import { Op } from "sequelize";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -40,6 +41,20 @@ export default class AuthenticationController {
           )
         );
 
+      const userExist = await dataSources.userDAOService.findByAny({
+        where: {
+          [Op.or]: [{ email: value.email, phone: value.phone }],
+        },
+      });
+
+      if (userExist)
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.BAD_REQUEST.value,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
       //find role by name
       const role = await dataSources.roleDAOService.findByAny({
         where: { slug: value.role },
@@ -59,6 +74,24 @@ export default class AuthenticationController {
 
       //associate user with role
       await user.$set("roles", [role]);
+
+      const platforms = value.companyName.split(",");
+
+      for (const platform of platforms) {
+        const partner = await dataSources.partnerDAOService.findByAny({
+          where: { name: platform },
+        });
+
+        if (!partner)
+          return Promise.reject(
+            CustomAPIError.response(
+              HttpStatus.NOT_FOUND.value,
+              HttpStatus.NOT_FOUND.code
+            )
+          );
+
+        await partner.$add("users", [user]);
+      }
 
       const mailText = create_customer_success_email({
         username: user.email,

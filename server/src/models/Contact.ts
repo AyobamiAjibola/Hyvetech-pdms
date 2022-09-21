@@ -18,6 +18,7 @@ import {
 } from "sequelize";
 import User from "./User";
 import Partner from "./Partner";
+import RideShareDriver from "./RideShareDriver";
 
 export const $contactSchema = {
   address: Joi.string().required().label("Address"),
@@ -85,4 +86,11 @@ export default class Contact extends Model<
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: NonAttribute<number>;
+
+  @BelongsTo(() => RideShareDriver)
+  declare rideShareDriver: NonAttribute<RideShareDriver>;
+
+  @ForeignKey(() => RideShareDriver)
+  @Column(DataType.INTEGER)
+  declare rideShareDriverId: NonAttribute<number>;
 }

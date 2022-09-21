@@ -51,6 +51,10 @@ import CategoryRepository from "../../repositories/CategoryRepository";
 import CategoryDAOService from "./CategoryDAOService";
 import PaymentPlanRepository from "../../repositories/PaymentPlanRepository";
 import PaymentPlanDAOService from "./PaymentPlanDAOService";
+import RideShareDriverRepository from "../../repositories/RideShareDriverRepository";
+import RideShareDriverDAOService from "./RideShareDriverDAOService";
+import RideShareDriverSubscriptionRepository from "../../repositories/RideShareDriverSubscriptionRepository";
+import RideShareDriverSubscriptionDAOService from "./RideShareDriverSubscriptionDAOService";
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -79,6 +83,9 @@ const permissionRepository = new PermissionRepository();
 const partnerRepository = new PartnerRepository();
 const categoryRepository = new CategoryRepository();
 const paymentPlanRepository = new PaymentPlanRepository();
+const rideShareDriverRepository = new RideShareDriverRepository();
+const rideShareDriverSubscriptionRepository =
+  new RideShareDriverSubscriptionRepository();
 
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
@@ -121,6 +128,13 @@ const permissionDAOService = new PermissionDAOService(permissionRepository);
 const partnerDAOService = new PartnerDAOService(partnerRepository);
 const categoryDAOService = new CategoryDAOService(categoryRepository);
 const paymentPlanDAOService = new PaymentPlanDAOService(paymentPlanRepository);
+const rideShareDriverDAOService = new RideShareDriverDAOService(
+  rideShareDriverRepository
+);
+const rideShareDriverSubscriptionDAOService =
+  new RideShareDriverSubscriptionDAOService(
+    rideShareDriverSubscriptionRepository
+  );
 
 export default {
   customerDAOService,
@@ -148,4 +162,6 @@ export default {
   partnerDAOService,
   categoryDAOService,
   paymentPlanDAOService,
+  rideShareDriverDAOService,
+  rideShareDriverSubscriptionDAOService,
 };

@@ -15,6 +15,7 @@ import {
   NonAttribute,
 } from "sequelize";
 import Customer from "./Customer";
+import RideShareDriver from "./RideShareDriver";
 
 @Table({
   timestamps: true,
@@ -92,4 +93,11 @@ export default class Transaction extends Model<
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: number;
+
+  @BelongsTo(() => RideShareDriver)
+  declare rideShareDriver: NonAttribute<RideShareDriver>;
+
+  @ForeignKey(() => RideShareDriver)
+  @Column(DataType.INTEGER)
+  declare rideShareDriverId: NonAttribute<number>;
 }

@@ -22,6 +22,7 @@ import Job from "./Job";
 import Vehicle from "./Vehicle";
 import AppointmentJob from "./AppointmentJob";
 import Joi from "joi";
+import RideShareDriver from "./RideShareDriver";
 
 export const $rescheduleInspectionSchema = {
   customerId: Joi.number().required().label("Customer Id"),
@@ -100,33 +101,13 @@ export default class Appointment extends Model<
   @Column(DataType.INTEGER)
   declare customerId: number;
 
+  @BelongsTo(() => RideShareDriver)
+  declare rideShareDriver: NonAttribute<RideShareDriver>;
+
+  @ForeignKey(() => RideShareDriver)
+  @Column(DataType.INTEGER)
+  declare rideShareDriverId: NonAttribute<number>;
+
   @BelongsToMany(() => Job, () => AppointmentJob)
   declare jobs: NonAttribute<Array<Job & { BookingJob: AppointmentJob }>>;
-
-  // @AfterBulkCreate
-  // @AfterCreate
-  // public static async countAppointmentsPerDay(): Promise<NonAttribute<void>> {
-  //   const date = moment(now());
-  //
-  //   const startTime = date.startOf("day").toDate();
-  //   const endTime = date.endOf("day").toDate();
-  //
-  //   const bookings = await Appointment.findAll({
-  //     where: {
-  //       createdAt: {
-  //         [Op.gte]: startTime,
-  //         [Op.lt]: endTime,
-  //       },
-  //     },
-  //     raw: true,
-  //   }); //Get all bookings for the day
-  //
-  //   //If booking exceeds 7, return an error
-  //   if (bookings.length > 7) throw new Error("Maximum bookings exceeded!");
-  //
-  //   //Cache the number in redis datastore. Overwrite each value in the datastore.
-  //   await dataStore.setEx(BOOKINGS, bookings.length.toString(), {
-  //     PX: TWENTY_FOUR_HOUR_EXPIRY,
-  //   });
-  // }
 }

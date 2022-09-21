@@ -32,3 +32,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInBlc
 ###
 GET  http://localhost:5400/api/v1/partners/1/payment-plans
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInBlcm1pc3Npb25zIjpbeyJhY3Rpb24iOiJyZWFkIiwic3ViamVjdCI6Imd1ZXN0IiwiUm9sZVBlcm1pc3Npb24iOnsiaWQiOjEsInJvbGVJZCI6MywicGVybWlzc2lvbklkIjozMH19XSwiaWF0IjoxNjYzMzIzODU4LCJleHAiOjE2NjM0MTAyNTh9.OGPtEs-AzEPlP7Gh5TtpnnY2WGFzME45UFCmLy-p_zg
+
+###
+POST http://localhost:5400/api/v1/sign-up
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInBlcm1pc3Npb25zIjpbeyJhY3Rpb24iOiJyZWFkIiwic3ViamVjdCI6Imd1ZXN0IiwiUm9sZVBlcm1pc3Npb24iOnsiaWQiOjEsInJvbGVJZCI6MywicGVybWlzc2lvbklkIjozMH19XSwiaWF0IjoxNjYzMzIzODU4LCJleHAiOjE2NjM0MTAyNTh9.OGPtEs-AzEPlP7Gh5TtpnnY2WGFzME45UFCmLy-p_zg
+
+{
+  "companyName": "PickMeUp,Bolt",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "johnDoe@gmail.com",
+  "role": "RIDE_SHARE_DRIVER_ROLE",
+  "phone": "09011223344"
+}

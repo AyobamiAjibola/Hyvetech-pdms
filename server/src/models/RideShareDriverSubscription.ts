@@ -13,24 +13,24 @@ import {
   InferCreationAttributes,
   NonAttribute,
 } from "sequelize";
-import Customer from "./Customer";
 import Vehicle from "./Vehicle";
-import CustomerPlanSubscription from "./CustomerPlanSubscription";
+import RideShareDriver from "./RideShareDriver";
+import RideShareDriverPlanSubscription from "./RideShareDriverPlanSubscription";
 
 @Table({
   timestamps: true,
-  tableName: "customer_subscriptions",
+  tableName: "ride_share_driver_subscriptions",
 })
-export default class CustomerSubscription extends Model<
-  InferAttributes<CustomerSubscription>,
-  InferCreationAttributes<CustomerSubscription>
+export default class RideShareDriverSubscription extends Model<
+  InferAttributes<RideShareDriverSubscription>,
+  InferCreationAttributes<RideShareDriverSubscription>
 > {
   @PrimaryKey
   @AutoIncrement
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
-    field: "customer_subscription_id",
+    field: "ride_share_driver_subscription_id",
   })
   declare id: number;
 
@@ -94,9 +94,13 @@ export default class CustomerSubscription extends Model<
   @Column(DataType.DATE)
   declare nextPaymentDate: Date;
 
-  @BelongsToMany(() => Customer, () => CustomerPlanSubscription)
+  @BelongsToMany(() => RideShareDriver, () => RideShareDriverPlanSubscription)
   declare customers: NonAttribute<
-    Array<Customer & { CustomerPlanSubscription: CustomerPlanSubscription }>
+    Array<
+      RideShareDriver & {
+        RideShareDriverPlanSubscription: RideShareDriverPlanSubscription;
+      }
+    >
   >;
 
   @HasMany(() => Vehicle)

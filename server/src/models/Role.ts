@@ -21,6 +21,8 @@ import {
 } from "sequelize";
 import UserRole from "./UserRole";
 import User from "./User";
+import RideShareDriverRole from "./RideShareDriverRole";
+import RideShareDriver from "./RideShareDriver";
 
 export const $roleSchema = {
   name: Joi.string().required().label("Role Name"),
@@ -57,4 +59,9 @@ export default class Role extends Model<
 
   @BelongsToMany(() => User, () => UserRole)
   declare users: NonAttribute<Array<User & { UserRole: UserRole }>>;
+
+  @BelongsToMany(() => RideShareDriver, () => RideShareDriverRole)
+  declare rideShareDrivers: NonAttribute<
+    Array<RideShareDriver & { RideShareDriverRole: RideShareDriverRole }>
+  >;
 }
