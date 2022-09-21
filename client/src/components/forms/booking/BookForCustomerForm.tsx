@@ -25,7 +25,6 @@ import {
 import { AppContext } from "../../../context/AppContextProvider";
 import { IAppointment } from "@app-models";
 import useAppDispatch from "../../../hooks/useAppDispatch";
-import useAppSelector from "../../../hooks/useAppSelector";
 import { AppContextProps } from "@app-interfaces";
 import useUploadFile from "../../../hooks/useUploadFile";
 import { createAppointmentAction } from "../../../store/actions/appointmentActions";
@@ -74,7 +73,7 @@ export default function BookForCustomerForm(props: IBookingProps) {
   const { image, height, width } = useUploadFile();
 
   const dispatch = useAppDispatch();
-  const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
+  //const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
 
   useEffect(() => {
     if (props.planCategory) {
@@ -163,8 +162,8 @@ export default function BookForCustomerForm(props: IBookingProps) {
       planCategory === DRIVE_IN_PLAN ||
       (planCategory === HYBRID_PLAN && planTab === 1)
     ) {
-      const timeSlotDate = timeSlotReducer.timeSlot?.date;
-      const time = slot;
+      // const timeSlotDate = timeSlotReducer.timeSlot?.date;
+      // const time = slot;
 
       if (showBooking) setShowBooking(!showBooking);
     }

@@ -167,10 +167,12 @@ function TransactionPage() {
             transaction?.serviceStatus === "unprocessed" && (
               <Grid item xs={12} md={3}>
                 <Button
+                  size="small"
                   onClick={handleShowBooking}
                   fullWidth
                   variant="outlined"
                   color="primary"
+                  sx={{ textTransform: "capitalize" }}
                 >
                   Schedule {transaction.purpose}
                 </Button>
