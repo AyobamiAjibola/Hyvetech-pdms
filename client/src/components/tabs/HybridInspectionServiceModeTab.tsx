@@ -11,7 +11,7 @@ import settings from "../../config/settings";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import Location from "../forms/booking/Location";
 import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProperties } from "@app-interfaces";
+import { AppContextProps } from "@app-interfaces";
 import TabPanel from "./TabPanel";
 
 export default function HybridInspectionServiceModeTab() {
@@ -26,7 +26,7 @@ export default function HybridInspectionServiceModeTab() {
     setMobileDate,
     showBookingBtn,
     setShowBookingBtn,
-  } = useContext(AppContext) as AppContextProperties;
+  } = useContext(AppContext) as AppContextProps;
 
   const _handleChange = (event: any, newValue: number) => {
     setPlanTab(newValue);

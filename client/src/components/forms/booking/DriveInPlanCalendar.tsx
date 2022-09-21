@@ -14,7 +14,7 @@ import { AppContext } from "../../../context/AppContextProvider";
 
 import "./bookingForm.css";
 import useAppSelector from "../../../hooks/useAppSelector";
-import { AppContextProperties } from "@app-interfaces";
+import { AppContextProps } from "@app-interfaces";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 
 interface IDriveInPlanCalendarProps {
@@ -48,7 +48,7 @@ function DriveInPlanCalendar({
   const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
 
   const { setShowBookingBtn, showBookingBtn, checkedSlot, setCheckedSlot } =
-    useContext(AppContext) as AppContextProperties;
+    useContext(AppContext) as AppContextProps;
 
   const dispatch = useAppDispatch();
 

@@ -17,21 +17,43 @@ const fields = {
       required: "Please enter your service location.",
     },
   },
+  vehicle: {
+    name: "vehicle",
+    label: "Select Vehicle",
+    error: {
+      invalid: "Vehicle is invalid",
+      required: "Vehicle is required",
+    },
+  },
 };
 
 const initialValues = {
   [fields.vehicleFault.name]: "",
   [fields.location.name]: "",
+  [fields.vehicle.name]: "",
 };
 
-const schema = Yup.object().shape({
-  [fields.vehicleFault.name]: Yup.string()
-    .required(fields.vehicleFault.error.required)
-    .label(fields.vehicleFault.label),
-  [fields.location.name]: Yup.string()
-    .required(fields.location.error.required)
-    .label(fields.location.label),
-});
+const schema = [
+  Yup.object().shape({
+    [fields.vehicleFault.name]: Yup.string()
+      .required(fields.vehicleFault.error.required)
+      .label(fields.vehicleFault.label),
+    [fields.location.name]: Yup.string()
+      .required(fields.location.error.required)
+      .label(fields.location.label),
+  }),
+  Yup.object().shape({
+    [fields.vehicleFault.name]: Yup.string()
+      .required(fields.vehicleFault.error.required)
+      .label(fields.vehicleFault.label),
+    [fields.location.name]: Yup.string()
+      .required(fields.location.error.required)
+      .label(fields.location.label),
+    [fields.vehicle.name]: Yup.string()
+      .required(fields.vehicle.error.required)
+      .label(fields.vehicle.label),
+  }),
+];
 
 const bookingModel = {
   fields,

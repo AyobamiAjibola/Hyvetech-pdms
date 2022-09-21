@@ -11,12 +11,12 @@ import { useFormikContext } from "formik";
 import { IBookingFormValues } from "./BookingForm";
 import useAppSelector from "../../../hooks/useAppSelector";
 
-interface IFilmOptionType {
+export interface IOptionType {
   inputValue?: string;
   title: string;
 }
 
-const filter = createFilterOptions<IFilmOptionType>();
+export const filterOptions = createFilterOptions<IOptionType>();
 
 function Location() {
   const { values, setFieldValue, handleBlur, errors, touched } =
@@ -46,7 +46,7 @@ function Location() {
       fullWidth
       className="locationTextField"
       freeSolo
-      getOptionLabel={(option: IFilmOptionType | any) => {
+      getOptionLabel={(option: IOptionType | any) => {
         // Value selected with enter, right from the input
         if (typeof option === "string") {
           return option;
@@ -59,7 +59,7 @@ function Location() {
         return option.title;
       }}
       filterOptions={(options: any, params: any) => {
-        const filtered: IFilmOptionType[] | any = filter(options, params);
+        const filtered: IOptionType[] | any = filterOptions(options, params);
 
         const { inputValue } = params;
         // Suggest the creation of a new value

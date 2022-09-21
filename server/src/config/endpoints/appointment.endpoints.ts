@@ -1,5 +1,6 @@
 import {
   cancelAppointmentHandler,
+  createAppointmentHandler,
   getAppointmentHandler,
   getAppointmentsHandler,
   rescheduleAppointmentHandler,
@@ -20,6 +21,12 @@ const appointmentEndpoints: RouteEndpoints = [
     method: "get",
     path: "/appointments/:appointmentId",
     handler: getAppointmentHandler,
+  },
+  {
+    name: "appointments",
+    method: "post",
+    path: "/appointments",
+    handler: createAppointmentHandler,
   },
   {
     name: "appointments",

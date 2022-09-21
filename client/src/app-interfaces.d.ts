@@ -1,7 +1,7 @@
 declare module "@app-interfaces" {
   import React from "react";
   import { GenericObjectType } from "@app-types";
-  import { ICustomer } from "@app-models";
+  import { ICustomer, IVehicle } from "@app-models";
 
   interface IModule {
     customers: { name: string; data: GenericObjectType[] };
@@ -19,7 +19,7 @@ declare module "@app-interfaces" {
     monthlyData: IModule;
   }
 
-  interface AppContextProperties {
+  interface AppContextProps {
     showBooking: boolean;
     setShowBooking: React.Dispatch<React.SetStateAction<boolean>>;
     showBookingBtn: boolean;
@@ -34,6 +34,14 @@ declare module "@app-interfaces" {
     setShowTime: React.Dispatch<React.SetStateAction<boolean>>;
     isSignedIn: boolean;
     setIsSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+    customer: ICustomer | null;
+    setCustomer: React.Dispatch<React.SetStateAction<ICustomer | null>>;
+    vehicle: IVehicle | null;
+    setVehicle: React.Dispatch<React.SetStateAction<IVehicle | null>>;
+    vehicles: IVehicle[];
+    setVehicles: React.Dispatch<React.SetStateAction<IVehicle[]>>;
+    showVehicles: boolean;
+    setShowVehicles: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
   interface ISignInModel {

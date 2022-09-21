@@ -2,12 +2,12 @@ import React, { useContext } from "react";
 import { Button, Grid } from "@mui/material";
 import { MdEditCalendar } from "react-icons/md";
 import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProperties } from "@app-interfaces";
+import { AppContextProps } from "@app-interfaces";
 
 function SkipAndSubmitButtons() {
   const { showBookingBtn, mobileDate } = useContext(
     AppContext
-  ) as AppContextProperties;
+  ) as AppContextProps;
 
   return (
     <Grid

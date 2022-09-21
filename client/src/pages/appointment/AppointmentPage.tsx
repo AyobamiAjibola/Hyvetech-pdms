@@ -54,7 +54,7 @@ import useAppSelector from "../../hooks/useAppSelector";
 import AppModal from "../../components/modal/AppModal";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack5";
 import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProperties } from "@app-interfaces";
+import { AppContextProps } from "@app-interfaces";
 import {
   APPOINTMENT_STATUS,
   ESTIMATE,
@@ -97,7 +97,7 @@ function AppointmentPage() {
 
   const { showBooking, setShowBooking } = useContext(
     AppContext
-  ) as AppContextProperties;
+  ) as AppContextProps;
 
   const appointmentReducer = useAppSelector(
     (state) => state.appointmentReducer

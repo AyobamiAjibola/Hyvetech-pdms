@@ -7,7 +7,7 @@ import { TextField, Typography } from "@mui/material";
 import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
 import "./bookingForm.css";
 import { AppContext } from "../../../context/AppContextProvider";
-import { AppContextProperties } from "@app-interfaces";
+import { AppContextProps } from "@app-interfaces";
 
 interface IMobilePlanCalendarProps {
   date: any;
@@ -34,7 +34,7 @@ function MobilePlanCalendar({
 
   const { setMobileDate, showTime, setShowTime } = useContext(
     AppContext
-  ) as AppContextProperties;
+  ) as AppContextProps;
 
   useEffect(() => {
     _setMinDate(minDate);

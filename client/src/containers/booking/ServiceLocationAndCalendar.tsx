@@ -9,8 +9,9 @@ import { AppContext } from "../../context/AppContextProvider";
 import { IBookingFormValues } from "../../components/forms/booking/BookingForm";
 import { FaCamera } from "react-icons/fa";
 import "./uploadImage.css";
-import { AppContextProperties } from "@app-interfaces";
+import { AppContextProps } from "@app-interfaces";
 import bookingModel from "../../components/forms/models/bookingModel";
+import Vehicle from "../../components/forms/booking/Vehicle";
 
 interface Props {
   planCategory: string;
@@ -67,7 +68,7 @@ function ServiceLocationAndCalendar({
   width,
   image,
 }: Props) {
-  const { planTab } = useContext(AppContext) as AppContextProperties;
+  const { planTab } = useContext(AppContext) as AppContextProps;
   const { handleBlur, handleChange, errors, touched, values, setErrors } =
     useFormikContext<IBookingFormValues>();
 
@@ -83,6 +84,8 @@ function ServiceLocationAndCalendar({
       sx={{ mb: 3 }}
     >
       <Grid item xs={12} md={6} className="topOne">
+        <Vehicle />
+        {planCategory === "Mobile" && <Box sx={{ mt: 3 }} />}
         <ServiceLocation planCategory={planCategory} />
         {planCategory === "Mobile" && <Box sx={{ mt: 3 }} />}
         {planCategory === "Drive-in" && <Box sx={{ mt: 3 }} />}

@@ -4,7 +4,6 @@ import {
   Column,
   DataType,
   HasMany,
-  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -66,7 +65,7 @@ export default class Partner extends Model<
   @Column(DataType.ARRAY(DataType.STRING))
   declare workingHours: string[];
 
-  @HasOne(() => Contact)
+  @HasMany(() => Contact)
   declare contact: NonAttribute<Contact>;
 
   @BelongsToMany(() => User, () => PartnerUser)

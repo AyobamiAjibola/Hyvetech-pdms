@@ -32,6 +32,7 @@ export const MESSAGES = {
 export const MOBILE_PLAN = "Mobile";
 export const DRIVE_IN_PLAN = "Drive-in";
 export const HYBRID_PLAN = "Hybrid";
+
 export const MAIN_OFFICE = "No. 10, 45 Road, off 1st Avenue Gwarimpa";
 export const INVENTORY = "Inventory";
 export const REPORT = "Report";
@@ -49,3 +50,8 @@ export const BOOK_APPOINTMENT = "event:BOOK_APPOINTMENT";
 export const RESCHEDULE_APPOINTMENT = "event:RESCHEDULE_APPOINTMENT";
 export const CANCEL_APPOINTMENT = "event:CANCEL_APPOINTMENT";
 export const AGENDA_COLLECTION_NAME = "appointmentJobs";
+
+export const ONE_TIME_SUB = "One Time";
+export const HOUSE_HOLD_SUB = "House Hold";
+export const FAF_SUB = "Family & Friends";
+export const PICK_ME_UP_SUB = "Pick Me Up";

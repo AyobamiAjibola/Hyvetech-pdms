@@ -15,6 +15,13 @@ export const getAppointmentHandler = authenticateRouteWrapper(
   }
 );
 
+export const createAppointmentHandler = authenticateRouteWrapper(
+  async (req, res) => {
+    const response = await AppointmentController.createAppointment(req);
+    res.status(response.code).json(response);
+  }
+);
+
 export const updateAppointmentHandler = authenticateRouteWrapper(
   async (req, res) => {
     const response = await AppointmentController.updateAppointment(req);

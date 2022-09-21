@@ -19,6 +19,7 @@ import VehicleFault from "../models/VehicleFault";
 import Customer from "../models/Customer";
 import {
   APPOINTMENT_STATUS,
+  BOOK_APPOINTMENT,
   CANCEL_APPOINTMENT,
   DRIVE_IN_CATEGORY,
   HYBRID_CATEGORY,
@@ -27,6 +28,8 @@ import {
   MOBILE_INSPECTION_TIME,
   RESCHEDULE_APPOINTMENT,
   RESCHEDULE_CONSTRAINT,
+  SERVICES,
+  SUBSCRIPTIONS,
   UPLOAD_BASE_PATH,
 } from "../config/constants";
 
@@ -37,6 +40,8 @@ import { appEventEmitter } from "../services/AppEventEmitter";
 import booking_reschedule_email from "../resources/templates/email/booking_reschedule_email";
 import CustomerSubscription from "../models/CustomerSubscription";
 import booking_cancel_email from "../resources/templates/email/booking_cancel_email";
+import { Op } from "sequelize";
+import booking_success_email from "../resources/templates/email/booking_success_email";
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
 
@@ -111,6 +116,346 @@ export default class AppointmentController {
         code: HttpStatus.OK.code,
         message: HttpStatus.OK.value,
         result: appointment,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  public static async createAppointment(req: Request) {
+    const { error, value } = Joi.object({
+      planCategory: Joi.string(),
+      appointmentDate: Joi.string(),
+      vehicleFault: Joi.string(),
+      vehicleId: Joi.number(),
+      customerId: Joi.number(),
+      location: Joi.string(),
+      reference: Joi.string(),
+      subscriptionName: Joi.string(),
+      amount: Joi.number(),
+      timeSlot: Joi.string(),
+    }).validate(req.body);
+
+    if (error) {
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+    }
+
+    const planCategory = value.planCategory;
+    const appointmentDate = moment(value.appointmentDate).utc(true);
+    const serviceLocation = value.serviceLocation;
+    const vehicleFault = value.vehicleFault;
+    const subscriptionName = value.subscriptionName;
+    const vehicleId = value.vehicleId;
+    const amount = value.amount;
+    const customerId = value.customerId;
+    const reference = value.reference;
+
+    //construct plan label
+    const planLabel = Generic.generateSlug(
+      `${subscriptionName} ${planCategory}`
+    );
+
+    try {
+      /**** Find subscription -> start*****/
+      const subscription = await dataSources.subscriptionDAOService.findByAny({
+        where: {
+          name: subscriptionName,
+        },
+      });
+
+      if (!subscription) {
+        return Promise.reject(
+          CustomAPIError.response(
+            `Subscription ${subscriptionName} does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+      }
+      /**** Find subscription -> end*****/
+
+      let transaction;
+
+      if (reference) {
+        //find customer transaction by reference number
+        transaction = await dataSources.transactionDAOService.findByAny({
+          where: { reference: reference },
+        });
+
+        if (!transaction) {
+          return Promise.reject(
+            CustomAPIError.response(
+              `Transaction reference ${value.reference} does not exist`,
+              HttpStatus.NOT_FOUND.code
+            )
+          );
+        }
+      }
+
+      //find vehicle by id
+      const vehicle = await dataSources.vehicleDAOService.findById(vehicleId);
+
+      //if vehicle does not exist, throw error
+      if (!vehicle) {
+        return Promise.reject(
+          CustomAPIError.response(
+            `Vehicle does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+      }
+
+      const customerData = await dataSources.customerDAOService.findById(
+        customerId
+      );
+
+      if (!customerData) {
+        return Promise.reject(
+          CustomAPIError.response(
+            `Customer does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+      }
+
+      let message, modeOfService, startDate, endDate;
+
+      const year = appointmentDate.year();
+      const month = appointmentDate.month();
+      const date = appointmentDate.date();
+
+      //find customer subscription by subscription name and plan category
+      const customerSubscription =
+        await dataSources.customerSubscriptionDAOService.findByAny({
+          where: {
+            [Op.and]: [{ planType: subscriptionName }, { planCategory }],
+          },
+          include: [{ model: Customer, where: { id: customerId } }],
+        });
+
+      //If plan is mobile or plan is hybrid and mobile
+      if (
+        planCategory === MOBILE_CATEGORY ||
+        (planCategory === HYBRID_CATEGORY && serviceLocation !== MAIN_OFFICE)
+      ) {
+        startDate = appointmentDate;
+
+        endDate = moment(appointmentDate).add(MOBILE_INSPECTION_TIME, "hours");
+        modeOfService = MOBILE_CATEGORY;
+
+        message = `You have successfully booked a ${MOBILE_CATEGORY}
+         inspection service for ${appointmentDate.format("LLL")}.
+         We will confirm this appointment date and revert back to you.
+        `;
+      } else {
+        //generate appointment calendar
+        const slots = value.timeSlot.split("-"); //9am - 11am
+        const startTime = moment(slots[0].trim(), "HH: a"); //9am
+        const endTime = moment(slots[1].trim(), "HH: a"); //11am
+
+        startDate = moment({ year, month, date, hours: startTime.hours() }); //create start date
+        endDate = moment({ year, month, date, hours: endTime.hours() }); //create end date
+
+        modeOfService = DRIVE_IN_CATEGORY;
+
+        message = `You have successfully booked a ${DRIVE_IN_CATEGORY}
+        inspection service for ${value.timeSlot},
+         ${appointmentDate.format("LL")}`;
+      }
+
+      const bookingValues: any = {
+        code: Generic.generateRandomString(10),
+        appointmentDate: appointmentDate,
+        timeSlot: value.timeSlot,
+        status: APPOINTMENT_STATUS.pending,
+        serviceLocation,
+        planCategory,
+        modeOfService,
+        programme: SERVICES[0].slug,
+        serviceCost: amount,
+      };
+
+      //book appointment
+      const booking = await dataSources.appointmentDAOService.create(
+        bookingValues
+      );
+
+      const vehicleFaultValues: any = {
+        description: vehicleFault,
+      };
+
+      const _vehicleFault = await dataSources.vehicleFaultDAOService.create(
+        vehicleFaultValues
+      );
+
+      await booking.$set("vehicleFault", _vehicleFault);
+
+      //update vehicle details booking status
+      vehicle.isBooked = true;
+      await vehicle.save();
+
+      //associate booking with vehicle details
+      await booking.$set("vehicle", vehicle);
+
+      //associate customer with booking
+      await customerData.$add("appointments", [booking]);
+
+      //if this is a plan, then update mode of service of customer subscription
+      if (
+        value.subscriptionName !== SUBSCRIPTIONS[0].name &&
+        customerSubscription
+      ) {
+        const subscriptionPlan = await subscription.$get("plans", {
+          where: { label: planLabel },
+        });
+
+        const defaultMobileInspections = subscriptionPlan[0].mobile;
+        const defaultDriveInInspections = subscriptionPlan[0].driveIn;
+
+        let mobileCount = customerSubscription.mobileCount;
+        let driveInCount = customerSubscription.driveInCount;
+
+        //Hybrid mobile
+        if (
+          planCategory === HYBRID_CATEGORY &&
+          serviceLocation !== MAIN_OFFICE
+        ) {
+          if (mobileCount < defaultMobileInspections) {
+            mobileCount++;
+          } else
+            return this.getInspectionsCountError(
+              subscriptionName,
+              MOBILE_CATEGORY
+            );
+        }
+
+        //Hybrid drive-in
+        if (
+          planCategory === HYBRID_CATEGORY &&
+          serviceLocation === MAIN_OFFICE
+        ) {
+          if (driveInCount < defaultDriveInInspections) {
+            driveInCount++;
+          } else
+            return this.getInspectionsCountError(
+              subscriptionName,
+              DRIVE_IN_CATEGORY
+            );
+        }
+
+        //Increment count for normal mobile inspection
+        if (planCategory === MOBILE_CATEGORY) {
+          if (mobileCount < defaultMobileInspections) {
+            mobileCount++;
+          } else
+            return this.getInspectionsCountError(
+              subscriptionName,
+              MOBILE_CATEGORY
+            );
+        }
+
+        //increment count for normal drive-in inspection
+        if (planCategory === DRIVE_IN_CATEGORY) {
+          if (driveInCount < defaultDriveInInspections) {
+            driveInCount++;
+          } else
+            return this.getInspectionsCountError(
+              subscriptionName,
+              DRIVE_IN_CATEGORY
+            );
+        }
+
+        await customerSubscription.update({
+          mobileCount,
+          driveInCount,
+          inspections: mobileCount + driveInCount,
+        });
+      }
+
+      if (transaction) {
+        await transaction.update({
+          serviceStatus: "processed",
+          status: "success",
+          paidAt: transaction.createdAt,
+        });
+      }
+
+      const eventData: ICalCalendarData = {
+        name: "Vehicle Inspection",
+        timezone: "Africa/Lagos",
+        description: `${subscriptionName} Vehicle Inspection`,
+        method: ICalCalendarMethod.REQUEST,
+        events: [
+          {
+            start: startDate,
+            end: endDate,
+            description: `${subscriptionName} Vehicle Inspection`,
+            summary: `You have scheduled for ${subscriptionName} Vehicle Inspection`,
+            organizer: {
+              name: "Jiffix Technologies",
+              email: <string>process.env.SMTP_EMAIL_FROM,
+            },
+          },
+        ],
+      };
+
+      const eventCalendar = ical(eventData).toString();
+
+      const mailText = booking_success_email({
+        planCategory: planCategory,
+        location: serviceLocation,
+        appointmentDate: appointmentDate.format("LL"),
+        loginUrl: <string>process.env.CUSTOMER_APP_HOST,
+        vehicleFault: vehicleFault,
+        vehicleDetail: {
+          year: vehicle.modelYear,
+          make: vehicle.make,
+          model: vehicle.model,
+        },
+      });
+
+      //generate mail template
+      const mailHtml = email_content({
+        firstName: customerData.firstName,
+        signature: <string>process.env.SMTP_EMAIL_SIGNATURE,
+        text: mailText,
+      });
+
+      //send email
+      await QueueManager.publish({
+        data: {
+          to: customerData.email,
+          from: {
+            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            address: <string>process.env.SMTP_EMAIL_FROM,
+          },
+          subject: "Jiffix Appointment Confirmation",
+          bcc: [
+            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+            <string>process.env.SMTP_EMAIL_FROM,
+          ],
+          html: mailHtml,
+          icalEvent: {
+            method: "request",
+            content: eventCalendar,
+            filename: "invite.ics",
+          },
+        },
+      });
+
+      appEventEmitter.emit(BOOK_APPOINTMENT, { appointment: booking });
+
+      const response: HttpResponse<string> = {
+        code: HttpStatus.OK.code,
+        message: HttpStatus.OK.value,
+        result: message,
       };
 
       return Promise.resolve(response);
@@ -627,5 +972,17 @@ export default class AppointmentController {
 
       await Generic.enableTimeSlot(appointmentDate, appointment);
     }
+  }
+
+  private static getInspectionsCountError(
+    subscriptionName: string,
+    category: string
+  ) {
+    return Promise.reject(
+      CustomAPIError.response(
+        `Maximum number of ${category} inspections reached for plan ${subscriptionName}`,
+        HttpStatus.BAD_REQUEST.code
+      )
+    );
   }
 }

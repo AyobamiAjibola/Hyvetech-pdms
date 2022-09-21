@@ -4,7 +4,7 @@ import { Grid, Typography } from "@mui/material";
 import TimeSlot from "../../components/forms/booking/TimeSlot";
 import { AppContext } from "../../context/AppContextProvider";
 import { DRIVE_IN_PLAN } from "../../config/constants";
-import { AppContextProperties } from "@app-interfaces";
+import { AppContextProps } from "@app-interfaces";
 
 interface Props {
   slot: string;
@@ -17,7 +17,7 @@ function VehicleFaultAndTimeSlot({
   handleSelectSlot,
   planCategory,
 }: Props) {
-  const { planTab } = useContext(AppContext) as AppContextProperties;
+  const { planTab } = useContext(AppContext) as AppContextProps;
 
   return (
     <Grid

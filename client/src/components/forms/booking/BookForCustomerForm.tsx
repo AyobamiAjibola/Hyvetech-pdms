@@ -28,7 +28,7 @@ import useAppDispatch from "../../../hooks/useAppDispatch";
 import useAppSelector from "../../../hooks/useAppSelector";
 import { AppContextProps } from "@app-interfaces";
 import useUploadFile from "../../../hooks/useUploadFile";
-import { rescheduleInspectionAction } from "../../../store/actions/appointmentActions";
+import { createAppointmentAction } from "../../../store/actions/appointmentActions";
 
 interface IBookingProps {
   appointment?: IAppointment | null;
@@ -41,21 +41,21 @@ interface IBookingProps {
 export interface IBookingFormValues {
   location: string;
   vehicleFault: string;
+  vehicle: string;
 }
 
 const bookingFormValues: IBookingFormValues = {
   location: "",
   vehicleFault: "",
+  vehicle: "",
 };
 
-export default function BookingForm(props: IBookingProps) {
+export default function BookForCustomerForm(props: IBookingProps) {
   const [date, setDate] = useState<Date>(new Date());
   const [slot, setSlot] = useState<string>("");
   const [planCategory, setPlanCategory] = useState<string>(DRIVE_IN_PLAN);
-  const [bookingData, setBookingData] = useState<IAppointment>();
   const [_bookingFormValues, _setBookingFormValues] =
     useState<IBookingFormValues>(bookingFormValues);
-  const [mobileLocation, setMobileLocation] = useState<string>("");
 
   const {
     setShowBookingBtn,
@@ -67,6 +67,8 @@ export default function BookingForm(props: IBookingProps) {
     setMobileDate,
     setShowTime,
     setPlanTab,
+    vehicles,
+    customer,
   } = useContext(AppContext) as AppContextProps;
 
   const { image, height, width } = useUploadFile();
@@ -75,59 +77,16 @@ export default function BookingForm(props: IBookingProps) {
   const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
 
   useEffect(() => {
-    if (props.appointment) {
-      const appointment = props.appointment;
-
-      let location = "";
-
-      if (appointment.planCategory === HYBRID_PLAN) {
-        //Mobile mode
-        if (appointment.serviceLocation !== MAIN_OFFICE) {
-          location = appointment.serviceLocation;
-          setMobileLocation(location);
-        } else {
-          location = MAIN_OFFICE;
-        }
+    if (props.planCategory) {
+      if (props.planCategory === DRIVE_IN_PLAN) {
+        _setBookingFormValues((prevState) => ({
+          ...prevState,
+          location: MAIN_OFFICE,
+        }));
       }
-
-      //Set location to MAIN Garage if mode is drive-in
-      if (appointment.planCategory === DRIVE_IN_PLAN) {
-        location = MAIN_OFFICE;
-      }
-
-      //Set location to customer location if mode is drive-in
-      if (appointment.planCategory === MOBILE_PLAN) {
-        location = appointment.serviceLocation;
-        setMobileLocation(location);
-      }
-
-      setPlanCategory(appointment.planCategory);
-      setBookingData(appointment);
-
-      _setBookingFormValues({
-        location,
-        vehicleFault: appointment.vehicleFault.description
-          ? appointment.vehicleFault.description
-          : "",
-      });
+      setPlanCategory(props.planCategory);
     }
-  }, [props.appointment]);
-
-  useEffect(() => {
-    if (planCategory === HYBRID_PLAN && planTab === 1) {
-      _setBookingFormValues((prevState) => ({
-        ...prevState,
-        location: MAIN_OFFICE,
-      }));
-    }
-    if (planCategory === HYBRID_PLAN && planTab === 0) {
-      _setBookingFormValues((prevState) => ({
-        ...prevState,
-        location: mobileLocation,
-      }));
-    }
-    setDate(new Date());
-  }, [mobileLocation, planCategory, planTab]);
+  }, [props.planCategory]);
 
   useEffect(() => {
     return () => {
@@ -208,30 +167,30 @@ export default function BookingForm(props: IBookingProps) {
       const time = slot;
 
       if (showBooking) setShowBooking(!showBooking);
-
-      localStorage.setItem(
-        LOCAL_STORAGE.timeSlot,
-        JSON.stringify({ date: timeSlotDate, time })
-      );
     }
 
-    // const now = moment();
-    // const inspectionTime = moment(date);
-    //
-    // if (inspectionTime.isBefore(now))
-    //   return alert("You cannot choose a previous time.");
+    const vehicle = vehicles.find(
+      (vehicle) =>
+        `(${vehicle.modelYear}) ${vehicle.make} ${vehicle.model}` ===
+        values.vehicle
+    );
 
-    const id = bookingData?.id;
-    const data = {
-      planCategory,
-      customerId: bookingData?.customerId,
-      time: date.toISOString(),
-      vehicleFault: values.vehicleFault,
-      location: serviceLocation,
-      timeSlot,
-    };
+    if (vehicle && customer) {
+      const data = {
+        planCategory,
+        appointmentDate: date.toISOString(),
+        vehicleFault: values.vehicleFault,
+        vehicleId: vehicle.id,
+        customerId: customer.id,
+        location: serviceLocation,
+        reference: props.paymentReference,
+        subscriptionName: props.subscriptionName,
+        amount: props.amount,
+        timeSlot,
+      };
 
-    dispatch(rescheduleInspectionAction({ id, data }));
+      dispatch(createAppointmentAction(data));
+    }
 
     setShowBooking(false);
     setShowBookingBtn(false);
@@ -248,7 +207,7 @@ export default function BookingForm(props: IBookingProps) {
     >
       <Formik
         initialValues={_bookingFormValues}
-        validationSchema={bookingModel.schema[0]}
+        validationSchema={bookingModel.schema[1]}
         onSubmit={handleBookAppointment}
         enableReinitialize
       >

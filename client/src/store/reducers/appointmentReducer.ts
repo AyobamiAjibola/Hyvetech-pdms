@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IThunkAPIStatus } from "@app-types";
 import {
+  createAppointmentAction,
   getAppointmentAction,
   getAppointmentsAction,
   updateAppointmentAction,
@@ -15,6 +16,10 @@ interface IAppointmentState {
   getAppointmentStatus: IThunkAPIStatus;
   getAppointmentSuccess: string;
   getAppointmentError: string;
+
+  createAppointmentStatus: IThunkAPIStatus;
+  createAppointmentSuccess: string;
+  createAppointmentError: string;
 
   updateAppointmentStatus: IThunkAPIStatus;
   updateAppointmentSuccess: string;
@@ -32,6 +37,10 @@ const initialState: IAppointmentState = {
   getAppointmentStatus: "idle",
   getAppointmentSuccess: "",
   getAppointmentError: "",
+
+  createAppointmentStatus: "idle",
+  createAppointmentSuccess: "",
+  createAppointmentError: "",
 
   updateAppointmentStatus: "idle",
   updateAppointmentSuccess: "",
@@ -74,6 +83,22 @@ const appointmentSlice = createSlice({
       .addCase(getAppointmentsAction.rejected, (state, action) => {
         state.getAppointmentsStatus = "failed";
         state.getAppointmentsError = <string>action.error.message;
+      });
+
+    builder
+      .addCase(createAppointmentAction.pending, (state) => {
+        state.createAppointmentStatus = "loading";
+      })
+      .addCase(createAppointmentAction.fulfilled, (state, action) => {
+        state.createAppointmentStatus = "completed";
+        state.createAppointmentSuccess = action.payload.message;
+      })
+      .addCase(createAppointmentAction.rejected, (state, action) => {
+        state.createAppointmentStatus = "failed";
+
+        if (action.payload) {
+          state.createAppointmentError = action.payload.message;
+        } else state.createAppointmentError = <string>action.error.message;
       });
 
     builder

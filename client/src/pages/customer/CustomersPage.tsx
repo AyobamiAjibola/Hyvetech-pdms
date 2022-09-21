@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box, Chip, Divider, Stack, Typography } from "@mui/material";
 import AppDataGrid from "../../components/tables/AppDataGrid";
 import useCustomer from "../../hooks/useCustomer";
@@ -7,12 +7,17 @@ import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { ICustomer } from "@app-models";
+import { AppContext } from "../../context/AppContextProvider";
+import { AppContextProps } from "@app-interfaces";
 
 function CustomersPage() {
+  const { setCustomer } = useContext(AppContext) as AppContextProps;
+
   const customer = useCustomer();
   const navigate = useNavigate();
 
   const handleView = (customer: ICustomer) => {
+    setCustomer(customer);
     navigate(`/customers/${customer.id}`, { state: { customer } });
   };
 

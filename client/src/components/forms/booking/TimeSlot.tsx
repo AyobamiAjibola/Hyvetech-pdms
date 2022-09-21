@@ -5,7 +5,7 @@ import morning from "../../../assets/images/morning.png";
 import sun from "../../../assets/images/sun.png";
 import { AppContext } from "../../../context/AppContextProvider";
 import useAppSelector from "../../../hooks/useAppSelector";
-import { AppContextProperties } from "@app-interfaces";
+import { AppContextProps } from "@app-interfaces";
 
 interface Props {
   handleChange: any;
@@ -15,7 +15,7 @@ interface Props {
 function TimeSlot({ handleChange, slot }: Props) {
   const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
 
-  const { checkedSlot } = useContext(AppContext) as AppContextProperties;
+  const { checkedSlot } = useContext(AppContext) as AppContextProps;
 
   return (
     <div className="radio-container">
