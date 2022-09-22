@@ -42,11 +42,13 @@ import {
   ONE_TIME_DRIVE_IN_PLAN,
   ONE_TIME_MOBILE_PLAN,
   ONE_TIME_SUBSCRIPTION,
+  PAY_STACK_PLANS,
   PAYMENT_PLANS,
   PAYMENT_TERMS,
   PLANS,
   SERVICES,
   SUBSCRIPTIONS,
+  TWENTY_FOUR_HOUR_EXPIRY,
 } from "../config/constants";
 import Category from "../models/Category";
 import PaymentPlan from "../models/PaymentPlan";
@@ -60,6 +62,9 @@ import statesAndDistrictsJson from "../resources/data/states_and_districts.json"
 import adminJson from "../resources/data/admin.json";
 import UserRepository from "../repositories/UserRepository";
 import PasswordEncoder from "../utils/PasswordEncoder";
+import PaymentGateway from "../models/PaymentGateway";
+import axiosClient from "../services/api/axiosClient";
+import dataStore from "../config/dataStore";
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 
 export default class CommandLineRunner {
@@ -116,6 +121,24 @@ export default class CommandLineRunner {
     await this.singleton.loadDefaultVINProvider();
     await this.singleton.loadDefaultTags();
     await this.singleton.loadDefaultAdmin();
+    await this.singleton.loadPayStackPlans();
+  }
+
+  async loadPayStackPlans() {
+    const paymentGateway = (await this.paymentGatewayRepository.findOne({
+      where: { default: true },
+    })) as PaymentGateway;
+
+    axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
+    axiosClient.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${paymentGateway.secretKey}`;
+
+    const response = await axiosClient.get("/plan");
+
+    await dataStore.setEx(PAY_STACK_PLANS, JSON.stringify(response.data.data), {
+      PX: TWENTY_FOUR_HOUR_EXPIRY,
+    });
   }
 
   async loadDefaultAdmin() {
