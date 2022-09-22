@@ -73,6 +73,7 @@ function TransactionPage() {
       appointmentReducer.createAppointmentStatus === "completed" &&
       customer
     ) {
+      setSuccess({ message: "Successfully scheduled appointment" });
       dispatch(getCustomerTransactionsAction(customer.id));
     }
   }, [dispatch, customer, appointmentReducer.createAppointmentStatus]);
@@ -84,7 +85,6 @@ function TransactionPage() {
       );
 
       if (_transaction) setTransaction(_transaction);
-      setSuccess({ message: "Successfully scheduled appointment" });
     }
   }, [
     customerReducer.getCustomerTransactionsStatus,
