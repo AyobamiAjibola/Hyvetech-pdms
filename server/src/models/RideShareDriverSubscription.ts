@@ -95,7 +95,7 @@ export default class RideShareDriverSubscription extends Model<
   declare nextPaymentDate: Date;
 
   @BelongsToMany(() => RideShareDriver, () => RideShareDriverPlanSubscription)
-  declare customers: NonAttribute<
+  declare rideShareDrivers: NonAttribute<
     Array<
       RideShareDriver & {
         RideShareDriverPlanSubscription: RideShareDriverPlanSubscription;
