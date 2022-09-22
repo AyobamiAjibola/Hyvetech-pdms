@@ -147,6 +147,26 @@ function TransactionPage() {
     setTransaction(state.transaction);
   }, [location.state]);
 
+  const isProcessed = useMemo(() => {
+    let result = true;
+
+    if (
+      transaction?.status === "success" &&
+      transaction?.serviceStatus === "unprocessed"
+    ) {
+      result = false;
+    }
+
+    if (
+      transaction?.status !== "success" &&
+      transaction?.serviceStatus === "unprocessed"
+    ) {
+      result = false;
+    }
+
+    return result;
+  }, [transaction]);
+
   return (
     <React.Fragment>
       <Box>
@@ -163,21 +183,20 @@ function TransactionPage() {
               </span>
             </Box>
           </Grid>
-          {transaction?.status !== "success" &&
-            transaction?.serviceStatus === "unprocessed" && (
-              <Grid item xs={12} md={3}>
-                <Button
-                  size="small"
-                  onClick={handleShowBooking}
-                  fullWidth
-                  variant="outlined"
-                  color="primary"
-                  sx={{ textTransform: "capitalize" }}
-                >
-                  Schedule {transaction.purpose}
-                </Button>
-              </Grid>
-            )}
+          {!isProcessed && (
+            <Grid item xs={12} md={3}>
+              <Button
+                size="small"
+                onClick={handleShowBooking}
+                fullWidth
+                variant="outlined"
+                color="primary"
+                sx={{ textTransform: "capitalize" }}
+              >
+                Schedule {transaction?.purpose}
+              </Button>
+            </Grid>
+          )}
         </Grid>
         <Grid
           container
