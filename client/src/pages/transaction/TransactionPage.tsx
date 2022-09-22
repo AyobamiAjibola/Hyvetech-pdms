@@ -27,10 +27,15 @@ import {
   ONE_TIME_SUB,
   PICK_ME_UP_SUB,
 } from "../../config/constants";
-import { getCustomerVehiclesAction } from "../../store/actions/customerActions";
+import {
+  getCustomerTransactionsAction,
+  getCustomerVehiclesAction,
+} from "../../store/actions/customerActions";
 import useAppDispatch from "../../hooks/useAppDispatch";
 import useAppSelector from "../../hooks/useAppSelector";
 import BookForCustomerForm from "../../components/forms/booking/BookForCustomerForm";
+import { CustomHookMessage } from "@app-types";
+import AppAlert from "../../components/alerts/AppAlert";
 
 interface ILocationState {
   transaction: ITransaction;
@@ -38,6 +43,7 @@ interface ILocationState {
 
 function TransactionPage() {
   const [transaction, setTransaction] = useState<ITransaction>();
+  const [success, setSuccess] = useState<CustomHookMessage>();
 
   const {
     showBooking,
@@ -48,7 +54,43 @@ function TransactionPage() {
   } = useContext(AppContext) as AppContextProps;
 
   const customerReducer = useAppSelector((state) => state.customerReducer);
+  const appointmentReducer = useAppSelector(
+    (state) => state.appointmentReducer
+  );
   const dispatch = useAppDispatch();
+
+  useTimeslot();
+  const location = useLocation();
+
+  useEffect(() => {
+    const state = location.state as ILocationState;
+
+    setTransaction(state.transaction);
+  }, [location.state]);
+
+  useEffect(() => {
+    if (
+      appointmentReducer.createAppointmentStatus === "completed" &&
+      customer
+    ) {
+      dispatch(getCustomerTransactionsAction(customer.id));
+    }
+  }, [dispatch, customer, appointmentReducer.createAppointmentStatus]);
+
+  useEffect(() => {
+    if (customerReducer.getCustomerTransactionsStatus === "completed") {
+      const _transaction = customerReducer.transactions.find(
+        (value) => value.id === transaction?.id
+      );
+
+      if (_transaction) setTransaction(_transaction);
+      setSuccess({ message: "Successfully scheduled appointment" });
+    }
+  }, [
+    customerReducer.getCustomerTransactionsStatus,
+    customerReducer.transactions,
+    transaction?.id,
+  ]);
 
   useEffect(() => {
     if (customer) {
@@ -65,9 +107,6 @@ function TransactionPage() {
     customerReducer.vehicles,
     setVehicles,
   ]);
-
-  useTimeslot();
-  const location = useLocation();
 
   const planCategory = useMemo(() => {
     let planCategory;
@@ -140,12 +179,6 @@ function TransactionPage() {
     setShowVehicles(false);
     setShowBooking(false);
   };
-
-  useEffect(() => {
-    const state = location.state as ILocationState;
-
-    setTransaction(state.transaction);
-  }, [location.state]);
 
   const isProcessed = useMemo(() => {
     let result = true;
@@ -298,6 +331,12 @@ function TransactionPage() {
           />
         }
         onClose={handleCloseBooking}
+      />
+      <AppAlert
+        alertType="success"
+        show={success !== undefined}
+        message={success?.message}
+        onClose={() => setSuccess(undefined)}
       />
     </React.Fragment>
   );

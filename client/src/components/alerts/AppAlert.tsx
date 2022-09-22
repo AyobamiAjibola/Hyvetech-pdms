@@ -27,7 +27,7 @@ export default function AppAlert(props: AppAlertProps) {
 }
 
 interface AppAlertProps {
-  alertType: any;
+  alertType: "success" | "info" | "warning" | "error";
   show: boolean;
   message: any;
   onClose: CallableFunction;
