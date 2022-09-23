@@ -20,9 +20,10 @@ export default async function authenticateRoute(
   next: NextFunction
 ) {
   const headers = req.headers;
+  const cookie = headers.cookie;
 
-  if (!headers.cookie) {
-    logger.error("authorization missing in header");
+  if (!cookie) {
+    logger.error("cookie missing in header");
 
     return next(
       CustomAPIError.response(
@@ -31,8 +32,6 @@ export default async function authenticateRoute(
       )
     );
   }
-
-  const cookie = headers.cookie;
 
   if (cookie && !cookie.split("=")[0].startsWith("_admin_auth")) {
     logger.error("malformed authorization: '_admin_auth' missing");

@@ -79,6 +79,12 @@ export default class RideShareDriver extends Model<
   @Column(DataType.STRING)
   declare profileImageUrl: string;
 
+  @Column(DataType.STRING)
+  declare frontLicenseImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare rearLicenseImageUrl: string;
+
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare active: boolean;
 
