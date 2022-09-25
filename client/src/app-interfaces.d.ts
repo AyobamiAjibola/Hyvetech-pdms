@@ -14,6 +14,12 @@ declare module "@app-interfaces" {
     message: string;
   }
 
+  interface IDriversFilterData {
+    id: number;
+    fullName: string;
+    query: string;
+  }
+
   interface IDashboardData {
     dailyData: IModule;
     monthlyData: IModule;
@@ -69,6 +75,7 @@ declare module "@app-interfaces" {
   }
 
   interface ITab {
+    tag?: string;
     name: string;
     Element: ReturnType<JSX.Element>;
   }
@@ -88,5 +95,18 @@ declare module "@app-interfaces" {
   export interface IComponentErrorState {
     hasError: boolean;
     errorMessage: string;
+  }
+
+  interface ApiResponseSuccess<T> {
+    message: string;
+    code: number;
+    timestamp?: string;
+    result?: T;
+    results?: T[];
+  }
+
+  interface ApiResponseError {
+    message: string;
+    code: number;
   }
 }

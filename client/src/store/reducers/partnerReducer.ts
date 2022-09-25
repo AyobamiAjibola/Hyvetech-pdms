@@ -4,12 +4,14 @@ import {
   addPaymentPlanAction,
   addPlanAction,
   createPartnerAction,
+  getDriversFilterDataAction,
   getPartnerAction,
   getPartnersAction,
   getPaymentPlansAction,
   getPlansAction,
 } from "../actions/partnerActions";
 import { IPartner, IPaymentPlan, IPlan } from "@app-models";
+import { IDriversFilterData } from "@app-interfaces";
 
 interface IPartnerState {
   createPartnerStatus: IThunkAPIStatus;
@@ -27,6 +29,10 @@ interface IPartnerState {
   getPlansStatus: IThunkAPIStatus;
   getPlansSuccess: string;
   getPlansError?: string;
+
+  getDriversFilterDataStatus: IThunkAPIStatus;
+  getDriversFilterDataSuccess: string;
+  getDriversFilterDataError?: string;
 
   getPaymentPlansStatus: IThunkAPIStatus;
   getPaymentPlansSuccess: string;
@@ -46,6 +52,7 @@ interface IPartnerState {
   paymentPlan: IPaymentPlan | null;
   plans: IPlan[];
   paymentPlans: IPaymentPlan[];
+  driversFilterData: IDriversFilterData[];
 }
 
 const initialState: IPartnerState = {
@@ -65,6 +72,10 @@ const initialState: IPartnerState = {
   getPlansStatus: "idle",
   getPlansSuccess: "",
 
+  getDriversFilterDataError: "",
+  getDriversFilterDataStatus: "idle",
+  getDriversFilterDataSuccess: "",
+
   getPaymentPlansError: "",
   getPaymentPlansStatus: "idle",
   getPaymentPlansSuccess: "",
@@ -83,6 +94,7 @@ const initialState: IPartnerState = {
   paymentPlan: null,
   plans: [],
   paymentPlans: [],
+  driversFilterData: [],
 };
 
 const partnerSlice = createSlice({
@@ -103,6 +115,21 @@ const partnerSlice = createSlice({
       state.getPartnerStatus = "idle";
       state.getPartnerSuccess = "";
       state.getPartnerError = "";
+    },
+    clearGetPlansStatus(state: IPartnerState) {
+      state.getPlansStatus = "idle";
+      state.getPlansSuccess = "";
+      state.getPlansError = "";
+    },
+    clearGetPaymentPlansStatus(state: IPartnerState) {
+      state.getPaymentPlansStatus = "idle";
+      state.getPaymentPlansSuccess = "";
+      state.getPaymentPlansError = "";
+    },
+    clearGetDriversFilterDataStatus(state: IPartnerState) {
+      state.getDriversFilterDataStatus = "idle";
+      state.getDriversFilterDataSuccess = "";
+      state.getDriversFilterDataError = "";
     },
   },
   extraReducers: (builder) => {
@@ -215,6 +242,23 @@ const partnerSlice = createSlice({
           state.getPaymentPlansError = action.payload.message;
         } else state.getPaymentPlansError = action.error.message;
       });
+
+    builder
+      .addCase(getDriversFilterDataAction.pending, (state) => {
+        state.getDriversFilterDataStatus = "idle";
+      })
+      .addCase(getDriversFilterDataAction.fulfilled, (state, action) => {
+        state.getDriversFilterDataStatus = "completed";
+        state.driversFilterData = action.payload
+          .results as IDriversFilterData[];
+      })
+      .addCase(getDriversFilterDataAction.rejected, (state, action) => {
+        state.getDriversFilterDataStatus = "failed";
+
+        if (action.payload) {
+          state.getDriversFilterDataError = action.payload.message;
+        } else state.getDriversFilterDataError = action.error.message;
+      });
   },
 });
 
@@ -222,6 +266,9 @@ export const {
   clearCreatePartnerStatus,
   clearGetPartnersStatus,
   clearGetPartnerStatus,
+  clearGetPaymentPlansStatus,
+  clearGetPlansStatus,
+  clearGetDriversFilterDataStatus,
 } = partnerSlice.actions;
 
 export default partnerSlice.reducer;

@@ -17,6 +17,7 @@ import Contact from "../models/Contact";
 import Plan, { $planSchema } from "../models/Plan";
 import PaymentPlan, { $paymentPlanSchema } from "../models/PaymentPlan";
 import axiosClient from "../services/api/axiosClient";
+import _ from "lodash";
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 
@@ -33,6 +34,13 @@ interface IPaymentPlanModelCoverage {
 export interface IPricing {
   interval: string;
   amount: string;
+}
+
+export interface IDriverFilter {
+  firstName: string;
+  lastName: string;
+  email: string;
+  plateNumber: string;
 }
 
 export interface ICreatePartnerBody {
@@ -62,6 +70,12 @@ export interface ICreatePlanBody {
   validity: string;
   mobile: string;
   driveIn: string;
+}
+
+export interface IDriverFilterProps {
+  id?: number;
+  fullName?: string;
+  query?: string;
 }
 
 export default class PartnerController {
@@ -482,7 +496,7 @@ export default class PartnerController {
           )
         );
 
-      const responses = pricing.map(async (price) => {
+      pricing.map(async (price) => {
         const payload = {
           name: capitalize.words(`${value.name} ${price.interval} plan`),
           interval: price.interval,
@@ -567,6 +581,148 @@ export default class PartnerController {
         code: HttpStatus.OK.code,
         results: paymentPlans,
       };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public async filterDrivers(req: Request) {
+    const partnerId = req.params.partnerId as string;
+
+    const driverInfo: IDriverFilterProps[] = [];
+
+    const response: HttpResponse<IDriverFilterProps> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      results: driverInfo,
+    };
+
+    try {
+      const { error, value } = Joi.object<IDriverFilter>({
+        email: Joi.string().email().allow("").label("Email"),
+        firstName: Joi.string().allow("").label("First Name"),
+        lastName: Joi.string().allow("").label("Last Name"),
+        plateNumber: Joi.string().allow("").label("Plate Number"),
+      }).validate(req.body);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const partner = await dataSources.partnerDAOService.findById(+partnerId);
+
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Partner does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const driverInfo: IDriverFilterProps[] = [];
+
+      const hasValues = _.values<IDriverFilter>(value).some(
+        (filter) => filter.length > 0
+      );
+
+      if (!hasValues) return Promise.resolve(response);
+
+      for (const valueKey in value) {
+        if (valueKey === "plateNumber") {
+          const vehicle = await dataSources.vehicleDAOService.findByAny({
+            where: { plateNumber: value[valueKey] },
+          });
+
+          if (!vehicle) return Promise.resolve(response);
+
+          const driver = await vehicle.$get("rideShareDriver");
+
+          if (!driver) return Promise.resolve(response);
+
+          driverInfo.push({
+            id: driver.id,
+            fullName: `${driver.firstName} ${driver.lastName}`,
+          });
+
+          response.results = driverInfo;
+        }
+
+        const driver = await dataSources.rideShareDriverDAOService.findByAny({
+          where: {
+            [valueKey]: {
+              // @ts-ignore
+              [Op.iLike]: value[valueKey],
+            },
+          },
+        });
+
+        if (!driver) return Promise.resolve(response);
+
+        driverInfo.push({
+          id: driver.id,
+          fullName: `${driver.firstName} ${driver.lastName}`,
+        });
+
+        response.results = driverInfo;
+      }
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public async driversFilterData(partnerId: number) {
+    const driverInfo: IDriverFilterProps[] = [];
+
+    const response: HttpResponse<IDriverFilterProps> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      results: driverInfo,
+    };
+
+    try {
+      const partner = await dataSources.partnerDAOService.findById(partnerId);
+
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Partner does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const drivers = await dataSources.rideShareDriverDAOService.findAll();
+
+      if (!drivers.length) return Promise.resolve(response);
+
+      for (let i = 0; i < drivers.length; i++) {
+        const driver = drivers[i];
+        const fullName = `${driver.firstName} ${driver.lastName}`;
+        const email = driver.email;
+
+        const vehicles = await drivers[i].$get("vehicles");
+
+        driverInfo[i] = {
+          id: driver.id,
+          fullName,
+          query: `${email} ${fullName}`,
+        };
+
+        for (let j = 0; j < vehicles.length; j++) {
+          const vehicle = vehicles[j];
+
+          Object.assign(driverInfo[i], {
+            query: `${driverInfo[i].query} ${vehicle.plateNumber}`,
+          });
+        }
+      }
 
       return Promise.resolve(response);
     } catch (e) {

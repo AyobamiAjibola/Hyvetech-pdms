@@ -29,7 +29,7 @@ export const getPartnersHandler = authenticateRouteWrapper(
 
 export const getPartnerHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
-    const id = req.params.partnerId as unknown as string;
+    const id = req.params.partnerId as string;
 
     const result = await partnerController.getPartner(+id);
 
@@ -39,7 +39,7 @@ export const getPartnerHandler = authenticateRouteWrapper(
 
 export const addPlanHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
-    const partnerId = req.params.partnerId as unknown as string;
+    const partnerId = req.params.partnerId as string;
     const body = req.body as ICreatePlanBody;
 
     const result = await partnerController.addPlan(body, +partnerId);
@@ -50,7 +50,7 @@ export const addPlanHandler = authenticateRouteWrapper(
 
 export const addPaymentPlanHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
-    const partnerId = req.params.partnerId as unknown as string;
+    const partnerId = req.params.partnerId as string;
     const body = req.body as ICreatePaymentPlanBody;
 
     const result = await partnerController.addPaymentPlan(body, +partnerId);
@@ -61,7 +61,7 @@ export const addPaymentPlanHandler = authenticateRouteWrapper(
 
 export const getPlansHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
-    const partnerId = req.params.partnerId as unknown as string;
+    const partnerId = req.params.partnerId as string;
 
     const result = await partnerController.getPlans(+partnerId);
 
@@ -71,9 +71,27 @@ export const getPlansHandler = authenticateRouteWrapper(
 
 export const getPaymentPlansHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
-    const partnerId = req.params.partnerId as unknown as string;
+    const partnerId = req.params.partnerId as string;
 
     const result = await partnerController.getPaymentPlans(+partnerId);
+
+    res.status(result.code).json(result);
+  }
+);
+
+export const filterDriversHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await partnerController.filterDrivers(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
+export const driversFilterDataHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const partnerId = req.params.partnerId as string;
+
+    const result = await partnerController.driversFilterData(+partnerId);
 
     res.status(result.code).json(result);
   }

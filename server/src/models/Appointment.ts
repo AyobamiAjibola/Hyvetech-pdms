@@ -1,7 +1,6 @@
 import {
   AutoIncrement,
   BelongsTo,
-  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -18,9 +17,7 @@ import {
   InferCreationAttributes,
   NonAttribute,
 } from "sequelize";
-import Job from "./Job";
 import Vehicle from "./Vehicle";
-import AppointmentJob from "./AppointmentJob";
 import Joi from "joi";
 import RideShareDriver from "./RideShareDriver";
 
@@ -30,7 +27,7 @@ export const $rescheduleInspectionSchema = {
   timeSlot: Joi.string().allow("").label("Time Slot"),
   location: Joi.string().allow("").label("Location"),
   vehicleFault: Joi.string().allow("").label("Vehicle Fault"),
-  planCategory: Joi.string().allow("").label("Plan Category"),
+  planCategory: Joi.string().allow("").label("Plans Category"),
   image: Joi.string().allow("").label("Vehicle Fault Image"),
   video: Joi.string().allow("").label("Vehicle Fault Video"),
 };
@@ -107,7 +104,4 @@ export default class Appointment extends Model<
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
-
-  @BelongsToMany(() => Job, () => AppointmentJob)
-  declare jobs: NonAttribute<Array<Job & { BookingJob: AppointmentJob }>>;
 }

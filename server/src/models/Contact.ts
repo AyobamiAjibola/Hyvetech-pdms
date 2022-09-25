@@ -19,6 +19,7 @@ import {
 import User from "./User";
 import Partner from "./Partner";
 import RideShareDriver from "./RideShareDriver";
+import Technician from "./Technician";
 
 export const $contactSchema = {
   address: Joi.string().required().label("Address"),
@@ -93,4 +94,11 @@ export default class Contact extends Model<
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
+
+  @BelongsTo(() => Technician)
+  declare technician: NonAttribute<Technician>;
+
+  @ForeignKey(() => Technician)
+  @Column(DataType.INTEGER)
+  declare technicianId: NonAttribute<number>;
 }

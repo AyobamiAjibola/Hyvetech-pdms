@@ -19,13 +19,13 @@ import PaymentPlanCategory from "./PaymentPlanCategory";
 import Joi from "joi";
 
 export const $paymentPlanSchema = {
-  name: Joi.string().required().label("Payment Plan Name"),
+  name: Joi.string().required().label("Payment Plans Name"),
   discount: Joi.string().allow("").label("Discount"),
-  plan: Joi.string().required().label("Plan Name"),
+  plan: Joi.string().required().label("Plans Name"),
   coverage: Joi.string().required().label("Coverage"),
-  descriptions: Joi.array().allow().label("Payment Plan Description"),
-  parameters: Joi.array().allow().label("Payment Plan Coverage"),
-  pricing: Joi.array().allow().label("Payment Plan Pricing"),
+  descriptions: Joi.array().allow().label("Payment Plans Description"),
+  parameters: Joi.array().allow().label("Payment Plans Coverage"),
+  pricing: Joi.array().allow().label("Payment Plans Pricing"),
 };
 
 @Table({

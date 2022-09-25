@@ -22,7 +22,7 @@ export const appointmentColumn = (options?: any) =>
     },
     {
       field: "planCategory",
-      headerName: "Plan Category",
+      headerName: "Plans Category",
       headerAlign: "center",
       width: 170,
       align: "center",

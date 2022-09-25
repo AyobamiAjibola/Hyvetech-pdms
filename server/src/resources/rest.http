@@ -10,7 +10,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInBlcm1pc3Npb25zIjpbeyJhY3Rpb24iOiJyZWFkIiwic3ViamVjdCI6Imd1ZXN0IiwiUm9sZVBlcm1pc3Npb24iOnsiaWQiOjEsInJvbGVJZCI6MywicGVybWlzc2lvbklkIjozMH19XSwiaWF0IjoxNjYzMzIzODU4LCJleHAiOjE2NjM0MTAyNTh9.OGPtEs-AzEPlP7Gh5TtpnnY2WGFzME45UFCmLy-p_zg
 
 {
-  "name": "Drive-in Payment Plan",
+  "name": "Drive-in Payment Plans",
   "discount": "",
   "value": 3000,
   "plan": "DRIVER_INSPECTION_PLAN",

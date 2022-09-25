@@ -55,3 +55,9 @@ export const ONE_TIME_SUB = "One Time";
 export const HOUSE_HOLD_SUB = "House Hold";
 export const FAF_SUB = "Family & Friends";
 export const PICK_ME_UP_SUB = "Pick Me Up";
+
+export const MOBILE_CATEGORY = "Mobile";
+export const DRIVE_IN_CATEGORY = "Drive-in";
+export const HYBRID_CATEGORY = "Hybrid";
+export const GARAGE_CATEGORY = "Garage";
+export const RIDE_SHARE_CATEGORY = "Ride-Share";

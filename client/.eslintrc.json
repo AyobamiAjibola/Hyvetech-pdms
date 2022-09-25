@@ -47,6 +47,9 @@
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-    "jsx-a11y/media-has-caption": "off"
+    "jsx-a11y/media-has-caption": "off",
+    "react/display-name": "off",
+    "no-prototype-builtins": "off",
+    "react/prop-types": "off"
   }
 }

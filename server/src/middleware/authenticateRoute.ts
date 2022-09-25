@@ -21,6 +21,8 @@ export default async function authenticateRoute(
 ) {
   const headers = req.headers;
   const cookie = headers.cookie;
+  const authorization = headers.authorization;
+  let jwt;
 
   if (!cookie) {
     logger.error("cookie missing in header");
@@ -44,7 +46,22 @@ export default async function authenticateRoute(
     );
   }
 
-  const jwt = cookie.split("=")[1];
+  jwt = cookie.split("=")[1];
+
+  if (authorization) {
+    if (!authorization.startsWith("Bearer")) {
+      logger.error("malformed token: no Bearer in header");
+
+      return next(
+        CustomAPIError.response(
+          HttpStatus.UNAUTHORIZED.value,
+          HttpStatus.UNAUTHORIZED.code
+        )
+      );
+    }
+
+    jwt = authorization.split(" ")[1].trim();
+  }
 
   const key = settings.jwt.key;
 

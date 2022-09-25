@@ -1,8 +1,10 @@
 import {
   AutoIncrement,
-  BelongsToMany,
+  BelongsTo,
   Column,
   DataType,
+  ForeignKey,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -11,10 +13,13 @@ import {
   CreationOptional,
   InferAttributes,
   InferCreationAttributes,
-  NonAttribute,
 } from "sequelize/types";
-import Appointment from "./Appointment";
-import AppointmentJob from "./AppointmentJob";
+import Vehicle from "./Vehicle";
+import { NonAttribute } from "sequelize";
+import Technician from "./Technician";
+import Partner from "./Partner";
+import RideShareDriverSubscription from "./RideShareDriverSubscription";
+import CustomerSubscription from "./CustomerSubscription";
 
 @Table({ tableName: "jobs", timestamps: true })
 export default class Job extends Model<
@@ -35,8 +40,32 @@ export default class Job extends Model<
   @Column(DataType.STRING)
   declare duration: string;
 
-  @BelongsToMany(() => Appointment, () => AppointmentJob)
-  declare appointments: NonAttribute<
-    Array<Appointment & { BookingJob: AppointmentJob }>
-  >;
+  @Column(DataType.STRING)
+  declare vehicleOwner: string;
+
+  @Column(DataType.DATE)
+  declare jobDate: Date;
+
+  @HasOne(() => Vehicle)
+  declare vehicle: NonAttribute<Vehicle>;
+
+  @HasOne(() => RideShareDriverSubscription)
+  declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
+
+  @HasOne(() => CustomerSubscription)
+  declare customerSubscription: NonAttribute<CustomerSubscription>;
+
+  @BelongsTo(() => Technician)
+  declare technician: NonAttribute<Technician>;
+
+  @ForeignKey(() => Technician)
+  @Column(DataType.INTEGER)
+  declare technicianId: NonAttribute<number>;
+
+  @BelongsTo(() => Partner)
+  declare partner: NonAttribute<Partner>;
+
+  @ForeignKey(() => Partner)
+  @Column(DataType.INTEGER)
+  declare partnerId: NonAttribute<number>;
 }

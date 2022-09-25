@@ -26,6 +26,7 @@ export default async function authorizeRoute(req: Request) {
     case "/dashboard":
     case "/boostrap":
     case "/states":
+    case path.match("/ride-share/(\\d+)/driver")?.input:
     case "/appointments":
     case path.match("/appointments/(\\d+)")?.input:
     case path.match("/appointments/(\\d+)/reschedule")?.input:

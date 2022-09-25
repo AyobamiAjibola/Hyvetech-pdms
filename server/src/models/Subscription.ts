@@ -22,8 +22,8 @@ import Joi from "joi";
 
 export const $subscriptionSchema = {
   name: Joi.string().required().label("Name"),
-  planCategory: Joi.string().required().label("Plan Category"),
-  paymentPlan: Joi.string().required().label("Payment Plan"),
+  planCategory: Joi.string().required().label("Plans Category"),
+  paymentPlan: Joi.string().required().label("Payment Plans"),
   price: Joi.string().required().label("Subscription Price"),
 };
 

@@ -23,10 +23,10 @@ import Partner from "./Partner";
 import { v4 } from "uuid";
 
 export const $planSchema = {
-  label: Joi.string().required().label("Plan Name"),
+  label: Joi.string().required().label("Plans Name"),
   minVehicles: Joi.number().required().label("Minimum Vehicle"),
   maxVehicles: Joi.number().required().label("Maximum Vehicle"),
-  validity: Joi.string().required().label("Plan Validity"),
+  validity: Joi.string().required().label("Plans Validity"),
   mobile: Joi.number().required().label("No of Mobile Service"),
   driveIn: Joi.number().required().label("No of Drive-in Service"),
   inspections: Joi.number().required().label("Total Inspections"),

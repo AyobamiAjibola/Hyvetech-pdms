@@ -36,31 +36,31 @@ const initialValues: IPaymentPlanModel = {
 };
 
 const schema = Yup.object().shape({
-  name: Yup.string().required().label("Payment Plan Name"),
+  name: Yup.string().required().label("Payment Plans Name"),
   discount: Yup.string().nullable().label("Discount"),
-  plan: Yup.string().required().label("Plan Name"),
+  plan: Yup.string().required().label("Plans Name"),
   coverage: Yup.string().required().label("Coverage"),
   description: Yup.array()
     .of(Yup.object())
     .nullable()
-    .label("Payment Plan Description"),
+    .label("Payment Plans Description"),
   parameter: Yup.array()
     .of(Yup.object())
     .nullable()
-    .label("Payment Plan Coverage"),
+    .label("Payment Plans Coverage"),
   pricing: Yup.array()
     .of(Yup.object())
     .required()
-    .label("Payment Plan Pricing"),
+    .label("Payment Plans Pricing"),
 });
 
 const fields = {
   name: {
     name: "name",
-    label: "Payment Plan Name*",
+    label: "Payment Plans Name*",
     error: {
-      invalid: "Invalid Payment Plan.",
-      required: "Payment Plan name is required",
+      invalid: "Invalid Payment Plans.",
+      required: "Payment Plans name is required",
     },
   },
   discount: {
@@ -73,10 +73,10 @@ const fields = {
   },
   plan: {
     name: "plan",
-    label: "Select Plan*",
+    label: "Select Plans*",
     error: {
       invalid: `Plan is invalid`,
-      required: "Plan is required",
+      required: "Plans is required",
     },
   },
   coverage: {

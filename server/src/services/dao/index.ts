@@ -55,6 +55,8 @@ import RideShareDriverRepository from "../../repositories/RideShareDriverReposit
 import RideShareDriverDAOService from "./RideShareDriverDAOService";
 import RideShareDriverSubscriptionRepository from "../../repositories/RideShareDriverSubscriptionRepository";
 import RideShareDriverSubscriptionDAOService from "./RideShareDriverSubscriptionDAOService";
+import TechnicianRepository from "../../repositories/TechnicianRepository";
+import TechnicianDAOService from "./TechnicianDAOService";
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -86,6 +88,7 @@ const paymentPlanRepository = new PaymentPlanRepository();
 const rideShareDriverRepository = new RideShareDriverRepository();
 const rideShareDriverSubscriptionRepository =
   new RideShareDriverSubscriptionRepository();
+const technicianRepository = new TechnicianRepository();
 
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
@@ -135,6 +138,7 @@ const rideShareDriverSubscriptionDAOService =
   new RideShareDriverSubscriptionDAOService(
     rideShareDriverSubscriptionRepository
   );
+const technicianDAOService = new TechnicianDAOService(technicianRepository);
 
 export default {
   customerDAOService,
@@ -164,4 +168,5 @@ export default {
   paymentPlanDAOService,
   rideShareDriverDAOService,
   rideShareDriverSubscriptionDAOService,
+  technicianDAOService,
 };

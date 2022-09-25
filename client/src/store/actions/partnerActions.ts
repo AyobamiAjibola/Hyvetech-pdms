@@ -6,6 +6,7 @@ import { ICreatePartnerModel } from "../../components/forms/models/partnerModel"
 
 const CREATE_PARTNER = "partner:CREATE_PARTNER";
 const GET_PARTNERS = "partner:GET_PARTNERS";
+const GET_DRIVERS_FILTER_DATA = "partner:GET_DRIVERS_FILTER_DATA";
 const GET_PARTNER = "partner:GET_PARTNER";
 const CREATE_PLAN = "partner:CREATE_PLAN";
 const CREATE_PAYMENT_PLAN = "partner:CREATE_PAYMENT_PLAN";
@@ -112,6 +113,20 @@ export const getPaymentPlansAction = createAsyncThunk<
   asyncThunkErrorWrapper(async (partnerId: number) => {
     const response = await axiosClient.get(
       `${API_ROOT}/partners/${partnerId}/payment-plans`
+    );
+    return response.data;
+  })
+);
+
+export const getDriversFilterDataAction = createAsyncThunk<
+  any,
+  number,
+  { rejectValue: { message: string } }
+>(
+  GET_DRIVERS_FILTER_DATA,
+  asyncThunkErrorWrapper(async (partnerId: number) => {
+    const response = await axiosClient.get(
+      `${API_ROOT}/partners/${partnerId}/drivers-filter-data`
     );
     return response.data;
   })

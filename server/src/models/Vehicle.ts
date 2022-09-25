@@ -25,6 +25,7 @@ import Tag from "./Tag";
 import CustomerSubscription from "./CustomerSubscription";
 import RideShareDriver from "./RideShareDriver";
 import RideShareDriverSubscription from "./RideShareDriverSubscription";
+import Job from "./Job";
 
 export const $vehicleSchema = {
   model: Joi.string().required().label("Car Model"),
@@ -72,6 +73,24 @@ export default class Vehicle extends Model<
 
   @Column(DataType.STRING)
   declare imageUrl: string;
+
+  @Column(DataType.STRING)
+  declare roadWorthinessFileUrl: string;
+
+  @Column(DataType.STRING)
+  declare proofOfOwnershipFileUrl: string;
+
+  @Column(DataType.STRING)
+  declare registrationNumberFileUrl: string;
+
+  @Column(DataType.STRING)
+  declare motorReceiptFileUrl: string;
+
+  @Column(DataType.STRING)
+  declare vehicleInspectionFileUrl: string;
+
+  @Column(DataType.STRING)
+  declare thirdPartyInsuranceFileUrl: string;
 
   @Column(DataType.STRING)
   declare nickname: string;
@@ -122,6 +141,13 @@ export default class Vehicle extends Model<
   @ForeignKey(() => RideShareDriverSubscription)
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: number;
+
+  @BelongsTo(() => Job)
+  declare job: NonAttribute<Job>;
+
+  @ForeignKey(() => Job)
+  @Column(DataType.INTEGER)
+  declare jobId: number;
 
   @BelongsToMany(() => Tag, () => VehicleTag)
   declare tags: NonAttribute<Array<Tag & { VehicleTag: VehicleTag }>>;

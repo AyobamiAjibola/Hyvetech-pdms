@@ -26,7 +26,7 @@ describe("PartnerController", function () {
     httpServer.close();
   });
 
-  describe("Add Payment Payment Plan", function () {
+  describe("Add Payment Payment Plans", function () {
     it("should create payment plan and return 200", async function () {
       const response = await request.post(
         `${apiRoot}/partners/1/payment-plans`

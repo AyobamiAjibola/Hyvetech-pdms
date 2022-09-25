@@ -18,6 +18,7 @@ import Plan from "./Plan";
 import PartnerUser from "./PartnerUser";
 import PartnerRideShareDriver from "./PartnerRideShareDriver";
 import RideShareDriver from "./RideShareDriver";
+import Job from "./Job";
 
 @Table({
   timestamps: true,
@@ -68,6 +69,12 @@ export default class Partner extends Model<
   @HasMany(() => Contact)
   declare contact: NonAttribute<Contact>;
 
+  @HasMany(() => Plan)
+  declare plans: NonAttribute<Array<Plan>>;
+
+  @HasMany(() => Job)
+  declare jobs: NonAttribute<Array<Job>>;
+
   @BelongsToMany(() => User, () => PartnerUser)
   declare users: NonAttribute<Array<User & { PartnerUser: PartnerUser }>>;
 
@@ -75,9 +82,6 @@ export default class Partner extends Model<
   declare rideShareDrivers: NonAttribute<
     Array<RideShareDriver & { PartnerRideShareDriver: PartnerRideShareDriver }>
   >;
-
-  @HasMany(() => Plan)
-  declare plans: NonAttribute<Array<Plan>>;
 
   @BelongsToMany(() => Category, () => PartnerCategory)
   declare categories: NonAttribute<

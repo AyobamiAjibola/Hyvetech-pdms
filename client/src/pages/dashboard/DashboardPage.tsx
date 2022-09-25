@@ -107,7 +107,7 @@ function DashboardPage() {
           </Paper>
           <Paper>
             <AppPieChart
-              title={`Vehicles, ${moment().format("MMM YYYY")}.`}
+              title={`DriverVehicles, ${moment().format("MMM YYYY")}.`}
               series={dashboardReducer.analytics?.monthlyData.vehicles}
             />
           </Paper>
@@ -126,7 +126,7 @@ function DashboardPage() {
           <AppStackedColumnChart
             title=""
             categories={MONTHS}
-            yAxisText="Monthly Appointments, Customers, Vehicles and Transactions"
+            yAxisText="Monthly Appointments, Customers, DriverVehicles and Transactions"
             series={barChartSeries}
           />
         </Stack>

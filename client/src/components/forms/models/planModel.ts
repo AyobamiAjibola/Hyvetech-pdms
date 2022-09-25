@@ -16,10 +16,10 @@ export interface IPlanModel {
 const schema = Yup.object().shape({
   programme: Yup.string().required().label("Programme"),
   serviceMode: Yup.string().required().label("Service Mode"),
-  label: Yup.string().required().label("Plan Name"),
+  label: Yup.string().required().label("Plans Name"),
   minVehicles: Yup.string().required().label("Minimum Vehicle"),
   maxVehicles: Yup.string().required().label("Maximum  Vehicle"),
-  validity: Yup.string().required().label("Plan Validity"),
+  validity: Yup.string().required().label("Plans Validity"),
   mobile: Yup.string().required().label("No of Mobile Service"),
   driveIn: Yup.string().required().label("No of Drive-in Service"),
 });
@@ -54,7 +54,7 @@ const fields = {
   },
   label: {
     name: "label",
-    label: "Plan Name*",
+    label: "Plans Name*",
     error: {
       invalid: "Invalid name.",
       required: "Partner name is required",

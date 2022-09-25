@@ -48,8 +48,8 @@ export const TWENTY_FOUR_HOUR_EXPIRY = 24 * 60 * 60 * 1000;
 export const VIN_PATTERN = /^(?=.*[0-9])(?=.*[A-z])[0-9A-z-]{17}$/;
 
 export const ANNUAL_PAYMENT_PLAN = "One Time Payment";
-export const BI_PAYMENT_PLAN = "Biannual Payment Plan";
-export const QUARTER_PAYMENT_PLAN = "Quarterly Payment Plan";
+export const BI_PAYMENT_PLAN = "Biannual Payment Plans";
+export const QUARTER_PAYMENT_PLAN = "Quarterly Payment Plans";
 
 export const ONE_TIME_MOBILE_PLAN = Generic.generateSlug("one time mobile");
 export const ONE_TIME_DRIVE_IN_PLAN = Generic.generateSlug("one time drive-in");

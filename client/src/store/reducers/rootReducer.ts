@@ -6,6 +6,7 @@ import appointmentReducer from "./appointmentReducer";
 import timeSlotReducer from "./timeSlotReducer";
 import miscellaneousReducer from "./miscellaneousReducer";
 import partnerReducer from "./partnerReducer";
+import rideShareReducer from "./rideShareReducer";
 
 const rootReducer = combineReducers({
   appointmentReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   timeSlotReducer,
   miscellaneousReducer,
   partnerReducer,
+  rideShareReducer,
 });
 
 export default rootReducer;

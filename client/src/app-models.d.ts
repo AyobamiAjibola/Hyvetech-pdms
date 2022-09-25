@@ -219,7 +219,7 @@ declare module "@app-models" {
   }
 
   interface IPartner {
-    id: CreationOptional<number>;
+    id: number;
     name: string;
     slug: string;
     phone: string;
@@ -268,7 +268,9 @@ declare module "@app-models" {
     value: number;
     hasPromo: boolean;
     descriptions: string[];
-    coverage: string[];
+    coverage: string;
+    parameters: string[];
+    pricing: string[];
     plan: IPlan;
     planId: number;
     categories: ICategory[];
@@ -368,5 +370,89 @@ declare module "@app-models" {
     time: string;
     label: string;
     available: boolean;
+  }
+
+  interface IRideShareDriverSubscription {
+    id: number;
+    status: string;
+    planType: string;
+    planCategory: string;
+    modeOfService: string;
+    paymentPlan: string;
+    maxVehicle: number;
+    vehicleCount: number;
+    minVehicle: number;
+    isHybrid: boolean;
+    mobileCount: number;
+    maxMobile: number;
+    driveInCount: number;
+    maxDriveIn: number;
+    inspections: number;
+    subscriber: string;
+    amount: string;
+    programme: string;
+    planCode: string;
+    subscriptionDate: Date;
+    nextPaymentDate: Date;
+    rideShareDrivers: IRideShareDriver[];
+    vehicles: IVehicle[];
+    createdAt: Date;
+    updatedAt: Date;
+  }
+
+  interface IRideShareDriver {
+    id: number;
+    code: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    companyName: string;
+    designation: string;
+    password: string;
+    rawPassword: string;
+    email: string;
+    phone: string;
+    gender: string;
+    profileImageUrl: string;
+    active: boolean;
+    enabled: boolean;
+    loginToken: string;
+    gatewayId: string;
+    loginDate: Date;
+    contacts: IContact[];
+    paymentDetails: IPaymentDetail[];
+    vehicles: IVehicle[];
+    transactions: ITransaction[];
+    appointments: IAppointment[];
+    subscriptions: IRideShareDriverSubscription[];
+    roles: IRole[];
+    createdAt: Date;
+    updatedAt: Date;
+  }
+
+  interface ITechnician {
+    id: number;
+    code: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    companyName: string;
+    designation: string;
+    password: string;
+    rawPassword: string;
+    email: string;
+    phone: string;
+    gender: string;
+    profileImageUrl: string;
+    active: boolean;
+    enabled: boolean;
+    loginToken: string;
+    gatewayId: string;
+    loginDate: Date;
+    contacts: IContact[];
+    jobs: IJob[];
+    roles: IRole[];
+    createdAt: Date;
+    updatedAt: Date;
   }
 }

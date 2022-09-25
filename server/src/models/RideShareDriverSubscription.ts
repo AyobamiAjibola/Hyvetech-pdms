@@ -1,8 +1,10 @@
 import {
   AutoIncrement,
+  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
+  ForeignKey,
   HasMany,
   Model,
   PrimaryKey,
@@ -16,6 +18,7 @@ import {
 import Vehicle from "./Vehicle";
 import RideShareDriver from "./RideShareDriver";
 import RideShareDriverPlanSubscription from "./RideShareDriverPlanSubscription";
+import Job from "./Job";
 
 @Table({
   timestamps: true,
@@ -105,4 +108,11 @@ export default class RideShareDriverSubscription extends Model<
 
   @HasMany(() => Vehicle)
   declare vehicles: NonAttribute<Vehicle[]>;
+
+  @BelongsTo(() => Job)
+  declare job: NonAttribute<Job>;
+
+  @ForeignKey(() => Job)
+  @Column(DataType.INTEGER)
+  declare jobId: NonAttribute<number>;
 }

@@ -2,6 +2,8 @@ import {
   addPaymentPlanHandler,
   addPlanHandler,
   createPartnerHandler,
+  driversFilterDataHandler,
+  filterDriversHandler,
   getPartnerHandler,
   getPartnersHandler,
   getPaymentPlansHandler,
@@ -52,6 +54,18 @@ const partnerEndpoints: RouteEndpoints = [
     method: "get",
     path: "/partners/:partnerId/plans",
     handler: getPlansHandler,
+  },
+  {
+    name: "partners",
+    method: "post",
+    path: "/partners/:partnerId/filter-drivers",
+    handler: filterDriversHandler,
+  },
+  {
+    name: "partners",
+    method: "get",
+    path: "/partners/:partnerId/drivers-filter-data",
+    handler: driversFilterDataHandler,
   },
 ];
 
