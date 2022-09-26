@@ -42,7 +42,6 @@ export const LOG_LEVEL_COLORS = {
 };
 
 export const BOOKINGS = "cache:BOOKINGS";
-export const BANKS = "cache:BANKS";
 export const PAY_STACK_PLANS = "cache:PAY_STACK_PLANS";
 export const TWENTY_FOUR_HOUR_EXPIRY = 24 * 60 * 60 * 1000;
 export const VIN_PATTERN = /^(?=.*[0-9])(?=.*[A-z])[0-9A-z-]{17}$/;
@@ -79,10 +78,6 @@ export const FAF_DRIVE_IN_PLAN = Generic.generateSlug(
 );
 export const FAF_HYBRID_PLAN = Generic.generateSlug("family & friends hybrid");
 
-export const PICK_ME_UP_DRIVE_IN_PLAN = Generic.generateSlug(
-  "pick me up drive-in"
-);
-
 export const MOBILE_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug(
   "mobile house hold payment plan"
 );
@@ -101,18 +96,13 @@ export const DRIVE_IN_FAF_PAYMENT_PLAN = Generic.generateSlug(
 export const HYBRID_FAF_PAYMENT_PLAN = Generic.generateSlug(
   "hybrid family & friends payment plan"
 );
-export const DRIVE_IN_PICK_ME_UP_PAYMENT_PLAN = Generic.generateSlug(
-  "drive-in pick me up payment plan"
-);
 
 export const INSPECTIONS_SERVICE = "Inspection";
 export const MAINTENANCE_SERVICE = "Maintenance";
-export const REPAIRS_SERVICE = "Repairs";
 
 export const ONE_TIME_SUBSCRIPTION = Generic.generateSlug("One Time");
 export const HOUSE_HOLD_SUBSCRIPTION = Generic.generateSlug("House Hold");
 export const FAF_SUBSCRIPTION = Generic.generateSlug("Family & Friends");
-export const PICK_ME_UP = Generic.generateSlug("Pick Me Up");
 
 export const SERVICES = [
   {
@@ -132,7 +122,6 @@ export const SUBSCRIPTIONS = [
   { name: "One Time", slug: ONE_TIME_SUBSCRIPTION },
   { name: "House Hold", slug: HOUSE_HOLD_SUBSCRIPTION },
   { name: "Family & Friends", slug: FAF_SUBSCRIPTION },
-  { name: "Pick Me Up", slug: PICK_ME_UP },
 ];
 
 export const CATEGORIES = [
@@ -411,11 +400,6 @@ export const PAYMENT_TERMS = [
   },
 ];
 
-export const GWARIMPA_DISTRICT_ONE_TIME_DRIVE_IN_DISCOUNT =
-  "GWARIMPA_DISTRICT_ONE_TIME_DRIVE_IN";
-export const GWARIMPA_DISTRICT_ONE_TIME_MOBILE_DISCOUNT =
-  "GWARIMPA_DISTRICT_ONE_TIME_MOBILE";
-
 export const MESSAGES = {
   http: {
     200: "Ok",
@@ -437,11 +421,6 @@ export const MAIN_OFFICE = "No. 10, 45 Road, off 1st Avenue Gwarimpa";
 
 export const RESCHEDULE_CONSTRAINT = 3600000;
 export const MOBILE_INSPECTION_TIME = 3; //3hrs;
-
-export const PAYMENT_TYPE = {
-  oneTime: "One Time",
-  plan: "Plan",
-};
 
 export const BOOK_APPOINTMENT = "event:BOOK_APPOINTMENT";
 export const RESCHEDULE_APPOINTMENT = "event:RESCHEDULE_APPOINTMENT";

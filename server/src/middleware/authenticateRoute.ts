@@ -22,34 +22,27 @@ export default async function authenticateRoute(
   const headers = req.headers;
   const cookie = headers.cookie;
   const authorization = headers.authorization;
-  let jwt;
+  let jwt = "";
 
-  if (!cookie) {
-    logger.error("cookie missing in header");
+  if (cookie) {
+    const [name, token] = cookie.split("=");
 
-    return next(
-      CustomAPIError.response(
-        HttpStatus.UNAUTHORIZED.value,
-        HttpStatus.UNAUTHORIZED.code
-      )
-    );
-  }
+    if (!name.startsWith("_admin_auth")) {
+      logger.error("malformed authorization: '_admin_auth' missing");
 
-  if (cookie && !cookie.split("=")[0].startsWith("_admin_auth")) {
-    logger.error("malformed authorization: '_admin_auth' missing");
+      return next(
+        CustomAPIError.response(
+          HttpStatus.UNAUTHORIZED.value,
+          HttpStatus.UNAUTHORIZED.code
+        )
+      );
+    }
 
-    return next(
-      CustomAPIError.response(
-        HttpStatus.UNAUTHORIZED.value,
-        HttpStatus.UNAUTHORIZED.code
-      )
-    );
-  }
+    jwt = token.trim();
+  } else if (authorization) {
+    const [name, token] = authorization.split(" ");
 
-  jwt = cookie.split("=")[1];
-
-  if (authorization) {
-    if (!authorization.startsWith("Bearer")) {
+    if (!name.startsWith("Bearer")) {
       logger.error("malformed token: no Bearer in header");
 
       return next(
@@ -60,7 +53,16 @@ export default async function authenticateRoute(
       );
     }
 
-    jwt = authorization.split(" ")[1].trim();
+    jwt = token.trim();
+  } else {
+    logger.error("Cookie or Authorization not in header");
+
+    return next(
+      CustomAPIError.response(
+        HttpStatus.UNAUTHORIZED.value,
+        HttpStatus.UNAUTHORIZED.code
+      )
+    );
   }
 
   const key = settings.jwt.key;

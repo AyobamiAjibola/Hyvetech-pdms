@@ -1,5 +1,6 @@
 import {
   Attributes,
+  BulkCreateOptions,
   CreateOptions,
   CreationAttributes,
   DestroyOptions,
@@ -18,6 +19,13 @@ export default class PaymentPlanDAOService implements ICrudDAO<PaymentPlan> {
 
   constructor(paymentPlanRepository: PaymentPlanRepository) {
     this.paymentPlanRepository = paymentPlanRepository;
+  }
+
+  bulkCreate(
+    records: ReadonlyArray<CreationAttributes<PaymentPlan>>,
+    options?: BulkCreateOptions<Attributes<PaymentPlan>>
+  ): Promise<PaymentPlan[]> {
+    return this.paymentPlanRepository.bulkCreate(records, options);
   }
 
   create(

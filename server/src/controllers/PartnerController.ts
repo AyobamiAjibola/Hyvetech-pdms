@@ -6,7 +6,7 @@ import { Op } from "sequelize";
 import CustomAPIError from "../exceptions/CustomAPIError";
 import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
-import { CATEGORIES, SUBSCRIPTIONS } from "../config/constants";
+import { CATEGORIES } from "../config/constants";
 import Generic from "../utils/Generic";
 import { appCommonTypes } from "../@types/app-common";
 import settings from "../config/settings";
@@ -356,27 +356,32 @@ export default class PartnerController {
         );
 
       //todo: use type of programme to find subscription
+      const subValues: any = {
+        name: value.label,
+        slug: Generic.generateSlug(value.label),
+      };
 
-      const subscription = await dataSources.subscriptionDAOService.findByAny({
-        where: { slug: SUBSCRIPTIONS[3].slug },
-      });
+      const subscription = await dataSources.subscriptionDAOService.create(
+        subValues
+      );
 
       if (!subscription)
         return Promise.reject(
           CustomAPIError.response(
-            `Subscription programme does not exist.`,
-            HttpStatus.NOT_FOUND.code
+            `Error adding subscription.`,
+            HttpStatus.BAD_REQUEST.code
           )
         );
 
       Object.assign(value, {
-        label: Generic.generateSlug(value.label),
+        label: Generic.generateSlug(`${value.label} ${value.serviceMode}`),
       });
 
       const plan = await dataSources.planDAOService.create(value);
 
-      await plan.$set("partner", partner);
-      await plan.$set("subscriptions", subscription);
+      await subscription.$set("plans", [plan]);
+      await partner.$set("plans", [plan]);
+
       await plan.$add("categories", [category]);
 
       const plans = await dataSources.planDAOService.findAll({
@@ -458,11 +463,15 @@ export default class PartnerController {
           )
         );
 
-      const paymentPlanData: any = {
+      const pricing = value.pricing;
+
+      const paymentPlanData: any[] = pricing.map((price) => ({
         discount: +value.discount,
         hasPromo: value.discount.length !== 0,
-        name: value.name,
-        label: Generic.generateSlug(value.name),
+        name: capitalize.words(`${price.interval} ${value.name}`),
+        label: Generic.generateSlug(
+          `${price.interval} ${plan.serviceMode} ${value.name}`
+        ),
         coverage: value.coverage,
         descriptions: value.descriptions.map((value) =>
           JSON.stringify({ ...value })
@@ -471,17 +480,15 @@ export default class PartnerController {
           JSON.stringify({ ...value })
         ),
         pricing: value.pricing.map((value) => JSON.stringify({ ...value })),
-      };
+      }));
 
       //link payment plan categories
-      const paymentPlan = await dataSources.paymentPlanDAOService.create(
+      const paymentPlan = await dataSources.paymentPlanDAOService.bulkCreate(
         paymentPlanData
       );
 
       //link plan payment plans
-      await plan.$add("paymentPlans", [paymentPlan]);
-
-      const pricing = value.pricing;
+      await plan.$add("paymentPlans", paymentPlan);
 
       const paymentGateway =
         await dataSources.paymentGatewayDAOService.findByAny({
@@ -498,7 +505,7 @@ export default class PartnerController {
 
       pricing.map(async (price) => {
         const payload = {
-          name: capitalize.words(`${value.name} ${price.interval} plan`),
+          name: capitalize.words(`${price.interval} ${value.name}`),
           interval: price.interval,
           amount: `${+price.amount * 100}`,
         };
