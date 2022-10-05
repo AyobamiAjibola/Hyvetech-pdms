@@ -97,6 +97,7 @@ const checkListSlice = createSlice({
       .addCase(createCheckListAction.fulfilled, (state, action) => {
         state.createCheckListStatus = "completed";
         state.createCheckListSuccess = action.payload.message;
+        state.checkLists = action.payload.results as ICheckList[];
       })
       .addCase(createCheckListAction.rejected, (state, action) => {
         state.createCheckListStatus = "failed";
@@ -113,6 +114,7 @@ const checkListSlice = createSlice({
       .addCase(updateCheckListAction.fulfilled, (state, action) => {
         state.updateCheckListStatus = "completed";
         state.updateCheckListSuccess = action.payload.message;
+        state.checkLists = action.payload.results as ICheckList[];
       })
       .addCase(updateCheckListAction.rejected, (state, action) => {
         state.updateCheckListStatus = "failed";
@@ -129,6 +131,7 @@ const checkListSlice = createSlice({
       .addCase(deleteCheckListAction.fulfilled, (state, action) => {
         state.deleteCheckListStatus = "completed";
         state.deleteCheckListSuccess = action.payload.message;
+        state.checkLists = action.payload.results as ICheckList[];
       })
       .addCase(deleteCheckListAction.rejected, (state, action) => {
         state.deleteCheckListStatus = "failed";
@@ -145,6 +148,7 @@ const checkListSlice = createSlice({
       .addCase(getCheckListsAction.fulfilled, (state, action) => {
         state.getCheckListsStatus = "completed";
         state.getCheckListsSuccess = action.payload.message;
+        state.checkLists = action.payload.results as ICheckList[];
       })
       .addCase(getCheckListsAction.rejected, (state, action) => {
         state.getCheckListsStatus = "failed";
@@ -161,6 +165,7 @@ const checkListSlice = createSlice({
       .addCase(getCheckListAction.fulfilled, (state, action) => {
         state.getCheckListStatus = "completed";
         state.getCheckListSuccess = action.payload.message;
+        state.checkList = action.payload.result as ICheckList;
       })
       .addCase(getCheckListAction.rejected, (state, action) => {
         state.getCheckListStatus = "failed";

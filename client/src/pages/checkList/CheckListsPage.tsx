@@ -23,7 +23,10 @@ import {
   ImageMarked,
   ImageSrc,
 } from "../../components/buttons/imageButton";
-import { createCheckListAction } from "../../store/actions/checkListActions";
+import {
+  createCheckListAction,
+  getCheckListsAction,
+} from "../../store/actions/checkListActions";
 import { CustomHookMessage } from "@app-types";
 import AppAlert from "../../components/alerts/AppAlert";
 
@@ -53,6 +56,12 @@ function CheckListsPage() {
       dispatch(getPartnersAction());
     }
   }, [dispatch, partnerReducer.getPartnersStatus]);
+
+  useEffect(() => {
+    if (checkListReducer.getCheckListsStatus === "idle") {
+      dispatch(getCheckListsAction());
+    }
+  }, [dispatch, checkListReducer.getCheckListsStatus]);
 
   useEffect(() => {
     if (partnerReducer.getPartnersStatus === "completed") {
@@ -109,6 +118,8 @@ function CheckListsPage() {
   ]);
 
   const handleCreateCheckList = (values: ICheckListValues) => {
+    console.log(values);
+
     dispatch(createCheckListAction(values));
   };
 

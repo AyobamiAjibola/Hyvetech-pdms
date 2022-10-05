@@ -82,10 +82,10 @@ function GarageProfileAndSetting() {
         totalTechnicians: partner.totalTechnicians
           ? `${partner.totalTechnicians}`
           : "",
-        workingHours: workingHours.length
+        workingHours: workingHours
           ? workingHours
           : [{ days: [], from: new Date(), to: new Date() }],
-        brands: brands.length ? brands : [{ name: "", description: "" }],
+        brands: brands ? brands : [{ name: "", description: "" }],
       }));
     }
   }, [partner]);

@@ -13,8 +13,8 @@ export default class CheckListController {
   public static async create(req: Request) {
     try {
       const { error, value } = Joi.object({
-        partnerId: Joi.string().required().label("Partner Id"),
-        name: Joi.string().required().label("Check List Name"),
+        partner: Joi.string().required().label("Partner Id"),
+        checkList: Joi.string().required().label("Check List Name"),
       }).validate(req.body);
 
       if (error)
@@ -25,7 +25,7 @@ export default class CheckListController {
           )
         );
 
-      const partnerId = value.partnerId as string;
+      const partnerId = value.partner as string;
 
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
@@ -37,7 +37,11 @@ export default class CheckListController {
           )
         );
 
-      const checkList = await dataSources.checkListDAOService.create(value);
+      const data: any = {
+        name: value.checkList,
+      };
+
+      const checkList = await dataSources.checkListDAOService.create(data);
 
       await partner.$set("checkLists", [checkList]);
 
@@ -49,7 +53,7 @@ export default class CheckListController {
 
       const response: HttpResponse<InferAttributes<CheckList>> = {
         code: HttpStatus.OK.code,
-        message: HttpStatus.OK.value,
+        message: `Created Check List Successfully`,
         results,
       };
 
