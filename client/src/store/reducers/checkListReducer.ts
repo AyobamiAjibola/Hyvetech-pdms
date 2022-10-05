@@ -3,8 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   createCheckListAction,
   deleteCheckListAction,
+  getCheckListAction,
+  getCheckListsAction,
   updateCheckListAction,
 } from "../actions/checkListActions";
+import { ICheckList } from "@app-models";
 
 interface ICheckListState {
   createCheckListStatus: IThunkAPIStatus;
@@ -18,6 +21,17 @@ interface ICheckListState {
   deleteCheckListStatus: IThunkAPIStatus;
   deleteCheckListSuccess: string;
   deleteCheckListError?: string;
+
+  getCheckListsStatus: IThunkAPIStatus;
+  getCheckListsSuccess: string;
+  getCheckListsError?: string;
+
+  getCheckListStatus: IThunkAPIStatus;
+  getCheckListSuccess: string;
+  getCheckListError?: string;
+
+  checkLists: ICheckList[];
+  checkList: ICheckList | null;
 }
 
 const initialState: ICheckListState = {
@@ -32,6 +46,17 @@ const initialState: ICheckListState = {
   deleteCheckListStatus: "idle",
   deleteCheckListSuccess: "",
   deleteCheckListError: "",
+
+  getCheckListsStatus: "idle",
+  getCheckListsSuccess: "",
+  getCheckListsError: "",
+
+  getCheckListStatus: "idle",
+  getCheckListSuccess: "",
+  getCheckListError: "",
+
+  checkLists: [],
+  checkList: null,
 };
 
 const checkListSlice = createSlice({
@@ -52,6 +77,16 @@ const checkListSlice = createSlice({
       state.deleteCheckListStatus = "idle";
       state.deleteCheckListSuccess = "";
       state.deleteCheckListError = "";
+    },
+    clearGetCheckListsStatus(state: ICheckListState) {
+      state.getCheckListsStatus = "idle";
+      state.getCheckListsSuccess = "";
+      state.getCheckListsError = "";
+    },
+    clearGetCheckListStatus(state: ICheckListState) {
+      state.getCheckListStatus = "idle";
+      state.getCheckListSuccess = "";
+      state.getCheckListError = "";
     },
   },
   extraReducers: (builder) => {
@@ -102,7 +137,44 @@ const checkListSlice = createSlice({
           state.deleteCheckListError = action.payload.message;
         } else state.deleteCheckListError = action.error.message;
       });
+
+    builder
+      .addCase(getCheckListsAction.pending, (state) => {
+        state.getCheckListsStatus = "loading";
+      })
+      .addCase(getCheckListsAction.fulfilled, (state, action) => {
+        state.getCheckListsStatus = "completed";
+        state.getCheckListsSuccess = action.payload.message;
+      })
+      .addCase(getCheckListsAction.rejected, (state, action) => {
+        state.getCheckListsStatus = "failed";
+
+        if (action.payload) {
+          state.getCheckListsError = action.payload.message;
+        } else state.getCheckListsError = action.error.message;
+      });
+
+    builder
+      .addCase(getCheckListAction.pending, (state) => {
+        state.getCheckListStatus = "loading";
+      })
+      .addCase(getCheckListAction.fulfilled, (state, action) => {
+        state.getCheckListStatus = "completed";
+        state.getCheckListSuccess = action.payload.message;
+      })
+      .addCase(getCheckListAction.rejected, (state, action) => {
+        state.getCheckListStatus = "failed";
+
+        if (action.payload) {
+          state.getCheckListError = action.payload.message;
+        } else state.getCheckListError = action.error.message;
+      });
   },
 });
 
+export const {
+  clearCreateCheckListStatus,
+  clearDeleteCheckListStatus,
+  clearUpdateCheckListStatus,
+} = checkListSlice.actions;
 export default checkListSlice.reducer;

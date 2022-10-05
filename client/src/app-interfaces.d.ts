@@ -1,6 +1,6 @@
 declare module "@app-interfaces" {
   import React from "react";
-  import { GenericObjectType, ICheckListAnswer } from "@app-types";
+  import { GenericObjectType, ICheckListSection } from "@app-types";
   import {
     ICustomer,
     IJob,
@@ -125,6 +125,19 @@ declare module "@app-interfaces" {
     setShowViewJob: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
+  interface CheckListPageContextProps {
+    showCreate: boolean;
+    setShowCreate: React.Dispatch<React.SetStateAction<boolean>>;
+    showEdit: boolean;
+    setShowEdit: React.Dispatch<React.SetStateAction<boolean>>;
+    showDelete: boolean;
+    setShowDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    showView: boolean;
+    setShowView: React.Dispatch<React.SetStateAction<boolean>>;
+    partners: IPartner[];
+    setPartners: React.Dispatch<React.SetStateAction<IPartner[]>>;
+  }
+
   interface PartnerPageContextProps {
     programme?: string;
     setProgramme: React.Dispatch<React.SetStateAction<string>>;
@@ -163,15 +176,14 @@ declare module "@app-interfaces" {
     code: number;
   }
 
-  interface ICheckListQuestion {
-    answer: ICheckListAnswer[];
+  interface ICheckListModel {
+    sections: ICheckListSection[];
   }
 
-  interface ICheckListSection {
-    question: ICheckListQuestion[];
-  }
-
-  interface ICheckListValues {
-    section: ICheckListSection[];
+  interface IImageButtonData {
+    id: number;
+    url: string;
+    title: string;
+    width: string;
   }
 }

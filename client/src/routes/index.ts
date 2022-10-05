@@ -7,6 +7,7 @@ import {
   Handshake,
   HomeRepairService,
   Payments,
+  PlaylistAddCheck,
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
@@ -42,6 +43,12 @@ export const sideNavs: ISideNav[] = [
     Icon: Garage,
   },
   { tag: "super", name: "Partners", path: "/partners", Icon: Handshake },
+  {
+    tag: "super",
+    name: "Check Lists",
+    path: "/checkLists",
+    Icon: PlaylistAddCheck,
+  },
   {
     tag: "super",
     name: "Appointments",

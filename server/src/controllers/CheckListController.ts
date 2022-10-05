@@ -13,7 +13,7 @@ export default class CheckListController {
   public static async create(req: Request) {
     try {
       const { error, value } = Joi.object({
-        partnerId: Joi.number().required().label("Partner Id"),
+        partnerId: Joi.string().required().label("Partner Id"),
         name: Joi.string().required().label("Check List Name"),
       }).validate(req.body);
 
@@ -25,9 +25,9 @@ export default class CheckListController {
           )
         );
 
-      const partnerId = value.partnerId;
+      const partnerId = value.partnerId as string;
 
-      const partner = await dataSources.partnerDAOService.findById(partnerId);
+      const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
       if (!partner)
         return Promise.reject(
@@ -51,6 +51,59 @@ export default class CheckListController {
         code: HttpStatus.OK.code,
         message: HttpStatus.OK.value,
         results,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public static async checkLists() {
+    try {
+      const checkLists = await dataSources.checkListDAOService.findAll({
+        include: [{ all: true }],
+      });
+
+      const results = checkLists.map((checkList) => checkList.toJSON());
+
+      const response: HttpResponse<InferAttributes<CheckList>> = {
+        code: HttpStatus.OK.code,
+        message: HttpStatus.OK.value,
+        results,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public static async checkList(req: Request) {
+    const checkListId = req.params.checkListId as string;
+
+    try {
+      const checkList = await dataSources.checkListDAOService.findById(
+        +checkListId,
+        {
+          include: [{ all: true }],
+        }
+      );
+
+      if (!checkList)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Check List not found`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const result = checkList.toJSON();
+
+      const response: HttpResponse<InferAttributes<CheckList>> = {
+        code: HttpStatus.OK.code,
+        message: HttpStatus.OK.value,
+        result,
       };
 
       return Promise.resolve(response);

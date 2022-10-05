@@ -906,29 +906,21 @@ export default class PartnerController {
   }
 
   public static formatPartners(partners: Partner[]) {
-    return partners.map((partner) => {
-      const workingHours = partner.workingHours.map((workingHour) =>
-        JSON.parse(workingHour)
-      );
-      const brands = partner.brands.map((brand) => JSON.parse(brand));
-
-      Object.assign(partner, {
-        workingHours,
-        brands,
-      });
-
-      return partner;
-    });
+    return partners.map((partner) => this.formatPartner(partner));
   }
 
   public static formatPartner(partner: Partner) {
     const workingHours = partner.workingHours;
     const brands = partner.brands;
 
-    Object.assign(partner, {
-      workingHours: workingHours.map((workingHour) => JSON.parse(workingHour)),
-      brands: brands.map((brand) => JSON.parse(brand)),
-    });
+    if (workingHours || brands) {
+      Object.assign(partner, {
+        workingHours: workingHours.map((workingHour) =>
+          JSON.parse(workingHour)
+        ),
+        brands: brands.map((brand) => JSON.parse(brand)),
+      });
+    }
 
     return partner;
   }

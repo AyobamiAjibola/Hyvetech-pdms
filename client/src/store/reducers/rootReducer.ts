@@ -11,6 +11,7 @@ import vehicleReducer from "./vehicleReducer";
 import technicianReducer from "./technicianReducer";
 import jobReducer from "./jobReducer";
 import userReducer from "./userReducer";
+import checkListReducer from "./checkListReducer";
 
 const rootReducer = combineReducers({
   appointmentReducer,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   technicianReducer,
   jobReducer,
   userReducer,
+  checkListReducer,
 });
 
 export default rootReducer;

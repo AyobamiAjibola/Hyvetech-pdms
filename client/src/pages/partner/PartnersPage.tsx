@@ -11,7 +11,8 @@ import {
   ImageButton,
   ImageMarked,
   ImageSrc,
-} from "./styles";
+} from "../../components/buttons/imageButton";
+
 import partnerModel, {
   ICreatePartnerModel,
 } from "../../components/forms/models/partnerModel";
@@ -27,17 +28,11 @@ import CreatePartnerForm from "../../components/forms/partner/CreatePartnerForm"
 import partnerImg from "../../assets/images/partner2.jpg";
 import { useNavigate } from "react-router-dom";
 import { getImageUrl } from "../../utils/generic";
-
-interface IPartnerImageData {
-  id: number;
-  url: string;
-  title: string;
-  width: string;
-}
+import { IImageButtonData } from "@app-interfaces";
 
 export default function PartnersPage() {
   const [createPartner, setCreatePartner] = useState<boolean>(false);
-  const [images, setImages] = useState<IPartnerImageData[]>([]);
+  const [images, setImages] = useState<IImageButtonData[]>([]);
 
   const miscReducer = useAppSelector((state) => state.miscellaneousReducer);
   const partnerReducer = useAppSelector((state) => state.partnerReducer);
@@ -120,7 +115,6 @@ export default function PartnersPage() {
         sx={{ display: "flex", flexWrap: "wrap", minWidth: 300, width: "100%" }}
       >
         {images.map((image) => {
-          console.log(image);
           return (
             <ImageButton
               focusRipple

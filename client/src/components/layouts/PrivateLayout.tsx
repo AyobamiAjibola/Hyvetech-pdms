@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Route, Routes } from "react-router-dom";
+
 import AppointmentsPage from "../../pages/appointment/AppointmentsPage";
 import VehiclePages from "../../pages/vehicle/VehiclePages";
 import CustomersPage from "../../pages/customer/CustomersPage";
@@ -29,6 +30,8 @@ import { AppContextProps } from "@app-interfaces";
 import AppBar from "./AppDar";
 import DrawerHeader from "./DrawerHeader";
 import withErrorBoundary from "../../hoc/withErrorBoundary";
+import CheckListsPage from "../../pages/checkList/CheckListsPage";
+import CheckListPage from "../../pages/checkList/CheckListPage";
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(
@@ -86,6 +89,8 @@ function PrivateLayout() {
             <Route path="/drivers" element={<DriversPage />} />
             <Route path="/driver/:id" element={<DriverPage />} />
             <Route path="/garage" element={<PartnerPage />} />
+            <Route path="/checkLists" element={<CheckListsPage />} />
+            <Route path="/checkLists/:id" element={<CheckListPage />} />
           </Routes>
         </Box>
       </Box>
