@@ -12,7 +12,7 @@ const ability = new Ability();
 store.subscribe(() => {
   const { authenticationReducer } = store.getState();
 
-  let permissions: IPermission[] = [];
+  let permissions: IPermission[];
 
   const localPermissions = JSON.parse(
     localStorage.getItem(LOCAL_STORAGE.permissions) as string
@@ -31,7 +31,7 @@ store.subscribe(() => {
   }
 });
 
-const defineRulesFor = (permissions: IPermission[]) => {
+export const defineRulesFor = (permissions: IPermission[]) => {
   const { can, rules } = new AbilityBuilder(Ability);
 
   permissions.forEach((permission: IPermission) => {

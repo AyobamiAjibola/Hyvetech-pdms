@@ -153,7 +153,7 @@ export default class CommandLineRunner {
     const passwordEncoder = new PasswordEncoder();
 
     Object.assign(adminJson, {
-      password: await passwordEncoder.encode(adminJson.password),
+      password: await passwordEncoder.encode(<string>process.env.ADMIN_PASS),
     });
 
     const user = await this.userRepository.save(adminJson);
@@ -225,12 +225,9 @@ export default class CommandLineRunner {
   }
 
   async loadDefaultRolesAndPermissions() {
-    await this.roleRepository.deleteAll({
-      force: true,
-    });
-    await this.permissionRepository.deleteAll({
-      force: true,
-    });
+    const roles = await this.roleRepository.findAll();
+
+    if (roles.length) return;
 
     const totalPermissions = settings.permissions.length;
 
@@ -266,8 +263,8 @@ export default class CommandLineRunner {
           { name: settings.permissions[1] },
           { name: settings.permissions[2] },
           { name: settings.permissions[3] },
-          { name: settings.permissions[9] },
           { name: settings.permissions[10] },
+          { name: settings.permissions[11] },
         ],
       },
     });
@@ -275,12 +272,7 @@ export default class CommandLineRunner {
     //garage admin permissions
     const garageAdminPermissions = await this.permissionRepository.findAll({
       where: {
-        [Op.or]: [
-          { name: settings.permissions[21] },
-          { name: settings.permissions[22] },
-          { name: settings.permissions[23] },
-          { name: settings.permissions[24] },
-        ],
+        [Op.or]: [{ name: settings.permissions[25] }],
       },
     });
 
@@ -288,7 +280,10 @@ export default class CommandLineRunner {
     const garageTechnicianPermissions = await this.permissionRepository.findAll(
       {
         where: {
-          [Op.or]: [{ name: settings.permissions[22] }],
+          [Op.or]: [
+            { name: settings.permissions[22] },
+            { name: settings.permissions[23] },
+          ],
         },
       }
     );
@@ -296,19 +291,17 @@ export default class CommandLineRunner {
     //ride share permissions
     const rideShareAdminPermissions = await this.permissionRepository.findAll({
       where: {
-        [Op.or]: [
-          { name: settings.permissions[25] },
-          { name: settings.permissions[26] },
-          { name: settings.permissions[27] },
-          { name: settings.permissions[28] },
-        ],
+        [Op.or]: [{ name: settings.permissions[30] }],
       },
     });
 
     //ride share permissions
     const rideShareDriverPermissions = await this.permissionRepository.findAll({
       where: {
-        [Op.or]: [{ name: settings.permissions[26] }],
+        [Op.or]: [
+          { name: settings.permissions[27] },
+          { name: settings.permissions[28] },
+        ],
       },
     });
 

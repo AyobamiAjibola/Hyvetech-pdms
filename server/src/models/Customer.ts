@@ -124,19 +124,19 @@ export default class Customer extends Model<
   @Column(DataType.DATE)
   declare loginDate: Date;
 
-  @HasMany(() => Contact)
+  @HasMany(() => Contact, { onDelete: "cascade" })
   declare contacts: NonAttribute<Contact[]>;
 
-  @HasMany(() => PaymentDetail)
+  @HasMany(() => PaymentDetail, { onDelete: "cascade" })
   declare paymentDetails: NonAttribute<PaymentDetail[]>;
 
-  @HasMany(() => Vehicle)
+  @HasMany(() => Vehicle, { onDelete: "cascade" })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasMany(() => Transaction)
+  @HasMany(() => Transaction, { onDelete: "cascade" })
   declare transactions: NonAttribute<Transaction[]>;
 
-  @HasMany(() => Appointment)
+  @HasMany(() => Appointment, { onDelete: "cascade" })
   declare appointments: NonAttribute<Appointment[]>;
 
   @BelongsToMany(() => CustomerSubscription, () => CustomerPlanSubscription)

@@ -57,6 +57,6 @@ export default class Subscription extends Model<
     Array<Service & { ServiceSubscription: ServiceSubscription }>
   >;
 
-  @HasMany(() => Plan)
+  @HasMany(() => Plan, { onDelete: "cascade" })
   declare plans: NonAttribute<Plan[]>;
 }

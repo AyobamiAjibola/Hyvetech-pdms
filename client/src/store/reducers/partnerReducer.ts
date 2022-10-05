@@ -4,7 +4,10 @@ import {
   addPaymentPlanAction,
   addPlanAction,
   createPartnerAction,
+  createPartnerKycAction,
+  createPartnerSettingsAction,
   getDriversFilterDataAction,
+  getOwnersFilterDataAction,
   getPartnerAction,
   getPartnersAction,
   getPaymentPlansAction,
@@ -17,6 +20,14 @@ interface IPartnerState {
   createPartnerStatus: IThunkAPIStatus;
   createPartnerSuccess: string;
   createPartnerError?: string;
+
+  createPartnerKycStatus: IThunkAPIStatus;
+  createPartnerKycSuccess: string;
+  createPartnerKycError?: string;
+
+  createPartnerSettingsStatus: IThunkAPIStatus;
+  createPartnerSettingsSuccess: string;
+  createPartnerSettingsError?: string;
 
   addPlanStatus: IThunkAPIStatus;
   addPlanSuccess: string;
@@ -33,6 +44,10 @@ interface IPartnerState {
   getDriversFilterDataStatus: IThunkAPIStatus;
   getDriversFilterDataSuccess: string;
   getDriversFilterDataError?: string;
+
+  getOwnersFilterDataStatus: IThunkAPIStatus;
+  getOwnersFilterDataSuccess: string;
+  getOwnersFilterDataError?: string;
 
   getPaymentPlansStatus: IThunkAPIStatus;
   getPaymentPlansSuccess: string;
@@ -53,12 +68,21 @@ interface IPartnerState {
   plans: IPlan[];
   paymentPlans: IPaymentPlan[];
   driversFilterData: IDriversFilterData[];
+  ownersFilterData: IDriversFilterData[];
 }
 
 const initialState: IPartnerState = {
   createPartnerError: "",
   createPartnerStatus: "idle",
   createPartnerSuccess: "",
+
+  createPartnerKycError: "",
+  createPartnerKycStatus: "idle",
+  createPartnerKycSuccess: "",
+
+  createPartnerSettingsError: "",
+  createPartnerSettingsStatus: "idle",
+  createPartnerSettingsSuccess: "",
 
   addPlanError: "",
   addPlanStatus: "idle",
@@ -75,6 +99,10 @@ const initialState: IPartnerState = {
   getDriversFilterDataError: "",
   getDriversFilterDataStatus: "idle",
   getDriversFilterDataSuccess: "",
+
+  getOwnersFilterDataError: "",
+  getOwnersFilterDataStatus: "idle",
+  getOwnersFilterDataSuccess: "",
 
   getPaymentPlansError: "",
   getPaymentPlansStatus: "idle",
@@ -95,6 +123,7 @@ const initialState: IPartnerState = {
   plans: [],
   paymentPlans: [],
   driversFilterData: [],
+  ownersFilterData: [],
 };
 
 const partnerSlice = createSlice({
@@ -105,6 +134,16 @@ const partnerSlice = createSlice({
       state.createPartnerStatus = "idle";
       state.createPartnerSuccess = "";
       state.createPartnerError = "";
+    },
+    clearCreatePartnerKycStatus(state: IPartnerState) {
+      state.createPartnerKycStatus = "idle";
+      state.createPartnerKycSuccess = "";
+      state.createPartnerKycError = "";
+    },
+    clearCreatePartnerSettingsStatus(state: IPartnerState) {
+      state.createPartnerSettingsStatus = "idle";
+      state.createPartnerSettingsSuccess = "";
+      state.createPartnerSettingsError = "";
     },
     clearGetPartnersStatus(state: IPartnerState) {
       state.getPartnersStatus = "idle";
@@ -147,6 +186,38 @@ const partnerSlice = createSlice({
         if (action.payload) {
           state.createPartnerError = action.payload.message;
         } else state.createPartnerError = action.error.message;
+      });
+
+    builder
+      .addCase(createPartnerKycAction.pending, (state) => {
+        state.createPartnerKycStatus = "loading";
+      })
+      .addCase(createPartnerKycAction.fulfilled, (state, action) => {
+        state.createPartnerKycStatus = "completed";
+        state.createPartnerKycSuccess = action.payload.message;
+        state.partner = action.payload.result as IPartner;
+      })
+      .addCase(createPartnerKycAction.rejected, (state, action) => {
+        state.createPartnerKycStatus = "failed";
+        if (action.payload) {
+          state.createPartnerKycError = action.payload.message;
+        } else state.createPartnerKycError = action.error.message;
+      });
+
+    builder
+      .addCase(createPartnerSettingsAction.pending, (state) => {
+        state.createPartnerSettingsStatus = "loading";
+      })
+      .addCase(createPartnerSettingsAction.fulfilled, (state, action) => {
+        state.createPartnerSettingsStatus = "completed";
+        state.createPartnerSettingsSuccess = action.payload.message;
+        state.partner = action.payload.result as IPartner;
+      })
+      .addCase(createPartnerSettingsAction.rejected, (state, action) => {
+        state.createPartnerSettingsStatus = "failed";
+        if (action.payload) {
+          state.createPartnerSettingsError = action.payload.message;
+        } else state.createPartnerSettingsError = action.error.message;
       });
 
     builder
@@ -259,6 +330,22 @@ const partnerSlice = createSlice({
           state.getDriversFilterDataError = action.payload.message;
         } else state.getDriversFilterDataError = action.error.message;
       });
+
+    builder
+      .addCase(getOwnersFilterDataAction.pending, (state) => {
+        state.getOwnersFilterDataStatus = "idle";
+      })
+      .addCase(getOwnersFilterDataAction.fulfilled, (state, action) => {
+        state.getOwnersFilterDataStatus = "completed";
+        state.ownersFilterData = action.payload.results as IDriversFilterData[];
+      })
+      .addCase(getOwnersFilterDataAction.rejected, (state, action) => {
+        state.getOwnersFilterDataStatus = "failed";
+
+        if (action.payload) {
+          state.getOwnersFilterDataError = action.payload.message;
+        } else state.getOwnersFilterDataError = action.error.message;
+      });
   },
 });
 
@@ -269,6 +356,8 @@ export const {
   clearGetPaymentPlansStatus,
   clearGetPlansStatus,
   clearGetDriversFilterDataStatus,
+  clearCreatePartnerKycStatus,
+  clearCreatePartnerSettingsStatus,
 } = partnerSlice.actions;
 
 export default partnerSlice.reducer;

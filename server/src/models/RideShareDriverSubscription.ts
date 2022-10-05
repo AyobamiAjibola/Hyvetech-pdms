@@ -6,6 +6,7 @@ import {
   DataType,
   ForeignKey,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -19,6 +20,7 @@ import Vehicle from "./Vehicle";
 import RideShareDriver from "./RideShareDriver";
 import RideShareDriverPlanSubscription from "./RideShareDriverPlanSubscription";
 import Job from "./Job";
+import Transaction from "./Transaction";
 
 @Table({
   timestamps: true,
@@ -106,10 +108,13 @@ export default class RideShareDriverSubscription extends Model<
     >
   >;
 
-  @HasMany(() => Vehicle)
+  @HasMany(() => Vehicle, { onDelete: "cascade" })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @BelongsTo(() => Job)
+  @HasOne(() => Transaction, { onDelete: "cascade" })
+  declare transaction: NonAttribute<Transaction>;
+
+  @BelongsTo(() => Job, { onDelete: "cascade" })
   declare job: NonAttribute<Job>;
 
   @ForeignKey(() => Job)

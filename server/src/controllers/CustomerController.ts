@@ -10,6 +10,7 @@ import Appointment from "../models/Appointment";
 import Transaction from "../models/Transaction";
 import VehicleFault from "../models/VehicleFault";
 import { Request } from "express";
+import { HasAnyRole } from "../decorators";
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
 
@@ -28,6 +29,32 @@ export default class CustomerController {
         results: customers,
       };
 
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public static async customer(customerId: number) {
+    const response: HttpResponse<Customer> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+    };
+
+    try {
+      const customer = await dataSources.customerDAOService.findById(
+        customerId,
+        {
+          attributes: { exclude: ["password", "rawPassword", "loginToken"] },
+        }
+      );
+
+      if (!customer) {
+        response.result = customer;
+        return Promise.resolve(response);
+      }
+
+      response.result = customer;
       return Promise.resolve(response);
     } catch (e) {
       return Promise.reject(e);

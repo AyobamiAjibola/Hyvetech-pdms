@@ -109,6 +109,11 @@ export declare namespace appModelTypes {
     slug: string;
     phone: string;
     email: string;
+    logo: string;
+    googleMap: string;
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
     totalStaff: number;
     totalTechnicians: number;
     brands: string[];

@@ -1,8 +1,10 @@
 import {
   AutoIncrement,
+  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
+  ForeignKey,
   HasMany,
   Model,
   PrimaryKey,
@@ -23,7 +25,6 @@ import {
   NonAttribute,
 } from "sequelize";
 import Partner from "./Partner";
-import PartnerUser from "./PartnerUser";
 
 export const $userSchema = {
   companyName: Joi.string().required().label("Company Name"),
@@ -77,6 +78,9 @@ export default class User extends Model<
   declare password: string;
 
   @Column(DataType.STRING)
+  declare rawPassword: string;
+
+  @Column(DataType.STRING)
   declare email: string;
 
   @Column(DataType.STRING)
@@ -97,12 +101,16 @@ export default class User extends Model<
   @Column(DataType.DATE)
   declare loginDate: Date | null;
 
-  @HasMany(() => Contact)
+  @HasMany(() => Contact, { onDelete: "cascade" })
   declare contacts: NonAttribute<Contact[]>;
 
   @BelongsToMany(() => Role, () => UserRole)
   declare roles: NonAttribute<Array<Role & { UserRole: UserRole }>>;
 
-  @BelongsToMany(() => Partner, () => PartnerUser)
-  declare partners: NonAttribute<Array<Partner & { PartnerUser: PartnerUser }>>;
+  @BelongsTo(() => Partner)
+  declare partner: NonAttribute<Partner>;
+
+  @ForeignKey(() => Partner)
+  @Column(DataType.INTEGER)
+  declare partnerId: NonAttribute<number>;
 }

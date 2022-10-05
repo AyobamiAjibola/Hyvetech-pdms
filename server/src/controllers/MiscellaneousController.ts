@@ -3,6 +3,7 @@ import District from "../models/District";
 import HttpStatus from "../helpers/HttpStatus";
 import { appCommonTypes } from "../@types/app-common";
 import State from "../models/State";
+import { HasAnyRole } from "../decorators";
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class MiscellaneousController {

@@ -77,21 +77,21 @@ export default class Plan extends Model<
   @Column(DataType.STRING)
   declare serviceMode: string;
 
-  @BelongsTo(() => Subscription)
+  @BelongsTo(() => Subscription, { onDelete: "cascade" })
   declare subscriptions: Subscription;
 
   @ForeignKey(() => Subscription)
   @Column(DataType.INTEGER)
   declare subscriptionId: number;
 
-  @BelongsTo(() => Partner)
+  @BelongsTo(() => Partner, { onDelete: "cascade" })
   declare partner: Partner;
 
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: number;
 
-  @HasMany(() => PaymentPlan)
+  @HasMany(() => PaymentPlan, { onDelete: "cascade" })
   declare paymentPlans: PaymentPlan[];
 
   @BelongsToMany(() => Category, () => PlanCategory)

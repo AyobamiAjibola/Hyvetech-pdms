@@ -38,6 +38,6 @@ export default class Schedule extends Model<
   @Column(DataType.BOOLEAN)
   declare default: boolean;
 
-  @HasMany(() => TimeSlot)
+  @HasMany(() => TimeSlot, { onDelete: "cascade" })
   declare timeSlots: NonAttribute<TimeSlot[]>;
 }

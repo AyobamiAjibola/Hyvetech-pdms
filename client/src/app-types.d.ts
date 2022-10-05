@@ -3,4 +3,5 @@ declare module "@app-types" {
   type CallableFunction = () => void;
   type CustomHookMessage = { message: string };
   type GenericObjectType = { [t: string]: any };
+  type ICheckListAnswer = { label: string; weight: string };
 }

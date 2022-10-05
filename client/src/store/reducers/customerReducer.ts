@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IThunkAPIStatus } from "@app-types";
 import {
+  getCustomerAction,
   getCustomerAppointmentsAction,
   getCustomersAction,
   getCustomerTransactionsAction,
@@ -17,22 +18,27 @@ import {
 interface ICustomerState {
   getCustomersStatus: IThunkAPIStatus;
   getCustomersSuccess: string;
-  getCustomersError: string;
+  getCustomersError?: string;
+
+  getCustomerStatus: IThunkAPIStatus;
+  getCustomerSuccess: string;
+  getCustomerError?: string;
 
   getCustomerVehiclesStatus: IThunkAPIStatus;
   getCustomerVehiclesSuccess: string;
-  getCustomerVehiclesError: string;
+  getCustomerVehiclesError?: string;
 
   getCustomerAppointmentsStatus: IThunkAPIStatus;
   getCustomerAppointmentsSuccess: string;
-  getCustomerAppointmentsError: string;
+  getCustomerAppointmentsError?: string;
 
   getCustomerTransactionsStatus: IThunkAPIStatus;
   getCustomerTransactionsSuccess: string;
-  getCustomerTransactionsError: string;
+  getCustomerTransactionsError?: string;
 
   contacts: IContact[];
   customers: ICustomer[];
+  customer: ICustomer | null;
   vehicles: IVehicle[];
   appointments: IAppointment[];
   transactions: ITransaction[];
@@ -42,6 +48,10 @@ const initialState: ICustomerState = {
   getCustomersError: "",
   getCustomersSuccess: "",
   getCustomersStatus: "idle",
+
+  getCustomerError: "",
+  getCustomerSuccess: "",
+  getCustomerStatus: "idle",
 
   getCustomerVehiclesStatus: "idle",
   getCustomerVehiclesSuccess: "",
@@ -57,6 +67,7 @@ const initialState: ICustomerState = {
 
   contacts: [],
   customers: [],
+  customer: null,
   vehicles: [],
   appointments: [],
   transactions: [],
@@ -84,7 +95,26 @@ const customerSlice = createSlice({
       })
       .addCase(getCustomersAction.rejected, (state, action) => {
         state.getCustomersStatus = "failed";
-        state.getCustomersError = <string>action.error.message;
+        if (action.payload) {
+          state.getCustomersError = action.payload.message;
+        } else state.getCustomersError = action.error.message;
+      });
+
+    builder
+      .addCase(getCustomerAction.pending, (state) => {
+        state.getCustomerStatus = "loading";
+      })
+      .addCase(getCustomerAction.fulfilled, (state, action) => {
+        state.getCustomerStatus = "completed";
+        state.getCustomerSuccess = action.payload.message;
+        state.customer = action.payload.result as ICustomer;
+      })
+      .addCase(getCustomerAction.rejected, (state, action) => {
+        state.getCustomerStatus = "failed";
+
+        if (action.payload) {
+          state.getCustomerError = action.payload.message;
+        } else state.getCustomerError = action.error.message;
       });
 
     builder
@@ -98,7 +128,10 @@ const customerSlice = createSlice({
       })
       .addCase(getCustomerVehiclesAction.rejected, (state, action) => {
         state.getCustomerVehiclesStatus = "failed";
-        state.getCustomerVehiclesError = <string>action.error.message;
+
+        if (action.payload) {
+          state.getCustomerVehiclesError = action.error.message;
+        } else state.getCustomerVehiclesError = action.error.message;
       });
 
     builder
@@ -112,7 +145,10 @@ const customerSlice = createSlice({
       })
       .addCase(getCustomerAppointmentsAction.rejected, (state, action) => {
         state.getCustomerAppointmentsStatus = "failed";
-        state.getCustomerAppointmentsError = <string>action.error.message;
+
+        if (action.payload) {
+          state.getCustomerAppointmentsError = action.payload.message;
+        } else state.getCustomerAppointmentsError = action.error.message;
       });
 
     builder
@@ -126,7 +162,10 @@ const customerSlice = createSlice({
       })
       .addCase(getCustomerTransactionsAction.rejected, (state, action) => {
         state.getCustomerTransactionsStatus = "failed";
-        state.getCustomerTransactionsError = <string>action.error.message;
+
+        if (action.payload) {
+          state.getCustomerTransactionsError = action.payload.message;
+        } else state.getCustomerTransactionsError = action.error.message;
       });
   },
 });

@@ -1,5 +1,6 @@
 import {
   getCustomerAppointmentsHandler,
+  getCustomerHandler,
   getCustomersHandler,
   getCustomerTransactionsHandler,
   getCustomerVehiclesHandler,
@@ -13,6 +14,12 @@ const customerEndpoints: RouteEndpoints = [
     method: "get",
     path: "/customers",
     handler: getCustomersHandler,
+  },
+  {
+    name: "customer",
+    method: "get",
+    path: "/customer/:customerId",
+    handler: getCustomerHandler,
   },
   {
     name: "customer",

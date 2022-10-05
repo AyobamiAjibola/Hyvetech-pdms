@@ -8,6 +8,7 @@ import CustomAPIError from "../exceptions/CustomAPIError";
 import settings from "../config/settings";
 import authorizeRoute from "./authorizeRoute";
 import UserRepository from "../repositories/UserRepository";
+import Role from "../models/Role";
 import AsyncWrapper = appCommonTypes.AsyncWrapper;
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 
@@ -57,7 +58,9 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
 
     const { userId } = payload;
 
-    const user = await userRepo.findById(userId);
+    const user = await userRepo.findById(userId, {
+      include: [Role],
+    });
 
     if (!user) {
       return next(
@@ -70,6 +73,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
 
     req.permissions = payload.permissions;
     req.user = user;
+    req.jwt = jwt;
 
     const authorised = await authorizeRoute(req);
 

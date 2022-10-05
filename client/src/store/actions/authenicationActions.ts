@@ -1,16 +1,26 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../../config/axiosClient";
-import asyncThunkErrorWrapper from "../../helpers/asyncThunkErrorWrapper";
 import settings from "../../config/settings";
+import asyncThunkWrapper from "../../helpers/asyncThunkWrapper";
+import { ApiResponseSuccess } from "@app-interfaces";
 
 const SIGN_IN = "authentication:SIGN_IN";
+const SIGN_OUT = "authentication:SIGN_OUT";
 const API_ROOT = settings.api.rest;
 
-export const signInAction = createAsyncThunk(
+export const signInAction = asyncThunkWrapper<ApiResponseSuccess<string>, any>(
   SIGN_IN,
-  asyncThunkErrorWrapper(async (args: any) => {
+  async (args: any) => {
     const response = await axiosClient.post(`${API_ROOT}/sign-in`, args);
 
     return response.data;
-  })
+  }
+);
+
+export const signOutAction = asyncThunkWrapper<ApiResponseSuccess<null>, void>(
+  SIGN_OUT,
+  async () => {
+    const response = await axiosClient.get(`${API_ROOT}/sign-out`);
+
+    return response.data;
+  }
 );

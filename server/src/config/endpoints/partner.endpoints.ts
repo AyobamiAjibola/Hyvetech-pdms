@@ -2,12 +2,15 @@ import {
   addPaymentPlanHandler,
   addPlanHandler,
   createPartnerHandler,
+  createPartnerKycHandler,
+  createPartnerSettingsHandler,
   driversFilterDataHandler,
   filterDriversHandler,
   getPartnerHandler,
   getPartnersHandler,
   getPaymentPlansHandler,
   getPlansHandler,
+  partnerJobsHandler,
 } from "../../routes/partnerHandler";
 import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -18,6 +21,18 @@ const partnerEndpoints: RouteEndpoints = [
     method: "post",
     path: "/partners",
     handler: createPartnerHandler,
+  },
+  {
+    name: "partners",
+    method: "patch",
+    path: "/partners/:partnerId/kyc",
+    handler: createPartnerKycHandler,
+  },
+  {
+    name: "partners",
+    method: "patch",
+    path: "/partners/:partnerId/settings",
+    handler: createPartnerSettingsHandler,
   },
   {
     name: "partners",
@@ -66,6 +81,18 @@ const partnerEndpoints: RouteEndpoints = [
     method: "get",
     path: "/partners/:partnerId/drivers-filter-data",
     handler: driversFilterDataHandler,
+  },
+  {
+    name: "partners",
+    method: "get",
+    path: "/partners/:partnerId/owners-filter-data",
+    handler: driversFilterDataHandler,
+  },
+  {
+    name: "partners",
+    method: "get",
+    path: "/partners/:partnerId/jobs",
+    handler: partnerJobsHandler,
   },
 ];
 

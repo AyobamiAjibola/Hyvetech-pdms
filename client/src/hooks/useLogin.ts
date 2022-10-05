@@ -41,7 +41,9 @@ export default function useLogin() {
 
   useEffect(() => {
     if (authReducer.signingInStatus === "failed") {
-      setError({ message: authReducer.signingInError });
+      if (authReducer.signingInError) {
+        setError({ message: authReducer.signingInError });
+      }
     }
   }, [authReducer.signingInStatus, authReducer.signingInError, navigate]);
 

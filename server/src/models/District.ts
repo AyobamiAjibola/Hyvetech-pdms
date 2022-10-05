@@ -41,7 +41,7 @@ export default class District extends Model<
     Array<Discount & { DistrictDiscount: DistrictDiscount }>
   >;
 
-  @BelongsTo(() => State)
+  @BelongsTo(() => State, { onDelete: "cascade" })
   declare state: NonAttribute<State>;
 
   @ForeignKey(() => State)

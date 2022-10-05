@@ -27,6 +27,9 @@ export const MONTHS = [
 
 export const MESSAGES = {
   txn_init: "Authorization URL created",
+  cancelText: `Are you sure you want to carry out this action? 
+  If you agree to do this, the affected entity, will not be able to execute certain features on the app.`,
+  internalError: "An error occurred. Please contact support",
 };
 
 export const MOBILE_PLAN = "Mobile";
@@ -61,3 +64,12 @@ export const DRIVE_IN_CATEGORY = "Drive-in";
 export const HYBRID_CATEGORY = "Hybrid";
 export const GARAGE_CATEGORY = "Garage";
 export const RIDE_SHARE_CATEGORY = "Ride-Share";
+
+export const JOB_STATUS = {
+  complete: "Complete",
+  pending: "Pending",
+  inProgress: "In-Progress",
+  canceled: "Canceled",
+};
+export const DRAWER_WIDTH = 240;
+export const DAYS = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"];

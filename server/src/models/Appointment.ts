@@ -85,20 +85,20 @@ export default class Appointment extends Model<
   @Column(DataType.STRING)
   declare estimateFile: string;
 
-  @HasOne(() => Vehicle)
+  @HasOne(() => Vehicle, { onDelete: "cascade" })
   declare vehicle: NonAttribute<Vehicle>;
 
-  @HasOne(() => VehicleFault)
+  @HasOne(() => VehicleFault, { onDelete: "cascade" })
   declare vehicleFault: NonAttribute<VehicleFault>;
 
-  @BelongsTo(() => Customer)
+  @BelongsTo(() => Customer, { onDelete: "cascade" })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: number;
 
-  @BelongsTo(() => RideShareDriver)
+  @BelongsTo(() => RideShareDriver, { onDelete: "cascade" })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)

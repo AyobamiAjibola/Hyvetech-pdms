@@ -4,6 +4,7 @@ import {
   Column,
   DataType,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -15,10 +16,12 @@ import User from "./User";
 import PartnerCategory from "./PartnerCategory";
 import Category from "./Category";
 import Plan from "./Plan";
-import PartnerUser from "./PartnerUser";
 import PartnerRideShareDriver from "./PartnerRideShareDriver";
 import RideShareDriver from "./RideShareDriver";
 import Job from "./Job";
+import Technician from "./Technician";
+import PartnerTechnician from "./PartnerTechnician";
+import CheckList from "./CheckList";
 
 @Table({
   timestamps: true,
@@ -45,6 +48,21 @@ export default class Partner extends Model<
   @Column(DataType.STRING)
   declare email: string;
 
+  @Column(DataType.STRING)
+  declare logo: string;
+
+  @Column(DataType.STRING)
+  declare googleMap: string;
+
+  @Column(DataType.STRING)
+  declare bankName: string;
+
+  @Column(DataType.STRING)
+  declare accountName: string;
+
+  @Column(DataType.STRING)
+  declare accountNumber: string;
+
   @Column(DataType.INTEGER)
   declare totalStaff: number;
 
@@ -63,24 +81,41 @@ export default class Partner extends Model<
   @Column(DataType.STRING)
   declare cac: string;
 
+  @Column(DataType.STRING)
+  declare vatNumber: string;
+
+  @Column(DataType.STRING)
+  declare nameOfDirector: string;
+
+  @Column(DataType.STRING)
+  declare nameOfManager: string;
+
   @Column(DataType.ARRAY(DataType.STRING))
   declare workingHours: string[];
 
-  @HasMany(() => Contact)
+  @HasOne(() => Contact, { onDelete: "cascade" })
   declare contact: NonAttribute<Contact>;
 
-  @HasMany(() => Plan)
+  @HasMany(() => Plan, { onDelete: "cascade" })
   declare plans: NonAttribute<Array<Plan>>;
 
-  @HasMany(() => Job)
+  @HasMany(() => Job, { onDelete: "cascade" })
   declare jobs: NonAttribute<Array<Job>>;
 
-  @BelongsToMany(() => User, () => PartnerUser)
-  declare users: NonAttribute<Array<User & { PartnerUser: PartnerUser }>>;
+  @HasMany(() => User)
+  declare users: NonAttribute<Array<User>>;
+
+  @HasMany(() => CheckList)
+  declare checkLists: NonAttribute<Array<CheckList>>;
 
   @BelongsToMany(() => RideShareDriver, () => PartnerRideShareDriver)
   declare rideShareDrivers: NonAttribute<
     Array<RideShareDriver & { PartnerRideShareDriver: PartnerRideShareDriver }>
+  >;
+
+  @BelongsToMany(() => Technician, () => PartnerTechnician)
+  declare technicians: NonAttribute<
+    Array<Technician & { PartnerTechnician: PartnerTechnician }>
   >;
 
   @BelongsToMany(() => Category, () => PartnerCategory)

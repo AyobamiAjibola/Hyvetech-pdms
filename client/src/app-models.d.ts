@@ -19,6 +19,7 @@ declare module "@app-models" {
     gatewayId: string;
     loginDate: Date;
     contacts: IContact[];
+    partner: IPartner;
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
@@ -99,11 +100,19 @@ declare module "@app-models" {
     modelYear: string;
     engineModel: string;
     imageUrl: string;
+    roadWorthinessFileUrl: string;
+    proofOfOwnershipFileUrl: string;
+    registrationNumberFileUrl: string;
+    motorReceiptFileUrl: string;
+    vehicleInspectionFileUrl: string;
+    thirdPartyInsuranceFileUrl: string;
     nickname: string;
     plateNumber: string;
     type: string;
     isBooked: boolean;
     isOwner: boolean;
+    onInspection: boolean;
+    onMaintenance: boolean;
     customer: ICustomer;
     customerId: number;
     appointment: IAppointment;
@@ -176,10 +185,17 @@ declare module "@app-models" {
     id: number;
     type: string;
     name: string;
+    status: string;
     duration: string;
-    appointments: IAppointment;
-    createdAt: Date;
-    updatedAt: Date;
+    vehicleOwner: string;
+    jobDate: Date;
+    vehicle: IVehicle;
+    rideShareDriverSubscription: IRideShareDriverSubscription;
+    customerSubscription: ICustomerSubscription;
+    technician: ITechnician;
+    technicianId: number;
+    partner: IPartner;
+    partnerId: number;
   }
 
   interface ICustomerSubscription {
@@ -206,6 +222,7 @@ declare module "@app-models" {
     nextPaymentDate: Date;
     customers: ICustomer[];
     vehicles: IVehicle[];
+    transaction: ITransaction;
     createdAt: Date;
     updatedAt: Date;
   }
@@ -230,9 +247,18 @@ declare module "@app-models" {
     images: string[];
     yearOfIncorporation: number;
     cac: string;
+    vatNumber: string;
+    nameOfDirector: string;
+    nameOfManager: string;
+    logo: string;
+    googleMap: string;
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
     workingHours: string[];
     users: IUser[];
     categories: ICategory[];
+    technicians: [];
     contact: IContact;
   }
 
@@ -395,6 +421,7 @@ declare module "@app-models" {
     subscriptionDate: Date;
     nextPaymentDate: Date;
     rideShareDrivers: IRideShareDriver[];
+    transaction: ITransaction;
     vehicles: IVehicle[];
     createdAt: Date;
     updatedAt: Date;
@@ -420,6 +447,8 @@ declare module "@app-models" {
     gatewayId: string;
     loginDate: Date;
     contacts: IContact[];
+    frontLicenseImageUrl: string;
+    rearLicenseImageUrl: string;
     paymentDetails: IPaymentDetail[];
     vehicles: IVehicle[];
     transactions: ITransaction[];
@@ -446,13 +475,27 @@ declare module "@app-models" {
     profileImageUrl: string;
     active: boolean;
     enabled: boolean;
+    hasJob: boolean;
     loginToken: string;
     gatewayId: string;
     loginDate: Date;
     contacts: IContact[];
+    partners: IPartner[];
     jobs: IJob[];
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
+  }
+
+  interface ICheckList {
+    id: number;
+    name: string;
+    sections: Array<string>;
+    approvedByGarageAdmin: boolean;
+    isSubmitted: boolean;
+    partner: IPartner;
+    partnerId: number;
+    job: IJob;
+    jobId: number;
   }
 }

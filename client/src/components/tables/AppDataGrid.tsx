@@ -42,6 +42,15 @@ function AppDataGrid(props: IProps) {
         onSortModelChange={(model) => {
           if (props.sortModel && props.onSortModel) props.onSortModel(model);
         }}
+        disableSelectionOnClick
+        disableColumnFilter
+        disableColumnSelector
+        componentsProps={{
+          toolbar: {
+            showQuickFilter: true,
+            quickFilterProps: { debounceMs: 500 },
+          },
+        }}
       />
     </Box>
   );

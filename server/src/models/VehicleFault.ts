@@ -44,7 +44,7 @@ export default class VehicleFault extends Model<
   @Column(DataType.STRING)
   declare videoPath: string;
 
-  @BelongsTo(() => Appointment)
+  @BelongsTo(() => Appointment, { onDelete: "cascade" })
   declare appointment: NonAttribute<Appointment>;
 
   @ForeignKey(() => Appointment)

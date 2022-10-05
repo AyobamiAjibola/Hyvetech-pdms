@@ -8,8 +8,9 @@ import IncomingForm from "formidable/Formidable";
 import User from "../models/User";
 
 export declare namespace appCommonTypes {
-  import ICrudDAO = appModelTypes.ICrudDAO;
+  import IPermission = appModelTypes.IPermission;
   type DatabaseEnv = "development" | "production" | "test";
+  type ICheckListAnswer = { label: string; weight: string };
   type Roles =
     | "ADMIN_ROLE"
     | "GUEST_ROLE"
@@ -45,10 +46,12 @@ export declare namespace appCommonTypes {
     | "read_technician"
     | "update_technician"
     | "delete_technician"
+    | "manage_technician"
     | "create_driver"
     | "read_driver"
     | "update_driver"
     | "delete_driver"
+    | "manage_driver"
     | "read_guest";
   type VINProvider = {
     name: string;
@@ -59,7 +62,7 @@ export declare namespace appCommonTypes {
   };
 
   type AuthPayload = {
-    permissions: Attributes<Permission>[];
+    permissions: IPermission[];
     userId: number;
     customer?: number;
     pass?: string;
@@ -133,7 +136,7 @@ export declare namespace appCommonTypes {
     message: string;
     code: number;
     timestamp?: string;
-    result?: T;
+    result?: T | null;
     results?: T[];
   }
 
@@ -148,6 +151,10 @@ export declare namespace appCommonTypes {
     path: string;
     method: string;
     handler: AsyncWrapper;
+    hasRole?: string;
+    hasAuthority?: string;
+    hasAnyRole?: string[];
+    hasAnyAuthority?: string[];
   }
 
   type RouteEndpoints = RouteEndpointConfig[];
@@ -221,8 +228,16 @@ export declare namespace appCommonTypes {
     name: QueueMailTypes;
   }
 
-  interface DataSources {
-    [p: string]: ICrudDAO;
+  interface ICheckListQuestion {
+    answer: ICheckListAnswer[];
+  }
+
+  interface ICheckListSection {
+    question: ICheckListQuestion[];
+  }
+
+  interface ICheckList {
+    section: ICheckListSection[];
   }
 }
 
@@ -234,6 +249,7 @@ declare global {
       permissions: Attributes<Permission>[];
       user: User;
       form: IncomingForm;
+      jwt: string;
     }
   }
 }

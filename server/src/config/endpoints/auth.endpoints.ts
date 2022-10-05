@@ -1,6 +1,7 @@
 import {
   bootstrapHandler,
   signInHandler,
+  signOutHandler,
   signupHandler,
 } from "../../routes/authRoute";
 import { appCommonTypes } from "../../@types/app-common";
@@ -18,6 +19,12 @@ const authEndpoints: RouteEndpoints = [
     method: "post",
     path: "/sign-up",
     handler: signupHandler,
+  },
+  {
+    name: "signOut",
+    method: "get",
+    path: "/sign-out",
+    handler: signOutHandler,
   },
   {
     name: "bootstrap",

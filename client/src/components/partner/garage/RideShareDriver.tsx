@@ -7,51 +7,53 @@ import { clearGetDriversFilterDataStatus } from "../../../store/reducers/partner
 import {
   Autocomplete,
   Box,
-  Card,
-  CardActionArea,
-  CardContent,
   CircularProgress,
   createFilterOptions,
   Divider,
   Grid,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Paper,
   Stack,
   TextField,
-  Typography,
 } from "@mui/material";
 import { IDriversFilterData } from "@app-interfaces";
 import { getDriverAction } from "../../../store/actions/rideShareActions";
 import { IRideShareDriver } from "@app-models";
 import AppLoader from "../../loader/AppLoader";
-import { FaCarAlt } from "react-icons/fa";
+import AppTab from "../../tabs/AppTab";
+import { driverSearchResultTabs } from "../../../navigation/menus";
+import useAdmin from "../../../hooks/useAdmin";
 
 const filterOptions = createFilterOptions({
   matchFrom: "any",
   stringify: (option: IDriversFilterData) => `${option.query}`,
 });
 
-function Drivers() {
+function RideShareDriver() {
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
   const [driver, setDriver] = useState<IRideShareDriver | null>(null);
-  const [selectedVehicle, setSelectedVehicle] = useState<number>(0);
 
   const partnerReducer = useAppSelector((state) => state.partnerReducer);
   const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
   const dispatch = useAppDispatch();
 
   const params = useParams();
+  const admin = useAdmin();
 
-  const partnerId = useMemo(() => params.id as string, [params.id]);
+  const partnerId = useMemo(() => {
+    if (admin.isTechAdmin && admin.user) {
+      return admin.user.partner.id;
+    }
+
+    if (params.id) {
+      return +(params.id as unknown as string);
+    }
+  }, [admin.isTechAdmin, admin.user, params.id]);
 
   useEffect(() => {
     if (partnerReducer.getDriversFilterDataStatus === "idle") {
-      dispatch(getDriversFilterDataAction(+partnerId));
+      if (partnerId) dispatch(getDriversFilterDataAction(+partnerId));
     }
   }, [dispatch, partnerId, partnerReducer.getDriversFilterDataStatus]);
 
@@ -72,6 +74,7 @@ function Drivers() {
 
   useEffect(() => {
     return () => {
+      setDriver(null);
       dispatch(clearGetDriversFilterDataStatus());
     };
   }, [dispatch]);
@@ -82,22 +85,9 @@ function Drivers() {
     }
   };
 
-  const handleListItemClick = (
-    event:
-      | React.MouseEvent<HTMLAnchorElement>
-      | React.MouseEvent<HTMLDivElement>,
-    number: number
-  ) => {
-    setSelectedVehicle(number);
-  };
-
   return (
     <React.Fragment>
-      <Stack
-        direction="column"
-        divider={<Divider orientation="horizontal" />}
-        spacing={5}
-      >
+      <Stack direction="column" spacing={5}>
         <Grid container justifyContent="center" alignItems="center">
           <Grid item xs={12} md={6}>
             <Autocomplete
@@ -120,7 +110,7 @@ function Drivers() {
               renderInput={(props) => (
                 <TextField
                   {...props}
-                  label="Find Driver"
+                  label="Search driver by First name, last name, car plate number."
                   InputProps={{
                     ...props.InputProps,
                     endAdornment: (
@@ -140,81 +130,10 @@ function Drivers() {
           </Grid>
         </Grid>
         <Box hidden={driver === null}>
-          <Grid
-            container
-            spacing={{ xs: 2, md: 4 }}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item xs={12} md={4}>
-              <Typography textAlign="center" display="block">
-                Personal Info
-              </Typography>
-
-              <Card>
-                <CardActionArea>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {`${driver?.firstName} ${driver?.lastName}`}
-                    </Typography>
-                    <Typography
-                      gutterBottom
-                      variant="body2"
-                      color="text.secondary"
-                    >
-                      {driver?.email} | {driver?.phone}
-                    </Typography>
-
-                    {driver?.contacts.map((contact, index) => {
-                      return (
-                        <Typography
-                          key={index}
-                          gutterBottom
-                          variant="body2"
-                          color="text.secondary"
-                        >
-                          {contact.state} {contact.district} {contact.address}
-                        </Typography>
-                      );
-                    })}
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Paper>
-                <Typography textAlign="center" display="block">
-                  Vehicle Info
-                </Typography>
-                <List component="nav" aria-label="main mailbox folders">
-                  {driver?.vehicles.map((vehicle, index) => {
-                    return (
-                      <ListItemButton
-                        key={index}
-                        selected={selectedVehicle === index}
-                        onClick={(event) => handleListItemClick(event, index)}
-                      >
-                        <ListItemIcon>
-                          <FaCarAlt />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={vehicle.make}
-                          secondary={`${vehicle.modelYear} | ${vehicle.model} | ${vehicle.plateNumber}`}
-                        />
-                      </ListItemButton>
-                    );
-                  })}
-                </List>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Paper>
-                <Typography textAlign="center" display="block">
-                  Subscription Info
-                </Typography>
-              </Paper>
-            </Grid>
-          </Grid>
+          <Divider orientation="horizontal" />
+          <Paper sx={{ p: 3 }}>
+            <AppTab slideDirection="left" tabMenus={driverSearchResultTabs} />
+          </Paper>
         </Box>
       </Stack>
       <AppLoader show={rideShareReducer.getDriverStatus === "loading"} />
@@ -222,4 +141,4 @@ function Drivers() {
   );
 }
 
-export default Drivers;
+export default RideShareDriver;

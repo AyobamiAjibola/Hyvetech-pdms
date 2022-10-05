@@ -426,3 +426,10 @@ export const BOOK_APPOINTMENT = "event:BOOK_APPOINTMENT";
 export const RESCHEDULE_APPOINTMENT = "event:RESCHEDULE_APPOINTMENT";
 export const CANCEL_APPOINTMENT = "event:CANCEL_APPOINTMENT";
 export const AGENDA_COLLECTION_NAME = "appointment_jobs";
+
+export const JOB_STATUS = {
+  complete: "Complete",
+  pending: "Pending",
+  inProgress: "In-Progress",
+  canceled: "Canceled",
+};

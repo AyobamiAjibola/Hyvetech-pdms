@@ -19,6 +19,22 @@ export const createPartnerHandler = authenticateRouteWrapper(
   }
 );
 
+export const createPartnerKycHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await partnerController.createKyc(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
+export const createPartnerSettingsHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await partnerController.createSettings(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
 export const getPartnersHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
     const result = await partnerController.getPartners();
@@ -89,9 +105,15 @@ export const filterDriversHandler = authenticateRouteWrapper(
 
 export const driversFilterDataHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
-    const partnerId = req.params.partnerId as string;
+    const result = await partnerController.driversFilterData(req);
 
-    const result = await partnerController.driversFilterData(+partnerId);
+    res.status(result.code).json(result);
+  }
+);
+
+export const partnerJobsHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await partnerController.jobs(req);
 
     res.status(result.code).json(result);
   }

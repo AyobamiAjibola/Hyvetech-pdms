@@ -107,42 +107,48 @@ export default class Vehicle extends Model<
   @Column(DataType.BOOLEAN)
   declare isOwner: boolean;
 
-  @BelongsTo(() => Customer)
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  declare onInspection: boolean;
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  declare onMaintenance: boolean;
+
+  @BelongsTo(() => Customer, { onDelete: "cascade" })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: number;
 
-  @BelongsTo(() => Appointment)
+  @BelongsTo(() => Appointment, { onDelete: "cascade" })
   declare appointment: NonAttribute<Appointment>;
 
   @ForeignKey(() => Appointment)
   @Column(DataType.INTEGER)
   declare appointmentId: number;
 
-  @BelongsTo(() => CustomerSubscription)
+  @BelongsTo(() => CustomerSubscription, { onDelete: "cascade" })
   declare subscription: NonAttribute<CustomerSubscription>;
 
   @ForeignKey(() => CustomerSubscription)
   @Column(DataType.INTEGER)
   declare customerSubscriptionId: number;
 
-  @BelongsTo(() => RideShareDriver)
+  @BelongsTo(() => RideShareDriver, { onDelete: "cascade" })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriverSubscription)
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: "cascade" })
   declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
 
   @ForeignKey(() => RideShareDriverSubscription)
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: number;
 
-  @BelongsTo(() => Job)
+  @BelongsTo(() => Job, { onDelete: "cascade" })
   declare job: NonAttribute<Job>;
 
   @ForeignKey(() => Job)

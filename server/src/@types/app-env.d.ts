@@ -76,5 +76,7 @@ declare namespace NodeJS {
 
     BCRYPT_SALT: string;
     BOOTSTRAP_PASS: string;
+    PARTNER_PASS: string;
+    ADMIN_PASS: string;
   }
 }

@@ -8,6 +8,13 @@ export const getCustomersHandler = authenticateRouteWrapper(
   }
 );
 
+export const getCustomerHandler = authenticateRouteWrapper(async (req, res) => {
+  const customerId = req.params.customerId as string;
+
+  const response = await CustomerController.customer(+customerId);
+  res.status(response.code).json(response);
+});
+
 export const getCustomerVehiclesHandler = authenticateRouteWrapper(
   async (req, res) => {
     const response = await CustomerController.customerVehicles(req);

@@ -4,6 +4,7 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   HasOne,
   Model,
   PrimaryKey,
@@ -20,6 +21,7 @@ import Technician from "./Technician";
 import Partner from "./Partner";
 import RideShareDriverSubscription from "./RideShareDriverSubscription";
 import CustomerSubscription from "./CustomerSubscription";
+import CheckList from "./CheckList";
 
 @Table({ tableName: "jobs", timestamps: true })
 export default class Job extends Model<
@@ -38,6 +40,9 @@ export default class Job extends Model<
   declare name: string;
 
   @Column(DataType.STRING)
+  declare status: string;
+
+  @Column(DataType.STRING)
   declare duration: string;
 
   @Column(DataType.STRING)
@@ -46,23 +51,26 @@ export default class Job extends Model<
   @Column(DataType.DATE)
   declare jobDate: Date;
 
-  @HasOne(() => Vehicle)
+  @HasOne(() => Vehicle, { onDelete: "cascade" })
   declare vehicle: NonAttribute<Vehicle>;
 
-  @HasOne(() => RideShareDriverSubscription)
+  @HasOne(() => RideShareDriverSubscription, { onDelete: "cascade" })
   declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
 
-  @HasOne(() => CustomerSubscription)
+  @HasOne(() => CustomerSubscription, { onDelete: "cascade" })
   declare customerSubscription: NonAttribute<CustomerSubscription>;
 
-  @BelongsTo(() => Technician)
+  @HasMany(() => CheckList)
+  declare checkLists: NonAttribute<Array<CheckList>>;
+
+  @BelongsTo(() => Technician, { onDelete: "cascade" })
   declare technician: NonAttribute<Technician>;
 
   @ForeignKey(() => Technician)
   @Column(DataType.INTEGER)
   declare technicianId: NonAttribute<number>;
 
-  @BelongsTo(() => Partner)
+  @BelongsTo(() => Partner, { onDelete: "cascade" })
   declare partner: NonAttribute<Partner>;
 
   @ForeignKey(() => Partner)

@@ -71,7 +71,7 @@ export default class PaymentPlan extends Model<
   @Column(DataType.ARRAY(DataType.STRING))
   declare pricing: string[];
 
-  @BelongsTo(() => Plan)
+  @BelongsTo(() => Plan, { onDelete: "cascade" })
   declare plan: NonAttribute<Plan>;
 
   @ForeignKey(() => Plan)

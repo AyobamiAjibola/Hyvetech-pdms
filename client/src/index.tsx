@@ -4,12 +4,12 @@ import { Provider } from "react-redux";
 
 import reportWebVitals from "./reportWebVitals";
 import store from "./store";
-import AppContextProvider from "./context/AppContextProvider";
 import AppLoader from "./components/loader/AppLoader";
 
 import "./index.css";
 import Dexie from "dexie";
 import getIndexDB from "./db";
+import App from "./App";
 
 const appRoot = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -22,7 +22,7 @@ Dexie.exists("BookingDB")
       <React.StrictMode>
         <Provider store={store}>
           <React.Suspense fallback={<AppLoader show={true} />}>
-            <AppContextProvider />
+            <App />
           </React.Suspense>
         </Provider>
       </React.StrictMode>

@@ -34,11 +34,13 @@ const settings: AppSettings = {
     "read_technician",
     "update_technician",
     "delete_technician",
+    "manage_technician",
 
     "create_driver",
     "read_driver",
     "update_driver",
     "delete_driver",
+    "manage_driver",
 
     "read_guest",
   ],

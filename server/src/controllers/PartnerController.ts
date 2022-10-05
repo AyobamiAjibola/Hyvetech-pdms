@@ -1,12 +1,12 @@
 import { Request } from "express";
 import Joi from "joi";
 import capitalize from "capitalize";
-import { Op } from "sequelize";
+import { InferAttributes, Op } from "sequelize";
 
 import CustomAPIError from "../exceptions/CustomAPIError";
 import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
-import { CATEGORIES } from "../config/constants";
+import { CATEGORIES, UPLOAD_BASE_PATH } from "../config/constants";
 import Generic from "../utils/Generic";
 import { appCommonTypes } from "../@types/app-common";
 import settings from "../config/settings";
@@ -18,6 +18,7 @@ import Plan, { $planSchema } from "../models/Plan";
 import PaymentPlan, { $paymentPlanSchema } from "../models/PaymentPlan";
 import axiosClient from "../services/api/axiosClient";
 import _ from "lodash";
+import JobController from "./JobController";
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 
@@ -90,6 +91,7 @@ export default class PartnerController {
    * @description Create partners
    * @param req
    */
+
   public async createPartner(req: Request) {
     try {
       const body = req.body as ICreatePartnerBody;
@@ -137,36 +139,27 @@ export default class PartnerController {
           )
         );
 
-      const partnerValues = {
+      const password = <string>process.env.PARTNER_PASS;
+      const partnerValues: any = {
         email: value?.email,
         name: value?.name,
         phone: value?.phone,
         slug: Generic.generateSlug(value?.name),
         totalStaff: 0,
         totalTechnicians: 0,
-        brands: [],
-        images: [],
         yearOfIncorporation: 0,
-        cac: "",
-        workingHours: [],
       };
-      const userValues = {
+      const userValues: any = {
         username: value?.email,
         email: value?.email,
-        firstName: "Partner",
-        lastName: "Partner",
-        phone: "",
+        firstName: "Admin",
+        lastName: "Admin",
         active: true,
-        password: await this.passwordEncoder.encode("W3lc0m3@!!!"),
+        password,
+        rawPassword: password,
       };
-      const contactValues = {
+      const contactValues: any = {
         state: state.name,
-        label: "",
-        address: "",
-        city: "",
-        district: "",
-        postalCode: "",
-        mapUrl: "",
         country: "Nigeria",
       };
 
@@ -232,10 +225,156 @@ export default class PartnerController {
       await partner.$set("contact", contact);
       await partner.$set("users", user);
 
+      const result = PartnerController.formatPartner(partner);
+
       const response: HttpResponse<Partner> = {
         message: HttpStatus.OK.value,
         code: HttpStatus.OK.code,
-        result: partner,
+        result,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  /**
+   * @name createKyc
+   * @param req
+   */
+  public async createKyc(req: Request) {
+    const partnerId = req.params.partnerId as string;
+
+    try {
+      const { error, value } = Joi.object({
+        cac: Joi.string().label("CAC"),
+        name: Joi.string().label("Company Full Name"),
+        nameOfDirector: Joi.string().label("Name of Director"),
+        nameOfManager: Joi.string().label("Name of Manager"),
+        vatNumber: Joi.string().label("VAT Number"),
+        workshopAddress: Joi.string().label("Workshop Address"),
+      }).validate(req.body);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const partner = await dataSources.partnerDAOService.findById(+partnerId, {
+        include: [{ all: true }],
+      });
+
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Partner with id ${partnerId} does not exist`,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      for (const valueKey in value) {
+        if (value[valueKey].length) {
+          await partner.update({ [valueKey]: value[valueKey] });
+        }
+      }
+
+      if (value.workshopAddress.length) {
+        const contact = await partner.$get("contact");
+        if (contact) {
+          await contact.update({ address: value.workshopAddress });
+          await partner.$set("contact", contact);
+        }
+      }
+
+      const result = PartnerController.formatPartner(partner);
+
+      const response: HttpResponse<Partner> = {
+        code: HttpStatus.OK.code,
+        message: `Updated KYC Successfully`,
+        result,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  /**
+   * @name createSettings
+   * @param req
+   */
+  public async createSettings(req: Request) {
+    const partnerId = req.params.partnerId as string;
+    const fields = req.fields;
+    const logo = req.files.logo as { [p: string]: any };
+    const basePath = `${UPLOAD_BASE_PATH}/partners`;
+
+    try {
+      const { error, value } = Joi.object({
+        accountName: Joi.string().allow("").label("Account Name"),
+        accountNumber: Joi.string().allow("").label("Account Number"),
+        bankName: Joi.string().allow("").label("Bank Name"),
+        googleMap: Joi.string().allow("").label("Google Map Link"),
+        logo: Joi.binary().allow().label("Company Logo"),
+        phone: Joi.string().allow("").label("Phone"),
+        totalStaff: Joi.string().allow("").label("Total Staff"),
+        totalTechnicians: Joi.string().allow("").label("Total Technicians"),
+        brands: Joi.string().allow("").label("Company Brands"),
+        workingHours: Joi.string().allow("").label("Working Hours"),
+      }).validate(fields);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const partner = await dataSources.partnerDAOService.findById(+partnerId, {
+        include: [{ all: true }],
+      });
+
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Partner with id ${partnerId} does not exist`,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      value.brands = JSON.parse(value.brands);
+      value.workingHours = JSON.parse(value.workingHours);
+
+      for (const valueKey in value) {
+        if (valueKey !== "logo" && value[valueKey].length) {
+          await partner.update({ [valueKey]: value[valueKey] });
+        }
+      }
+
+      if (logo) {
+        partner.set({
+          logo: await Generic.getImagePath({
+            tempPath: logo.filepath,
+            filename: logo.originalFilename,
+            basePath,
+          }),
+        });
+
+        await partner.save();
+      }
+
+      const partnerJson = partner.toJSON();
+
+      const response: HttpResponse<InferAttributes<Partner>> = {
+        code: HttpStatus.OK.code,
+        message: `Updated Settings Successfully`,
+        result: partnerJson,
       };
 
       return Promise.resolve(response);
@@ -247,16 +386,19 @@ export default class PartnerController {
   /**
    * @name getPartners
    */
+
   public async getPartners() {
     try {
       const partners = await dataSources.partnerDAOService.findAll({
         include: [Category, User, Contact],
       });
 
+      const results = PartnerController.formatPartners(partners);
+
       const response: HttpResponse<Partner> = {
         message: HttpStatus.OK.value,
         code: HttpStatus.OK.code,
-        results: partners,
+        results,
       };
 
       return Promise.resolve(response);
@@ -284,10 +426,12 @@ export default class PartnerController {
           )
         );
 
+      const result = PartnerController.formatPartner(partner);
+
       const response: HttpResponse<Partner> = {
         message: HttpStatus.OK.value,
         code: HttpStatus.OK.code,
-        result: partner,
+        result,
       };
 
       return Promise.resolve(response);
@@ -301,6 +445,7 @@ export default class PartnerController {
    * @param body
    * @param partnerId
    */
+
   public async addPlan(body: ICreatePlanBody, partnerId: number) {
     try {
       const { error, value } = Joi.object($planSchema).validate(body);
@@ -405,6 +550,7 @@ export default class PartnerController {
    * @param body
    * @param partnerId
    */
+
   public async addPaymentPlan(body: ICreatePaymentPlanBody, partnerId: number) {
     try {
       const { value, error } =
@@ -469,9 +615,8 @@ export default class PartnerController {
         discount: +value.discount,
         hasPromo: value.discount.length !== 0,
         name: capitalize.words(`${price.interval} ${value.name}`),
-        label: Generic.generateSlug(
-          `${price.interval} ${plan.serviceMode} ${value.name}`
-        ),
+        label: Generic.generateSlug(`${plan.serviceMode} ${value.name}`),
+        value: price.amount,
         coverage: value.coverage,
         descriptions: value.descriptions.map((value) =>
           JSON.stringify({ ...value })
@@ -543,6 +688,7 @@ export default class PartnerController {
    * @name getPlans
    * @param partnerId
    */
+
   public async getPlans(partnerId: number) {
     try {
       const plans = await dataSources.planDAOService.findAll({
@@ -565,6 +711,7 @@ export default class PartnerController {
    * @name getPaymentPlans
    * @param partnerId
    */
+
   public async getPaymentPlans(partnerId: number) {
     try {
       const partner = await dataSources.partnerDAOService.findById(partnerId, {
@@ -685,7 +832,12 @@ export default class PartnerController {
     }
   }
 
-  public async driversFilterData(partnerId: number) {
+  public async driversFilterData(req: Request) {
+    const partnerId = req.params.partnerId as string;
+    const path = req.path;
+
+    path.search("owners-filter-data");
+
     const driverInfo: IDriverFilterProps[] = [];
 
     const response: HttpResponse<IDriverFilterProps> = {
@@ -695,7 +847,7 @@ export default class PartnerController {
     };
 
     try {
-      const partner = await dataSources.partnerDAOService.findById(partnerId);
+      const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
       if (!partner)
         return Promise.reject(
@@ -705,7 +857,17 @@ export default class PartnerController {
           )
         );
 
-      const drivers = await dataSources.rideShareDriverDAOService.findAll();
+      let drivers: any[] = [];
+
+      switch (path) {
+        case path.match("owners-filter-data")?.input:
+          drivers = await dataSources.customerDAOService.findAll();
+          break;
+        case path.match("drivers-filter-data")?.input:
+          drivers = await dataSources.rideShareDriverDAOService.findAll();
+          break;
+        default:
+      }
 
       if (!drivers.length) return Promise.resolve(response);
 
@@ -735,5 +897,39 @@ export default class PartnerController {
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  public async jobs(req: Request) {
+    const partnerId = req.params.partnerId as string;
+
+    return JobController.jobs(+partnerId);
+  }
+
+  public static formatPartners(partners: Partner[]) {
+    return partners.map((partner) => {
+      const workingHours = partner.workingHours.map((workingHour) =>
+        JSON.parse(workingHour)
+      );
+      const brands = partner.brands.map((brand) => JSON.parse(brand));
+
+      Object.assign(partner, {
+        workingHours,
+        brands,
+      });
+
+      return partner;
+    });
+  }
+
+  public static formatPartner(partner: Partner) {
+    const workingHours = partner.workingHours;
+    const brands = partner.brands;
+
+    Object.assign(partner, {
+      workingHours: workingHours.map((workingHour) => JSON.parse(workingHour)),
+      brands: brands.map((brand) => JSON.parse(brand)),
+    });
+
+    return partner;
   }
 }

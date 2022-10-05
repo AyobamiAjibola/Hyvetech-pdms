@@ -15,6 +15,7 @@ import { QUEUE_EVENTS } from "../config/constants";
 import dataSources from "../services/dao";
 import settings from "../config/settings";
 import { Op } from "sequelize";
+import Permission from "../models/Permission";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -167,7 +168,9 @@ export default class AuthenticationController {
 
       //verify password
       const hash = user.password;
-      const isMatch = await this.passwordEncoder.match(value.password, hash);
+      const password = value.password;
+
+      const isMatch = await this.passwordEncoder.match(password, hash);
 
       if (!isMatch)
         return Promise.reject(
@@ -177,16 +180,28 @@ export default class AuthenticationController {
           )
         );
 
-      const roles = await user.$get("roles");
+      const roles = await user.$get("roles", {
+        include: [
+          {
+            model: Permission,
+            attributes: ["action", "subject"],
+            through: { attributes: [] },
+          },
+        ],
+      });
+
+      if (!roles.length)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Roles does not exist`,
+            HttpStatus.UNAUTHORIZED.code
+          )
+        );
 
       const permissions = [];
 
       for (const role of roles) {
-        const _permissions = await role.$get("permissions", {
-          attributes: ["action", "subject"],
-        });
-
-        for (const _permission of _permissions) {
+        for (const _permission of role.permissions) {
           permissions.push(_permission.toJSON());
         }
       }
@@ -224,6 +239,7 @@ export default class AuthenticationController {
    * @name bootstrap
    * @description generate authentication token for anonymous users
    */
+
   public async bootstrap() {
     try {
       const user = await dataSources.userDAOService.findByAny({
@@ -331,6 +347,38 @@ export default class AuthenticationController {
         message: HttpStatus.OK.value,
         code: HttpStatus.OK.code,
         result: jwt,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  /**
+   * @name signOut
+   * @param req
+   */
+
+  public async signOut(req: Request) {
+    try {
+      const user = await dataSources.userDAOService.findByAny({
+        where: { loginToken: req.jwt },
+      });
+
+      if (!user)
+        return Promise.reject(
+          CustomAPIError.response(
+            `User does not exist or already logged out`,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      await user.update({ loginToken: "" });
+
+      const response: HttpResponse<null> = {
+        code: HttpStatus.OK.code,
+        message: HttpStatus.OK.value,
       };
 
       return Promise.resolve(response);

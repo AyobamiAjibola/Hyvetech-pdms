@@ -1,8 +1,8 @@
-import React, { FocusEvent, useState } from "react";
+import React from "react";
 import { useFormikContext } from "formik";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDateTimePicker } from "@mui/x-date-pickers";
+import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import { FormGroup, TextField } from "@mui/material";
 import ErrorField from "./ErrorField";
 
@@ -23,36 +23,18 @@ interface IDateTimeFieldProps {
 }
 
 function DateTimeInputField(props: IDateTimeFieldProps) {
-  const [open, setOpen] = useState<boolean>(false);
-
-  const { errors, touched, setFieldValue, setFieldTouched } =
-    useFormikContext();
-
-  const handleChange = (date: Date | null) => {
-    setFieldValue(props.name, date);
-  };
-
-  const handleBlur = (
-    event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFieldTouched(props.name, event.target.value.length === 0);
-  };
+  const { errors, touched, setFieldValue } = useFormikContext<any>();
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormGroup sx={props.inputGroupStyle}>
-        <DesktopDateTimePicker
-          open={open}
-          views={props.views}
-          onChange={handleChange}
+        <MobileDateTimePicker
+          disablePast
+          onChange={(date) => {
+            setFieldValue(props.name, date);
+          }}
           value={props.value}
-          //@ts-ignore
-          date={props.value}
-          rawValue={props.value}
-          renderInput={(params) => (
-            <TextField {...params} {...props} onBlur={handleBlur} />
-          )}
-          openPicker={() => setOpen(true)}
+          renderInput={(params) => <TextField {...params} {...props} />}
         />
         <ErrorField
           helperStyle={props.helperStyle}

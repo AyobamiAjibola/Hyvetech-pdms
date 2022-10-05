@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AuthenticationController from "../controllers/AuthenticationController";
 import PasswordEncoder from "../utils/PasswordEncoder";
+import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
 
 const passwordEncoder = new PasswordEncoder();
 const authenticationController = new AuthenticationController(passwordEncoder);
@@ -84,3 +85,11 @@ export const bootstrapHandler = async (req: Request, res: Response) => {
 
   res.status(response.code).json(response);
 };
+
+export const signOutHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const response = await authenticationController.signOut(req);
+
+    res.status(response.code).json(response);
+  }
+);

@@ -12,16 +12,17 @@ import {
   InferAttributes,
   InferCreationAttributes,
 } from "sequelize";
-import User from "./User";
 import Partner from "./Partner";
+
+import Technician from "./Technician";
 
 @Table({
   timestamps: false,
-  tableName: "partner_users",
+  tableName: "partner_technicians",
 })
-export default class PartnerUser extends Model<
-  InferAttributes<PartnerUser>,
-  InferCreationAttributes<PartnerUser>
+export default class PartnerTechnician extends Model<
+  InferAttributes<PartnerTechnician>,
+  InferCreationAttributes<PartnerTechnician>
 > {
   @PrimaryKey
   @AutoIncrement
@@ -32,7 +33,7 @@ export default class PartnerUser extends Model<
   @Column({ type: DataType.INTEGER })
   declare partnerId: number;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => Technician)
   @Column({ type: DataType.INTEGER })
-  declare userId: number;
+  declare technicianId: number;
 }

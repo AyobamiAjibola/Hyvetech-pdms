@@ -3,12 +3,22 @@ const settings = {
     rest: process.env.REACT_APP_REST_ROOT,
     baseURL: process.env.REACT_APP_SERVER_BASE_URL,
     customerBaseURL: process.env.REACT_APP_CUSTOMER_BASE_URL,
+    driverBaseURL: process.env.REACT_APP_DRIVER_SERVER_BASE_URL,
   },
   auth: {
     admin: <string>process.env.REACT_APP_ADMIN_AUTH,
   },
   env: process.env.NODE_ENV,
-  roles: ["ADMIN_ROLE", "CUSTOMER_ROLE", "GUEST_ROLE", "USER_ROLE"],
+  roles: [
+    "ADMIN_ROLE",
+    "CUSTOMER_ROLE",
+    "GUEST_ROLE",
+    "USER_ROLE",
+    "GARAGE_ADMIN_ROLE",
+    "GARAGE_TECHNICIAN_ROLE",
+    "RIDE_SHARE_ADMIN_ROLE",
+    "RIDE_SHARE_DRIVER_ROLE",
+  ],
   permissions: [
     "manage_all",
 
@@ -36,6 +46,18 @@ const settings = {
     "read_plan",
     "update_plan",
     "delete_plan",
+
+    "create_technician",
+    "read_technician",
+    "update_technician",
+    "delete_technician",
+
+    "create_driver",
+    "read_driver",
+    "update_driver",
+    "delete_driver",
+
+    "read_guest",
   ],
   office: {
     primary: "Jiffix Hub",

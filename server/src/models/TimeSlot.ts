@@ -40,7 +40,7 @@ export default class TimeSlot extends Model<
   @Column(DataType.BOOLEAN)
   declare available: boolean;
 
-  @BelongsTo(() => Schedule)
+  @BelongsTo(() => Schedule, { onDelete: "cascade" })
   declare schedule: NonAttribute<Schedule>;
 
   @ForeignKey(() => Schedule)

@@ -6,6 +6,7 @@ import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
 import TimeSlot from "../models/TimeSlot";
 import AppLogger from "../utils/AppLogger";
+import { HasAnyRole } from "../decorators";
 import ISchedule = appCommonTypes.ISchedule;
 
 export default class TimeSlotController {

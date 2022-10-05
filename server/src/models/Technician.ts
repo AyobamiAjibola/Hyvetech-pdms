@@ -21,6 +21,8 @@ import {
 } from "sequelize";
 import Job from "./Job";
 import TechnicianRole from "./TechnicianRole";
+import PartnerTechnician from "./PartnerTechnician";
+import Partner from "./Partner";
 
 export const $technicianSchema = {
   firstName: Joi.string().required().label("First Name"),
@@ -86,6 +88,9 @@ export default class Technician extends Model<
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare enabled: boolean;
 
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  declare hasJob: boolean;
+
   @Column(DataType.STRING(3000))
   declare loginToken: string;
 
@@ -95,12 +100,17 @@ export default class Technician extends Model<
   @Column(DataType.DATE)
   declare loginDate: Date;
 
-  @HasMany(() => Contact)
+  @HasMany(() => Contact, { onDelete: "cascade" })
   declare contacts: NonAttribute<Contact[]>;
 
-  @HasMany(() => Job)
-  declare appointments: NonAttribute<Job[]>;
+  @HasMany(() => Job, { onDelete: "cascade" })
+  declare jobs: NonAttribute<Job[]>;
 
   @BelongsToMany(() => Role, () => TechnicianRole)
   declare roles: NonAttribute<Array<Role & { TechnicianRole: TechnicianRole }>>;
+
+  @BelongsToMany(() => Partner, () => PartnerTechnician)
+  declare partners: NonAttribute<
+    Array<Partner & { PartnerTechnician: PartnerTechnician }>
+  >;
 }

@@ -26,6 +26,7 @@ import CreatePartnerForm from "../../components/forms/partner/CreatePartnerForm"
 
 import partnerImg from "../../assets/images/partner2.jpg";
 import { useNavigate } from "react-router-dom";
+import { getImageUrl } from "../../utils/generic";
 
 interface IPartnerImageData {
   id: number;
@@ -61,7 +62,7 @@ export default function PartnersPage() {
       setImages(
         partnerReducer.partners.map((partner) => ({
           id: partner.id,
-          url: partner.images.length ? partner.images[0] : partnerImg,
+          url: partner.logo ? getImageUrl(partner.logo) : partnerImg,
           title: partner.name,
           width: "33.33%",
         }))
@@ -78,7 +79,7 @@ export default function PartnersPage() {
           ...prevState,
           {
             id: partner.id,
-            url: partner.images.length ? partner.images[0] : partnerImg,
+            url: partner.logo ? getImageUrl(partner.logo) : partnerImg,
             title: partner.name,
             width: "33.33%",
           },
@@ -118,35 +119,38 @@ export default function PartnersPage() {
       <Box
         sx={{ display: "flex", flexWrap: "wrap", minWidth: 300, width: "100%" }}
       >
-        {images.map((image) => (
-          <ImageButton
-            focusRipple
-            onClick={() => navigate(`/partner/${image.id}`, { state: image })}
-            key={image.title}
-            style={{
-              width: image.width,
-            }}
-          >
-            <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-            <ImageBackdrop className="MuiImageBackdrop-root" />
-            <Image>
-              <Typography
-                component="span"
-                variant="subtitle1"
-                color="inherit"
-                sx={{
-                  position: "relative",
-                  p: 4,
-                  pt: 2,
-                  pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                }}
-              >
-                {image.title}
-                <ImageMarked className="MuiImageMarked-root" />
-              </Typography>
-            </Image>
-          </ImageButton>
-        ))}
+        {images.map((image) => {
+          console.log(image);
+          return (
+            <ImageButton
+              focusRipple
+              onClick={() => navigate(`/partner/${image.id}`, { state: image })}
+              key={image.title}
+              style={{
+                width: image.width,
+              }}
+            >
+              <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
+              <ImageBackdrop className="MuiImageBackdrop-root" />
+              <Image>
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color="inherit"
+                  sx={{
+                    position: "relative",
+                    p: 4,
+                    pt: 2,
+                    pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
+                  }}
+                >
+                  {image.title}
+                  <ImageMarked className="MuiImageMarked-root" />
+                </Typography>
+              </Image>
+            </ImageButton>
+          );
+        })}
       </Box>
       <AppModal
         size="md"

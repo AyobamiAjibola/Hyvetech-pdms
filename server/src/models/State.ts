@@ -35,6 +35,6 @@ export default class State extends Model<
   @Column(DataType.STRING)
   declare alias: string;
 
-  @HasMany(() => District)
+  @HasMany(() => District, { onDelete: "cascade" })
   declare districts: NonAttribute<District[]>;
 }

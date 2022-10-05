@@ -1,13 +1,14 @@
 import React, { createContext, useState } from "react";
 
 import { AppContextProps } from "@app-interfaces";
-import App from "../App";
 import AbilityContext, { ability } from "./AbilityContext";
 import { ICustomer, IVehicle } from "@app-models";
+import PrivateLayout from "../components/layouts/PrivateLayout";
 
 export const AppContext = createContext<AppContextProps | null>(null);
 
-function AppContextProvider() {
+export default function AppContextProvider() {
+  const [openSideNav, setOpenSideNav] = useState<boolean>(true);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [showBooking, setShowBooking] = useState<boolean>(false);
   const [showBookingBtn, setShowBookingBtn] = useState<boolean>(false);
@@ -21,37 +22,37 @@ function AppContextProvider() {
   const [showVehicles, setShowVehicles] = useState<boolean>(false);
 
   return (
-    <AppContext.Provider
-      value={{
-        isSignedIn,
-        setIsSignedIn,
-        showBooking,
-        setShowBooking,
-        showBookingBtn,
-        setShowBookingBtn,
-        checkedSlot,
-        setCheckedSlot,
-        planTab,
-        setPlanTab,
-        mobileDate,
-        setMobileDate,
-        showTime,
-        setShowTime,
-        customer,
-        setCustomer,
-        vehicle,
-        setVehicle,
-        vehicles,
-        setVehicles,
-        showVehicles,
-        setShowVehicles,
-      }}
-    >
-      <AbilityContext.Provider value={ability}>
-        <App />
-      </AbilityContext.Provider>
-    </AppContext.Provider>
+    <AbilityContext.Provider value={ability}>
+      <AppContext.Provider
+        value={{
+          openSideNav,
+          setOpenSideNav,
+          isSignedIn,
+          setIsSignedIn,
+          showBooking,
+          setShowBooking,
+          showBookingBtn,
+          setShowBookingBtn,
+          checkedSlot,
+          setCheckedSlot,
+          planTab,
+          setPlanTab,
+          mobileDate,
+          setMobileDate,
+          showTime,
+          setShowTime,
+          customer,
+          setCustomer,
+          vehicle,
+          setVehicle,
+          vehicles,
+          setVehicles,
+          showVehicles,
+          setShowVehicles,
+        }}
+      >
+        <PrivateLayout />
+      </AppContext.Provider>
+    </AbilityContext.Provider>
   );
 }
-
-export default AppContextProvider;

@@ -67,35 +67,35 @@ export default class Contact extends Model<
   @Column(DataType.STRING)
   declare mapUrl: string;
 
-  @BelongsTo(() => Customer)
+  @BelongsTo(() => Customer, { onDelete: "cascade" })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: NonAttribute<number>;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { onDelete: "cascade" })
   declare user: NonAttribute<User>;
 
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
   declare userId: NonAttribute<number>;
 
-  @BelongsTo(() => Partner)
+  @BelongsTo(() => Partner, { onDelete: "cascade" })
   declare partner: NonAttribute<Partner>;
 
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriver)
+  @BelongsTo(() => RideShareDriver, { onDelete: "cascade" })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
 
-  @BelongsTo(() => Technician)
+  @BelongsTo(() => Technician, { onDelete: "cascade" })
   declare technician: NonAttribute<Technician>;
 
   @ForeignKey(() => Technician)

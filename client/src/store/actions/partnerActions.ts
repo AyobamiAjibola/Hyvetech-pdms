@@ -1,12 +1,20 @@
 import settings from "../../config/settings";
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import asyncThunkErrorWrapper from "../../helpers/asyncThunkErrorWrapper";
 import axiosClient from "../../config/axiosClient";
-import { ICreatePartnerModel } from "../../components/forms/models/partnerModel";
+import {
+  ICreatePartnerModel,
+  IGarageSettings,
+  IKycValues,
+} from "../../components/forms/models/partnerModel";
+import asyncThunkWrapper from "../../helpers/asyncThunkWrapper";
+import { ApiResponseSuccess } from "@app-interfaces";
+import { IPartner } from "@app-models";
 
 const CREATE_PARTNER = "partner:CREATE_PARTNER";
+const CREATE_PARTNER_KYC = "partner:CREATE_PARTNER_KYC";
+const CREATE_PARTNER_SETTINGS = "partner:CREATE_PARTNER_SETTINGS";
 const GET_PARTNERS = "partner:GET_PARTNERS";
 const GET_DRIVERS_FILTER_DATA = "partner:GET_DRIVERS_FILTER_DATA";
+const GET_OWNERS_FILTER_DATA = "partner:GET_OWNERS_FILTER_DATA";
 const GET_PARTNER = "partner:GET_PARTNER";
 const CREATE_PLAN = "partner:CREATE_PLAN";
 const CREATE_PAYMENT_PLAN = "partner:CREATE_PAYMENT_PLAN";
@@ -14,40 +22,76 @@ const GET_PLANS = "partner:GET_PLANS";
 const GET_PAYMENT_PLANS = "partner:GET_PAYMENT_PLANS";
 const API_ROOT = settings.api.rest;
 
-export const createPartnerAction = createAsyncThunk<
-  any,
-  ICreatePartnerModel,
-  { rejectValue: { message: string } }
->(
+export const createPartnerAction = asyncThunkWrapper<any, ICreatePartnerModel>(
   CREATE_PARTNER,
-  asyncThunkErrorWrapper(async (args: ICreatePartnerModel) => {
+  async (args: ICreatePartnerModel) => {
     const response = await axiosClient.post(`${API_ROOT}/partners`, args);
     return response.data;
-  })
+  }
 );
 
-export const getPartnersAction = createAsyncThunk<
-  any,
-  void,
-  { rejectValue: { message: string } }
->(
+interface ICreateKycArgs {
+  data: IKycValues;
+  partnerId: number;
+}
+
+export const createPartnerKycAction = asyncThunkWrapper<
+  ApiResponseSuccess<IPartner>,
+  ICreateKycArgs
+>(CREATE_PARTNER_KYC, async (args) => {
+  const response = await axiosClient.patch(
+    `${API_ROOT}/partners/${args.partnerId}/kyc`,
+    args.data
+  );
+  return response.data;
+});
+
+interface ICreateSettingsArgs {
+  data: IGarageSettings;
+  partnerId: number;
+}
+
+export const createPartnerSettingsAction = asyncThunkWrapper<
+  ApiResponseSuccess<IPartner>,
+  ICreateSettingsArgs
+>(CREATE_PARTNER_SETTINGS, async (args) => {
+  const formData = new FormData();
+
+  formData.set("logo", args.data.logo);
+  formData.set("phone", args.data.phone);
+  formData.set("workingHours", JSON.stringify(args.data.workingHours));
+  formData.set("brands", JSON.stringify(args.data.brands));
+  formData.set("bankName", args.data.bankName);
+  formData.set("googleMap", args.data.googleMap);
+  formData.set("totalStaff", args.data.totalStaff);
+  formData.set("totalTechnicians", args.data.totalTechnicians);
+  formData.set("accountNumber", args.data.accountNumber);
+  formData.set("accountName", args.data.accountName);
+
+  axiosClient.defaults.headers.patch["Content-Type"] = "multipart/form-data";
+
+  const response = await axiosClient.patch(
+    `${API_ROOT}/partners/${args.partnerId}/settings`,
+    formData
+  );
+
+  return response.data;
+});
+
+export const getPartnersAction = asyncThunkWrapper<any, void>(
   GET_PARTNERS,
-  asyncThunkErrorWrapper(async () => {
+  async () => {
     const response = await axiosClient.get(`${API_ROOT}/partners`);
     return response.data;
-  })
+  }
 );
 
-export const getPartnerAction = createAsyncThunk<
-  any,
-  number,
-  { rejectValue: { message: string } }
->(
+export const getPartnerAction = asyncThunkWrapper<any, number>(
   GET_PARTNER,
-  asyncThunkErrorWrapper(async (id: number) => {
+  async (id: number) => {
     const response = await axiosClient.get(`${API_ROOT}/partners/${id}`);
     return response.data;
-  })
+  }
 );
 
 interface AddPlanArgs {
@@ -55,19 +99,15 @@ interface AddPlanArgs {
   partnerId: string;
 }
 
-export const addPlanAction = createAsyncThunk<
-  any,
-  AddPlanArgs,
-  { rejectValue: { message: string } }
->(
+export const addPlanAction = asyncThunkWrapper<any, AddPlanArgs>(
   CREATE_PLAN,
-  asyncThunkErrorWrapper(async (args: AddPlanArgs) => {
+  async (args: AddPlanArgs) => {
     const response = await axiosClient.post(
       `${API_ROOT}/partners/${args.partnerId}/plans`,
       args.plan
     );
     return response.data;
-  })
+  }
 );
 
 interface AddPaymentPlanArgs {
@@ -75,59 +115,53 @@ interface AddPaymentPlanArgs {
   partnerId: string;
 }
 
-export const addPaymentPlanAction = createAsyncThunk<
-  any,
-  AddPaymentPlanArgs,
-  { rejectValue: { message: string } }
->(
+export const addPaymentPlanAction = asyncThunkWrapper<any, AddPaymentPlanArgs>(
   CREATE_PAYMENT_PLAN,
-  asyncThunkErrorWrapper(async (args: AddPaymentPlanArgs) => {
+  async (args: AddPaymentPlanArgs) => {
     const response = await axiosClient.post(
       `${API_ROOT}/partners/${args.partnerId}/payment-plans`,
       args.paymentPlan
     );
     return response.data;
-  })
+  }
 );
 
-export const getPlansAction = createAsyncThunk<
-  any,
-  number,
-  { rejectValue: { message: string } }
->(
+export const getPlansAction = asyncThunkWrapper<any, number>(
   GET_PLANS,
-  asyncThunkErrorWrapper(async (partnerId: number) => {
+  async (partnerId: number) => {
     const response = await axiosClient.get(
       `${API_ROOT}/partners/${partnerId}/plans`
     );
     return response.data;
-  })
+  }
 );
 
-export const getPaymentPlansAction = createAsyncThunk<
-  any,
-  number,
-  { rejectValue: { message: string } }
->(
+export const getPaymentPlansAction = asyncThunkWrapper<any, number>(
   GET_PAYMENT_PLANS,
-  asyncThunkErrorWrapper(async (partnerId: number) => {
+  async (partnerId: number) => {
     const response = await axiosClient.get(
       `${API_ROOT}/partners/${partnerId}/payment-plans`
     );
     return response.data;
-  })
+  }
 );
 
-export const getDriversFilterDataAction = createAsyncThunk<
-  any,
-  number,
-  { rejectValue: { message: string } }
->(
+export const getDriversFilterDataAction = asyncThunkWrapper<any, number>(
   GET_DRIVERS_FILTER_DATA,
-  asyncThunkErrorWrapper(async (partnerId: number) => {
+  async (partnerId: number) => {
     const response = await axiosClient.get(
       `${API_ROOT}/partners/${partnerId}/drivers-filter-data`
     );
     return response.data;
-  })
+  }
+);
+
+export const getOwnersFilterDataAction = asyncThunkWrapper<any, number>(
+  GET_OWNERS_FILTER_DATA,
+  async (partnerId: number) => {
+    const response = await axiosClient.get(
+      `${API_ROOT}/partners/${partnerId}/owners-filter-data`
+    );
+    return response.data;
+  }
 );

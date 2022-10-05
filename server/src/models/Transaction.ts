@@ -16,6 +16,8 @@ import {
 } from "sequelize";
 import Customer from "./Customer";
 import RideShareDriver from "./RideShareDriver";
+import CustomerSubscription from "./CustomerSubscription";
+import RideShareDriverSubscription from "./RideShareDriverSubscription";
 
 @Table({
   timestamps: true,
@@ -87,14 +89,28 @@ export default class Transaction extends Model<
   @Column(DataType.DATE)
   declare paidAt: Date;
 
-  @BelongsTo(() => Customer)
+  @BelongsTo(() => CustomerSubscription, { onDelete: "cascade" })
+  declare customerSubscription: NonAttribute<CustomerSubscription>;
+
+  @ForeignKey(() => CustomerSubscription)
+  @Column(DataType.INTEGER)
+  declare customerSubscriptionId: NonAttribute<number>;
+
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: "cascade" })
+  declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
+
+  @ForeignKey(() => RideShareDriverSubscription)
+  @Column(DataType.INTEGER)
+  declare rideShareDriverSubscriptionId: NonAttribute<number>;
+
+  @BelongsTo(() => Customer, { onDelete: "cascade" })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
-  declare customerId: number;
+  declare customerId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriver)
+  @BelongsTo(() => RideShareDriver, { onDelete: "cascade" })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)

@@ -1,7 +1,16 @@
 declare module "@app-interfaces" {
   import React from "react";
-  import { GenericObjectType } from "@app-types";
-  import { ICustomer, IVehicle } from "@app-models";
+  import { GenericObjectType, ICheckListAnswer } from "@app-types";
+  import {
+    ICustomer,
+    IJob,
+    IPartner,
+    IPermission,
+    IRideShareDriverSubscription,
+    ITechnician,
+    IVehicle,
+  } from "@app-models";
+  import { JwtPayload } from "jsonwebtoken";
 
   interface IModule {
     customers: { name: string; data: GenericObjectType[] };
@@ -9,6 +18,18 @@ declare module "@app-interfaces" {
     vehicles: { name: string; data: GenericObjectType[] };
     transactions: { name: string; data: GenericObjectType[] };
   }
+
+  interface ITableColumnOptions {
+    onView?: (args: any) => void;
+    onEdit?: (args: any) => void;
+    onDelete?: (args: any) => void;
+  }
+
+  type CustomJwtPayload = JwtPayload & {
+    permissions: IPermission[];
+    userId: number;
+    [p: string]: any;
+  };
 
   interface IThunkAPIPayloadError {
     message: string;
@@ -23,31 +44,6 @@ declare module "@app-interfaces" {
   interface IDashboardData {
     dailyData: IModule;
     monthlyData: IModule;
-  }
-
-  interface AppContextProps {
-    showBooking: boolean;
-    setShowBooking: React.Dispatch<React.SetStateAction<boolean>>;
-    showBookingBtn: boolean;
-    setShowBookingBtn: React.Dispatch<React.SetStateAction<boolean>>;
-    checkedSlot: boolean;
-    setCheckedSlot: React.Dispatch<React.SetStateAction<boolean>>;
-    planTab: number;
-    setPlanTab: React.Dispatch<React.SetStateAction<number>>;
-    mobileDate: boolean;
-    setMobileDate: React.Dispatch<React.SetStateAction<boolean>>;
-    showTime: boolean;
-    setShowTime: React.Dispatch<React.SetStateAction<boolean>>;
-    isSignedIn: boolean;
-    setIsSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-    customer: ICustomer | null;
-    setCustomer: React.Dispatch<React.SetStateAction<ICustomer | null>>;
-    vehicle: IVehicle | null;
-    setVehicle: React.Dispatch<React.SetStateAction<IVehicle | null>>;
-    vehicles: IVehicle[];
-    setVehicles: React.Dispatch<React.SetStateAction<IVehicle[]>>;
-    showVehicles: boolean;
-    setShowVehicles: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
   interface ISignInModel {
@@ -70,7 +66,7 @@ declare module "@app-interfaces" {
     message: string;
     code: number;
     timestamp?: string;
-    result?: T;
+    result?: T | null;
     results?: T[];
   }
 
@@ -80,9 +76,53 @@ declare module "@app-interfaces" {
     Element: ReturnType<JSX.Element>;
   }
 
+  interface AppContextProps {
+    showBooking: boolean;
+    setShowBooking: React.Dispatch<React.SetStateAction<boolean>>;
+    openSideNav: boolean;
+    setOpenSideNav: React.Dispatch<React.SetStateAction<boolean>>;
+    showBookingBtn: boolean;
+    setShowBookingBtn: React.Dispatch<React.SetStateAction<boolean>>;
+    checkedSlot: boolean;
+    setCheckedSlot: React.Dispatch<React.SetStateAction<boolean>>;
+    planTab: number;
+    setPlanTab: React.Dispatch<React.SetStateAction<number>>;
+    mobileDate: boolean;
+    setMobileDate: React.Dispatch<React.SetStateAction<boolean>>;
+    showTime: boolean;
+    setShowTime: React.Dispatch<React.SetStateAction<boolean>>;
+    isSignedIn: boolean;
+    setIsSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+    customer: ICustomer | null;
+    setCustomer: React.Dispatch<React.SetStateAction<ICustomer | null>>;
+    vehicle: IVehicle | null;
+    setVehicle: React.Dispatch<React.SetStateAction<IVehicle | null>>;
+    vehicles: IVehicle[];
+    setVehicles: React.Dispatch<React.SetStateAction<IVehicle[]>>;
+    showVehicles: boolean;
+    setShowVehicles: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+
   interface CustomerPageContextProps {
     customer?: ICustomer;
     setCustomer: React.Dispatch<React.SetStateAction<ICustomer | undefined>>;
+  }
+
+  interface TechniciansPageContextProps {
+    showCreate: boolean;
+    setShowCreate: React.Dispatch<React.SetStateAction<boolean>>;
+    showEdit: boolean;
+    setShowEdit: React.Dispatch<React.SetStateAction<boolean>>;
+    showDelete: boolean;
+    setShowDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    showView: boolean;
+    setShowView: React.Dispatch<React.SetStateAction<boolean>>;
+    detail: ITechnician | null;
+    setDetail: React.Dispatch<React.SetStateAction<ITechnician | null>>;
+    job: IJob | null;
+    setJob: React.Dispatch<React.SetStateAction<IJob | null>>;
+    showViewJob: boolean;
+    setShowViewJob: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
   interface PartnerPageContextProps {
@@ -90,6 +130,19 @@ declare module "@app-interfaces" {
     setProgramme: React.Dispatch<React.SetStateAction<string>>;
     modeOfService?: string;
     setModeOfService: React.Dispatch<React.SetStateAction<string>>;
+    partner: IPartner | null;
+    setPartner: React.Dispatch<React.SetStateAction<IPartner | null>>;
+  }
+
+  interface DriverVehiclesContextProps {
+    viewSub: boolean;
+    setViewSub: React.Dispatch<React.SetStateAction<boolean>>;
+    driverSub: IRideShareDriverSubscription | null;
+    setDriverSub: React.Dispatch<
+      React.SetStateAction<IRideShareDriverSubscription | null>
+    >;
+    vehicle: IVehicle | null;
+    setVehicle: React.Dispatch<React.SetStateAction<IVehicle | null>>;
   }
 
   export interface IComponentErrorState {
@@ -108,5 +161,17 @@ declare module "@app-interfaces" {
   interface ApiResponseError {
     message: string;
     code: number;
+  }
+
+  interface ICheckListQuestion {
+    answer: ICheckListAnswer[];
+  }
+
+  interface ICheckListSection {
+    question: ICheckListQuestion[];
+  }
+
+  interface ICheckListValues {
+    section: ICheckListSection[];
   }
 }

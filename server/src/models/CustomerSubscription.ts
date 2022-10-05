@@ -6,6 +6,7 @@ import {
   DataType,
   ForeignKey,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -19,6 +20,7 @@ import Customer from "./Customer";
 import Vehicle from "./Vehicle";
 import CustomerPlanSubscription from "./CustomerPlanSubscription";
 import Job from "./Job";
+import Transaction from "./Transaction";
 
 @Table({
   timestamps: true,
@@ -102,10 +104,13 @@ export default class CustomerSubscription extends Model<
     Array<Customer & { CustomerPlanSubscription: CustomerPlanSubscription }>
   >;
 
-  @HasMany(() => Vehicle)
+  @HasMany(() => Vehicle, { onDelete: "cascade" })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @BelongsTo(() => Job)
+  @HasOne(() => Transaction, { onDelete: "cascade" })
+  declare transaction: NonAttribute<Transaction>;
+
+  @BelongsTo(() => Job, { onDelete: "cascade" })
   declare job: NonAttribute<Job>;
 
   @ForeignKey(() => Job)

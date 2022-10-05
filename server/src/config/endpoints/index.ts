@@ -6,6 +6,11 @@ import timeslotEndpoints from "./timeslot.endpoints";
 import miscellaneousEndpoints from "./miscellaneous.endpoints";
 import partnerEndpoints from "./partner.endpoints";
 import rideShareEndpoints from "./ride-share.endpoints";
+import vehicleEndpoints from "./vehicle.endpoints";
+import technicianEndpoints from "./technician.endpoints";
+import jobEndpoints from "./job.endpoints";
+import userEndpoints from "./user.endpoints";
+import checkListEndpoints from "./check-list.endpoints";
 
 const endpoints = authEndpoints
   .concat(appointmentEndpoints)
@@ -14,6 +19,11 @@ const endpoints = authEndpoints
   .concat(miscellaneousEndpoints)
   .concat(partnerEndpoints)
   .concat(timeslotEndpoints)
-  .concat(rideShareEndpoints);
+  .concat(rideShareEndpoints)
+  .concat(vehicleEndpoints)
+  .concat(technicianEndpoints)
+  .concat(jobEndpoints)
+  .concat(userEndpoints)
+  .concat(checkListEndpoints);
 
 export default endpoints;

@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Divider, Paper, Stack } from "@mui/material";
 import useAppSelector from "../../hooks/useAppSelector";
@@ -18,6 +18,7 @@ import {
   clearGetPlansStatus,
 } from "../../store/reducers/partnerReducer";
 import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from "../../config/constants";
+import useAdmin from "../../hooks/useAdmin";
 
 export const PartnerPageContext = createContext<PartnerPageContextProps | null>(
   null
@@ -26,21 +27,30 @@ export const PartnerPageContext = createContext<PartnerPageContextProps | null>(
 function PartnerPage() {
   const [programme, setProgramme] = useState<string>("");
   const [modeOfService, setModeOfService] = useState<string>("");
-  const [partner, setPartner] = useState<IPartner | null>();
+  const [partner, setPartner] = useState<IPartner | null>(null);
   const [tabs, setTabs] = useState<ITab[]>([]);
 
   const params = useParams();
+  const admin = useAdmin();
+
+  const partnerId = useMemo(() => {
+    if (admin.isTechAdmin && admin.user) {
+      return admin.user.partner.id;
+    }
+
+    if (params.id) {
+      return +(params.id as unknown as string);
+    }
+  }, [admin.isTechAdmin, admin.user, params.id]);
 
   const partnerReducer = useAppSelector((state) => state.partnerReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (partnerReducer.getPartnerStatus === "idle") {
-      const id = params.id as unknown as string;
-
-      dispatch(getPartnerAction(+id));
+      if (partnerId) dispatch(getPartnerAction(partnerId));
     }
-  }, [dispatch, params.id, partnerReducer.getPartnerStatus]);
+  }, [dispatch, partnerId, partnerReducer.getPartnerStatus]);
 
   useEffect(() => {
     if (partnerReducer.getPartnerStatus === "completed") {
@@ -67,19 +77,15 @@ function PartnerPage() {
 
   useEffect(() => {
     if (partnerReducer.getPlansStatus === "idle") {
-      const id = params.id as unknown as string;
-
-      dispatch(getPlansAction(+id));
+      if (partnerId) dispatch(getPlansAction(partnerId));
     }
-  }, [dispatch, params.id, partnerReducer.getPlansStatus]);
+  }, [dispatch, partnerId, partnerReducer.getPlansStatus]);
 
   useEffect(() => {
     if (partnerReducer.getPaymentPlansStatus === "idle") {
-      const id = params.id as unknown as string;
-
-      dispatch(getPaymentPlansAction(+id));
+      if (partnerId) dispatch(getPaymentPlansAction(partnerId));
     }
-  }, [dispatch, params.id, partnerReducer.getPaymentPlansStatus]);
+  }, [dispatch, partnerId, partnerReducer.getPaymentPlansStatus]);
 
   useEffect(() => {
     return () => {
@@ -93,7 +99,14 @@ function PartnerPage() {
     <React.Fragment>
       <h1>{partner?.name}</h1>
       <PartnerPageContext.Provider
-        value={{ programme, setProgramme, modeOfService, setModeOfService }}
+        value={{
+          programme,
+          setProgramme,
+          modeOfService,
+          setModeOfService,
+          partner,
+          setPartner,
+        }}
       >
         <Stack
           direction="column"
