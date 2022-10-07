@@ -38,7 +38,7 @@ app.use(json()); // Parse incoming requests data
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev")); //Route debugger
 
-app.use("/uploads", authenticateRoute, _static(path.resolve("uploads")));
+app.use("/uploads", _static(path.resolve("uploads")));
 
 // Route API documentation
 app.use(`${settings.service.apiRoot}/docs`, serve, setup(openapiSpecification));

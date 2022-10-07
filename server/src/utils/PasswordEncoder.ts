@@ -13,6 +13,8 @@ export default class PasswordEncoder implements BcryptPasswordEncoder {
   async encode(rawPassword: string): Promise<string> {
     const salt = await genSalt(this.saltRounds);
 
+    console.log(<string>process.env.BCRYPT_SALT)
+
     return hash(rawPassword, salt);
   }
 

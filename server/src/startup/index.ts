@@ -21,7 +21,7 @@ export default async function startup(server: HttpServer, io: SocketServer) {
   await dataStore.init({ flush: true });
   await database.init();
   const mongodb = await database.mongodb();
-  await database.sequelize.sync({ alter: true });
+  await database.sequelize.sync();
   await CommandLineRunner.run();
 
   await QueueManager.init({
