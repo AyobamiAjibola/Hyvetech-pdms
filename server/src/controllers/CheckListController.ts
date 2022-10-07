@@ -9,6 +9,18 @@ import CheckList from "../models/CheckList";
 import { InferAttributes } from "sequelize";
 import HttpResponse = appCommonTypes.HttpResponse;
 
+const initialFormValues = {
+  title: "",
+  questions: [
+    {
+      answers: [{ answer: "", weight: "" }],
+      media: false,
+      note: false,
+      question: "",
+    },
+  ],
+};
+
 export default class CheckListController {
   public static async create(req: Request) {
     try {
@@ -54,7 +66,7 @@ export default class CheckListController {
 
       const checkList = await dataSources.checkListDAOService.create(data);
 
-      await partner.$set("checkLists", [checkList]);
+      await partner.$add("checkLists", [checkList]);
 
       const checkLists = await dataSources.checkListDAOService.findAll({
         include: [{ all: true }],
@@ -74,13 +86,68 @@ export default class CheckListController {
     }
   }
 
+  public static async update(req: Request) {
+    const checkListId = req.params.checkListId as string;
+
+    try {
+      const { error, value } = Joi.object({
+        sections: Joi.array().items(Joi.any()).required(),
+      }).validate(req.body);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const sections = value.sections;
+
+      const checkList = await dataSources.checkListDAOService.findById(
+        +checkListId,
+        { include: [{ all: true }] }
+      );
+
+      if (!checkList)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Check List does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      await checkList.update({ sections });
+
+      const response: HttpResponse<CheckList> = {
+        code: HttpStatus.OK.code,
+        message: "Added Check List Section Successfully",
+        result: checkList,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
   public static async checkLists() {
     try {
       const checkLists = await dataSources.checkListDAOService.findAll({
         include: [{ all: true }],
       });
 
-      const results = checkLists.map((checkList) => checkList.toJSON());
+      const results = checkLists.map((checkList) => {
+        const result = checkList.toJSON();
+
+        if (result.sections)
+          result.sections = result.sections.map((section) =>
+            JSON.parse(section)
+          );
+        else result.sections = JSON.parse(JSON.stringify([initialFormValues]));
+
+        return result;
+      });
 
       const response: HttpResponse<InferAttributes<CheckList>> = {
         code: HttpStatus.OK.code,
@@ -114,6 +181,10 @@ export default class CheckListController {
         );
 
       const result = checkList.toJSON();
+
+      if (result.sections)
+        result.sections = result.sections.map((section) => JSON.parse(section));
+      else result.sections = JSON.parse(JSON.stringify([initialFormValues]));
 
       const response: HttpResponse<InferAttributes<CheckList>> = {
         code: HttpStatus.OK.code,

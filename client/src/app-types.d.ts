@@ -3,15 +3,18 @@ declare module "@app-types" {
   type CallableFunction = () => void;
   type CustomHookMessage = { message: string };
   type GenericObjectType = { [t: string]: any };
-  type ICheckListAnswer = { answer: string; weight: string };
-  type ICheckListQuestion = {
+  type CheckListAnswerType = { answer: string; weight: string };
+  type CheckListQuestionType = {
     question: string;
-    requireMedia: boolean;
-    note?: string;
-    answers: ICheckListAnswer[];
+    media: boolean;
+    note?: boolean;
+    answers: Array<CheckListAnswerType>;
   };
-  type ICheckListSection = {
+  type CheckListSectionType = {
     title: string;
-    questions: ICheckListQuestion[];
+    questions: Array<CheckListQuestionType>;
+  };
+  type CheckListType = {
+    sections: Array<CheckListSectionType>;
   };
 }

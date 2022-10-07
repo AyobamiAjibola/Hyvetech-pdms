@@ -19,13 +19,18 @@ export const createCheckListAction = asyncThunkWrapper<
   return response.data;
 });
 
+interface IUpdateCheckList {
+  id: number;
+  data: string;
+}
+
 export const updateCheckListAction = asyncThunkWrapper<
   ApiResponseSuccess<ICheckList>,
-  any
+  IUpdateCheckList
 >(UPDATE_CHECK_LIST, async (args) => {
-  const response = await axiosClient.put(
+  const response = await axiosClient.patch(
     `${API_ROOT}/checkLists/${args.id}`,
-    args
+    args.data
   );
   return response.data;
 });

@@ -4,7 +4,6 @@ import {
   Column,
   DataType,
   ForeignKey,
-  HasMany,
   HasOne,
   Model,
   PrimaryKey,
@@ -60,8 +59,8 @@ export default class Job extends Model<
   @HasOne(() => CustomerSubscription, { onDelete: "cascade" })
   declare customerSubscription: NonAttribute<CustomerSubscription>;
 
-  @HasMany(() => CheckList)
-  declare checkLists: NonAttribute<Array<CheckList>>;
+  @HasOne(() => CheckList)
+  declare checkList: NonAttribute<CheckList>;
 
   @BelongsTo(() => Technician, { onDelete: "cascade" })
   declare technician: NonAttribute<Technician>;

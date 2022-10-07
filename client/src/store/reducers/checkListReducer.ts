@@ -115,6 +115,7 @@ const checkListSlice = createSlice({
         state.updateCheckListStatus = "completed";
         state.updateCheckListSuccess = action.payload.message;
         state.checkLists = action.payload.results as ICheckList[];
+        state.checkList = action.payload.result as ICheckList;
       })
       .addCase(updateCheckListAction.rejected, (state, action) => {
         state.updateCheckListStatus = "failed";

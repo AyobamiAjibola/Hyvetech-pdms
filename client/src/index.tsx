@@ -9,7 +9,7 @@ import AppLoader from "./components/loader/AppLoader";
 import "./index.css";
 import Dexie from "dexie";
 import getIndexDB from "./db";
-import AppTest from "./tests/AppTest";
+import App from "./App";
 
 const appRoot = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -22,7 +22,7 @@ Dexie.exists("BookingDB")
       <React.StrictMode>
         <Provider store={store}>
           <React.Suspense fallback={<AppLoader show={true} />}>
-            <AppTest />
+            <App />
           </React.Suspense>
         </Provider>
       </React.StrictMode>

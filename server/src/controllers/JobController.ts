@@ -19,7 +19,6 @@ import {
 } from "../config/constants";
 import Plan from "../models/Plan";
 import Generic from "../utils/Generic";
-import { HasAnyRole } from "../decorators";
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class JobController {
@@ -95,6 +94,16 @@ export default class JobController {
           )
         );
 
+      const checkLists = await partner.$get("checkLists");
+
+      if (!checkLists.length)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Check List does not exist. You need a check list to carry out inspection`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
       const technician = await dataSources.technicianDAOService.findById(
         +value.techId
       );
@@ -162,6 +171,9 @@ export default class JobController {
       });
 
       const job = await dataSources.jobDAOService.create(jobValues);
+
+      //associate job with check list
+      await job.$set("checkList", checkLists[0]);
 
       //associate job with vehicle
       await job.$set("vehicle", vehicle[0]);
