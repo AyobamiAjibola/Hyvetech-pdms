@@ -2,7 +2,7 @@ import checkListModel, { ICheckListValues } from "../models/checkListModel";
 import React, { useContext, useEffect, useState } from "react";
 import SelectField, { ISelectData } from "../fields/SelectField";
 import { Form, useFormikContext } from "formik";
-import { CheckListPageContextProps } from "@app-interfaces";
+import { CheckListsPageContextProps } from "@app-interfaces";
 import { Grid } from "@mui/material";
 import TextInputField from "../fields/TextInputField";
 import { LoadingButton } from "@mui/lab";
@@ -23,7 +23,7 @@ export default function CheckListForm(props: ICheckListFormProps) {
     useFormikContext<ICheckListValues>();
   const { partners, showCreate, showEdit } = useContext(
     CheckListsPageContext
-  ) as CheckListPageContextProps;
+  ) as CheckListsPageContextProps;
 
   useEffect(() => {
     if (!showCreate || !showEdit) resetForm();

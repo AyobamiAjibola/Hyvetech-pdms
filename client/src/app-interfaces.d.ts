@@ -2,6 +2,7 @@ declare module "@app-interfaces" {
   import React from "react";
   import { GenericObjectType, ICheckListSection } from "@app-types";
   import {
+    ICheckList,
     ICustomer,
     IJob,
     IPartner,
@@ -125,7 +126,7 @@ declare module "@app-interfaces" {
     setShowViewJob: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
-  interface CheckListPageContextProps {
+  interface CheckListsPageContextProps {
     showCreate: boolean;
     setShowCreate: React.Dispatch<React.SetStateAction<boolean>>;
     showEdit: boolean;
@@ -136,6 +137,13 @@ declare module "@app-interfaces" {
     setShowView: React.Dispatch<React.SetStateAction<boolean>>;
     partners: IPartner[];
     setPartners: React.Dispatch<React.SetStateAction<IPartner[]>>;
+  }
+
+  interface CheckListPageContextProps {
+    checkListId?: number;
+    setCheckListId: React.Dispatch<React.SetStateAction<number | undefined>>;
+    checkLists: ICheckList[];
+    setCheckLists: React.Dispatch<React.SetStateAction<ICheckList[]>>;
   }
 
   interface PartnerPageContextProps {

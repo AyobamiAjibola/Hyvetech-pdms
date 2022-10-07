@@ -26,6 +26,7 @@ export default class CheckListController {
         );
 
       const partnerId = value.partner as string;
+      const name = value.checkList;
 
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
@@ -37,9 +38,19 @@ export default class CheckListController {
           )
         );
 
-      const data: any = {
-        name: value.checkList,
-      };
+      const exist = await dataSources.checkListDAOService.findByAny({
+        where: { name },
+      });
+
+      if (exist)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Check list with name already exist`,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const data: any = { name };
 
       const checkList = await dataSources.checkListDAOService.create(data);
 

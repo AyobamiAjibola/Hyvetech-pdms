@@ -144,6 +144,8 @@ function DriverSubscription() {
     dispatch(driverAssignJobAction(data));
   };
 
+  console.log(driverSub);
+
   return (
     <React.Fragment>
       <TableContainer

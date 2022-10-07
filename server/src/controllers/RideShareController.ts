@@ -6,7 +6,6 @@ import Vehicle from "../models/Vehicle";
 import RideShareDriverSubscription from "../models/RideShareDriverSubscription";
 import Contact from "../models/Contact";
 import Transaction from "../models/Transaction";
-import { HasAnyRole } from "../decorators";
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class RideShareController {
@@ -21,6 +20,8 @@ export default class RideShareController {
         attributes: { exclude: ["password", "loginToken"] },
         include: [Vehicle, RideShareDriverSubscription, Contact, Transaction],
       });
+
+      console.log(driver);
 
       if (!driver) {
         response.result = driver;

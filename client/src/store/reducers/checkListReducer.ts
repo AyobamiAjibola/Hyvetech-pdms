@@ -181,5 +181,7 @@ export const {
   clearCreateCheckListStatus,
   clearDeleteCheckListStatus,
   clearUpdateCheckListStatus,
+  clearGetCheckListStatus,
+  clearGetCheckListsStatus,
 } = checkListSlice.actions;
 export default checkListSlice.reducer;

@@ -14,7 +14,7 @@ export default function globalExceptionHandler(
   res: Response,
   next: NextFunction
 ) {
-  logger.error(err);
+  console.error(err);
 
   if (res.headersSent) return next(err);
 

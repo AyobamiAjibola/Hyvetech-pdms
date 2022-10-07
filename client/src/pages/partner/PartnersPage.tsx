@@ -29,6 +29,11 @@ import partnerImg from "../../assets/images/partner2.jpg";
 import { useNavigate } from "react-router-dom";
 import { getImageUrl } from "../../utils/generic";
 import { IImageButtonData } from "@app-interfaces";
+import { clearGetStatesAndDistrictsStatus } from "../../store/reducers/miscellaneousReducer";
+import {
+  clearCreatePartnerStatus,
+  clearGetPartnersStatus,
+} from "../../store/reducers/partnerReducer";
 
 export default function PartnersPage() {
   const [createPartner, setCreatePartner] = useState<boolean>(false);
@@ -83,6 +88,14 @@ export default function PartnersPage() {
       setCreatePartner(false);
     }
   }, [partnerReducer.createPartnerStatus, partnerReducer.partner]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearGetStatesAndDistrictsStatus());
+      dispatch(clearGetPartnersStatus());
+      dispatch(clearCreatePartnerStatus());
+    };
+  }, [dispatch]);
 
   const handleOpenCreatePartner = () => {
     setCreatePartner(true);

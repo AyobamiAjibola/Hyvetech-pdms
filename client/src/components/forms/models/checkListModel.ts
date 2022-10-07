@@ -22,6 +22,30 @@ const fields = {
       require: "Partner is required",
     },
   },
+  sections: {
+    name: "sections",
+    label: "Section Title*",
+    error: {
+      invalid: "Section Title is invalid",
+      require: "Section Title is required",
+    },
+  },
+  questions: {
+    name: "questions",
+    label: "Question*",
+    error: {
+      invalid: "Question is invalid",
+      require: "Question is required",
+    },
+  },
+  answers: {
+    name: "answers",
+    label: "Answer*",
+    error: {
+      invalid: "Answer is invalid",
+      require: "Answer is required",
+    },
+  },
 };
 
 const initialValues: ICheckListValues = { checkList: "", partner: "" };

@@ -29,6 +29,12 @@ const HomePage = React.lazy(() => import("../context/AppContextProvider"));
 export const sideNavs: ISideNav[] = [
   { tag: "all", name: "Dashboard", path: "/dashboard", Icon: Dashboard },
   { tag: "super", name: "Customers", path: "/customers", Icon: Groups },
+  {
+    tag: "super",
+    name: "Check Lists",
+    path: "/checkLists",
+    Icon: PlaylistAddCheck,
+  },
   { tag: "drivers", name: "Drivers", path: "/drivers", Icon: TaxiAlert },
   {
     tag: "techs",
@@ -43,12 +49,6 @@ export const sideNavs: ISideNav[] = [
     Icon: Garage,
   },
   { tag: "super", name: "Partners", path: "/partners", Icon: Handshake },
-  {
-    tag: "super",
-    name: "Check Lists",
-    path: "/checkLists",
-    Icon: PlaylistAddCheck,
-  },
   {
     tag: "super",
     name: "Appointments",

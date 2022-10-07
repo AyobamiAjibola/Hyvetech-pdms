@@ -12,7 +12,6 @@ import dataSources from "../services/dao";
 import { Op } from "sequelize";
 import Generic from "../utils/Generic";
 import { $loginSchema } from "../models/User";
-import { HasAnyRole } from "../decorators";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -84,10 +83,10 @@ export default class TechnicianController {
           )
         );
 
-      const password = Generic.generateRandomString(8);
+      const password = value.password;
+      value.rawPassword = password;
 
       value.password = await this.passwordEncoder.encode(password);
-      value.rawPassword = password;
 
       const user = await dataSources.technicianDAOService.create(value);
 

@@ -1,11 +1,10 @@
 import React, { createContext, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { Button } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { Formik } from "formik";
-import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 
-import { CheckListPageContextProps, IImageButtonData } from "@app-interfaces";
+import { CheckListsPageContextProps, IImageButtonData } from "@app-interfaces";
 import AppModal from "../../components/modal/AppModal";
 import checkListModel, {
   ICheckListValues,
@@ -15,23 +14,21 @@ import useAppDispatch from "../../hooks/useAppDispatch";
 import useAppSelector from "../../hooks/useAppSelector";
 import { getPartnersAction } from "../../store/actions/partnerActions";
 import CheckListForm from "../../components/forms/checkList/CheckListForm";
-import checkListImg from "../../assets/images/check-list.jpeg";
-import {
-  Image,
-  ImageBackdrop,
-  ImageButton,
-  ImageMarked,
-  ImageSrc,
-} from "../../components/buttons/imageButton";
+import checkListImg from "../../assets/images/check-list2.png";
 import {
   createCheckListAction,
   getCheckListsAction,
 } from "../../store/actions/checkListActions";
 import { CustomHookMessage } from "@app-types";
 import AppAlert from "../../components/alerts/AppAlert";
+import CheckListCard from "../../components/checkList/CheckListCard";
+import {
+  clearCreateCheckListStatus,
+  clearGetCheckListsStatus,
+} from "../../store/reducers/checkListReducer";
 
 export const CheckListsPageContext =
-  createContext<CheckListPageContextProps | null>(null);
+  createContext<CheckListsPageContextProps | null>(null);
 
 const { initialValues, schema } = checkListModel;
 
@@ -41,7 +38,7 @@ function CheckListsPage() {
   const [showDelete, setShowDelete] = useState<boolean>(false);
   const [showView, setShowView] = useState<boolean>(false);
   const [partners, setPartners] = useState<IPartner[]>([]);
-  const [images, setImages] = useState<IImageButtonData[]>([]);
+  const [_checkLists, setCheckLists] = useState<IImageButtonData[]>([]);
   const [success, setSuccess] = useState<CustomHookMessage>();
   const [error, setError] = useState<CustomHookMessage>();
 
@@ -71,7 +68,7 @@ function CheckListsPage() {
 
   useEffect(() => {
     if (checkListReducer.getCheckListsStatus === "completed") {
-      setImages(
+      setCheckLists(
         checkListReducer.checkLists.map((checkList) => ({
           id: checkList.id,
           url: checkListImg,
@@ -87,7 +84,7 @@ function CheckListsPage() {
       const checkLists = checkListReducer.checkLists;
 
       if (checkLists.length) {
-        setImages(
+        setCheckLists(
           checkLists.map((checkList) => ({
             id: checkList.id,
             url: checkListImg,
@@ -98,11 +95,14 @@ function CheckListsPage() {
       }
       setShowCreate(false);
       setSuccess({ message: checkListReducer.createCheckListSuccess });
+      dispatch(clearCreateCheckListStatus());
+      dispatch(clearGetCheckListsStatus());
     }
   }, [
     checkListReducer.createCheckListStatus,
     checkListReducer.checkLists,
     checkListReducer.createCheckListSuccess,
+    dispatch,
   ]);
 
   useEffect(() => {
@@ -112,14 +112,22 @@ function CheckListsPage() {
         setError({ message: checkListReducer.createCheckListError });
       }
     }
+    dispatch(clearCreateCheckListStatus());
+    dispatch(clearGetCheckListsStatus());
   }, [
     checkListReducer.createCheckListStatus,
     checkListReducer.createCheckListError,
+    dispatch,
   ]);
 
-  const handleCreateCheckList = (values: ICheckListValues) => {
-    console.log(values);
+  useEffect(() => {
+    return () => {
+      dispatch(clearCreateCheckListStatus());
+      dispatch(clearGetCheckListsStatus());
+    };
+  }, [dispatch]);
 
+  const handleCreateCheckList = (values: ICheckListValues) => {
     dispatch(createCheckListAction(values));
   };
 
@@ -138,7 +146,7 @@ function CheckListsPage() {
         setPartners,
       }}
     >
-      <Box mb={1}>
+      <Box mb={3}>
         <Button
           onClick={() => setShowCreate(true)}
           variant="outlined"
@@ -147,43 +155,33 @@ function CheckListsPage() {
           Create CheckList
         </Button>
       </Box>
-      <Box
-        sx={{ display: "flex", flexWrap: "wrap", minWidth: 300, width: "100%" }}
+      <Grid
+        container
+        spacing={{ xs: 2, md: 3 }}
+        columns={{ xs: 4, sm: 8, md: 12 }}
       >
-        {images.map((image) => {
+        {_checkLists.map((checkList) => {
           return (
-            <ImageButton
-              focusRipple
-              onClick={() =>
-                navigate(`/checkLists/${image.id}`, { state: image })
-              }
-              key={image.title}
-              style={{
-                width: image.width,
-              }}
-            >
-              <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
-              <ImageBackdrop className="MuiImageBackdrop-root" />
-              <Image>
-                <Typography
-                  component="span"
-                  variant="subtitle1"
-                  color="inherit"
-                  sx={{
-                    position: "relative",
-                    p: 4,
-                    pt: 2,
-                    pb: (theme) => `calc(${theme.spacing(1)} + 6px)`,
-                  }}
-                >
-                  {image.title}
-                  <ImageMarked className="MuiImageMarked-root" />
-                </Typography>
-              </Image>
-            </ImageButton>
+            <Grid item xs={12} md={3} key={checkList.id}>
+              <CheckListCard
+                onEdit={() => setShowEdit(true)}
+                onNavigate={() =>
+                  navigate(`/checkLists/${checkList.id}`, {
+                    state: {
+                      checkLists: checkListReducer.checkLists,
+                      checkListId: checkList.id,
+                    },
+                  })
+                }
+                title={checkList.title}
+                imgUrl={checkList.url}
+                index={checkList.id}
+              />
+            </Grid>
           );
         })}
-      </Box>
+      </Grid>
+
       <AppModal
         fullWidth
         size="xs"
