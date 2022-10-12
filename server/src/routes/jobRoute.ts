@@ -6,6 +6,11 @@ export const getJobsHandler = authenticateRouteWrapper(async (req, res) => {
   res.status(response.code).json(response);
 });
 
+export const getJobHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.job(req);
+  res.status(response.code).json(response);
+});
+
 export const assignDriverJobHandler = authenticateRouteWrapper(
   async (req, res) => {
     const response = await JobController.assignDriverJob(req);

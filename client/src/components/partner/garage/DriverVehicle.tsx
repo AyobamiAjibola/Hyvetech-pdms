@@ -407,6 +407,8 @@ export default function DriverVehicle(props: ILocationState) {
         onClose={() => setViewImage(false)}
       />
       <AppModal
+        fullWidth
+        size="xs"
         show={viewSub}
         Content={<DriverSubscription />}
         onClose={() => setViewSub(false)}

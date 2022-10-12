@@ -24,6 +24,7 @@ import {
   clearGetJobsStatus,
 } from "../../../store/reducers/jobReducer";
 import useAppDispatch from "../../../hooks/useAppDispatch";
+import { getCheckListsAction } from "../../../store/actions/checkListActions";
 
 export const DriverVehiclesContext =
   createContext<DriverVehiclesContextProps | null>(null);
@@ -37,7 +38,14 @@ export default function DriverVehicles() {
     useState<IRideShareDriverSubscription | null>(null);
 
   const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
+  const checkListReducer = useAppSelector((state) => state.checkListReducer);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (checkListReducer.getCheckListsStatus === "idle") {
+      dispatch(getCheckListsAction());
+    }
+  }, [dispatch, checkListReducer.getCheckListsStatus]);
 
   useEffect(() => {
     setDriver(rideShareReducer.driver);

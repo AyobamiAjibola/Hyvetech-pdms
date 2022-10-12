@@ -1,6 +1,6 @@
 declare module "@app-interfaces" {
   import React from "react";
-  import { GenericObjectType, ICheckListSection } from "@app-types";
+  import { GenericObjectType } from "@app-types";
   import {
     ICheckList,
     ICustomer,
@@ -166,6 +166,12 @@ declare module "@app-interfaces" {
     setVehicle: React.Dispatch<React.SetStateAction<IVehicle | null>>;
   }
 
+  interface IJobCheckListPageContextProps {
+    images: IImageButtonData[];
+    setImages: React.Dispatch<React.SetStateAction<IImageButtonData[]>>;
+    imageRef: React.RefObject<HTMLInputElement>;
+  }
+
   export interface IComponentErrorState {
     hasError: boolean;
     errorMessage: string;
@@ -184,14 +190,11 @@ declare module "@app-interfaces" {
     code: number;
   }
 
-  interface ICheckListModel {
-    sections: ICheckListSection[];
-  }
-
   interface IImageButtonData {
-    id: number;
+    id: any;
     url: string;
     title: string;
     width: string;
+    file?: string | File;
   }
 }

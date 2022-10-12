@@ -1,4 +1,6 @@
 declare module "@app-models" {
+  import { CheckListType } from "@app-types";
+
   interface IUser {
     id: number;
     code: string;
@@ -193,6 +195,8 @@ declare module "@app-models" {
     rideShareDriverSubscription: IRideShareDriverSubscription;
     customerSubscription: ICustomerSubscription;
     technician: ITechnician;
+    checkList: CheckListType;
+    checkLists: ICheckList[];
     technicianId: number;
     partner: IPartner;
     partnerId: number;

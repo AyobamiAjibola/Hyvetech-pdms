@@ -12,6 +12,8 @@ import dataSources from "../services/dao";
 import { Op } from "sequelize";
 import Generic from "../utils/Generic";
 import { $loginSchema } from "../models/User";
+import Job from "../models/Job";
+import Vehicle from "../models/Vehicle";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -160,6 +162,7 @@ export default class TechnicianController {
         password: Joi.string().allow("").label("Password"),
         phone: Joi.string().required().label("Phone Number"),
         active: Joi.boolean().truthy().required().label("Active"),
+        partnerId: Joi.string().required().label("Partner Id"),
       }).validate(req.body);
 
       if (error)
@@ -291,12 +294,22 @@ export default class TechnicianController {
     }
   }
 
-  public async technicians() {
+  public async technicians(req: Request) {
+    const partner = req.user.partner;
+    let technicians: Technician[];
+
     try {
-      const technicians = await dataSources.technicianDAOService.findAll({
-        attributes: { exclude: ["password", "loginToken", "rawPassword"] },
-        include: [{ all: true }],
-      });
+      if (partner) {
+        technicians = await partner.$get("technicians", {
+          attributes: { exclude: ["password", "loginToken", "rawPassword"] },
+          include: [{ model: Job, include: [Vehicle] }],
+        });
+      } else {
+        technicians = await dataSources.technicianDAOService.findAll({
+          attributes: { exclude: ["password", "loginToken", "rawPassword"] },
+          include: [{ model: Job, include: [Vehicle] }],
+        });
+      }
 
       const response: HttpResponse<Technician> = {
         code: HttpStatus.OK.code,

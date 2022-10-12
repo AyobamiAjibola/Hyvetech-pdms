@@ -8,7 +8,6 @@ import {
   IconButton,
   LinearProgress,
   Paper,
-  Stack,
   TableBody,
   TableCell,
   TableContainer,
@@ -17,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import capitalize from "capitalize";
-import { IJob } from "@app-models";
+import { ICheckList, IJob } from "@app-models";
 import { DriverVehiclesContext } from "./DriverVehicles";
 import useAppSelector from "../../../hooks/useAppSelector";
 import { formatNumberToIntl } from "../../../utils/generic";
@@ -41,12 +40,15 @@ interface IAssignJob {
   partnerId?: number;
   subscriptionId?: number;
   techId?: number;
+  checkListId?: number;
 }
 
 function DriverSubscription() {
   const [_technicians, _setTechnicians] = useState<ISelectData[]>([]);
   const [error, setError] = useState<CustomHookMessage>();
   const [success, setSuccess] = useState<CustomHookMessage>();
+  const [checkLists, setCheckLists] = useState<ICheckList[]>([]);
+  const [checkList, setCheckList] = useState<number>();
 
   const { driverSub, vehicle, setViewSub } = useContext(
     DriverVehiclesContext
@@ -68,7 +70,24 @@ function DriverSubscription() {
 
   const jobReducer = useAppSelector((state) => state.jobReducer);
   const technicianReducer = useAppSelector((state) => state.technicianReducer);
+  const checkListReducer = useAppSelector((state) => state.checkListReducer);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (checkListReducer.getCheckListsStatus === "completed") {
+      if (partnerId) {
+        setCheckLists(
+          checkListReducer.checkLists.filter(
+            (checkList) => checkList.partnerId === partnerId
+          )
+        );
+      }
+    }
+  }, [
+    checkListReducer.getCheckListsStatus,
+    checkListReducer.checkLists,
+    partnerId,
+  ]);
 
   useEffect(() => {
     if (technicianReducer.getTechniciansStatus === "completed") {
@@ -135,16 +154,25 @@ function DriverSubscription() {
   }, [driverSub]);
 
   const handleAssignJob = (value: string) => {
+    if (!checkLists.length)
+      return setError({
+        message: "You do not have a check list for inspection.",
+      });
+
+    if (undefined === checkList)
+      return setError({
+        message: "You must select one check list for this inspection",
+      });
+
     const data: IAssignJob = {
       partnerId,
       techId: +value,
       subscriptionId: driverSub?.id,
+      checkListId: checkList,
     };
 
     dispatch(driverAssignJobAction(data));
   };
-
-  console.log(driverSub);
 
   return (
     <React.Fragment>
@@ -224,30 +252,48 @@ function DriverSubscription() {
         )}
       </TableContainer>
       <Typography
-        variant="body2"
+        variant="h6"
         component="div"
         display="block"
         sx={{ mt: 2 }}
+        gutterBottom
       >
         Inspections
       </Typography>
-      <Stack spacing={1}>
+      <Grid container direction="column" spacing={1}>
+        <Grid item xs hidden={vehicleIsBusy}>
+          <Autocomplete
+            disabled={vehicleIsBusy}
+            options={checkLists}
+            getOptionLabel={(option) => option.name}
+            onChange={(event, option) => {
+              if (option) setCheckList(option.id);
+            }}
+            renderInput={(params) => (
+              <TextField {...params} fullWidth label="Check List" />
+            )}
+          />
+        </Grid>
         {jobs.map((job, index) => {
           return (
-            <React.Fragment key={index}>
+            <Grid item container spacing={1} key={index}>
               {_.isEmpty(job) && (
-                <Autocomplete
-                  disabled={vehicleIsBusy}
-                  options={_technicians}
-                  onChange={(event, option) => {
-                    if (option) {
-                      handleAssignJob(option.value);
-                    }
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} fullWidth label="Assign To" />
-                  )}
-                />
+                <Grid item container spacing={1}>
+                  <Grid item xs>
+                    <Autocomplete
+                      disabled={vehicleIsBusy}
+                      options={_technicians}
+                      onChange={(event, option) => {
+                        if (option) {
+                          handleAssignJob(option.value);
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth label="Assign To" />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
               )}
               {!_.isEmpty(job) && (
                 <Paper
@@ -294,10 +340,10 @@ function DriverSubscription() {
                   </Grid>
                 </Paper>
               )}
-            </React.Fragment>
+            </Grid>
           );
         })}
-      </Stack>
+      </Grid>
       <AppAlert
         alertType="error"
         show={error !== undefined}

@@ -10,7 +10,29 @@ import User from "../models/User";
 export declare namespace appCommonTypes {
   import IPermission = appModelTypes.IPermission;
   type DatabaseEnv = "development" | "production" | "test";
-  type ICheckListAnswer = { label: string; weight: string };
+  type CheckListAnswerType = {
+    id: string;
+    answer: string;
+    weight: string;
+    selected?: boolean;
+  };
+  type CheckListQuestionType = {
+    id: string;
+    question: string;
+    media: boolean;
+    note?: boolean;
+    images?: Array<IImageButtonData>;
+    text?: string;
+    answers: Array<CheckListAnswerType>;
+  };
+  type CheckListSectionType = {
+    id: string;
+    title: string;
+    questions: Array<CheckListQuestionType>;
+  };
+  type CheckListType = {
+    sections: Array<CheckListSectionType>;
+  };
   type Roles =
     | "ADMIN_ROLE"
     | "GUEST_ROLE"
@@ -228,16 +250,12 @@ export declare namespace appCommonTypes {
     name: QueueMailTypes;
   }
 
-  interface ICheckListQuestion {
-    answer: ICheckListAnswer[];
-  }
-
-  interface ICheckListSection {
-    question: ICheckListQuestion[];
-  }
-
-  interface ICheckList {
-    section: ICheckListSection[];
+  interface IImageButtonData {
+    id: any;
+    url: string;
+    title: string;
+    width: string;
+    file?: string | File;
   }
 }
 

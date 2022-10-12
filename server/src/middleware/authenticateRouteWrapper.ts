@@ -9,6 +9,7 @@ import settings from "../config/settings";
 import authorizeRoute from "./authorizeRoute";
 import UserRepository from "../repositories/UserRepository";
 import Role from "../models/Role";
+import Partner from "../models/Partner";
 import AsyncWrapper = appCommonTypes.AsyncWrapper;
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 
@@ -59,7 +60,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
     const { userId } = payload;
 
     const user = await userRepo.findById(userId, {
-      include: [Role],
+      include: [Role, Partner],
     });
 
     if (!user) {

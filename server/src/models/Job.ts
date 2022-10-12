@@ -20,7 +20,6 @@ import Technician from "./Technician";
 import Partner from "./Partner";
 import RideShareDriverSubscription from "./RideShareDriverSubscription";
 import CustomerSubscription from "./CustomerSubscription";
-import CheckList from "./CheckList";
 
 @Table({ tableName: "jobs", timestamps: true })
 export default class Job extends Model<
@@ -59,8 +58,8 @@ export default class Job extends Model<
   @HasOne(() => CustomerSubscription, { onDelete: "cascade" })
   declare customerSubscription: NonAttribute<CustomerSubscription>;
 
-  @HasOne(() => CheckList)
-  declare checkList: NonAttribute<CheckList>;
+  @Column(DataType.JSON)
+  declare checkList: string;
 
   @BelongsTo(() => Technician, { onDelete: "cascade" })
   declare technician: NonAttribute<Technician>;

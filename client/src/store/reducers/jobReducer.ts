@@ -1,12 +1,20 @@
 import { IThunkAPIStatus } from "@app-types";
 import { IJob } from "@app-models";
 import { createSlice } from "@reduxjs/toolkit";
-import { driverAssignJobAction, getJobsAction } from "../actions/jobActions";
+import {
+  driverAssignJobAction,
+  getJobAction,
+  getJobsAction,
+} from "../actions/jobActions";
 
 interface IJobState {
   getJobsStatus: IThunkAPIStatus;
   getJobsSuccess: string;
   getJobsError?: string;
+
+  getJobStatus: IThunkAPIStatus;
+  getJobSuccess: string;
+  getJobError?: string;
 
   driverAssignJobStatus: IThunkAPIStatus;
   driverAssignJobSuccess: string;
@@ -23,6 +31,9 @@ const initialState: IJobState = {
   getJobsError: "",
   getJobsStatus: "idle",
   getJobsSuccess: "",
+  getJobError: "",
+  getJobStatus: "idle",
+  getJobSuccess: "",
   job: null,
   jobs: [],
 };
@@ -35,6 +46,11 @@ const jobSlice = createSlice({
       state.getJobsStatus = "idle";
       state.getJobsSuccess = "";
       state.getJobsError = "";
+    },
+    clearGetJobStatus(state: IJobState) {
+      state.getJobStatus = "idle";
+      state.getJobSuccess = "";
+      state.getJobError = "";
     },
     clearDriverAssignJobStatus(state: IJobState) {
       state.driverAssignJobStatus = "idle";
@@ -61,6 +77,23 @@ const jobSlice = createSlice({
       });
 
     builder
+      .addCase(getJobAction.pending, (state) => {
+        state.getJobStatus = "loading";
+      })
+      .addCase(getJobAction.fulfilled, (state, action) => {
+        state.getJobStatus = "completed";
+        state.getJobSuccess = action.payload.message;
+        state.job = action.payload.result as IJob;
+      })
+      .addCase(getJobAction.rejected, (state, action) => {
+        state.getJobStatus = "failed";
+
+        if (action.payload) {
+          state.getJobError = action.payload.message;
+        } else state.getJobError = action.error.message;
+      });
+
+    builder
       .addCase(driverAssignJobAction.pending, (state) => {
         state.driverAssignJobStatus = "loading";
       })
@@ -79,6 +112,9 @@ const jobSlice = createSlice({
   },
 });
 
-export const { clearDriverAssignJobStatus, clearGetJobsStatus } =
-  jobSlice.actions;
+export const {
+  clearDriverAssignJobStatus,
+  clearGetJobsStatus,
+  clearGetJobStatus,
+} = jobSlice.actions;
 export default jobSlice.reducer;

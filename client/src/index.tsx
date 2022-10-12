@@ -1,13 +1,13 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
+import Dexie from "dexie";
 
 import reportWebVitals from "./reportWebVitals";
 import store from "./store";
 import AppLoader from "./components/loader/AppLoader";
 
 import "./index.css";
-import Dexie from "dexie";
 import getIndexDB from "./db";
 import App from "./App";
 

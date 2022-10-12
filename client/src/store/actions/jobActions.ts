@@ -6,6 +6,7 @@ import settings from "../../config/settings";
 import { AxiosResponse } from "axios";
 
 const GET_JOBS = "jobs:GET_JOBS";
+const GET_JOB = "jobs:GET_JOB";
 const ASSIGN_JOB = "jobs:ASSIGN_JOB";
 const API_ROOT = settings.api.rest;
 
@@ -22,6 +23,14 @@ export const getJobsAction = asyncThunkWrapper<ApiResponseSuccess<IJob>, any>(
     }
 
     response = await axiosClient.get(`${API_ROOT}/jobs`);
+    return response.data;
+  }
+);
+
+export const getJobAction = asyncThunkWrapper<ApiResponseSuccess<IJob>, number>(
+  GET_JOB,
+  async (jobId) => {
+    const response = await axiosClient.get(`${API_ROOT}/jobs/${jobId}`);
     return response.data;
   }
 );

@@ -10,7 +10,7 @@ import bodyParser from "body-parser";
 import settings from "./config/settings";
 import globalExceptionHandler from "./middleware/globalExceptionHandler";
 import config from "./config";
-import authenticateRoute from "./middleware/authenticateRoute";
+
 import router from "./routes";
 import fileUploadMiddleware from "./middleware/fileUploadMiddleware";
 import { UPLOAD_BASE_PATH } from "./config/constants";

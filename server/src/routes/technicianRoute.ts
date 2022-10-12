@@ -35,7 +35,7 @@ export const getTechnicianHandler = authenticateRouteWrapper(
 
 export const getTechniciansHandler = authenticateRouteWrapper(
   async (req, res) => {
-    const response = await technicianController.technicians();
+    const response = await technicianController.technicians(req);
     res.status(response.code).json(response);
   }
 );

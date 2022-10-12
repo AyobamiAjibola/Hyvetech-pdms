@@ -1,9 +1,9 @@
 import React from "react";
 import { ThemeProvider } from "@mui/material";
-
-import useAppTheme from "./hooks/useAppTheme";
 import CssBaseline from "@mui/material/CssBaseline";
 import MainLayout from "./components/layouts/MainLayout";
+
+import useAppTheme from "./hooks/useAppTheme";
 
 function App() {
   const { theme } = useAppTheme();

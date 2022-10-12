@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import { CheckListType } from "@app-types";
+import { v4 } from "uuid";
 
 const fields = {
   sections: {
@@ -31,10 +32,12 @@ const fields = {
 const initialValues: CheckListType = {
   sections: [
     {
+      id: v4(),
       title: "",
       questions: [
         {
-          answers: [{ answer: "", weight: "" }],
+          id: v4(),
+          answers: [{ id: v4(), answer: "", weight: "" }],
           media: false,
           note: false,
           question: "",

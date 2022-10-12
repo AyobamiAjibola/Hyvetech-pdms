@@ -14,12 +14,15 @@ import Customer from "../models/Customer";
 import {
   DRIVE_IN_CATEGORY,
   HYBRID_CATEGORY,
+  INITIAL_CHECK_LIST_VALUES,
   JOB_STATUS,
   MOBILE_CATEGORY,
 } from "../config/constants";
 import Plan from "../models/Plan";
 import Generic from "../utils/Generic";
+import Vehicle from "../models/Vehicle";
 import HttpResponse = appCommonTypes.HttpResponse;
+import CheckListType = appCommonTypes.CheckListType;
 
 export default class JobController {
   public static async jobs(partnerId?: number) {
@@ -66,6 +69,54 @@ export default class JobController {
     }
   }
 
+  public static async job(req: Request) {
+    const jobId = req.params.jobId as string;
+
+    let result: any = null;
+
+    try {
+      const job = await dataSources.jobDAOService.findById(+jobId, {
+        include: [
+          RideShareDriverSubscription,
+          CustomerSubscription,
+          Technician,
+          Vehicle,
+        ],
+      });
+
+      if (job) {
+        const checkList = JSON.parse(job.checkList) as unknown as CheckListType;
+
+        if (checkList.sections) {
+          checkList.sections = checkList.sections.map((section) =>
+            JSON.parse(section as unknown as string)
+          );
+        } else
+          checkList.sections = JSON.parse(
+            JSON.stringify([INITIAL_CHECK_LIST_VALUES])
+          );
+
+        result = Object.assign(
+          {},
+          {
+            ...job.toJSON(),
+            checkList,
+          }
+        );
+      }
+
+      const response: HttpResponse<Job> = {
+        code: HttpStatus.OK.code,
+        message: HttpStatus.OK.value,
+        result,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
   public static async assignDriverJob(req: Request) {
     try {
       const partnerId = req.params.partnerId as string;
@@ -74,6 +125,7 @@ export default class JobController {
         subscriptionId: Joi.number().required().label("Subscription Id"),
         techId: Joi.number().required().label("Technician Id"),
         partnerId: Joi.number().required().label("Partner Id"),
+        checkListId: Joi.number().required().label("Check List Id"),
       }).validate(req.body);
 
       if (error)
@@ -94,9 +146,11 @@ export default class JobController {
           )
         );
 
-      const checkLists = await partner.$get("checkLists");
+      const checkList = await dataSources.checkListDAOService.findById(
+        value.checkListId
+      );
 
-      if (!checkLists.length)
+      if (!checkList)
         return Promise.reject(
           CustomAPIError.response(
             `Check List does not exist. You need a check list to carry out inspection`,
@@ -172,14 +226,14 @@ export default class JobController {
 
       const job = await dataSources.jobDAOService.create(jobValues);
 
-      //associate job with check list
-      await job.$set("checkList", checkLists[0]);
-
       //associate job with vehicle
       await job.$set("vehicle", vehicle[0]);
 
       //associate job with subscription
       await job.$set("rideShareDriverSubscription", rideShareSub);
+
+      //create job check list
+      await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
 
       //associate partner with job
       await partner.$set("jobs", [job]);
@@ -222,6 +276,7 @@ export default class JobController {
         subscriptionId: Joi.number().required().label("Subscription Id"),
         techId: Joi.number().required().label("Technician Id"),
         partnerId: Joi.number().required().label("Partner Id"),
+        checkListId: Joi.number().required().label("Check List Id"),
       }).validate(req.body);
 
       if (error)
@@ -238,6 +293,18 @@ export default class JobController {
         return Promise.reject(
           CustomAPIError.response(
             `Partner with Id: ${partnerId} does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const checkList = await dataSources.checkListDAOService.findById(
+        value.checkListId
+      );
+
+      if (!checkList)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Check List does not exist. You need a check list to carry out inspection`,
             HttpStatus.NOT_FOUND.code
           )
         );
@@ -314,6 +381,9 @@ export default class JobController {
 
       //associate job with subscription
       await job.$set("customerSubscription", customerSub);
+
+      //associate job with check list
+      await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
 
       //associate partner with job
       await partner.$set("jobs", [job]);

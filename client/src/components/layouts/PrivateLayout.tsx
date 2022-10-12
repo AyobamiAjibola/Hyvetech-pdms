@@ -32,6 +32,7 @@ import DrawerHeader from "./DrawerHeader";
 import withErrorBoundary from "../../hoc/withErrorBoundary";
 import CheckListsPage from "../../pages/checkList/CheckListsPage";
 import CheckListPage from "../../pages/checkList/CheckListPage";
+import JobCheckListPage from "../../pages/checkList/JobCheckListPage";
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(
@@ -91,6 +92,7 @@ function PrivateLayout() {
             <Route path="/garage" element={<PartnerPage />} />
             <Route path="/checkLists" element={<CheckListsPage />} />
             <Route path="/checkLists/:id" element={<CheckListPage />} />
+            <Route path="/job-check-list/:id" element={<JobCheckListPage />} />
           </Routes>
         </Box>
       </Box>

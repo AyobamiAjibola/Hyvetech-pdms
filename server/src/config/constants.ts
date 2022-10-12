@@ -1,6 +1,8 @@
 import Generic from "../utils/Generic";
 import { appCommonTypes } from "../@types/app-common";
+import { v4 } from "uuid";
 import QueueEvents = appCommonTypes.QueueEvents;
+import CheckListSectionType = appCommonTypes.CheckListSectionType;
 
 export const PASSWORD_PATTERN =
   "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$";
@@ -432,4 +434,18 @@ export const JOB_STATUS = {
   pending: "Pending",
   inProgress: "In-Progress",
   canceled: "Canceled",
+};
+
+export const INITIAL_CHECK_LIST_VALUES: CheckListSectionType = {
+  id: v4(),
+  title: "",
+  questions: [
+    {
+      id: v4(),
+      answers: [{ id: v4(), answer: "", weight: "" }],
+      media: false,
+      note: false,
+      question: "",
+    },
+  ],
 };

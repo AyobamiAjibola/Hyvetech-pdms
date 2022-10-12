@@ -1,6 +1,7 @@
 import {
   assignCustomerJobHandler,
   assignDriverJobHandler,
+  getJobHandler,
   getJobsHandler,
 } from "../../routes/jobRoute";
 import { appCommonTypes } from "../../@types/app-common";
@@ -12,6 +13,12 @@ const jobEndpoints: RouteEndpoints = [
     method: "get",
     path: "/jobs",
     handler: getJobsHandler,
+  },
+  {
+    name: "jobs",
+    method: "get",
+    path: "/jobs/:jobId",
+    handler: getJobHandler,
   },
   {
     name: "jobs",

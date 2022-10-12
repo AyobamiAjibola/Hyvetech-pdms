@@ -20,12 +20,13 @@ import {
 } from "@mui/material";
 import AppDataGrid from "../../components/tables/AppDataGrid";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Cancel, Edit, Visibility } from "@mui/icons-material";
+import { PlaylistAddCheck, Visibility } from "@mui/icons-material";
 import { IJob } from "@app-models";
 import useAdmin from "../../hooks/useAdmin";
 import { JOB_STATUS } from "../../config/constants";
 import moment from "moment";
 import AppModal from "../../components/modal/AppModal";
+import { useNavigate } from "react-router-dom";
 
 function TechnicianPage() {
   const admin = useAdmin();
@@ -33,6 +34,8 @@ function TechnicianPage() {
   const { detail, setShowViewJob, showViewJob, job, setJob } = useContext(
     TechniciansPageContext
   ) as TechniciansPageContextProps;
+
+  const navigate = useNavigate();
 
   const jobStatusCount = useMemo(() => {
     let pending = 0,
@@ -62,13 +65,8 @@ function TechnicianPage() {
     [setJob, setShowViewJob]
   );
 
-  const handleEdit = (job: IJob) => {
-    console.log(job);
-  };
-
-  const handleDelete = (job: IJob) => {
-    console.log(job);
-  };
+  const handleViewJobCheckList = (job: IJob) =>
+    navigate(`/job-check-list/${job.id}`, { state: { job } });
 
   const columns = useMemo(() => {
     const display = admin.isTechAdmin ? "block" : "none";
@@ -154,19 +152,11 @@ function TechnicianPage() {
           <GridActionsCellItem
             hidden={!admin.isTechAdmin}
             key={1}
-            icon={<Edit sx={{ color: "limegreen" }} />}
-            onClick={() => handleEdit(params.row)}
+            icon={<PlaylistAddCheck sx={{ color: "limegreen" }} />}
+            onClick={() => handleViewJobCheckList(params.row)}
             label="Edit"
             showInMenu={false}
             sx={{ display }}
-          />,
-          <GridActionsCellItem
-            key={2}
-            icon={<Cancel sx={{ color: "indianred" }} />}
-            onClick={() => handleDelete(params.row)}
-            label="Delete"
-            sx={{ display }}
-            showInMenu={false}
           />,
         ],
       },
@@ -261,35 +251,37 @@ function TechnicianPage() {
           !job ? null : (
             <TableContainer component={Paper}>
               <Table>
-                <TableRow>
-                  <TableCell component="th">Name</TableCell>
-                  <TableCell component="td">{job.name}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component="th">Type</TableCell>
-                  <TableCell component="td">{job.type}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component="th">Status</TableCell>
-                  <TableCell component="td">{job.status}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component="th">Date</TableCell>
-                  <TableCell component="td">
-                    {moment(job.jobDate).format("LLL")}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component="th">Client</TableCell>
-                  <TableCell component="td">{job.vehicleOwner}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component="th">Vehicle Info</TableCell>
-                  <TableCell component="td">
-                    {job.vehicle.make} {job.vehicle.model} (
-                    {job.vehicle.plateNumber})
-                  </TableCell>
-                </TableRow>
+                <TableBody>
+                  <TableRow>
+                    <TableCell component="th">Name</TableCell>
+                    <TableCell component="td">{job.name}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th">Type</TableCell>
+                    <TableCell component="td">{job.type}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th">Status</TableCell>
+                    <TableCell component="td">{job.status}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th">Date</TableCell>
+                    <TableCell component="td">
+                      {moment(job.jobDate).format("LLL")}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th">Client</TableCell>
+                    <TableCell component="td">{job.vehicleOwner}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component="th">Vehicle Info</TableCell>
+                    <TableCell component="td">
+                      {job.vehicle.make} {job.vehicle.model} (
+                      {job.vehicle.plateNumber})
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               </Table>
             </TableContainer>
           )

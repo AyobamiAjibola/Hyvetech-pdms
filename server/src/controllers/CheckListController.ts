@@ -7,19 +7,8 @@ import HttpStatus from "../helpers/HttpStatus";
 import { appCommonTypes } from "../@types/app-common";
 import CheckList from "../models/CheckList";
 import { InferAttributes } from "sequelize";
+import { INITIAL_CHECK_LIST_VALUES } from "../config/constants";
 import HttpResponse = appCommonTypes.HttpResponse;
-
-const initialFormValues = {
-  title: "",
-  questions: [
-    {
-      answers: [{ answer: "", weight: "" }],
-      media: false,
-      note: false,
-      question: "",
-    },
-  ],
-};
 
 export default class CheckListController {
   public static async create(req: Request) {
@@ -144,7 +133,10 @@ export default class CheckListController {
           result.sections = result.sections.map((section) =>
             JSON.parse(section)
           );
-        else result.sections = JSON.parse(JSON.stringify([initialFormValues]));
+        else
+          result.sections = JSON.parse(
+            JSON.stringify([INITIAL_CHECK_LIST_VALUES])
+          );
 
         return result;
       });
@@ -184,7 +176,10 @@ export default class CheckListController {
 
       if (result.sections)
         result.sections = result.sections.map((section) => JSON.parse(section));
-      else result.sections = JSON.parse(JSON.stringify([initialFormValues]));
+      else
+        result.sections = JSON.parse(
+          JSON.stringify([INITIAL_CHECK_LIST_VALUES])
+        );
 
       const response: HttpResponse<InferAttributes<CheckList>> = {
         code: HttpStatus.OK.code,

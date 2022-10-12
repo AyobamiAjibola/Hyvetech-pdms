@@ -19,6 +19,7 @@ import { Add, Delete, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { CheckListType } from "@app-types";
 import checkListSectionModel from "../models/checkListSectionModel";
+import { v4 } from "uuid";
 
 interface IProps {
   isSubmitting?: boolean;
@@ -42,7 +43,8 @@ export default function SectionForm(props: IProps) {
     const questions = tempSections[sectionIndex].questions;
 
     questions.push({
-      answers: [{ answer: "", weight: "" }],
+      id: v4(),
+      answers: [{ id: v4(), answer: "", weight: "" }],
       media: false,
       note: false,
       question: "",
@@ -70,6 +72,7 @@ export default function SectionForm(props: IProps) {
     const tempSections = [...values.sections];
 
     tempSections[sectionIndex].questions[questionIndex].answers.push({
+      id: v4(),
       answer: "",
       weight: "",
     });

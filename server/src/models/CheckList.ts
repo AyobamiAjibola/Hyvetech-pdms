@@ -15,7 +15,6 @@ import {
   NonAttribute,
 } from "sequelize";
 import Partner from "./Partner";
-import Job from "./Job";
 
 @Table({
   timestamps: true,
@@ -33,13 +32,13 @@ export default class CheckList extends Model<
   @Column(DataType.STRING)
   declare name: string;
 
-  @Column(DataType.ARRAY(DataType.STRING))
+  @Column(DataType.ARRAY(DataType.STRING(5000)))
   declare sections: Array<string>;
 
-  @Column(DataType.BOOLEAN)
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare approvedByGarageAdmin: boolean;
 
-  @Column(DataType.BOOLEAN)
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare isSubmitted: boolean;
 
   @BelongsTo(() => Partner)
@@ -48,11 +47,4 @@ export default class CheckList extends Model<
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: NonAttribute<number>;
-
-  @BelongsTo(() => Job)
-  declare job: NonAttribute<Job>;
-
-  @ForeignKey(() => Job)
-  @Column(DataType.INTEGER)
-  declare jobId: NonAttribute<number>;
 }
