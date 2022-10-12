@@ -12,13 +12,15 @@ import RoleRepository from "../../src/repositories/RoleRepository";
 import UserRepository from "../../src/repositories/UserRepository";
 import PasswordEncoder from "../../src/utils/PasswordEncoder";
 import Role from "../../src/models/Role";
+import { InferAttributes } from "sequelize";
+import User from "../../src/models/User";
 
 const port = 5000;
 const apiRoot = settings.service.apiRoot;
 
 let server: http.Server, request: SuperTest<Test>;
 
-const userObject = {
+const userObject: any = {
   firstName: "John",
   lastName: "Doe",
   email: "johnDoe@gmail.com",
@@ -80,7 +82,7 @@ describe("AuthenticationController", () => {
     });
 
     it("should return status 400 given invalid user object, when user does not exist", async () => {
-      const data = immer(createUserObject, (draft) => ({
+      const data = immer(createUserObject, (draft: InferAttributes<User>) => ({
         ...draft,
         firstName: "",
       }));
@@ -91,7 +93,7 @@ describe("AuthenticationController", () => {
     });
 
     it("should return status 404 given valid user object, when role does not exist", async () => {
-      const data = immer(createUserObject, (draft) => ({
+      const data = immer(createUserObject, (draft: InferAttributes<User>) => ({
         ...draft,
         role: "some_role",
       }));
