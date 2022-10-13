@@ -34,8 +34,8 @@ interface FormProps {
   ) => void;
   question: CheckListQuestionType;
   onChangeRadioBtn: (e: ChangeEvent<HTMLInputElement>) => void;
-  onChangeImage: (e: ChangeEvent<HTMLInputElement>) => void;
-  onRemoveImage: (id: any) => void;
+  onChangeImage: (e: ChangeEvent<HTMLInputElement>, questionId?: any) => void;
+  onRemoveImage: (id: any, questionId?: any) => void;
 }
 
 export default function NoteAnswerForm(props: FormProps) {
@@ -123,6 +123,7 @@ export default function NoteAnswerForm(props: FormProps) {
       {question.images ? (
         <CardContent sx={{ overflowX: "scroll" }}>
           <CustomRadioIconField
+            questionId={question.id}
             options={question.images}
             onDelete={props.onRemoveImage}
           />
@@ -155,7 +156,7 @@ export default function NoteAnswerForm(props: FormProps) {
               placement="bottom-start"
               transition
               disablePortal
-              sx={{ width: "100%", maxWidth: 400, zIndex: 999 }}
+              sx={{ width: "100%", maxWidth: 440, zIndex: 999 }}
             >
               {({ TransitionProps, placement }) => (
                 <Grow
@@ -167,7 +168,7 @@ export default function NoteAnswerForm(props: FormProps) {
                 >
                   <Paper>
                     <ClickAwayListener onClickAway={handleClose}>
-                      <Card sx={{ minWidth: 275 }}>
+                      <Card>
                         <CardActions
                           sx={{
                             display: "flex",
@@ -211,7 +212,7 @@ export default function NoteAnswerForm(props: FormProps) {
           >
             media
             <input
-              onChange={props.onChangeImage}
+              onChange={(e) => props.onChangeImage(e, question.id)}
               hidden
               ref={imageRef}
               id={question.id}

@@ -256,7 +256,7 @@ export declare namespace appCommonTypes {
     url: string;
     title: string;
     width: string;
-    file?: string | File;
+    file?: any;
   }
 }
 

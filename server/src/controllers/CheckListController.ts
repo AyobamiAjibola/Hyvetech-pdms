@@ -7,8 +7,17 @@ import HttpStatus from "../helpers/HttpStatus";
 import { appCommonTypes } from "../@types/app-common";
 import CheckList from "../models/CheckList";
 import { InferAttributes } from "sequelize";
-import { INITIAL_CHECK_LIST_VALUES } from "../config/constants";
+import {
+  INITIAL_CHECK_LIST_VALUES,
+  JOB_STATUS,
+  UPLOAD_BASE_PATH,
+} from "../config/constants";
+import Job from "../models/Job";
+import { File } from "formidable";
+import Generic from "../utils/Generic";
 import HttpResponse = appCommonTypes.HttpResponse;
+import CheckListType = appCommonTypes.CheckListType;
+import IImageButtonData = appCommonTypes.IImageButtonData;
 
 export default class CheckListController {
   public static async create(req: Request) {
@@ -69,6 +78,91 @@ export default class CheckListController {
         code: HttpStatus.OK.code,
         message: `Created Check List Successfully`,
         results,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public static async createJobCheckList(req: Request) {
+    const jobId = req.params.jobId as string;
+
+    try {
+      const { error, value } = Joi.object({
+        checkList: Joi.string().required().label("Check List"),
+      }).validate(req.fields);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const job = await dataSources.jobDAOService.findById(+jobId);
+
+      if (!job)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Job does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const checkList = value.checkList as string;
+      const checkListJSON = JSON.parse(checkList) as CheckListType;
+      const sections = checkListJSON.sections;
+      const images: IImageButtonData[] = [];
+      const basePath = `${UPLOAD_BASE_PATH}/checklists`;
+
+      for (const section of sections) {
+        const questions = section.questions;
+
+        for (const question of questions) {
+          if (question.images) {
+            for (const image of question.images) {
+              images.push(image);
+            }
+          }
+        }
+      }
+
+      for (const image of images) {
+        const { originalFilename, filepath } = req.files[image.title] as File;
+
+        image.url = await Generic.getImagePath({
+          tempPath: filepath,
+          filename: originalFilename as string,
+          basePath,
+        });
+      }
+
+      const newSections = sections.map((section) => {
+        section.questions.forEach((question) => {
+          question.images = images;
+        });
+
+        return section;
+      });
+
+      const checklistValues: any = {
+        ...checkListJSON,
+        sections: newSections,
+      };
+
+      await job.update({
+        jobDate: new Date(),
+        status: JOB_STATUS.complete,
+        checkList: checklistValues,
+      });
+
+      const response: HttpResponse<Job> = {
+        code: HttpStatus.OK.code,
+        message: `Successfully created Job Check List`,
+        result: job,
       };
 
       return Promise.resolve(response);

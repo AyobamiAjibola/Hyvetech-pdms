@@ -8,6 +8,13 @@ export const createCheckListHandler = authenticateRouteWrapper(
   }
 );
 
+export const createJobCheckListHandler = authenticateRouteWrapper(
+  async (req, res) => {
+    const response = await CheckListController.createJobCheckList(req);
+    res.status(response.code).json(response);
+  }
+);
+
 export const updateCheckListHandler = authenticateRouteWrapper(
   async (req, res) => {
     const response = await CheckListController.update(req);

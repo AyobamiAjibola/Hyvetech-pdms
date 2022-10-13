@@ -87,7 +87,7 @@ export default class JobController {
         ],
       });
 
-      if (job) {
+      if (job && typeof job.checkList !== "object") {
         const checkList = JSON.parse(job.checkList) as unknown as CheckListType;
 
         if (checkList.sections) {
@@ -106,7 +106,7 @@ export default class JobController {
             checkList,
           }
         );
-      }
+      } else result = job;
 
       const response: HttpResponse<Job> = {
         code: HttpStatus.OK.code,

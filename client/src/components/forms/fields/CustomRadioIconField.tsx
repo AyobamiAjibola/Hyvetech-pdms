@@ -7,7 +7,8 @@ import { CloseOutlined } from "@mui/icons-material";
 
 interface IProps {
   options: IImageButtonData[];
-  onDelete?: (id: any) => void;
+  questionId?: any;
+  onDelete?: (id: any, questionId?: any) => void;
   onView?: (id: any) => void;
 }
 
@@ -66,7 +67,9 @@ export default function CustomRadioIconField(props: IProps) {
               checkedIcon={
                 <CloseOutlined
                   onClick={() =>
-                    props.onDelete ? props.onDelete(option.id) : null
+                    props.onDelete
+                      ? props.onDelete(option.id, props.questionId)
+                      : null
                   }
                 />
               }

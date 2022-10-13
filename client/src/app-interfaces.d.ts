@@ -195,6 +195,6 @@ declare module "@app-interfaces" {
     url: string;
     title: string;
     width: string;
-    file?: string | File;
+    file?: File;
   }
 }
