@@ -70,6 +70,17 @@ export default function CheckListForm(props: ICheckListFormProps) {
           />
         </Grid>
         <Grid item xs={12}>
+          <TextInputField
+            multiline
+            rows={2}
+            onChange={handleChange}
+            value={values.description}
+            name={fields.description.name}
+            label={fields.description.label}
+            data={options}
+          />
+        </Grid>
+        <Grid item xs={12}>
           <LoadingButton
             type="submit"
             loading={props.isSubmitting}

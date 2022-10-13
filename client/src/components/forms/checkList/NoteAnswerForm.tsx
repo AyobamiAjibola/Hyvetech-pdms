@@ -73,13 +73,14 @@ export default function NoteAnswerForm(props: FormProps) {
   };
 
   return (
-    <Card sx={{ width: "100%", maxWidth: 400 }} variant="outlined">
+    <Card sx={{ width: "100%" }} variant="outlined">
       <CardHeader title={question.question} />
       <CardContent>
         <CssVarsProvider>
           <RadioGroup name="answer" size="lg" sx={{ gap: 1.5 }}>
             {question.answers.map((answer, idx2) => {
-              const weight = +answer.weight;
+              const weight = Math.floor(+answer.weight);
+              const bgColor = answer.color ? answer.color : COLORS[weight];
 
               return (
                 <Sheet key={idx2} sx={{ p: 2, borderRadius: "md" }}>
@@ -106,7 +107,7 @@ export default function NoteAnswerForm(props: FormProps) {
                             "&&": {
                               // && to increase the specificity to win the base :hover styles
                               // borderColor: theme.vars.palette.primary[500],
-                              backgroundColor: COLORS[weight],
+                              backgroundColor: bgColor,
                             },
                           }),
                         }),

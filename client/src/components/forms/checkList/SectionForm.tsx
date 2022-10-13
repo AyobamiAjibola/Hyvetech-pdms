@@ -20,6 +20,7 @@ import { LoadingButton } from "@mui/lab";
 import { CheckListType } from "@app-types";
 import checkListSectionModel from "../models/checkListSectionModel";
 import { v4 } from "uuid";
+import { MuiColorInput } from "mui-color-input";
 
 interface IProps {
   isSubmitting?: boolean;
@@ -44,7 +45,7 @@ export default function SectionForm(props: IProps) {
 
     questions.push({
       id: v4(),
-      answers: [{ id: v4(), answer: "", weight: "" }],
+      answers: [{ id: v4(), answer: "", weight: "", color: "" }],
       media: false,
       note: false,
       question: "",
@@ -75,6 +76,7 @@ export default function SectionForm(props: IProps) {
       id: v4(),
       answer: "",
       weight: "",
+      color: "",
     });
 
     setFieldValue(fields.sections.name, tempSections);
@@ -219,7 +221,7 @@ export default function SectionForm(props: IProps) {
                               return (
                                 <React.Fragment key={idx3}>
                                   <Grid item xs={2} />
-                                  <Grid item xs={3}>
+                                  <Grid item xs={2}>
                                     <TextField
                                       size="small"
                                       label={`Answer ${idx3 + 1}`}
@@ -232,7 +234,7 @@ export default function SectionForm(props: IProps) {
                                       onChange={handleChange}
                                     />
                                   </Grid>
-                                  <Grid item xs={3}>
+                                  <Grid item xs={2}>
                                     <TextField
                                       size="small"
                                       label={`Weight ${idx3 + 1}`}
@@ -243,6 +245,25 @@ export default function SectionForm(props: IProps) {
                                           .answers[idx3].weight
                                       }
                                       onChange={handleChange}
+                                    />
+                                  </Grid>
+                                  <Grid item xs={2}>
+                                    <MuiColorInput
+                                      size="small"
+                                      label={`Color ${idx3 + 1}`}
+                                      fullWidth
+                                      format="hex"
+                                      name={`sections.${idx1}.questions.${idx2}.answers.${idx3}.color`}
+                                      value={
+                                        values.sections[idx1].questions[idx2]
+                                          .answers[idx3].color
+                                      }
+                                      onChange={(value) => {
+                                        setFieldValue(
+                                          `sections.${idx1}.questions.${idx2}.answers.${idx3}.color`,
+                                          value
+                                        );
+                                      }}
                                     />
                                   </Grid>
                                   <Grid item xs={4} alignSelf="center">

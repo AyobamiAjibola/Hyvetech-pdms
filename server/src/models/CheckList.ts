@@ -32,7 +32,10 @@ export default class CheckList extends Model<
   @Column(DataType.STRING)
   declare name: string;
 
-  @Column(DataType.ARRAY(DataType.STRING(5000)))
+  @Column(DataType.STRING)
+  declare description: string;
+
+  @Column(DataType.ARRAY(DataType.STRING(10000)))
   declare sections: Array<string>;
 
   @Column({ type: DataType.BOOLEAN, defaultValue: false })

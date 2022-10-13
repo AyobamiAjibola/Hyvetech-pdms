@@ -37,7 +37,7 @@ const initialValues: CheckListType = {
       questions: [
         {
           id: v4(),
-          answers: [{ id: v4(), answer: "", weight: "" }],
+          answers: [{ id: v4(), answer: "", weight: "", color: "" }],
           media: false,
           note: false,
           question: "",

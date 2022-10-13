@@ -21,6 +21,8 @@ import {
 import Plan from "../models/Plan";
 import Generic from "../utils/Generic";
 import Vehicle from "../models/Vehicle";
+import Partner from "../models/Partner";
+import Contact from "../models/Contact";
 import HttpResponse = appCommonTypes.HttpResponse;
 import CheckListType = appCommonTypes.CheckListType;
 
@@ -81,6 +83,7 @@ export default class JobController {
           CustomerSubscription,
           Technician,
           Vehicle,
+          { model: Partner, include: [Contact] },
         ],
       });
 

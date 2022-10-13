@@ -609,7 +609,55 @@ export default class PartnerController {
           )
         );
 
+      const paymentGateway =
+        await dataSources.paymentGatewayDAOService.findByAny({
+          where: { default: true },
+        });
+
+      if (!paymentGateway)
+        return Promise.reject(
+          CustomAPIError.response(
+            `No default payment gateway available.`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
       const pricing = value.pricing;
+
+      const axiosResponse = await axiosClient.get(
+        `${paymentGateway.baseUrl}/plan`
+      );
+
+      const _gwPaymentPlans = axiosResponse.data.data;
+
+      pricing.map(async (price) => {
+        const name = capitalize.words(`${price.interval} ${value.name}`);
+
+        const exist = _gwPaymentPlans.find((value: any) => value.name === name);
+
+        //Only create non-existing plan in paystack
+        if (!exist) {
+          const payload = {
+            name,
+            interval: price.interval,
+            amount: `${+price.amount * 100}`,
+          };
+
+          const response = await axiosClient.post(
+            `${paymentGateway.baseUrl}/plan`,
+            payload,
+            {
+              headers: {
+                Authorization: `Bearer ${paymentGateway.secretKey}`,
+              },
+            }
+          );
+
+          return response.data;
+        }
+
+        return exist;
+      });
 
       const paymentPlanData: any[] = pricing.map((price) => ({
         discount: +value.discount,
@@ -627,46 +675,30 @@ export default class PartnerController {
         pricing: value.pricing.map((value) => JSON.stringify({ ...value })),
       }));
 
-      //link payment plan categories
+      //check if name and label already exist
+      for (const datum of paymentPlanData) {
+        const exist = await dataSources.paymentPlanDAOService.findByAny({
+          where: {
+            [Op.or]: [{ name: datum.name }, { label: datum.label }],
+          },
+        });
+
+        if (exist) {
+          return Promise.reject(
+            CustomAPIError.response(
+              `Payment Plan with info: ${datum.name} already exist.`,
+              HttpStatus.BAD_REQUEST.code
+            )
+          );
+        }
+      }
+
       const paymentPlan = await dataSources.paymentPlanDAOService.bulkCreate(
         paymentPlanData
       );
 
       //link plan payment plans
       await plan.$add("paymentPlans", paymentPlan);
-
-      const paymentGateway =
-        await dataSources.paymentGatewayDAOService.findByAny({
-          where: { default: true },
-        });
-
-      if (!paymentGateway)
-        return Promise.reject(
-          CustomAPIError.response(
-            `No default payment gateway available.`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
-
-      pricing.map(async (price) => {
-        const payload = {
-          name: capitalize.words(`${price.interval} ${value.name}`),
-          interval: price.interval,
-          amount: `${+price.amount * 100}`,
-        };
-
-        const response = await axiosClient.post(
-          `${paymentGateway.baseUrl}/plan`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${paymentGateway.secretKey}`,
-            },
-          }
-        );
-
-        return response.data;
-      });
 
       const paymentPlans = await dataSources.paymentPlanDAOService.findAll({
         include: [{ model: Plan, where: { partnerId: partnerId } }],

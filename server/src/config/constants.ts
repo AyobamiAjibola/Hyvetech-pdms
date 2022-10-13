@@ -442,7 +442,7 @@ export const INITIAL_CHECK_LIST_VALUES: CheckListSectionType = {
   questions: [
     {
       id: v4(),
-      answers: [{ id: v4(), answer: "", weight: "" }],
+      answers: [{ id: v4(), answer: "", weight: "", color: "" }],
       media: false,
       note: false,
       question: "",

@@ -16,6 +16,7 @@ export default class CheckListController {
       const { error, value } = Joi.object({
         partner: Joi.string().required().label("Partner Id"),
         checkList: Joi.string().required().label("Check List Name"),
+        description: Joi.string().required().label("Check List Description"),
       }).validate(req.body);
 
       if (error)
@@ -28,6 +29,7 @@ export default class CheckListController {
 
       const partnerId = value.partner as string;
       const name = value.checkList;
+      const description = value.description;
 
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
@@ -51,7 +53,7 @@ export default class CheckListController {
           )
         );
 
-      const data: any = { name };
+      const data: any = { name, description };
 
       const checkList = await dataSources.checkListDAOService.create(data);
 

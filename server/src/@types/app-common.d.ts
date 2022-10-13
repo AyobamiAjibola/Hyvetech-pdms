@@ -14,6 +14,7 @@ export declare namespace appCommonTypes {
     id: string;
     answer: string;
     weight: string;
+    color: string;
     selected?: boolean;
   };
   type CheckListQuestionType = {

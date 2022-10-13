@@ -494,6 +494,7 @@ declare module "@app-models" {
   interface ICheckList {
     id: number;
     name: string;
+    description: string;
     sections: Array<string>;
     approvedByGarageAdmin: boolean;
     isSubmitted: boolean;

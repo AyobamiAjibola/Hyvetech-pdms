@@ -65,11 +65,15 @@ function TechnicianPage() {
     [setJob, setShowViewJob]
   );
 
-  const handleViewJobCheckList = (job: IJob) =>
-    navigate(`/job-check-list/${job.id}`, { state: { job } });
+  const handleViewJobCheckList = useCallback(
+    (job: IJob) =>
+      navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
+    [navigate]
+  );
 
   const columns = useMemo(() => {
-    const display = admin.isTechAdmin ? "block" : "none";
+    // const display = admin.isTechAdmin ? "block" : "none";
+
     return [
       {
         field: "id",
@@ -156,12 +160,12 @@ function TechnicianPage() {
             onClick={() => handleViewJobCheckList(params.row)}
             label="Edit"
             showInMenu={false}
-            sx={{ display }}
+            // sx={{ display }}
           />,
         ],
       },
     ] as GridColDef<IJob>[];
-  }, [admin.isTechAdmin, handleView]);
+  }, [admin.isTechAdmin, handleView, handleViewJobCheckList]);
 
   return (
     <React.Fragment>

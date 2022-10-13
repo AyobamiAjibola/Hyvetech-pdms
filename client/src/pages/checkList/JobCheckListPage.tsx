@@ -14,6 +14,7 @@ import { getJobAction } from "../../store/actions/jobActions";
 import {
   Box,
   Button,
+  Grid,
   Slide,
   Step,
   StepButton,
@@ -30,6 +31,7 @@ import AppAlert from "../../components/alerts/AppAlert";
 import NoteAnswerForm from "../../components/forms/checkList/NoteAnswerForm";
 import { IJob } from "@app-models";
 import { useLocation } from "react-router-dom";
+import { v4 } from "uuid";
 
 interface ILocationState {
   job: IJob;
@@ -67,8 +69,6 @@ function JobCheckListPage() {
         const jobId = state.job.id;
         dispatch(getJobAction(jobId));
       }
-
-      //dispatch(getJobAction(1));
     }
   }, [dispatch, jobReducer.getJobStatus, location.state]);
 
@@ -125,7 +125,7 @@ function JobCheckListPage() {
 
   const handleBack = () => setActiveStep(activeStep - 1);
 
-  const handleReset = () => setActiveStep(0);
+  //const handleReset = () => setActiveStep(0);
 
   const handleChangeRadioBtn = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -204,7 +204,7 @@ function JobCheckListPage() {
             question.images = [
               ...question.images,
               {
-                id: question.id,
+                id: v4(),
                 url: URL.createObjectURL(file),
                 title: file.name,
                 width: "",
@@ -214,7 +214,7 @@ function JobCheckListPage() {
           } else
             question.images = [
               {
-                id: question.id,
+                id: v4(),
                 url: URL.createObjectURL(file),
                 title: file.name,
                 width: "",
@@ -237,22 +237,26 @@ function JobCheckListPage() {
       ) as Array<CheckListSectionType>;
 
       for (let i = 0; i < tempSections.length; i++) {
-        const question = tempSections[i].questions.find(
-          (question) => question.id === id
-        );
+        if (imageRef.current) {
+          const questionId = imageRef.current.id;
 
-        if (question && question.images) {
-          const tempImages = [...question.images];
-          const image = tempImages.find((image) => image.id === id);
-          if (image) {
-            const index = tempImages.indexOf(image);
-            tempImages.splice(index, 1);
-            question.images = tempImages;
+          const question = tempSections[i].questions.find(
+            (question) => question.id === questionId
+          );
+
+          if (question && question.images) {
+            const tempImages = [...question.images];
+
+            const image = tempImages.find((image) => image.id === id);
+
+            if (image) {
+              const index = tempImages.indexOf(image);
+              tempImages.splice(index, 1);
+              question.images = tempImages;
+            }
+
+            break;
           }
-
-          if (imageRef.current) imageRef.current.value = "";
-
-          break;
         }
       }
 
@@ -287,18 +291,26 @@ function JobCheckListPage() {
                   dir={theme.direction}
                 >
                   <Box sx={{ pt: 6 }}>
-                    {tab.questions.map((question, idx1) => {
-                      return (
-                        <NoteAnswerForm
-                          key={idx1}
-                          onChangeRadioBtn={handleChangeRadioBtn}
-                          onChangeTextArea={handleChangeTextArea}
-                          onChangeImage={handleChangeImage}
-                          onRemoveImage={handleRemoveImage}
-                          question={question}
-                        />
-                      );
-                    })}
+                    <Grid
+                      container
+                      spacing={{ xs: 2, md: 3 }}
+                      columns={{ xs: 4, sm: 8, md: 12 }}
+                    >
+                      {tab.questions.map((question, idx1) => {
+                        return (
+                          <Grid item xs={4} key={idx1}>
+                            <NoteAnswerForm
+                              key={idx1}
+                              onChangeRadioBtn={handleChangeRadioBtn}
+                              onChangeTextArea={handleChangeTextArea}
+                              onChangeImage={handleChangeImage}
+                              onRemoveImage={handleRemoveImage}
+                              question={question}
+                            />
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
                   </Box>
                 </TabPanel>
               </div>

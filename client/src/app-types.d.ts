@@ -1,5 +1,6 @@
 declare module "@app-types" {
   import { IImageButtonData } from "@app-interfaces";
+  import { ICheckList } from "@app-models";
   type IThunkAPIStatus = "idle" | "loading" | "completed" | "failed";
   type CallableFunction = () => void;
   type CustomHookMessage = { message: string };
@@ -8,6 +9,7 @@ declare module "@app-types" {
     id: string;
     answer: string;
     weight: string;
+    color: string;
     selected?: boolean;
   };
   type CheckListQuestionType = {
@@ -24,7 +26,7 @@ declare module "@app-types" {
     title: string;
     questions: Array<CheckListQuestionType>;
   };
-  type CheckListType = {
+  type CheckListType = Partial<Omit<ICheckList, "sections">> & {
     sections: Array<CheckListSectionType>;
   };
 }

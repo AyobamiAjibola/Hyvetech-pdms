@@ -33,6 +33,7 @@ import withErrorBoundary from "../../hoc/withErrorBoundary";
 import CheckListsPage from "../../pages/checkList/CheckListsPage";
 import CheckListPage from "../../pages/checkList/CheckListPage";
 import JobCheckListPage from "../../pages/checkList/JobCheckListPage";
+import JobCheckListReportPage from "../../pages/checkList/JobCheckListReportPage";
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(
@@ -93,6 +94,10 @@ function PrivateLayout() {
             <Route path="/checkLists" element={<CheckListsPage />} />
             <Route path="/checkLists/:id" element={<CheckListPage />} />
             <Route path="/job-check-list/:id" element={<JobCheckListPage />} />
+            <Route
+              path="/job-check-list-report/:id"
+              element={<JobCheckListReportPage />}
+            />
           </Routes>
         </Box>
       </Box>
