@@ -72,7 +72,7 @@ function TechnicianPage() {
   );
 
   const columns = useMemo(() => {
-    // const display = admin.isTechAdmin ? "block" : "none";
+    const display = job?.status === JOB_STATUS.complete ? "block" : "none";
 
     return [
       {
@@ -160,12 +160,12 @@ function TechnicianPage() {
             onClick={() => handleViewJobCheckList(params.row)}
             label="Edit"
             showInMenu={false}
-            // sx={{ display }}
+            sx={{ display }}
           />,
         ],
       },
     ] as GridColDef<IJob>[];
-  }, [admin.isTechAdmin, handleView, handleViewJobCheckList]);
+  }, [admin.isTechAdmin, handleView, handleViewJobCheckList, job?.status]);
 
   return (
     <React.Fragment>

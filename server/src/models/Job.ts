@@ -58,7 +58,7 @@ export default class Job extends Model<
   @HasOne(() => CustomerSubscription, { onDelete: "cascade" })
   declare customerSubscription: NonAttribute<CustomerSubscription>;
 
-  @Column(DataType.JSON)
+  @Column(DataType.STRING(50000))
   declare checkList: string;
 
   @BelongsTo(() => Technician, { onDelete: "cascade" })

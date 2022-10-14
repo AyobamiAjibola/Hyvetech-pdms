@@ -1,13 +1,19 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import _ from "lodash";
 import { DriverVehiclesContextProps } from "@app-interfaces";
 import {
+  Alert,
   Autocomplete,
   Box,
   Grid,
   IconButton,
   LinearProgress,
-  Paper,
   TableBody,
   TableCell,
   TableContainer,
@@ -22,7 +28,7 @@ import useAppSelector from "../../../hooks/useAppSelector";
 import { formatNumberToIntl } from "../../../utils/generic";
 import useTechnician from "../../../hooks/useTechnician";
 import { ISelectData } from "../../forms/fields/SelectField";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import {
   driverAssignJobAction,
@@ -32,9 +38,9 @@ import { CustomHookMessage } from "@app-types";
 import AppAlert from "../../alerts/AppAlert";
 import { FileDownload } from "@mui/icons-material";
 import { getTechniciansAction } from "../../../store/actions/technicianActions";
-import { JOB_STATUS } from "../../../config/constants";
 import { getDriverVehicleSubscriptionAction } from "../../../store/actions/vehicleActions";
 import useAdmin from "../../../hooks/useAdmin";
+import { JOB_STATUS } from "../../../config/constants";
 
 interface IAssignJob {
   partnerId?: number;
@@ -54,6 +60,7 @@ function DriverSubscription() {
     DriverVehiclesContext
   ) as DriverVehiclesContextProps;
 
+  const navigate = useNavigate();
   useTechnician();
   const params = useParams();
   const admin = useAdmin();
@@ -174,6 +181,12 @@ function DriverSubscription() {
     dispatch(driverAssignJobAction(data));
   };
 
+  const handleViewReport = useCallback(
+    (job: Partial<IJob>) =>
+      navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
+    [navigate]
+  );
+
   return (
     <React.Fragment>
       <TableContainer
@@ -276,71 +289,52 @@ function DriverSubscription() {
         </Grid>
         {jobs.map((job, index) => {
           return (
-            <Grid item container spacing={1} key={index}>
+            <React.Fragment key={index}>
               {_.isEmpty(job) && (
-                <Grid item container spacing={1}>
-                  <Grid item xs>
-                    <Autocomplete
-                      disabled={vehicleIsBusy}
-                      options={_technicians}
-                      onChange={(event, option) => {
-                        if (option) {
-                          handleAssignJob(option.value);
-                        }
-                      }}
-                      renderInput={(params) => (
-                        <TextField {...params} fullWidth label="Assign To" />
-                      )}
-                    />
-                  </Grid>
+                <Grid item xs>
+                  <Autocomplete
+                    disabled={vehicleIsBusy}
+                    options={_technicians}
+                    onChange={(event, option) => {
+                      if (option) {
+                        handleAssignJob(option.value);
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} fullWidth label="Assign To" />
+                    )}
+                  />
                 </Grid>
               )}
               {!_.isEmpty(job) && (
-                <Paper
-                  sx={{
-                    p: 1,
-                    flexGrow: 1,
-                  }}
-                >
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} sm container alignItems="center">
-                      <Grid
-                        item
-                        xs
-                        container
-                        justifyItems="flex-end"
-                        direction="column"
-                        spacing={2}
-                      >
-                        <Grid item xs>
-                          <Typography
-                            gutterBottom
-                            variant="caption"
-                            component="div"
-                          >
-                            {job.name}
-                          </Typography>
-                          <Typography
-                            gutterBottom
-                            variant="caption"
-                            component="div"
-                          >
-                            status: {job.status}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                      <Grid item>
-                        {job.status === JOB_STATUS.complete && (
-                          <IconButton>
-                            <FileDownload />
-                          </IconButton>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Paper>
+                <Grid item>
+                  <Alert
+                    severity={
+                      JOB_STATUS.complete === job.status ? "success" : "info"
+                    }
+                    action={
+                      JOB_STATUS.complete === job.status && (
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => handleViewReport(job)}
+                        >
+                          <FileDownload fontSize="inherit" />
+                        </IconButton>
+                      )
+                    }
+                  >
+                    <Typography gutterBottom variant="caption" component="div">
+                      {job.name}
+                    </Typography>
+                    <Typography gutterBottom variant="caption" component="div">
+                      status: {job.status}
+                    </Typography>
+                  </Alert>
+                </Grid>
               )}
-            </Grid>
+            </React.Fragment>
           );
         })}
       </Grid>

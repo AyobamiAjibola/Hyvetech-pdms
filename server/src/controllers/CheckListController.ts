@@ -12,12 +12,16 @@ import {
   JOB_STATUS,
   UPLOAD_BASE_PATH,
 } from "../config/constants";
+import formidable, { File } from "formidable";
 import Job from "../models/Job";
-import { File } from "formidable";
 import Generic from "../utils/Generic";
 import HttpResponse = appCommonTypes.HttpResponse;
 import CheckListType = appCommonTypes.CheckListType;
 import IImageButtonData = appCommonTypes.IImageButtonData;
+
+const incomingForm = new formidable.IncomingForm({
+  uploadDir: UPLOAD_BASE_PATH,
+});
 
 export default class CheckListController {
   public static async create(req: Request) {
@@ -86,6 +90,7 @@ export default class CheckListController {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   public static async createJobCheckList(req: Request) {
     const jobId = req.params.jobId as string;
 
@@ -112,11 +117,39 @@ export default class CheckListController {
           )
         );
 
+      const vehicle = await job.$get("vehicle");
+
+      if (!vehicle)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Vehicle does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
       const checkList = value.checkList as string;
       const checkListJSON = JSON.parse(checkList) as CheckListType;
       const sections = checkListJSON.sections;
       const images: IImageButtonData[] = [];
       const basePath = `${UPLOAD_BASE_PATH}/checklists`;
+
+      //remove already existing image files
+      // const jobCheckList = JSON.parse(job.checkList) as CheckListType;
+      // const jobSections = jobCheckList.sections.map(
+      //   (section) =>
+      //     JSON.parse(section as unknown as string) as CheckListSectionType
+      // );
+      //
+      // console.log(jobSections);
+      //
+      // jobSections.forEach((section) => {
+      //   section.questions.forEach((question) => {
+      //     question.images?.forEach(async (image) => {
+      //       const fileExist = await Generic.fileExist(image?.url);
+      //       if (fileExist) await fs.rm(image?.url);
+      //     });
+      //   });
+      // });
 
       for (const section of sections) {
         const questions = section.questions;
@@ -148,10 +181,15 @@ export default class CheckListController {
         return section;
       });
 
-      const checklistValues: any = {
+      const checklistValues = JSON.stringify({
         ...checkListJSON,
         sections: newSections,
-      };
+      });
+
+      await vehicle.update({
+        onInspection: false,
+        isBooked: false,
+      });
 
       await job.update({
         jobDate: new Date(),

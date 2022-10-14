@@ -248,12 +248,12 @@ export default class PartnerController {
 
     try {
       const { error, value } = Joi.object({
-        cac: Joi.string().label("CAC"),
+        cac: Joi.string().allow("").label("CAC"),
         name: Joi.string().label("Company Full Name"),
-        nameOfDirector: Joi.string().label("Name of Director"),
-        nameOfManager: Joi.string().label("Name of Manager"),
-        vatNumber: Joi.string().label("VAT Number"),
-        workshopAddress: Joi.string().label("Workshop Address"),
+        nameOfDirector: Joi.string().allow("").label("Name of Director"),
+        nameOfManager: Joi.string().allow("").label("Name of Manager"),
+        vatNumber: Joi.string().allow("").label("VAT Number"),
+        workshopAddress: Joi.string().allow("").label("Workshop Address"),
       }).validate(req.body);
 
       if (error)

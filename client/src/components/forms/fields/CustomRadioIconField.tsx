@@ -4,6 +4,7 @@ import { CssVarsProvider, RadioGroup } from "@mui/joy";
 import Sheet from "@mui/joy/Sheet";
 import { IImageButtonData } from "@app-interfaces";
 import { CloseOutlined } from "@mui/icons-material";
+import { getImageUrl } from "../../../utils/generic";
 
 interface IProps {
   options: IImageButtonData[];
@@ -43,40 +44,55 @@ export default function CustomRadioIconField(props: IProps) {
           },
         }}
       >
-        {props.options.map((option, index) => (
-          <Sheet
-            key={index}
-            variant="outlined"
-            sx={{
-              borderRadius: "md",
-              bgcolor: "background.level1",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1.5,
-              p: 2,
-              minWidth: 60,
-              width: "100%",
-              minHeight: 60,
-            }}
-          >
-            <Radio
-              id={option.id}
-              value={option.title}
-              onClick={() => (props.onView ? props.onView(option.id) : null)}
-              checkedIcon={
-                <CloseOutlined
+        {props.options
+          .filter((img) => img.questionId === props.questionId)
+          .map((option, index) => {
+            const imgUrl = option.url.match("blob")?.input
+              ? option.url
+              : getImageUrl(option.url);
+
+            return (
+              <Sheet
+                key={index}
+                variant="outlined"
+                sx={{
+                  borderRadius: "md",
+                  bgcolor: "background.level1",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 1.5,
+                  p: 2,
+                  minWidth: 60,
+                  width: "100%",
+                  minHeight: 60,
+                }}
+              >
+                <Radio
+                  id={option.id}
+                  value={option.title}
                   onClick={() =>
-                    props.onDelete
-                      ? props.onDelete(option.id, props.questionId)
-                      : null
+                    props.onView ? props.onView(option.id) : null
+                  }
+                  checkedIcon={
+                    <CloseOutlined
+                      onClick={() =>
+                        props.onDelete
+                          ? props.onDelete(option.id, props.questionId)
+                          : null
+                      }
+                    />
                   }
                 />
-              }
-            />
-            <img src={option.url} width="50%" alt={option.title} />
-          </Sheet>
-        ))}
+                <img
+                  crossOrigin="anonymous"
+                  src={imgUrl}
+                  width="50%"
+                  alt={option.title}
+                />
+              </Sheet>
+            );
+          })}
       </RadioGroup>
     </CssVarsProvider>
   );

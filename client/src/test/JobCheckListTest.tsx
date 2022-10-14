@@ -295,33 +295,7 @@ export default function JobCheckListTest() {
   const handleNext = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (isLastStep && checkList) {
-      const errors = sections.map((section) => {
-        const questions = section.questions;
-        let errorMessage = "";
-
-        questions.forEach((question) => {
-          const answers = question.answers;
-
-          const someSelected = answers.some((answer) => answer.selected);
-
-          if (!someSelected)
-            errorMessage =
-              "You must select one answer from the options in the check list";
-          if (question.note && !question.text)
-            errorMessage =
-              "It appears one of the questions, requires you to add a note. Please check.";
-          if (question.media && !question.images)
-            errorMessage =
-              "It appears one of the questions, requires you to upload an image. Please check.";
-        });
-
-        return errorMessage;
-      });
-
-      if (errors.some((value) => value.length !== 0))
-        return setError({ message: errors[0] });
-
+    if (isLastStep) {
       const _checkList = {
         ...checkList,
         sections,
@@ -329,11 +303,7 @@ export default function JobCheckListTest() {
       };
 
       dispatch(createJobCheckListAction({ jobId: 1, checkList: _checkList }));
-
-      return;
-    }
-
-    setActiveStep(activeStep + 1);
+    } else setActiveStep(activeStep + 1);
   };
 
   const handleBack = () => setActiveStep(activeStep - 1);
@@ -414,6 +384,7 @@ export default function JobCheckListTest() {
             ...question.images,
             {
               id,
+              questionId,
               url: URL.createObjectURL(file),
               title: file.name,
               width: "",
@@ -423,6 +394,7 @@ export default function JobCheckListTest() {
           question.images = [
             {
               id,
+              questionId,
               url: URL.createObjectURL(file),
               title: file.name,
               width: "",
@@ -431,8 +403,6 @@ export default function JobCheckListTest() {
         break;
       }
     }
-
-    console.log(tempSections);
 
     setSections(tempSections);
   };

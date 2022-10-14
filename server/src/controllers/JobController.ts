@@ -91,9 +91,10 @@ export default class JobController {
         const checkList = JSON.parse(job.checkList) as unknown as CheckListType;
 
         if (checkList.sections) {
-          checkList.sections = checkList.sections.map((section) =>
-            JSON.parse(section as unknown as string)
-          );
+          checkList.sections = checkList.sections.map((section) => {
+            if (typeof section !== "string") return section;
+            else return JSON.parse(section as unknown as string);
+          });
         } else
           checkList.sections = JSON.parse(
             JSON.stringify([INITIAL_CHECK_LIST_VALUES])
@@ -107,6 +108,8 @@ export default class JobController {
           }
         );
       } else result = job;
+
+      console.log(result);
 
       const response: HttpResponse<Job> = {
         code: HttpStatus.OK.code,

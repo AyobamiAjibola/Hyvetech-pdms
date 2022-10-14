@@ -1,6 +1,6 @@
 import React from "react";
 import { FieldArray, Form, useFormikContext } from "formik";
-import { Autocomplete, Avatar, Grid, Typography } from "@mui/material";
+import { Autocomplete, Button, Grid, Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import { Add, PhotoCamera, Remove, Save } from "@mui/icons-material";
@@ -32,20 +32,19 @@ function GarageSettingsForm(props: IProps) {
           item
           container
           xs={12}
-          spacing={1}
-          justifyContent="center"
+          justifyContent="space-evenly"
           alignItems="center"
+          spacing={2}
           mb={3}
         >
           <Grid item>
-            <Typography variant="caption">Upload Logo</Typography>
-          </Grid>
-          <Grid item>
-            <IconButton
+            <Button
+              endIcon={<PhotoCamera />}
               color="primary"
               aria-label="upload picture"
               component="label"
             >
+              upload logo
               <input
                 hidden
                 name={fields.logo.name}
@@ -58,12 +57,16 @@ function GarageSettingsForm(props: IProps) {
                 accept="image/*"
                 type="file"
               />
-              <PhotoCamera />
-            </IconButton>
+            </Button>
           </Grid>
-          <Grid item>
+          <Grid item xs>
             {values.logo && (
-              <Avatar src={getImageUrl(values.logo)} alt="logo" />
+              <img
+                src={getImageUrl(values.logo)}
+                crossOrigin="anonymous"
+                width="10%"
+                alt="logo"
+              />
             )}
           </Grid>
         </Grid>

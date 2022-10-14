@@ -209,6 +209,7 @@ function JobCheckListPage() {
             ...question.images,
             {
               id,
+              questionId,
               url: URL.createObjectURL(file),
               title: file.name,
               width: "",
@@ -218,6 +219,7 @@ function JobCheckListPage() {
           question.images = [
             {
               id,
+              questionId,
               url: URL.createObjectURL(file),
               title: file.name,
               width: "",
