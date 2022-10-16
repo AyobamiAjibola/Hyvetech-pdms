@@ -6,6 +6,8 @@ import {
   createPartnerAction,
   createPartnerKycAction,
   createPartnerSettingsAction,
+  deletePaymentPlanAction,
+  deletePlanAction,
   getDriversFilterDataAction,
   getOwnersFilterDataAction,
   getPartnerAction,
@@ -60,6 +62,14 @@ interface IPartnerState {
   getPartnerStatus: IThunkAPIStatus;
   getPartnerSuccess: string;
   getPartnerError?: string;
+
+  deletePlanStatus: IThunkAPIStatus;
+  deletePlanSuccess: string;
+  deletePlanError?: string;
+
+  deletePaymentPlanStatus: IThunkAPIStatus;
+  deletePaymentPlanSuccess: string;
+  deletePaymentPlanError?: string;
 
   partner: IPartner | null;
   partners: IPartner[];
@@ -116,6 +126,14 @@ const initialState: IPartnerState = {
   getPartnerStatus: "idle",
   getPartnerSuccess: "",
 
+  deletePlanError: "",
+  deletePlanStatus: "idle",
+  deletePlanSuccess: "",
+
+  deletePaymentPlanError: "",
+  deletePaymentPlanStatus: "idle",
+  deletePaymentPlanSuccess: "",
+
   partner: null,
   partners: [],
   plan: null,
@@ -169,6 +187,18 @@ const partnerSlice = createSlice({
       state.getDriversFilterDataStatus = "idle";
       state.getDriversFilterDataSuccess = "";
       state.getDriversFilterDataError = "";
+    },
+
+    clearDeletePlanStatus(state: IPartnerState) {
+      state.deletePlanStatus = "idle";
+      state.deletePlanSuccess = "";
+      state.deletePlanError = "";
+    },
+
+    clearDeletePaymentPlanStatus(state: IPartnerState) {
+      state.deletePaymentPlanStatus = "idle";
+      state.deletePaymentPlanSuccess = "";
+      state.deletePaymentPlanError = "";
     },
   },
   extraReducers: (builder) => {
@@ -346,6 +376,38 @@ const partnerSlice = createSlice({
           state.getOwnersFilterDataError = action.payload.message;
         } else state.getOwnersFilterDataError = action.error.message;
       });
+
+    builder
+      .addCase(deletePlanAction.pending, (state) => {
+        state.deletePlanStatus = "idle";
+      })
+      .addCase(deletePlanAction.fulfilled, (state, action) => {
+        state.deletePlanStatus = "completed";
+        state.ownersFilterData = action.payload.results as IDriversFilterData[];
+      })
+      .addCase(deletePlanAction.rejected, (state, action) => {
+        state.deletePlanStatus = "failed";
+
+        if (action.payload) {
+          state.deletePlanError = action.payload.message;
+        } else state.deletePlanError = action.error.message;
+      });
+
+    builder
+      .addCase(deletePaymentPlanAction.pending, (state) => {
+        state.deletePaymentPlanStatus = "idle";
+      })
+      .addCase(deletePaymentPlanAction.fulfilled, (state, action) => {
+        state.deletePaymentPlanStatus = "completed";
+        state.ownersFilterData = action.payload.results as IDriversFilterData[];
+      })
+      .addCase(deletePaymentPlanAction.rejected, (state, action) => {
+        state.deletePaymentPlanStatus = "failed";
+
+        if (action.payload) {
+          state.deletePaymentPlanError = action.payload.message;
+        } else state.deletePaymentPlanError = action.error.message;
+      });
   },
 });
 
@@ -358,6 +420,8 @@ export const {
   clearGetDriversFilterDataStatus,
   clearCreatePartnerKycStatus,
   clearCreatePartnerSettingsStatus,
+  clearDeletePaymentPlanStatus,
+  clearDeletePlanStatus,
 } = partnerSlice.actions;
 
 export default partnerSlice.reducer;

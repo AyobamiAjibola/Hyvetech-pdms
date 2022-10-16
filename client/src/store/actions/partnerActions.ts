@@ -17,7 +17,9 @@ const GET_DRIVERS_FILTER_DATA = "partner:GET_DRIVERS_FILTER_DATA";
 const GET_OWNERS_FILTER_DATA = "partner:GET_OWNERS_FILTER_DATA";
 const GET_PARTNER = "partner:GET_PARTNER";
 const CREATE_PLAN = "partner:CREATE_PLAN";
+const DELETE_PLAN = "partner:DELETE_PLAN";
 const CREATE_PAYMENT_PLAN = "partner:CREATE_PAYMENT_PLAN";
+const DELETE_PAYMENT_PLAN = "partner:DELETE_PAYMENT_PLAN";
 const GET_PLANS = "partner:GET_PLANS";
 const GET_PAYMENT_PLANS = "partner:GET_PAYMENT_PLANS";
 const API_ROOT = settings.api.rest;
@@ -161,6 +163,26 @@ export const getOwnersFilterDataAction = asyncThunkWrapper<any, number>(
   async (partnerId: number) => {
     const response = await axiosClient.get(
       `${API_ROOT}/partners/${partnerId}/owners-filter-data`
+    );
+    return response.data;
+  }
+);
+
+export const deletePlanAction = asyncThunkWrapper<any, number>(
+  DELETE_PLAN,
+  async (planId: number) => {
+    const response = await axiosClient.delete(
+      `${API_ROOT}/partners?planId=${planId}`
+    );
+    return response.data;
+  }
+);
+
+export const deletePaymentPlanAction = asyncThunkWrapper<any, number>(
+  DELETE_PAYMENT_PLAN,
+  async (paymentPlanId) => {
+    const response = await axiosClient.delete(
+      `${API_ROOT}/partners?paymentPlanId=${paymentPlanId}`
     );
     return response.data;
   }

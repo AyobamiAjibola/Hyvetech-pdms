@@ -4,7 +4,15 @@ import { Delete, Visibility } from "@mui/icons-material";
 import { IPaymentPlan } from "@app-models";
 import AppDataGrid from "../../tables/AppDataGrid";
 import useAppSelector from "../../../hooks/useAppSelector";
-import { Button, Grid } from "@mui/material";
+import {
+  Button,
+  DialogActions,
+  DialogContentText,
+  Grid,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import { CustomHookMessage } from "@app-types";
 import { useParams } from "react-router-dom";
 import useAppDispatch from "../../../hooks/useAppDispatch";
@@ -14,13 +22,21 @@ import paymentPlanModel, {
   IPaymentPlanModel,
 } from "../../forms/models/paymentPlanModel";
 import AddPaymentPlanForm from "../../forms/partner/AddPaymentPlanForm";
-import { addPaymentPlanAction } from "../../../store/actions/partnerActions";
+import {
+  addPaymentPlanAction,
+  deletePaymentPlanAction,
+} from "../../../store/actions/partnerActions";
 import AppAlert from "../../alerts/AppAlert";
 import moment from "moment";
+import capitalize from "capitalize";
+import { MESSAGES } from "../../../config/constants";
 
 function PaymentPlans() {
   const [openAddPaymentPlan, setOpenAddPaymentPlan] = useState<boolean>(false);
+  const [openViewPlan, setOpenViewPlan] = useState<boolean>(false);
+  const [openDeletePlan, setOpenDeletePlan] = useState<boolean>(false);
   const [error, setError] = useState<CustomHookMessage>();
+  const [paymentPlan, setPaymentPlan] = useState<IPaymentPlan>();
 
   const params = useParams();
 
@@ -68,6 +84,23 @@ function PaymentPlans() {
     formikHelper.resetForm();
   };
 
+  const handleView = (paymentPlan: IPaymentPlan) => {
+    setOpenViewPlan(true);
+    setPaymentPlan(paymentPlan);
+  };
+
+  const handleDelete = (paymentPlan: IPaymentPlan) => {
+    setOpenDeletePlan(true);
+    setPaymentPlan(paymentPlan);
+  };
+
+  const handleConfirmDelete = () => {
+    if (paymentPlan) {
+      dispatch(deletePaymentPlanAction(paymentPlan.id));
+      setOpenDeletePlan(false);
+    }
+  };
+
   return (
     <React.Fragment>
       <Grid item xs={12}>
@@ -88,7 +121,7 @@ function PaymentPlans() {
           loading={partnerReducer.getPaymentPlansStatus === "loading"}
           showToolbar
           rows={partnerReducer.paymentPlans}
-          columns={columns()}
+          columns={columns({ onView: handleView, onDelete: handleDelete })}
         />
       </Grid>
       <AppModal
@@ -111,6 +144,76 @@ function PaymentPlans() {
         show={undefined !== error?.message}
         message={error?.message}
         onClose={() => setError(undefined)}
+      />
+      <AppModal
+        show={openViewPlan}
+        Content={
+          paymentPlan ? (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Payment Plan Name
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {capitalize.words(paymentPlan.name).replaceAll("_", " ")}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Label
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {paymentPlan.label}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Coverage
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {paymentPlan.coverage}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  On Promo
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {paymentPlan.hasPromo ? "Yes" : "No"}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Date Added
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {moment(paymentPlan.createdAt).format("LLL")}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Date Modified
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {moment(paymentPlan.updatedAt).format("LLL")}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          ) : null
+        }
+        onClose={() => setOpenViewPlan(false)}
+      />
+      <AppModal
+        fullWidth
+        show={openDeletePlan}
+        Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => setOpenDeletePlan(false)}>Disagree</Button>
+            <Button onClick={handleConfirmDelete}>Agree</Button>
+          </DialogActions>
+        }
+        onClose={() => setOpenDeletePlan(false)}
       />
     </React.Fragment>
   );

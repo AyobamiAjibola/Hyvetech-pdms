@@ -85,8 +85,6 @@ function JobCheckListReportPage() {
   useEffect(() => {
     if (jobReducer.getJobStatus === "completed") {
       if (jobReducer.job) {
-        console.log(jobReducer.job);
-
         setJob(jobReducer.job);
       }
     }
@@ -124,7 +122,12 @@ function JobCheckListReportPage() {
           columns={{ xs: 4, sm: 8, md: 12 }}
           ref={containerRef}
         >
-          <Grid item xs={4}>
+          <style type="text/css" media="print">
+            {"\
+               @page { size: portrait; }\
+           "}
+          </style>
+          <Grid item xs={12} md={4}>
             <Paper sx={{ p: 2 }} elevation={7}>
               <Grid item container xs={12} spacing={2}>
                 <Grid item xs={7}>
@@ -235,7 +238,7 @@ function JobCheckListReportPage() {
               <Divider flexItem orientation="horizontal" sx={{ mb: 4 }} />
             </Paper>
           </Grid>
-          <Grid item xs container spacing={0.5}>
+          <Grid item xs={12} md={8} container spacing={0.5}>
             {job.checkList.sections.map((section, idx1) => {
               return (
                 <Grid key={idx1} item xs={12} md={6}>

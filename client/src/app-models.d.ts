@@ -200,6 +200,8 @@ declare module "@app-models" {
     technicianId: number;
     partner: IPartner;
     partnerId: number;
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface ICustomerSubscription {
@@ -237,6 +239,8 @@ declare module "@app-models" {
     description: string;
     active: boolean;
     plans: IPlan[];
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface IPartner {
@@ -264,6 +268,8 @@ declare module "@app-models" {
     categories: ICategory[];
     technicians: [];
     contact: IContact;
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface ICategory {
@@ -273,6 +279,8 @@ declare module "@app-models" {
     plans: IPlan[];
     partners: IPartner[];
     paymentPlans: IPaymentPlan[];
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface IPlan {
@@ -288,6 +296,8 @@ declare module "@app-models" {
     subscriptionId: number;
     paymentPlans: IPaymentPlan[];
     categories: ICategory[];
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface IPaymentPlan {
@@ -304,6 +314,8 @@ declare module "@app-models" {
     plan: IPlan;
     planId: number;
     categories: ICategory[];
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface IPaymentTerm {
@@ -313,6 +325,8 @@ declare module "@app-models" {
     split: number;
     discount: number;
     quota: string;
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface Category {
@@ -321,6 +335,8 @@ declare module "@app-models" {
     description: string;
     plans: IPlan[];
     paymentPlans: IPaymentPlan[];
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface IPermission {
@@ -393,6 +409,8 @@ declare module "@app-models" {
     default: boolean;
     date?: string;
     timeSlots: ITimeSlot[];
+    createdAt: Date;
+    updatedAt: Date;
   }
 
   interface ITimeSlot {
@@ -400,6 +418,8 @@ declare module "@app-models" {
     time: string;
     label: string;
     available: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
   }
 
   interface IRideShareDriverSubscription {
@@ -502,5 +522,7 @@ declare module "@app-models" {
     partnerId: number;
     job: IJob;
     jobId: number;
+    createdAt: Date;
+    updatedAt: Date;
   }
 }

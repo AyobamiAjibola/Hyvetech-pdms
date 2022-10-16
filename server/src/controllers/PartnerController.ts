@@ -937,11 +937,11 @@ export default class PartnerController {
     return JobController.jobs(+partnerId);
   }
 
-  public static formatPartners(partners: Partner[]) {
+  private static formatPartners(partners: Partner[]) {
     return partners.map((partner) => this.formatPartner(partner));
   }
 
-  public static formatPartner(partner: Partner) {
+  private static formatPartner(partner: Partner) {
     const workingHours = partner.workingHours;
     const brands = partner.brands;
 
@@ -955,5 +955,80 @@ export default class PartnerController {
     }
 
     return partner;
+  }
+
+  public async deletePaymentPlan(req: Request) {
+    try {
+      const paymentPlanId = req.query.paymentPlanId as string;
+
+      const paymentPlan = await dataSources.paymentPlanDAOService.findById(
+        +paymentPlanId
+      );
+
+      if (!paymentPlan)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Payment Plan does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const plan = await dataSources.planDAOService.findById(
+        paymentPlan.planId
+      );
+
+      if (!plan)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Plan does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      await plan.$remove("paymentPlans", paymentPlan);
+      await paymentPlan.destroy();
+
+      const paymentPlans = await dataSources.paymentPlanDAOService.findAll();
+
+      const response: HttpResponse<PaymentPlan> = {
+        code: HttpStatus.OK.code,
+        message: `Deleted Payment Plan successfully.`,
+        results: paymentPlans,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public async deletePlan(req: Request) {
+    try {
+      const planId = req.query.planId as string;
+
+      const plan = await dataSources.planDAOService.findById(+planId);
+
+      if (!plan)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Plan does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      await plan.destroy();
+
+      const plans = await dataSources.planDAOService.findAll();
+
+      const response: HttpResponse<Plan> = {
+        code: HttpStatus.OK.code,
+        message: `Deleted plan successfully.`,
+        results: plans,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 }

@@ -2,19 +2,36 @@ import React, { useEffect, useState } from "react";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Delete, Visibility } from "@mui/icons-material";
 import { IPlan } from "@app-models";
-import { Button, Grid } from "@mui/material";
+import {
+  Button,
+  DialogActions,
+  DialogContentText,
+  Grid,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import AppDataGrid from "../../tables/AppDataGrid";
 import useAppSelector from "../../../hooks/useAppSelector";
 import AppModal from "../../modal/AppModal";
 import { Formik, FormikHelpers } from "formik";
 import planModel, { IPlanModel } from "../../forms/models/planModel";
 import AddPlanForm from "../../forms/partner/AddPlanForm";
-import { addPlanAction } from "../../../store/actions/partnerActions";
+import {
+  addPlanAction,
+  deletePlanAction,
+} from "../../../store/actions/partnerActions";
 import { useParams } from "react-router-dom";
 import useAppDispatch from "../../../hooks/useAppDispatch";
+import capitalize from "capitalize";
+import { MESSAGES } from "../../../config/constants";
+import moment from "moment";
 
 function Plans() {
   const [openAddPlan, setOpenAddPlan] = useState<boolean>(false);
+  const [openViewPlan, setOpenViewPlan] = useState<boolean>(false);
+  const [openDeletePlan, setOpenDeletePlan] = useState<boolean>(false);
+  const [plan, setPlan] = useState<IPlan>();
 
   const params = useParams();
 
@@ -59,6 +76,23 @@ function Plans() {
     formikHelper.resetForm();
   };
 
+  const handleView = (plan: IPlan) => {
+    setOpenViewPlan(true);
+    setPlan(plan);
+  };
+
+  const handleDelete = (plan: IPlan) => {
+    setOpenDeletePlan(true);
+    setPlan(plan);
+  };
+
+  const handleConfirmDelete = () => {
+    if (plan) {
+      dispatch(deletePlanAction(plan.id));
+      setOpenDeletePlan(false);
+    }
+  };
+
   return (
     <React.Fragment>
       <Grid item xs={12}>
@@ -79,7 +113,7 @@ function Plans() {
           loading={partnerReducer.getPlansStatus === "loading"}
           showToolbar
           rows={partnerReducer.plans}
-          columns={columns()}
+          columns={columns({ onView: handleView, onDelete: handleDelete })}
         />
       </Grid>
       <AppModal
@@ -96,6 +130,92 @@ function Plans() {
           </Formik>
         }
         onClose={handleCloseOpenAddPlan}
+      />
+      <AppModal
+        show={openViewPlan}
+        Content={
+          plan ? (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Plan Name
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {capitalize.words(plan.label).replaceAll("_", " ")}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Validity
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {plan.validity}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Inspections
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {plan.inspections}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Min/Max Vehicles
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {plan.minVehicles}/{plan.maxVehicles}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Total Drive-in
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {plan.driveIn}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Total Mobile
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {plan.mobile}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Date Added
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {moment(plan.createdAt).format("LLL")}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Date Modified
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {moment(plan.updatedAt).format("LLL")}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          ) : null
+        }
+        onClose={() => setOpenViewPlan(false)}
+      />
+      <AppModal
+        fullWidth
+        show={openDeletePlan}
+        Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => setOpenDeletePlan(false)}>Disagree</Button>
+            <Button onClick={handleConfirmDelete}>Agree</Button>
+          </DialogActions>
+        }
+        onClose={() => setOpenDeletePlan(false)}
       />
     </React.Fragment>
   );
