@@ -6,7 +6,11 @@ import { InferAttributes, Op } from "sequelize";
 import CustomAPIError from "../exceptions/CustomAPIError";
 import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
-import { CATEGORIES, UPLOAD_BASE_PATH } from "../config/constants";
+import {
+  CATEGORIES,
+  QUEUE_EVENTS,
+  UPLOAD_BASE_PATH,
+} from "../config/constants";
 import Generic from "../utils/Generic";
 import { appCommonTypes } from "../@types/app-common";
 import settings from "../config/settings";
@@ -19,6 +23,9 @@ import PaymentPlan, { $paymentPlanSchema } from "../models/PaymentPlan";
 import axiosClient from "../services/api/axiosClient";
 import _ from "lodash";
 import JobController from "./JobController";
+import email_content from "../resources/templates/email/email_content";
+import { QueueManager } from "rabbitmq-email-manager";
+import create_partner_success_email from "../resources/templates/email/create_partner_success_email";
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 
@@ -163,11 +170,13 @@ export default class PartnerController {
         country: "Nigeria",
       };
 
-      let category;
-      let role;
+      let category, role, mailSubject, partnerType;
 
       //Garage Partner
       if (value?.category === CATEGORIES[3].name) {
+        partnerType = "Garage";
+        mailSubject = `Welcome ${partnerValues.name}, to Jiffix ${partnerType}`;
+
         //find garage category
         category = await dataSources.categoryDAOService.findByAny({
           where: {
@@ -183,6 +192,9 @@ export default class PartnerController {
 
       //Ride-Share Partner
       if (value?.category === CATEGORIES[4].name) {
+        partnerType = "Ride-Share";
+        mailSubject = `Welcome ${partnerValues.name}, to Jiffix ${partnerType}`;
+
         //find ride-share category
         category = await dataSources.categoryDAOService.findByAny({
           where: {
@@ -226,6 +238,36 @@ export default class PartnerController {
       await partner.$set("users", user);
 
       const result = PartnerController.formatPartner(partner);
+
+      const mailText = create_partner_success_email({
+        username: userValues.email,
+        password: userValues.rawPassword,
+        appUrl: <string>process.env.CLIENT_HOST,
+        partnerType,
+      });
+
+      const mail = email_content({
+        firstName: partnerValues.name,
+        text: mailText,
+        signature: <string>process.env.SMTP_EMAIL_SIGNATURE,
+      });
+
+      await QueueManager.publish({
+        queue: QUEUE_EVENTS.name,
+        data: {
+          to: user.email,
+          from: {
+            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            address: <string>process.env.SMTP_EMAIL_FROM,
+          },
+          subject: mailSubject,
+          html: mail,
+          bcc: [
+            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+            <string>process.env.SMTP_EMAIL_FROM,
+          ],
+        },
+      });
 
       const response: HttpResponse<Partner> = {
         message: HttpStatus.OK.value,
@@ -957,76 +999,78 @@ export default class PartnerController {
     return partner;
   }
 
-  public async deletePaymentPlan(req: Request) {
-    try {
-      const paymentPlanId = req.query.paymentPlanId as string;
-
-      const paymentPlan = await dataSources.paymentPlanDAOService.findById(
-        +paymentPlanId
-      );
-
-      if (!paymentPlan)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Payment Plan does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
-
-      const plan = await dataSources.planDAOService.findById(
-        paymentPlan.planId
-      );
-
-      if (!plan)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Plan does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
-
-      await plan.$remove("paymentPlans", paymentPlan);
-      await paymentPlan.destroy();
-
-      const paymentPlans = await dataSources.paymentPlanDAOService.findAll();
-
-      const response: HttpResponse<PaymentPlan> = {
-        code: HttpStatus.OK.code,
-        message: `Deleted Payment Plan successfully.`,
-        results: paymentPlans,
-      };
-
-      return Promise.resolve(response);
-    } catch (e) {
-      return Promise.reject(e);
-    }
-  }
-
   public async deletePlan(req: Request) {
     try {
       const planId = req.query.planId as string;
+      const paymentPlanId = req.query.paymentPlanId as string;
 
-      const plan = await dataSources.planDAOService.findById(+planId);
+      if (planId) {
+        const plan = await dataSources.planDAOService.findById(+planId);
 
-      if (!plan)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Plan does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+        const result = plan;
+
+        if (!plan)
+          return Promise.reject(
+            CustomAPIError.response(
+              `Plan does not exist`,
+              HttpStatus.NOT_FOUND.code
+            )
+          );
+
+        await plan.destroy();
+
+        const response: HttpResponse<Plan> = {
+          code: HttpStatus.OK.code,
+          message: `Deleted plan successfully.`,
+          result,
+        };
+
+        return Promise.resolve(response);
+      }
+
+      if (paymentPlanId) {
+        const paymentPlan = await dataSources.paymentPlanDAOService.findById(
+          +paymentPlanId
         );
 
-      await plan.destroy();
+        const result = paymentPlan;
 
-      const plans = await dataSources.planDAOService.findAll();
+        if (!paymentPlan)
+          return Promise.reject(
+            CustomAPIError.response(
+              `Payment Plan does not exist`,
+              HttpStatus.NOT_FOUND.code
+            )
+          );
 
-      const response: HttpResponse<Plan> = {
-        code: HttpStatus.OK.code,
-        message: `Deleted plan successfully.`,
-        results: plans,
-      };
+        const plan = await dataSources.planDAOService.findById(
+          paymentPlan.planId
+        );
 
-      return Promise.resolve(response);
+        if (!plan)
+          return Promise.reject(
+            CustomAPIError.response(
+              `Plan does not exist`,
+              HttpStatus.NOT_FOUND.code
+            )
+          );
+
+        await plan.$remove("paymentPlans", paymentPlan);
+        await paymentPlan.destroy();
+
+        const response: HttpResponse<PaymentPlan> = {
+          code: HttpStatus.OK.code,
+          message: `Deleted Payment Plan successfully.`,
+          result,
+        };
+
+        return Promise.resolve(response);
+      }
+
+      return Promise.reject({
+        code: HttpStatus.BAD_REQUEST.code,
+        message: HttpStatus.BAD_REQUEST.value,
+      } as HttpResponse<any>);
     } catch (e) {
       return Promise.reject(e);
     }

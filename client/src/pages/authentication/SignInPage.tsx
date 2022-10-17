@@ -19,9 +19,7 @@ function SignInPage() {
     values: ISignInModel,
     formikHelpers: FormikHelpers<ISignInModel>
   ) => {
-    // @ts-ignore
     dispatch(signInAction(values));
-
     formikHelpers.resetForm();
   };
 
@@ -42,6 +40,12 @@ function SignInPage() {
         show={login.success !== undefined}
         message={login.success?.message}
         onClose={login.clearSuccess}
+      />
+      <AppAlert
+        alertType="error"
+        show={login.error !== undefined}
+        message={login.error?.message}
+        onClose={login.clearError}
       />
     </PublicLayout>
   );

@@ -30,12 +30,14 @@ import AppAlert from "../../alerts/AppAlert";
 import moment from "moment";
 import capitalize from "capitalize";
 import { MESSAGES } from "../../../config/constants";
+import { clearDeletePaymentPlanStatus } from "../../../store/reducers/partnerReducer";
 
 function PaymentPlans() {
   const [openAddPaymentPlan, setOpenAddPaymentPlan] = useState<boolean>(false);
   const [openViewPlan, setOpenViewPlan] = useState<boolean>(false);
   const [openDeletePlan, setOpenDeletePlan] = useState<boolean>(false);
   const [error, setError] = useState<CustomHookMessage>();
+  const [success, setSuccess] = useState<CustomHookMessage>();
   const [paymentPlan, setPaymentPlan] = useState<IPaymentPlan>();
 
   const params = useParams();
@@ -48,6 +50,31 @@ function PaymentPlans() {
       setOpenAddPaymentPlan(false);
     }
   }, [partnerReducer.addPaymentPlanStatus]);
+
+  useEffect(() => {
+    if (partnerReducer.deletePaymentPlanStatus === "completed") {
+      setSuccess({ message: partnerReducer.deletePaymentPlanSuccess });
+    }
+  }, [
+    partnerReducer.deletePaymentPlanStatus,
+    partnerReducer.deletePaymentPlanSuccess,
+  ]);
+
+  useEffect(() => {
+    if (partnerReducer.deletePaymentPlanStatus === "failed") {
+      if (partnerReducer.deletePaymentPlanError)
+        setError({ message: partnerReducer.deletePaymentPlanError });
+    }
+  }, [
+    partnerReducer.deletePaymentPlanStatus,
+    partnerReducer.deletePaymentPlanError,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearDeletePaymentPlanStatus());
+    };
+  }, [dispatch]);
 
   const handleOpenAddPaymentPlan = () => {
     setOpenAddPaymentPlan(true);
@@ -214,6 +241,18 @@ function PaymentPlans() {
           </DialogActions>
         }
         onClose={() => setOpenDeletePlan(false)}
+      />
+      <AppAlert
+        alertType="success"
+        show={undefined !== success}
+        message={success?.message}
+        onClose={() => setSuccess(undefined)}
+      />
+      <AppAlert
+        alertType="error"
+        show={undefined !== error}
+        message={error?.message}
+        onClose={() => setError(undefined)}
       />
     </React.Fragment>
   );

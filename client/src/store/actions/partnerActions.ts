@@ -7,7 +7,7 @@ import {
 } from "../../components/forms/models/partnerModel";
 import asyncThunkWrapper from "../../helpers/asyncThunkWrapper";
 import { ApiResponseSuccess } from "@app-interfaces";
-import { IPartner } from "@app-models";
+import { IPartner, IPaymentPlan, IPlan } from "@app-models";
 
 const CREATE_PARTNER = "partner:CREATE_PARTNER";
 const CREATE_PARTNER_KYC = "partner:CREATE_PARTNER_KYC";
@@ -168,22 +168,22 @@ export const getOwnersFilterDataAction = asyncThunkWrapper<any, number>(
   }
 );
 
-export const deletePlanAction = asyncThunkWrapper<any, number>(
-  DELETE_PLAN,
-  async (planId: number) => {
-    const response = await axiosClient.delete(
-      `${API_ROOT}/partners?planId=${planId}`
-    );
-    return response.data;
-  }
-);
+export const deletePlanAction = asyncThunkWrapper<
+  ApiResponseSuccess<IPlan>,
+  number
+>(DELETE_PLAN, async (planId: number) => {
+  const response = await axiosClient.delete(
+    `${API_ROOT}/partners?planId=${planId}`
+  );
+  return response.data;
+});
 
-export const deletePaymentPlanAction = asyncThunkWrapper<any, number>(
-  DELETE_PAYMENT_PLAN,
-  async (paymentPlanId) => {
-    const response = await axiosClient.delete(
-      `${API_ROOT}/partners?paymentPlanId=${paymentPlanId}`
-    );
-    return response.data;
-  }
-);
+export const deletePaymentPlanAction = asyncThunkWrapper<
+  ApiResponseSuccess<IPaymentPlan>,
+  number
+>(DELETE_PAYMENT_PLAN, async (paymentPlanId) => {
+  const response = await axiosClient.delete(
+    `${API_ROOT}/partners?paymentPlanId=${paymentPlanId}`
+  );
+  return response.data;
+});

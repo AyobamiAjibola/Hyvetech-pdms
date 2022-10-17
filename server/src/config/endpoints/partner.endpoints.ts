@@ -4,7 +4,6 @@ import {
   createPartnerHandler,
   createPartnerKycHandler,
   createPartnerSettingsHandler,
-  deletePaymentPlanHandler,
   deletePlanHandler,
   driversFilterDataHandler,
   filterDriversHandler,
@@ -108,7 +107,7 @@ const partnerEndpoints: RouteEndpoints = [
     name: "delete payment plan",
     method: "delete",
     path: "/partners",
-    handler: deletePaymentPlanHandler,
+    handler: deletePlanHandler,
   },
 ];
 

@@ -383,7 +383,15 @@ const partnerSlice = createSlice({
       })
       .addCase(deletePlanAction.fulfilled, (state, action) => {
         state.deletePlanStatus = "completed";
-        state.ownersFilterData = action.payload.results as IDriversFilterData[];
+        state.deletePlanSuccess = action.payload.message;
+        state.plan = action.payload.result as IPlan;
+
+        if (state.plan) {
+          const _plan = state.plan;
+          let plans = [...state.plans];
+          plans = plans.filter((plan) => plan.id !== _plan.id);
+          state.plans = plans;
+        }
       })
       .addCase(deletePlanAction.rejected, (state, action) => {
         state.deletePlanStatus = "failed";
@@ -399,7 +407,17 @@ const partnerSlice = createSlice({
       })
       .addCase(deletePaymentPlanAction.fulfilled, (state, action) => {
         state.deletePaymentPlanStatus = "completed";
-        state.ownersFilterData = action.payload.results as IDriversFilterData[];
+        state.deletePaymentPlanSuccess = action.payload.message;
+        state.paymentPlan = action.payload.result as IPaymentPlan;
+
+        if (state.paymentPlan) {
+          const _paymentPlan = state.paymentPlan;
+          let paymentPlans = [...state.paymentPlans];
+          paymentPlans = paymentPlans.filter(
+            (paymentPlan) => paymentPlan.id !== _paymentPlan.id
+          );
+          state.paymentPlans = paymentPlans;
+        }
       })
       .addCase(deletePaymentPlanAction.rejected, (state, action) => {
         state.deletePaymentPlanStatus = "failed";

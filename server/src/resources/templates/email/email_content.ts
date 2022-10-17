@@ -149,7 +149,7 @@ export default function email_content(mailBody: MailBody) {
                                                                 href="#"
                                                                 target="_blank"
                                                                 ><img
-                                                                  src="http://inspection.jiffixtech.com/api/v1/static/images/logo/Blue.png"
+                                                                  src="https://pdms.jiffixtech.com/api/v1/static/images/logo/Blue.png"
                                                                   alt=""
                                                                   width="241"
                                                                   height="47"
@@ -403,7 +403,7 @@ export default function email_content(mailBody: MailBody) {
                                   >
                                     <a href="#" target="_blank"
                                       ><img
-                                        src="http://inspection.jiffixtech.com/api/v1/static/images/logo/Blue.png"
+                                        src="https://pdms.jiffixtech.com/api/v1/static/images/logo/Blue.png"
                                         alt=""
                                         width="59"
                                         height="59"

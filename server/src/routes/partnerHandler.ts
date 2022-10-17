@@ -126,11 +126,3 @@ export const deletePlanHandler = authenticateRouteWrapper(
     res.status(result.code).json(result);
   }
 );
-
-export const deletePaymentPlanHandler = authenticateRouteWrapper(
-  async (req: Request, res: Response) => {
-    const result = await partnerController.deletePaymentPlan(req);
-
-    res.status(result.code).json(result);
-  }
-);
