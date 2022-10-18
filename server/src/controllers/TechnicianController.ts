@@ -7,13 +7,13 @@ import { appCommonTypes } from "../@types/app-common";
 import { QueueManager } from "rabbitmq-email-manager";
 import { QUEUE_EVENTS } from "../config/constants";
 import email_content from "../resources/templates/email/email_content";
-import create_customer_success_email from "../resources/templates/email/create_customer_success_email";
 import dataSources from "../services/dao";
 import { Op } from "sequelize";
 import Generic from "../utils/Generic";
 import { $loginSchema } from "../models/User";
 import Job from "../models/Job";
 import Vehicle from "../models/Vehicle";
+import create_technician_success_email from "../resources/templates/email/create_technician_success_email";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -98,10 +98,11 @@ export default class TechnicianController {
       //associate partner with technician
       await partner.$set("technicians", [user]);
 
-      const mailText = create_customer_success_email({
+      const mailText = create_technician_success_email({
         username: user.email,
         password: user.rawPassword,
-        loginUrl: process.env.CUSTOMER_APP_HOST,
+        appUrl: <string>process.env.TECHNICIAN_APP_URL,
+        whatsappUrl: <string>process.env.WHATSAPP_URL,
       });
 
       const mail = email_content({
@@ -119,7 +120,7 @@ export default class TechnicianController {
             name: <string>process.env.SMTP_EMAIL_FROM_NAME,
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
-          subject: `Welcome to Jiffix ${value.companyName}`,
+          subject: `Welcome to ${partner.name} Garage`,
           html: mail,
           bcc: [
             <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,

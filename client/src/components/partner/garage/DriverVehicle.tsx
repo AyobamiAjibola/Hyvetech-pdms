@@ -37,6 +37,7 @@ import generatePageNumbers from "../../../utils/generic";
 import DriverSubscription from "./DriverSubscription";
 import { DriverVehiclesContext } from "./DriverVehicles";
 import { DriverVehiclesContextProps } from "@app-interfaces";
+import { APPOINTMENT_STATUS } from "../../../config/constants";
 
 interface ILocationState {
   vehicle?: IVehicle;
@@ -338,8 +339,11 @@ export default function DriverVehicle(props: ILocationState) {
                     <CardContent>
                       <List>
                         {vehicleReducer.driverSubscriptions.length ? (
-                          vehicleReducer.driverSubscriptions.map(
-                            (sub, index) => {
+                          vehicleReducer.driverSubscriptions
+                            .filter(
+                              (sub) => sub.status !== APPOINTMENT_STATUS.cancel
+                            )
+                            .map((sub, index) => {
                               return (
                                 <ListItem
                                   key={index}
@@ -366,8 +370,7 @@ export default function DriverVehicle(props: ILocationState) {
                                   />
                                 </ListItem>
                               );
-                            }
-                          )
+                            })
                         ) : (
                           <ListItem>
                             <ListItemText primary="No Subscriptions" />

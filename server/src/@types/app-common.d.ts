@@ -7,6 +7,8 @@ import { Attributes } from "sequelize";
 import IncomingForm from "formidable/Formidable";
 import User from "../models/User";
 
+import CheckList from "../models/CheckList";
+
 export declare namespace appCommonTypes {
   import IPermission = appModelTypes.IPermission;
   type DatabaseEnv = "development" | "production" | "test";
@@ -31,7 +33,7 @@ export declare namespace appCommonTypes {
     title: string;
     questions: Array<CheckListQuestionType>;
   };
-  type CheckListType = {
+  type CheckListType = Partial<Omit<CheckList, "sections">> & {
     sections: Array<CheckListSectionType>;
   };
   type Roles =

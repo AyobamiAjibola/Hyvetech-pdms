@@ -1,10 +1,8 @@
 import {
   AutoIncrement,
-  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
-  ForeignKey,
   HasMany,
   HasOne,
   Model,
@@ -110,10 +108,6 @@ export default class CustomerSubscription extends Model<
   @HasOne(() => Transaction, { onDelete: "cascade" })
   declare transaction: NonAttribute<Transaction>;
 
-  @BelongsTo(() => Job, { onDelete: "cascade" })
-  declare job: NonAttribute<Job>;
-
-  @ForeignKey(() => Job)
-  @Column(DataType.INTEGER)
-  declare jobId: NonAttribute<number>;
+  @HasMany(() => Job)
+  declare jobs: NonAttribute<Array<Job>>;
 }

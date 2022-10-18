@@ -1,4 +1,5 @@
 import {
+  approveJobCheckListHandler,
   assignCustomerJobHandler,
   assignDriverJobHandler,
   getJobHandler,
@@ -31,6 +32,12 @@ const jobEndpoints: RouteEndpoints = [
     method: "post",
     path: "/jobs/:partnerId/customer-assign",
     handler: assignCustomerJobHandler,
+  },
+  {
+    name: "jobs",
+    method: "patch",
+    path: "/jobs/:jobId/checkList",
+    handler: approveJobCheckListHandler,
   },
 ];
 

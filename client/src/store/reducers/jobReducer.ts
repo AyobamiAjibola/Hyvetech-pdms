@@ -2,6 +2,7 @@ import { IThunkAPIStatus } from "@app-types";
 import { IJob } from "@app-models";
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  approveJobCheckListAction,
   driverAssignJobAction,
   getJobAction,
   getJobsAction,
@@ -20,6 +21,10 @@ interface IJobState {
   driverAssignJobSuccess: string;
   driverAssignJobError?: string;
 
+  approveJobCheckListStatus: IThunkAPIStatus;
+  approveJobCheckListSuccess: string;
+  approveJobCheckListError?: string;
+
   jobs: IJob[];
   job: IJob | null;
 }
@@ -34,6 +39,9 @@ const initialState: IJobState = {
   getJobError: "",
   getJobStatus: "idle",
   getJobSuccess: "",
+  approveJobCheckListStatus: "idle",
+  approveJobCheckListSuccess: "",
+  approveJobCheckListError: "",
   job: null,
   jobs: [],
 };
@@ -56,6 +64,11 @@ const jobSlice = createSlice({
       state.driverAssignJobStatus = "idle";
       state.driverAssignJobSuccess = "";
       state.driverAssignJobError = "";
+    },
+    clearApproveJobCheckListStatus(state: IJobState) {
+      state.approveJobCheckListStatus = "idle";
+      state.approveJobCheckListSuccess = "";
+      state.approveJobCheckListError = "";
     },
   },
   extraReducers: (builder) => {
@@ -109,6 +122,23 @@ const jobSlice = createSlice({
           state.driverAssignJobError = action.payload.message;
         } else state.driverAssignJobError = action.error.message;
       });
+
+    builder
+      .addCase(approveJobCheckListAction.pending, (state) => {
+        state.approveJobCheckListStatus = "loading";
+      })
+      .addCase(approveJobCheckListAction.fulfilled, (state, action) => {
+        state.approveJobCheckListStatus = "completed";
+        state.approveJobCheckListSuccess = action.payload.message;
+        state.job = action.payload.result as IJob;
+      })
+      .addCase(approveJobCheckListAction.rejected, (state, action) => {
+        state.approveJobCheckListStatus = "failed";
+
+        if (action.payload) {
+          state.approveJobCheckListError = action.payload.message;
+        } else state.approveJobCheckListError = action.error.message;
+      });
   },
 });
 
@@ -116,5 +146,6 @@ export const {
   clearDriverAssignJobStatus,
   clearGetJobsStatus,
   clearGetJobStatus,
+  clearApproveJobCheckListStatus,
 } = jobSlice.actions;
 export default jobSlice.reducer;

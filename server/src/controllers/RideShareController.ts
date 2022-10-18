@@ -6,6 +6,7 @@ import Vehicle from "../models/Vehicle";
 import RideShareDriverSubscription from "../models/RideShareDriverSubscription";
 import Contact from "../models/Contact";
 import Transaction from "../models/Transaction";
+import Job from "../models/Job";
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class RideShareController {
@@ -18,10 +19,13 @@ export default class RideShareController {
     try {
       const driver = await dataSources.rideShareDriverDAOService.findById(id, {
         attributes: { exclude: ["password", "loginToken"] },
-        include: [Vehicle, RideShareDriverSubscription, Contact, Transaction],
+        include: [
+          Vehicle,
+          { model: RideShareDriverSubscription, include: [Job] },
+          Contact,
+          Transaction,
+        ],
       });
-
-      console.log(driver);
 
       if (!driver) {
         response.result = driver;

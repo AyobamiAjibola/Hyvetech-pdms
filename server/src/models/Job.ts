@@ -52,12 +52,6 @@ export default class Job extends Model<
   @HasOne(() => Vehicle, { onDelete: "cascade" })
   declare vehicle: NonAttribute<Vehicle>;
 
-  @HasOne(() => RideShareDriverSubscription, { onDelete: "cascade" })
-  declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
-
-  @HasOne(() => CustomerSubscription, { onDelete: "cascade" })
-  declare customerSubscription: NonAttribute<CustomerSubscription>;
-
   @Column(DataType.STRING(50000))
   declare checkList: string;
 
@@ -74,4 +68,18 @@ export default class Job extends Model<
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: NonAttribute<number>;
+
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: "cascade" })
+  declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
+
+  @ForeignKey(() => RideShareDriverSubscription)
+  @Column(DataType.INTEGER)
+  declare rideShareDriverSubscriptionId: NonAttribute<number>;
+
+  @BelongsTo(() => CustomerSubscription, { onDelete: "cascade" })
+  declare customerSubscription: NonAttribute<CustomerSubscription>;
+
+  @ForeignKey(() => CustomerSubscription)
+  @Column(DataType.INTEGER)
+  declare customerSubscriptionId: NonAttribute<number>;
 }

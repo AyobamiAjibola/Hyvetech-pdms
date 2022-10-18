@@ -78,6 +78,7 @@ function DriverSubscription() {
   const jobReducer = useAppSelector((state) => state.jobReducer);
   const technicianReducer = useAppSelector((state) => state.technicianReducer);
   const checkListReducer = useAppSelector((state) => state.checkListReducer);
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -137,19 +138,18 @@ function DriverSubscription() {
   const jobs = useMemo(() => {
     if (driverSub) {
       const maxDriveIn = driverSub.maxDriveIn;
-      const tempJobs: Partial<IJob>[] = [...jobReducer.jobs];
+      const tempJobs: Partial<IJob>[] = [...driverSub.jobs];
 
       tempJobs.length += maxDriveIn - tempJobs.length;
 
-      const startIndex =
-        jobReducer.jobs.length > 0 ? jobReducer.jobs.length : 0;
+      const startIndex = driverSub.jobs.length > 0 ? driverSub.jobs.length : 0;
 
       for (let i = startIndex; i < tempJobs.length; i++) tempJobs[i] = {};
 
       return tempJobs;
     }
     return [];
-  }, [driverSub, jobReducer.jobs]);
+  }, [driverSub]);
 
   const vehicleIsBusy = useMemo(() => {
     if (driverSub) {

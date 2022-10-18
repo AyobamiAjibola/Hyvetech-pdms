@@ -12,16 +12,12 @@ import {
   JOB_STATUS,
   UPLOAD_BASE_PATH,
 } from "../config/constants";
-import formidable, { File } from "formidable";
+import { File } from "formidable";
 import Job from "../models/Job";
 import Generic from "../utils/Generic";
 import HttpResponse = appCommonTypes.HttpResponse;
 import CheckListType = appCommonTypes.CheckListType;
 import IImageButtonData = appCommonTypes.IImageButtonData;
-
-const incomingForm = new formidable.IncomingForm({
-  uploadDir: UPLOAD_BASE_PATH,
-});
 
 export default class CheckListController {
   public static async create(req: Request) {
@@ -127,6 +123,16 @@ export default class CheckListController {
           )
         );
 
+      const technician = await job.$get("technician");
+
+      if (!technician)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Technician does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
       const checkList = value.checkList as string;
       const checkListJSON = JSON.parse(checkList) as CheckListType;
       const sections = checkListJSON.sections;
@@ -189,6 +195,10 @@ export default class CheckListController {
       await vehicle.update({
         onInspection: false,
         isBooked: false,
+      });
+
+      await technician.update({
+        hasJob: false,
       });
 
       await job.update({

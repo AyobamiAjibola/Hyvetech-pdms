@@ -6,7 +6,7 @@ import HttpStatus from "../helpers/HttpStatus";
 import Vehicle from "../models/Vehicle";
 import { appCommonTypes } from "../@types/app-common";
 import Transaction from "../models/Transaction";
-import { HasAnyRole } from "../decorators";
+import Job from "../models/Job";
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class VehicleController {
@@ -34,6 +34,7 @@ export default class VehicleController {
               include: [
                 { model: Vehicle, where: { id: +vehicleId } },
                 Transaction,
+                Job,
               ],
             });
           break;
@@ -43,6 +44,7 @@ export default class VehicleController {
               include: [
                 { model: Vehicle, where: { id: +vehicleId } },
                 Transaction,
+                Job,
               ],
             });
           break;

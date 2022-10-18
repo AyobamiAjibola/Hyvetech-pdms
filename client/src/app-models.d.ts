@@ -446,6 +446,7 @@ declare module "@app-models" {
     nextPaymentDate: Date;
     rideShareDrivers: IRideShareDriver[];
     transaction: ITransaction;
+    jobs: IJob[];
     vehicles: IVehicle[];
     createdAt: Date;
     updatedAt: Date;

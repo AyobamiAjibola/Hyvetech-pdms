@@ -24,3 +24,10 @@ export const assignCustomerJobHandler = authenticateRouteWrapper(
     res.status(response.code).json(response);
   }
 );
+
+export const approveJobCheckListHandler = authenticateRouteWrapper(
+  async (req, res) => {
+    const response = await JobController.approveJobCheckList(req);
+    res.status(response.code).json(response);
+  }
+);

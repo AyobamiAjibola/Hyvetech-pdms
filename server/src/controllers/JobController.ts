@@ -109,8 +109,6 @@ export default class JobController {
         );
       } else result = job;
 
-      console.log(result);
-
       const response: HttpResponse<Job> = {
         code: HttpStatus.OK.code,
         message: HttpStatus.OK.value,
@@ -236,16 +234,16 @@ export default class JobController {
       await job.$set("vehicle", vehicle[0]);
 
       //associate job with subscription
-      await job.$set("rideShareDriverSubscription", rideShareSub);
+      await rideShareSub.$add("jobs", [job]);
 
       //create job check list
       await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
 
       //associate partner with job
-      await partner.$set("jobs", [job]);
+      await partner.$add("jobs", [job]);
 
       //associate technician with jobs
-      await technician.$set("jobs", [job]);
+      await technician.$add("jobs", [job]);
 
       //update technician job status
       await technician.update({ hasJob: true });
@@ -386,16 +384,16 @@ export default class JobController {
       await job.$set("vehicle", vehicle[0]);
 
       //associate job with subscription
-      await job.$set("customerSubscription", customerSub);
+      await customerSub.$add("jobs", [job]);
 
       //associate job with check list
       await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
 
       //associate partner with job
-      await partner.$set("jobs", [job]);
+      await partner.$add("jobs", [job]);
 
       //associate technician with jobs
-      await technician.$set("jobs", [job]);
+      await technician.$add("jobs", [job]);
 
       //update technician job status
       await technician.update({ hasJob: true });
@@ -416,6 +414,83 @@ export default class JobController {
         code: HttpStatus.OK.code,
         message: HttpStatus.OK.value,
         results: jobs,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public static async approveJobCheckList(req: Request) {
+    const jobId = req.params.jobId as string;
+
+    try {
+      const { error, value } = Joi.object({
+        jobId: Joi.number().required().label("Job Id"),
+        approved: Joi.boolean().required().label("Approved"),
+      }).validate(req.body);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const job = await dataSources.jobDAOService.findById(+jobId, {
+        include: [
+          RideShareDriverSubscription,
+          CustomerSubscription,
+          Technician,
+          Vehicle,
+          { model: Partner, include: [Contact] },
+        ],
+      });
+
+      if (!job)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Job does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const checkList = job.checkList;
+
+      if (!checkList.length)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Can not approve job, checklist does not available.`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const iCheckList = JSON.parse(checkList) as unknown as CheckListType;
+
+      let message;
+
+      if (value.approved) message = "Approved";
+      else message = "Not approved";
+
+      iCheckList.approvedByGarageAdmin = value.approved;
+
+      await job.update({
+        checkList: JSON.stringify(iCheckList),
+      });
+
+      const list = JSON.parse(job.checkList) as unknown as CheckListType;
+
+      const result = {
+        ...job.toJSON(),
+        checkList: list,
+      };
+
+      const response: HttpResponse<any> = {
+        code: HttpStatus.OK.code,
+        message,
+        result,
       };
 
       return Promise.resolve(response);

@@ -46,7 +46,7 @@ export const APPOINTMENT_STATUS = {
   complete: "Complete",
   inProgress: "In-Progress",
   reject: "Rejected",
-  cancel: "Cancelled",
+  cancel: "Canceled",
 };
 
 export const BOOK_APPOINTMENT = "event:BOOK_APPOINTMENT";
@@ -66,10 +66,8 @@ export const GARAGE_CATEGORY = "Garage";
 export const RIDE_SHARE_CATEGORY = "Ride-Share";
 
 export const JOB_STATUS = {
-  complete: "Complete",
-  pending: "Pending",
-  inProgress: "In-Progress",
-  canceled: "Canceled",
+  ...APPOINTMENT_STATUS,
 };
+
 export const DRAWER_WIDTH = 240;
 export const DAYS = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"];
