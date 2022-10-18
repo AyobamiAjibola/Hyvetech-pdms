@@ -38,7 +38,6 @@ import {
 import checkListVectorImg from "../../assets/images/check-list-vector.png";
 import { AccessTime, LocationOn, Print, Today } from "@mui/icons-material";
 import moment from "moment";
-import { useReactToPrint } from "react-to-print";
 import useAdmin from "../../hooks/useAdmin";
 import AppLoader from "../../components/loader/AppLoader";
 import AppAlert from "../../components/alerts/AppAlert";
@@ -135,9 +134,9 @@ function JobCheckListReportPage() {
     };
   }, [dispatch]);
 
-  const handlePrint = useReactToPrint({
-    content: () => containerRef.current,
-  });
+  const handlePrint = () => {
+    console.log(containerRef.current);
+  };
 
   const handleApproveReport = (jobId: number, approved: boolean) => {
     setApproved(approved);
