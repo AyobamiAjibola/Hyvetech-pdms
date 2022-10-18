@@ -39,7 +39,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev")); //Route debugger
 
 app.use("/uploads", _static(path.resolve("uploads")));
-app.use("/public", _static(path.resolve("public")));
 
 // Route API documentation
 app.use(`${settings.service.apiRoot}/docs`, serve, setup(openapiSpecification));
