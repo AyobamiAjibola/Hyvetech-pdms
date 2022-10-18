@@ -38,6 +38,7 @@ import {
 import checkListVectorImg from "../../assets/images/check-list-vector.png";
 import { AccessTime, LocationOn, Print, Today } from "@mui/icons-material";
 import moment from "moment";
+import { useReactToPrint } from "react-to-print";
 import useAdmin from "../../hooks/useAdmin";
 import AppLoader from "../../components/loader/AppLoader";
 import AppAlert from "../../components/alerts/AppAlert";
@@ -134,9 +135,9 @@ function JobCheckListReportPage() {
     };
   }, [dispatch]);
 
-  const handlePrint = () => {
-    console.log(containerRef.current);
-  };
+  const handlePrint = useReactToPrint({
+    content: () => containerRef.current,
+  });
 
   const handleApproveReport = (jobId: number, approved: boolean) => {
     setApproved(approved);
@@ -188,11 +189,11 @@ function JobCheckListReportPage() {
             columns={{ xs: 4, sm: 8, md: 12 }}
             ref={containerRef}
           >
-            {/* <style type="text/css" media="print">*/}
-            {/*   {"\*/}
-            {/*    @page { size: portrait; }\*/}
-            {/*"}*/}
-            {/* </style>*/}
+            <style type="text/css" media="print">
+              {"\
+               @page { size: portrait; }\
+           "}
+            </style>
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 2 }} elevation={7}>
                 <Grid item container xs={12} spacing={2}>
