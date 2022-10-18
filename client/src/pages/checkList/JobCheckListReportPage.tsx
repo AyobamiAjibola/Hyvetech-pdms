@@ -189,11 +189,11 @@ function JobCheckListReportPage() {
             columns={{ xs: 4, sm: 8, md: 12 }}
             ref={containerRef}
           >
-            <style type="text/css" media="print">
-              {"\
-               @page { size: portrait; }\
-           "}
-            </style>
+            {/* <style type="text/css" media="print">*/}
+            {/*   {"\*/}
+            {/*    @page { size: portrait; }\*/}
+            {/*"}*/}
+            {/* </style>*/}
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 2 }} elevation={7}>
                 <Grid item container xs={12} spacing={2}>
