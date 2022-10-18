@@ -2,6 +2,8 @@ import email_layout from "./email_layout";
 import { appCommonTypes } from "../../../@types/app-common";
 import MailBody = appCommonTypes.MailBody;
 
+const logo = `${process.env.WEBSITE_HOST_WWW}/api/v1/static/images/logo/Blue.png`;
+
 export default function email_content(mailBody: MailBody) {
   return email_layout(
     `
@@ -149,7 +151,7 @@ export default function email_content(mailBody: MailBody) {
                                                                 href="#"
                                                                 target="_blank"
                                                                 ><img
-                                                                  src="https://pdms.jiffixtech.com/uploads/logo/logo/Blue.png"
+                                                                  src=${logo}
                                                                   alt=""
                                                                   width="241"
                                                                   height="47"
@@ -403,7 +405,7 @@ export default function email_content(mailBody: MailBody) {
                                   >
                                     <a href="#" target="_blank"
                                       ><img
-                                        src="https://pdms.jiffixtech.com/uploads/logo/logo/Blue.png"
+                                        src=${logo}
                                         alt=""
                                         width="59"
                                         height="59"
