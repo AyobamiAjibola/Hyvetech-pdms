@@ -9,6 +9,7 @@ import useAppDispatch from "../../hooks/useAppDispatch";
 import { signInAction } from "../../store/actions/authenicationActions";
 import AppAlert from "../../components/alerts/AppAlert";
 import useLogin from "../../hooks/useLogin";
+import './signInForm.css'
 
 function SignInPage() {
   const dispatch = useAppDispatch();
@@ -25,8 +26,8 @@ function SignInPage() {
 
   return (
     <PublicLayout>
-      <Typography textAlign="center" variant="h4" component="div">
-        Sign In
+      <Typography textAlign="center" variant="h4" className="loginTextHeader">
+        Welcome to AutoHyve, workshops gateway to boundless opportunities!
       </Typography>
       <Formik
         initialValues={signInModel.initialValues}

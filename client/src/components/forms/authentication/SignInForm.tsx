@@ -1,13 +1,14 @@
 import React from "react";
 import { Form, useFormikContext } from "formik";
-import { Grid, InputAdornment } from "@mui/material";
+import { Grid, InputAdornment, Typography } from "@mui/material";
 import TextInputField from "../fields/TextInputField";
 import { Lock, VerifiedUser, Visibility } from "@mui/icons-material";
-
 import { ISignInModel } from "@app-interfaces";
 import signInModel from "../models/signInModel";
+import LockIcon from '@mui/icons-material/Lock';
 import { LoadingButton } from "@mui/lab";
 import useAppSelector from "../../../hooks/useAppSelector";
+import './signInForms.css'
 
 function SignInForm() {
   const { handleChange, handleBlur, values } = useFormikContext<ISignInModel>();
@@ -15,7 +16,9 @@ function SignInForm() {
   const authReducer = useAppSelector((state) => state.authenticationReducer);
 
   return (
-    <Form autoComplete="off">
+
+    <Form autoComplete="off" className="formContainer">
+
       <Grid container direction="column">
         <Grid item xs={12} md={6}>
           <TextInputField
@@ -46,15 +49,22 @@ function SignInForm() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Visibility />
+                  <Lock />
                 </InputAdornment>
               ),
             }}
+
+
           />
+
+          <Typography textAlign="center" variant="h4" className="forgotPasswordText">
+            Forgot my password
+          </Typography>
+
         </Grid>
         <Grid item xs={12} md={6} sx={{ mt: 2 }}>
           <LoadingButton
-            startIcon={<Lock />}
+
             loading={authReducer.signingInStatus === "loading"}
             loadingPosition="start"
             type="submit"
@@ -62,6 +72,7 @@ function SignInForm() {
             fullWidth
             variant="contained"
             color="primary"
+            className="loginBtn"
           >
             Login
           </LoadingButton>
