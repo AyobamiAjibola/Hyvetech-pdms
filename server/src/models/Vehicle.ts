@@ -93,7 +93,28 @@ export default class Vehicle extends Model<
   declare thirdPartyInsuranceFileUrl: string;
 
   @Column(DataType.STRING)
+  declare frontImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare rearImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare rightSideImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare leftSideImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare engineBayImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare instrumentClusterImageUrl: string;
+
+  @Column(DataType.STRING)
   declare nickname: string;
+
+  @Column(DataType.STRING)
+  declare mileage: string;
 
   @Column(DataType.STRING)
   declare plateNumber: string;

@@ -72,8 +72,6 @@ function TechnicianPage() {
   );
 
   const columns = useMemo(() => {
-    const display = job?.status === JOB_STATUS.complete ? "block" : "none";
-
     return [
       {
         field: "id",
@@ -82,15 +80,6 @@ function TechnicianPage() {
         align: "center",
         sortable: true,
         type: "number",
-      },
-      {
-        field: "name",
-        headerName: "Name",
-        headerAlign: "center",
-        align: "center",
-        sortable: true,
-        type: "string",
-        width: 180,
       },
 
       {
@@ -124,7 +113,19 @@ function TechnicianPage() {
           );
         },
       },
-
+      {
+        field: "jobDate",
+        headerName: "Completed Date",
+        headerAlign: "center",
+        align: "center",
+        sortable: true,
+        type: "dateTime",
+        width: 200,
+        valueFormatter: (params) => {
+          const date = params.value;
+          return date ? moment(date).format("LLL") : "-";
+        },
+      },
       {
         field: "createdAt",
         headerName: "Created At",
@@ -132,7 +133,7 @@ function TechnicianPage() {
         align: "center",
         sortable: true,
         type: "dateTime",
-        width: 180,
+        width: 200,
         valueFormatter: (params) => {
           const date = params.value;
           return date ? moment(date).format("LLL") : "";
@@ -144,28 +145,34 @@ function TechnicianPage() {
         type: "actions",
         headerAlign: "center",
         align: "center",
-        getActions: (params: any) => [
-          <GridActionsCellItem
-            key={0}
-            icon={<Visibility sx={{ color: "dodgerblue" }} />}
-            onClick={() => handleView(params.row)}
-            label="View"
-            showInMenu={false}
-          />,
+        getActions: (params: any) => {
+          const job = params.row;
 
-          <GridActionsCellItem
-            hidden={!admin.isTechAdmin}
-            key={1}
-            icon={<PlaylistAddCheck sx={{ color: "limegreen" }} />}
-            onClick={() => handleViewJobCheckList(params.row)}
-            label="Edit"
-            showInMenu={false}
-            sx={{ display }}
-          />,
-        ],
+          return [
+            <GridActionsCellItem
+              key={0}
+              icon={<Visibility sx={{ color: "dodgerblue" }} />}
+              onClick={() => handleView(params.row)}
+              label="View"
+              showInMenu={false}
+            />,
+
+            <GridActionsCellItem
+              hidden={!admin.isTechAdmin}
+              key={1}
+              icon={<PlaylistAddCheck sx={{ color: "limegreen" }} />}
+              onClick={() => handleViewJobCheckList(params.row)}
+              label="Edit"
+              showInMenu={false}
+              sx={{
+                display: job.status === JOB_STATUS.complete ? "block" : "none",
+              }}
+            />,
+          ];
+        },
       },
     ] as GridColDef<IJob>[];
-  }, [admin.isTechAdmin, handleView, handleViewJobCheckList, job?.status]);
+  }, [admin.isTechAdmin, handleView, handleViewJobCheckList]);
 
   return (
     <React.Fragment>

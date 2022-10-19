@@ -93,6 +93,7 @@ export default class CheckListController {
     try {
       const { error, value } = Joi.object({
         checkList: Joi.string().required().label("Check List"),
+        vehicleInfo: Joi.string().required().label("Vehicle Info"),
       }).validate(req.fields);
 
       if (error)
@@ -133,29 +134,13 @@ export default class CheckListController {
           )
         );
 
+      console.log(value.vehicleInfo);
+
       const checkList = value.checkList as string;
       const checkListJSON = JSON.parse(checkList) as CheckListType;
       const sections = checkListJSON.sections;
       const images: IImageButtonData[] = [];
       const basePath = `${UPLOAD_BASE_PATH}/checklists`;
-
-      //remove already existing image files
-      // const jobCheckList = JSON.parse(job.checkList) as CheckListType;
-      // const jobSections = jobCheckList.sections.map(
-      //   (section) =>
-      //     JSON.parse(section as unknown as string) as CheckListSectionType
-      // );
-      //
-      // console.log(jobSections);
-      //
-      // jobSections.forEach((section) => {
-      //   section.questions.forEach((question) => {
-      //     question.images?.forEach(async (image) => {
-      //       const fileExist = await Generic.fileExist(image?.url);
-      //       if (fileExist) await fs.rm(image?.url);
-      //     });
-      //   });
-      // });
 
       for (const section of sections) {
         const questions = section.questions;

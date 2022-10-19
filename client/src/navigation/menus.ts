@@ -13,6 +13,7 @@ import GarageProfileAndSetting from "../components/partner/garage/GarageProfileA
 import DriverProfile from "../components/partner/garage/DriverProfile";
 import DriverVehicles from "../components/partner/garage/DriverVehicles";
 import TechniciansPage from "../pages/technician/TechniciansPage";
+import Estimate from "../components/partner/garage/Estimate";
 
 export const customerDetailTabs: ITab[] = [
   { name: "Vehicles", Element: Vehicles },
@@ -35,12 +36,12 @@ export const partnerDetailTabs: ITab[] = [
   },
   {
     tag: GARAGE_CATEGORY,
-    name: "Vehicle Owners",
+    name: "Jiffix Hyve",
     Element: VehicleOwner,
   },
   {
     tag: GARAGE_CATEGORY,
-    name: "Ride Share Drivers",
+    name: "Ride Share Hyve",
     Element: RideShareDriver,
   },
   {
@@ -58,5 +59,5 @@ export const partnerDetailTabs: ITab[] = [
 export const driverSearchResultTabs: ITab[] = [
   { tag: "driver", name: "Driver Profile", Element: DriverProfile },
   { tag: "driver", name: "Vehicles", Element: DriverVehicles },
-  { tag: "driver", name: "Create Estimate", Element: () => null },
+  { tag: "driver", name: "Create Estimate", Element: Estimate },
 ];
