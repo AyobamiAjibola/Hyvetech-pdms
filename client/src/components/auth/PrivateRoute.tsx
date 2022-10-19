@@ -8,7 +8,7 @@ const cookieName = settings.auth.admin;
 function PrivateRoute({ children }: any) {
   const isSignedIn = cookie.exist(cookieName) && !cookie.isExpired(cookieName);
 
-  return isSignedIn ? children : <Navigate to="/sign-in" replace />;
+  return isSignedIn ? children : <Navigate to="/" replace />;
 }
 
 export default PrivateRoute;

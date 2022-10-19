@@ -23,7 +23,7 @@ export interface ISideNav {
 const SignInPage = React.lazy(
   () => import("../pages/authentication/SignInPage")
 );
-const WelcomePage = React.lazy(() => import("../pages/landing/WelcomePage"));
+
 const HomePage = React.lazy(() => import("../context/AppContextProvider"));
 
 export const sideNavs: ISideNav[] = [
@@ -60,14 +60,7 @@ export const sideNavs: ISideNav[] = [
 ];
 
 export const routes = [
-  { name: "Welcome", path: "/", Element: WelcomePage, isPublic: true },
-  { name: "Sign in", path: "/sign-in", Element: SignInPage, isPublic: true },
-  {
-    name: "Partner Sign in",
-    path: "/partner/sign-in",
-    Element: SignInPage,
-    isPublic: true,
-  },
+  { name: "Sign in", path: "/", Element: SignInPage, isPublic: true },
   {
     name: "Home",
     path: "*",
