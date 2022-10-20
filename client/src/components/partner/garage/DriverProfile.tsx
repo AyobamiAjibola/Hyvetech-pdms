@@ -30,7 +30,7 @@ function DriverProfile() {
   }, [rideShareReducer.driver]);
 
   const handleViewImage = async (imageUrl: string) => {
-    imageUrl = `${settings.api.baseURL}/${imageUrl}`;
+    imageUrl = `${settings.api.driverBaseURL}/${imageUrl}`;
 
     const response = await axiosClient.get(imageUrl, {
       responseType: "blob",
