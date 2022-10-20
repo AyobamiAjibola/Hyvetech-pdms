@@ -169,23 +169,45 @@ function EstimateForm(props: IProps) {
                           {Object.keys(part).map((value) => {
                             return (
                               <React.Fragment key={`${value}`}>
-                                <Grid item xs={3} sx={{ mb: 2 }}>
-                                  <TextField
-                                    fullWidth
-                                    type={
-                                      value === "quantity" ? "number" : "text"
-                                    }
-                                    inputProps={{
-                                      min: value === "quantity" ? "0" : "",
-                                    }}
-                                    variant="outlined"
-                                    name={`parts.${index}.${value}`}
-                                    label={value}
-                                    //@ts-ignore
-                                    value={part[value]}
-                                    onChange={handleChange}
-                                  />
-                                </Grid>
+                                {value === "warranty" ? (
+                                  <Grid item xs={3} container spacing={0.5}>
+                                    {Object.keys(part.warranty).map(
+                                      (warranty, idx1) => {
+                                        return warranty === "count" ? (
+                                          <Grid key={idx1} item xs={8}>
+                                            <TextInputField
+                                              onChange={handleChange}
+                                              value={values.jobDuration.count}
+                                              name="jobDuration.count"
+                                              label={warranty}
+                                            />
+                                          </Grid>
+                                        ) : (
+                                          <Grid key={idx1} item xs>
+                                            <TextInputField
+                                              onChange={handleChange}
+                                              value={values.jobDuration.count}
+                                              name="jobDuration.count"
+                                              label={warranty}
+                                            />
+                                          </Grid>
+                                        );
+                                      }
+                                    )}
+                                  </Grid>
+                                ) : (
+                                  <Grid item xs={3} sx={{ mb: 2 }}>
+                                    <TextField
+                                      fullWidth
+                                      variant="outlined"
+                                      name={`parts.${index}.${value}`}
+                                      label={value}
+                                      //@ts-ignore
+                                      value={part[value]}
+                                      onChange={handleChange}
+                                    />
+                                  </Grid>
+                                )}
                               </React.Fragment>
                             );
                           })}
@@ -204,8 +226,8 @@ function EstimateForm(props: IProps) {
                       onClick={() =>
                         partsProps.push({
                           name: "",
-                          quality: "",
-                          quantity: "",
+                          warranty: { count: "", interval: "" },
+                          quantity: { count: "", unit: "" },
                           cost: "",
                         })
                       }
@@ -310,9 +332,45 @@ function EstimateForm(props: IProps) {
           <Grid item />
         </Grid>
         <Grid item xs={12}>
+          <Typography gutterBottom variant="subtitle1" component="h1">
+            Job Information
+          </Typography>
           <Divider flexItem orientation="horizontal" />
         </Grid>
-        <Grid item>
+        <Grid item xs={6}>
+          <TextInputField
+            onChange={handleChange}
+            value={values.depositAmount}
+            name={fields.depositAmount.name}
+            label={fields.depositAmount.label}
+          />
+        </Grid>
+        <Grid item xs={6} container spacing={0.5}>
+          <Grid item xs={8}>
+            <TextInputField
+              onChange={handleChange}
+              value={values.jobDuration.count}
+              name="jobDuration.count"
+              label={fields.jobDuration.label}
+            />
+          </Grid>
+          <Grid item xs>
+            <SelectField
+              data={[
+                { label: "week", value: "week" },
+                { label: "month", value: "month" },
+                { label: "year", value: "year" },
+              ]}
+              onChange={handleChange}
+              value={values.jobDuration.interval}
+              name="jobDuration.interval"
+              label="Interval"
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Divider sx={{ mb: 1 }} flexItem orientation="horizontal" />
           <LoadingButton
             type="submit"
             loading={props.isSubmitting}
@@ -320,6 +378,7 @@ function EstimateForm(props: IProps) {
             variant="contained"
             color="secondary"
             endIcon={<Save />}
+            size="large"
           >
             Save
           </LoadingButton>

@@ -2,8 +2,8 @@ import * as Yup from "yup";
 
 export interface IPart {
   name: string;
-  quality: string;
-  quantity: string;
+  warranty: { count: string; interval: string };
+  quantity: { count: string; unit: string };
   cost: string;
 }
 
@@ -152,6 +152,14 @@ const fields = {
       required: "Deposit Amount is required",
     },
   },
+  jobDuration: {
+    name: "jobDuration",
+    label: "Job Duration",
+    error: {
+      invalid: "Job Duration is invalid",
+      required: "Job Duration is required",
+    },
+  },
 };
 
 const initialValues: IEstimateValues = {
@@ -167,7 +175,14 @@ const initialValues: IEstimateValues = {
   phone: "",
   vin: "",
   address: "",
-  parts: [{ name: "", quality: "", quantity: "", cost: "" }],
+  parts: [
+    {
+      name: "",
+      warranty: { count: "", interval: "" },
+      quantity: { count: "", unit: "" },
+      cost: "",
+    },
+  ],
   labours: [{ title: "", cost: "" }],
   discount: "",
   tax: "",
