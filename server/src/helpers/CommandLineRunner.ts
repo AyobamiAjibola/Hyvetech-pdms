@@ -65,6 +65,8 @@ import PasswordEncoder from "../utils/PasswordEncoder";
 import PaymentGateway from "../models/PaymentGateway";
 import axiosClient from "../services/api/axiosClient";
 import dataStore from "../config/dataStore";
+import Role from "../models/Role";
+import Permission from "../models/Permission";
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 
 export default class CommandLineRunner {
@@ -225,9 +227,8 @@ export default class CommandLineRunner {
   }
 
   async loadDefaultRolesAndPermissions() {
-    const roles = await this.roleRepository.findAll();
-
-    if (roles.length) return;
+    await Role.sync({ force: true });
+    await Permission.sync({ force: true });
 
     const totalPermissions = settings.permissions.length;
 
