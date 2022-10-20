@@ -362,19 +362,7 @@ export default class AuthenticationController {
 
   public async signOut(req: Request) {
     try {
-      const user = await dataSources.userDAOService.findByAny({
-        where: { loginToken: req.jwt },
-      });
-
-      if (!user)
-        return Promise.reject(
-          CustomAPIError.response(
-            `User does not exist or already logged out`,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
-
-      await user.update({ loginToken: "" });
+      await req.user.update({ loginToken: "" });
 
       const response: HttpResponse<null> = {
         code: HttpStatus.OK.code,
