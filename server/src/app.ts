@@ -26,6 +26,8 @@ export const corsOptions = {
     <string>process.env.WEBSITE_HOST,
     <string>process.env.WEBSITE_HOST_WWW,
     <string>process.env.WEBSITE_IP,
+    <string>process.env.PARTNER_HOST,
+    <string>process.env.PARTNER_WWW,
   ],
   credentials: true,
 };

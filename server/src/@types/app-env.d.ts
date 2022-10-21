@@ -41,6 +41,8 @@ declare namespace NodeJS {
     WEBSITE_HOST: string;
     WEBSITE_HOST_WWW: string;
     WEBSITE_IP: string;
+    PARTNER_WWW: string;
+    PARTNER_HOST: string;
 
     PAYMENT_GW_NAME: string;
     PAYMENT_GW_BASE_URL: string;
