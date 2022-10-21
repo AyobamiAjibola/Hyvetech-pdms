@@ -1,9 +1,5 @@
 @import "https://code.highcharts.com/css/highcharts.css";
 
-html {
-  height: 100%;
-}
-
 #container {
   /*height: 400px;*/
 }

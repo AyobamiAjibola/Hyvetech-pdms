@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Paper } from "@mui/material";
 import "./publicLayout.css";
-import cover from "../../assets/images/cover.png";
+import cover from "../../assets/images/Cover.png";
 import mechanic from "../../assets/images/mechanic.jpg";
 
 export default function PublicLayout({ children }: any) {

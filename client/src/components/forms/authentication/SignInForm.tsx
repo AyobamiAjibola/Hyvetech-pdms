@@ -2,12 +2,8 @@ import React, { useState } from "react";
 import { Form, useFormikContext } from "formik";
 import { Grid, InputAdornment, Typography } from "@mui/material";
 import TextInputField from "../fields/TextInputField";
-import {
-  Lock,
-  VerifiedUser,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
+import { Lock, VerifiedUser, Visibility, VisibilityOff } from "@mui/icons-material";
+
 import { ISignInModel } from "@app-interfaces";
 import signInModel from "../models/signInModel";
 import { LoadingButton } from "@mui/lab";
@@ -59,7 +55,7 @@ function SignInForm() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Lock />
+                  <Visibility />
                 </InputAdornment>
               ),
               endAdornment: (
@@ -90,7 +86,6 @@ function SignInForm() {
             fullWidth
             variant="contained"
             color="primary"
-            className="loginBtn"
           >
             Login
           </LoadingButton>
