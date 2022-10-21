@@ -9,6 +9,7 @@ import useAppDispatch from "../../hooks/useAppDispatch";
 import { signInAction } from "../../store/actions/authenicationActions";
 import AppAlert from "../../components/alerts/AppAlert";
 import useLogin from "../../hooks/useLogin";
+import logoLogin from '../../assets/images/logoLogin.png'
 import './signInForm.css'
 
 function SignInPage() {
@@ -26,8 +27,9 @@ function SignInPage() {
 
   return (
     <PublicLayout>
+      <img src={logoLogin} alt="" className="loginLogo" />
       <Typography textAlign="center" variant="h4" className="loginTextHeader">
-        Welcome to AutoHyve, workshops gateway to boundless opportunities!
+        Welcome to your gateway to boundless opportunities!
       </Typography>
       <Formik
         initialValues={signInModel.initialValues}

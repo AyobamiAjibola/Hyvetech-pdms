@@ -5,11 +5,13 @@
     font-family: 'Poppins' !important;
 }
 
+
+
 .forgotPasswordText {
-    font-family: 'Poppins';
+    font-family: 'Poppins' !important;
     font-style: normal;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 12px !important;
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;

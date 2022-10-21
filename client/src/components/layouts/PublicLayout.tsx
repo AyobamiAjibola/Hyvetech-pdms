@@ -16,20 +16,26 @@ export default function PublicLayout({ children }: any) {
         display: "flex",
         justifyContent: " center",
         alignItems: "center",
+        // position: 'relative'
       }}
     >
+
+      <span className="rightReserved">© 2022 All Rights Reserved, Jiffix Technologies Limited.</span>
+      <a href="https://www.jiffixtech.com/" className="aboutUs">About Us</a>
       <img src={cover} alt="" className="leftLoginBackgroundImage" />
+
       <Paper
         elevation={8}
         sx={{
-          width: "50%",
+          width: "40%",
           position: "relative",
           right: "23%",
+          left: '0',
           zIndex: 1000,
           pl: "60px",
           pr: "60px",
-          pt: "90px",
-          pb: "84px",
+          pt: "20px",
+          pb: "50px",
           background: (theme) =>
             theme.palette.mode === "dark" ? "paper.default" : "#FFFFFF",
           boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.5) !important",

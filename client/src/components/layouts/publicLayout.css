@@ -25,5 +25,32 @@
 
 .leftLoginBackgroundImage {
     width: 50%;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    position: absolute;
     height: 100vh;
+}
+
+.rightReserved {
+    position: absolute;
+    z-index: 1000;
+    bottom: 10px;
+    left: 15px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    font-family: 'Poppins';
+}
+
+.aboutUs {
+    position: absolute;
+    z-index: 1000;
+    bottom: 10px;
+    left: 570px;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    text-decoration: none;
+    color: #000000;
 }

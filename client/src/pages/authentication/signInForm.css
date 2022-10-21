@@ -5,3 +5,11 @@
     font-size: 14px;
     margin-bottom: 20px;
 }
+
+.loginLogo {
+    width: 243px;
+    height: 150px;
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+}
