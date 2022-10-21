@@ -18,7 +18,7 @@ const logger = AppLogger.init(startup.name).logger;
 export default async function startup(server: HttpServer, io: SocketServer) {
   const port = process.env.PORT || 5050;
 
-  await dataStore.init({ flush: true });
+  dataStore.init({ flush: true });
   await database.init();
   const mongodb = await database.mongodb();
   await database.sequelize.sync({ alter: true });

@@ -1,12 +1,13 @@
-import React, { useEffect, useMemo } from "react";
-import { Form, useFormikContext } from "formik";
-import { Grid, Typography } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
-import { Save } from "@mui/icons-material";
-import TextInputField from "../fields/TextInputField";
-import planModel, { IPlanModel } from "../models/planModel";
-import useAppSelector from "../../../hooks/useAppSelector";
-import RadioButtonField from "../fields/RadioButtonField";
+import { Save } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
+import { Grid, Typography } from '@mui/material';
+import { Form, useFormikContext } from 'formik';
+import React, { useEffect, useMemo } from 'react';
+
+import useAppSelector from '../../../hooks/useAppSelector';
+import RadioButtonField from '../fields/RadioButtonField';
+import TextInputField from '../fields/TextInputField';
+import planModel, { IPlanModel } from '../models/planModel';
 
 export default function AddPlanForm() {
   const { handleChange, values, setFieldValue } =
@@ -106,7 +107,7 @@ export default function AddPlanForm() {
             onChange={handleChange}
             value={values.validity}
             name={planModel.fields.validity.name}
-            label={planModel.fields.validity.label}
+            label={`${planModel.fields.validity.label} (month)`}
           />
         </Grid>
         <Grid hidden={values.serviceMode === "Mobile"} item xs={3}>

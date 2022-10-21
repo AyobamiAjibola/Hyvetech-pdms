@@ -42,10 +42,12 @@ import CustomerSubscription from "../models/CustomerSubscription";
 import booking_cancel_email from "../resources/templates/email/booking_cancel_email";
 import { Op } from "sequelize";
 import booking_success_email from "../resources/templates/email/booking_success_email";
+import formidable, { File } from "formidable";
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
 
 const CUSTOMER_ID = "Customer Id";
+const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 
 export default class AppointmentController {
   private static LOGGER = AppLogger.init(AppointmentController.name).logger;
@@ -464,87 +466,99 @@ export default class AppointmentController {
     }
   }
 
-  public static async updateAppointment(req: Request) {
+  public static async updateAppointment(
+    req: Request
+  ): Promise<HttpResponse<Appointment>> {
     const appointmentId = req.params.appointmentId as string;
 
-    const appointment = await dataSources.appointmentDAOService.findById(
-      +appointmentId,
-      {
-        include: [
-          { model: Vehicle },
-          { model: VehicleFault },
-          {
-            model: Customer,
-            attributes: { exclude: ["password", "rawPassword", "loginToken"] },
-          },
-        ],
-      }
-    );
+    return new Promise((resolve, reject) => {
+      form.parse(req, async (err, fields, files) => {
+        try {
+          const appointment = await dataSources.appointmentDAOService.findById(
+            +appointmentId,
+            {
+              include: [
+                { model: Vehicle },
+                { model: VehicleFault },
+                {
+                  model: Customer,
+                  attributes: {
+                    exclude: ["password", "rawPassword", "loginToken"],
+                  },
+                },
+              ],
+            }
+          );
 
-    if (!appointment) {
-      return Promise.reject(
-        CustomAPIError.response(
-          HttpStatus.NOT_FOUND.value,
-          HttpStatus.NOT_FOUND.code
-        )
-      );
-    }
+          if (!appointment) {
+            return reject(
+              CustomAPIError.response(
+                HttpStatus.NOT_FOUND.value,
+                HttpStatus.NOT_FOUND.code
+              )
+            );
+          }
 
-    const basePath = `${UPLOAD_BASE_PATH}/docs`;
+          const basePath = `${UPLOAD_BASE_PATH}/docs`;
 
-    if (undefined === req.fields || undefined === req.files) {
-      return Promise.reject(
-        CustomAPIError.response(
-          HttpStatus.INTERNAL_SERVER_ERROR.value,
-          HttpStatus.INTERNAL_SERVER_ERROR.code
-        )
-      );
-    }
+          if (undefined === fields || undefined === files) {
+            return reject(
+              CustomAPIError.response(
+                HttpStatus.INTERNAL_SERVER_ERROR.value,
+                HttpStatus.INTERNAL_SERVER_ERROR.code
+              )
+            );
+          }
 
-    const inventory = req.files.inventory as { [p: string]: any };
-    const report = req.files.report as { [p: string]: any };
-    const estimate = req.files.estimate as { [p: string]: any };
-    const status = req.fields.status as string;
+          const inventory = files.inventory as File;
+          const report = files.report as File;
+          const estimate = files.estimate as File;
+          const status = fields.status as string;
 
-    if (inventory) {
-      appointment.set({
-        inventoryFile: await Generic.getImagePath({
-          tempPath: inventory.filepath,
-          filename: inventory.originalFilename,
-          basePath,
-        }),
+          if (inventory) {
+            appointment.set({
+              inventoryFile: await Generic.getImagePath({
+                tempPath: inventory.filepath,
+                filename: <string>inventory.originalFilename,
+                basePath,
+              }),
+            });
+          }
+
+          if (report) {
+            appointment.set({
+              reportFile: await Generic.getImagePath({
+                tempPath: report.filepath,
+                filename: <string>report.originalFilename,
+                basePath,
+              }),
+            });
+          }
+
+          if (estimate) {
+            appointment.set({
+              estimateFile: await Generic.getImagePath({
+                tempPath: estimate.filepath,
+                filename: <string>estimate.originalFilename,
+                basePath,
+              }),
+            });
+          }
+
+          if (status) appointment.set({ status });
+
+          await appointment.save();
+
+          resolve({
+            message: HttpStatus.OK.value,
+            code: HttpStatus.OK.code,
+            result: appointment,
+          } as HttpResponse<Appointment>);
+        } catch (e) {
+          return reject(e);
+        }
       });
-    }
-
-    if (report) {
-      appointment.set({
-        reportFile: await Generic.getImagePath({
-          tempPath: report.filepath,
-          filename: report.originalFilename,
-          basePath,
-        }),
-      });
-    }
-
-    if (estimate) {
-      appointment.set({
-        estimateFile: await Generic.getImagePath({
-          tempPath: estimate.filepath,
-          filename: estimate.originalFilename,
-          basePath,
-        }),
-      });
-    }
-
-    if (status) appointment.set({ status });
-
-    await appointment.save();
-
-    return Promise.resolve({
-      message: HttpStatus.OK.value,
-      code: HttpStatus.OK.code,
-      result: appointment,
-    } as HttpResponse<Appointment>);
+    });
   }
 
   public static async rescheduleInspection(req: Request) {

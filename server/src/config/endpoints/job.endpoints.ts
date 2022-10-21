@@ -4,6 +4,7 @@ import {
   assignDriverJobHandler,
   getJobHandler,
   getJobsHandler,
+  updateJobVehicleHandler,
 } from "../../routes/jobRoute";
 import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -38,6 +39,12 @@ const jobEndpoints: RouteEndpoints = [
     method: "patch",
     path: "/jobs/:jobId/checkList",
     handler: approveJobCheckListHandler,
+  },
+  {
+    name: "jobs",
+    method: "patch",
+    path: "/jobs/:jobId/vehicle",
+    handler: updateJobVehicleHandler,
   },
 ];
 

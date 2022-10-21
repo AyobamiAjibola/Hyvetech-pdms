@@ -1,8 +1,8 @@
-import React from "react";
 import { ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import MainLayout from "./components/layouts/MainLayout";
+import React from "react";
 
+import MainLayout from "./components/layouts/MainLayout";
 import useAppTheme from "./hooks/useAppTheme";
 
 function App() {

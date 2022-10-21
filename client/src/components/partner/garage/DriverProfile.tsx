@@ -15,8 +15,6 @@ import AppModal from "../../modal/AppModal";
 import { FileOpen } from "@mui/icons-material";
 import { IRideShareDriver } from "@app-models";
 import axiosClient from "../../../config/axiosClient";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack5";
-import generatePageNumbers from "../../../utils/generic";
 
 function DriverProfile() {
   const [viewImage, setViewImage] = useState<boolean>(false);
@@ -136,12 +134,9 @@ function DriverProfile() {
         show={viewImage}
         title="Driver license"
         size="sm"
+        fullWidth
         Content={
-          <Document file={imageUrl}>
-            {generatePageNumbers(10).map((value, index) => (
-              <Page key={index} pageNumber={value} />
-            ))}
-          </Document>
+          <img src={imageUrl} alt="Driver license" crossOrigin="anonymous" />
         }
         onClose={() => setViewImage(false)}
       />

@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { CustomHookMessage } from "@app-types";
-import { useNavigate } from "react-router-dom";
-import useAppSelector from "./useAppSelector";
-import cookie from "../utils/cookie";
-import settings from "../config/settings";
-import useAppDispatch from "./useAppDispatch";
-import { clearLoginStatus } from "../store/reducers/authenticationReducer";
+import { CustomHookMessage } from '@app-types';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import settings from '../config/settings';
+import { clearLoginStatus } from '../store/reducers/authenticationReducer';
+import cookie from '../utils/cookie';
+import useAppDispatch from './useAppDispatch';
+import useAppSelector from './useAppSelector';
 
 export default function useLogin() {
   const [_timeout, _setTimeout] = useState<any>();
@@ -16,6 +17,14 @@ export default function useLogin() {
 
   const authReducer = useAppSelector((state) => state.authenticationReducer);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const isLoggedIn = cookie.get(settings.auth.admin);
+
+    if (!isLoggedIn) {
+      navigate("/");
+    } else navigate("/dashboard");
+  }, [navigate]);
 
   useEffect(() => {
     if (authReducer.signingInStatus === "completed") {

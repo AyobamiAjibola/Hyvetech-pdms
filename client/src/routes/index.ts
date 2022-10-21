@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BookOnline,
   Dashboard,
@@ -11,7 +10,8 @@ import {
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
-} from "@mui/icons-material";
+} from '@mui/icons-material';
+import React from 'react';
 
 export interface ISideNav {
   tag: string;
@@ -38,15 +38,15 @@ export const sideNavs: ISideNav[] = [
   { tag: "drivers", name: "Drivers", path: "/drivers", Icon: TaxiAlert },
   {
     tag: "techs",
-    name: "Technicians",
-    path: "/technicians",
-    Icon: HomeRepairService,
+    name: "Home",
+    path: "/garage",
+    Icon: Garage,
   },
   {
     tag: "techs",
-    name: "Manage Garage",
-    path: "/garage",
-    Icon: Garage,
+    name: "Technicians",
+    path: "/technicians",
+    Icon: HomeRepairService,
   },
   { tag: "super", name: "Partners", path: "/partners", Icon: Handshake },
   {

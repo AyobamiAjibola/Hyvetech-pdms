@@ -227,8 +227,11 @@ export default class CommandLineRunner {
   }
 
   async loadDefaultRolesAndPermissions() {
-    await Role.sync({ force: true });
-    await Permission.sync({ force: true });
+    const $roles = await this.roleRepository.findAll();
+    const $permissions = await this.permissionRepository.findAll();
+
+    if ($roles.length) await Role.sync({ force: true });
+    if ($permissions.length) await Permission.sync({ force: true });
 
     const totalPermissions = settings.permissions.length;
 

@@ -12,12 +12,14 @@ import {
   JOB_STATUS,
   UPLOAD_BASE_PATH,
 } from "../config/constants";
-import { File } from "formidable";
 import Job from "../models/Job";
+import formidable, { File } from "formidable";
 import Generic from "../utils/Generic";
 import HttpResponse = appCommonTypes.HttpResponse;
-import CheckListType = appCommonTypes.CheckListType;
 import IImageButtonData = appCommonTypes.IImageButtonData;
+import CheckListType = appCommonTypes.CheckListType;
+
+const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 
 export default class CheckListController {
   public static async create(req: Request) {
@@ -86,122 +88,131 @@ export default class CheckListController {
     }
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
-  public static async createJobCheckList(req: Request) {
+  public static async createJobCheckList(
+    req: Request
+  ): Promise<HttpResponse<Job>> {
     const jobId = req.params.jobId as string;
 
-    try {
-      const { error, value } = Joi.object({
-        checkList: Joi.string().required().label("Check List"),
-        vehicleInfo: Joi.string().required().label("Vehicle Info"),
-      }).validate(req.fields);
+    // eslint-disable-next-line sonarjs/cognitive-complexity
+    return new Promise((resolve, reject) => {
+      form.parse(req, async (err, fields, files) => {
+        if (err)
+          return reject(
+            CustomAPIError.response(err, HttpStatus.BAD_REQUEST.code)
+          );
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        try {
+          const { error, value } = Joi.object({
+            checkList: Joi.string().required().label("Check List"),
+            // vehicleInfo: Joi.string().required().label("Vehicle Info"),
+          }).validate(fields);
 
-      const job = await dataSources.jobDAOService.findById(+jobId);
+          if (error)
+            return reject(
+              CustomAPIError.response(
+                error.details[0].message,
+                HttpStatus.BAD_REQUEST.code
+              )
+            );
 
-      if (!job)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Job does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+          const job = await dataSources.jobDAOService.findById(+jobId);
 
-      const vehicle = await job.$get("vehicle");
+          if (!job)
+            return reject(
+              CustomAPIError.response(
+                `Job does not exist`,
+                HttpStatus.NOT_FOUND.code
+              )
+            );
 
-      if (!vehicle)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Vehicle does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+          const vehicle = await job.$get("vehicle");
 
-      const technician = await job.$get("technician");
+          if (!vehicle)
+            return reject(
+              CustomAPIError.response(
+                `Vehicle does not exist`,
+                HttpStatus.NOT_FOUND.code
+              )
+            );
 
-      if (!technician)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Technician does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+          const technician = await job.$get("technician");
 
-      console.log(value.vehicleInfo);
+          if (!technician)
+            return reject(
+              CustomAPIError.response(
+                `Technician does not exist`,
+                HttpStatus.NOT_FOUND.code
+              )
+            );
 
-      const checkList = value.checkList as string;
-      const checkListJSON = JSON.parse(checkList) as CheckListType;
-      const sections = checkListJSON.sections;
-      const images: IImageButtonData[] = [];
-      const basePath = `${UPLOAD_BASE_PATH}/checklists`;
+          const checkList = value.checkList as string;
+          const checkListJSON = JSON.parse(checkList) as CheckListType;
+          const sections = checkListJSON.sections;
+          const images: IImageButtonData[] = [];
+          const basePath = `${UPLOAD_BASE_PATH}/checklists`;
 
-      for (const section of sections) {
-        const questions = section.questions;
+          for (const section of sections) {
+            const questions = section.questions;
 
-        for (const question of questions) {
-          if (question.images) {
-            for (const image of question.images) {
-              images.push(image);
+            for (const question of questions) {
+              if (question.images) {
+                for (const image of question.images) {
+                  images.push(image);
+                }
+              }
             }
           }
+
+          for (const image of images) {
+            const { originalFilename, filepath } = files[image.title] as File;
+
+            image.url = await Generic.getImagePath({
+              tempPath: filepath,
+              filename: originalFilename as string,
+              basePath,
+            });
+          }
+
+          const newSections = sections.map((section) => {
+            section.questions.forEach((question) => {
+              question.images = images;
+            });
+
+            return section;
+          });
+
+          const checklistValues = JSON.stringify({
+            ...checkListJSON,
+            sections: newSections,
+          });
+
+          await vehicle.update({
+            onInspection: false,
+            isBooked: false,
+          });
+
+          await technician.update({
+            hasJob: false,
+          });
+
+          await job.update({
+            jobDate: new Date(),
+            status: JOB_STATUS.complete,
+            checkList: checklistValues,
+          });
+
+          const response: HttpResponse<Job> = {
+            code: HttpStatus.OK.code,
+            message: `Successfully created Job Check List`,
+            result: job,
+          };
+
+          resolve(response);
+        } catch (e) {
+          return reject(e);
         }
-      }
-
-      for (const image of images) {
-        const { originalFilename, filepath } = req.files[image.title] as File;
-
-        image.url = await Generic.getImagePath({
-          tempPath: filepath,
-          filename: originalFilename as string,
-          basePath,
-        });
-      }
-
-      const newSections = sections.map((section) => {
-        section.questions.forEach((question) => {
-          question.images = images;
-        });
-
-        return section;
       });
-
-      const checklistValues = JSON.stringify({
-        ...checkListJSON,
-        sections: newSections,
-      });
-
-      await vehicle.update({
-        onInspection: false,
-        isBooked: false,
-      });
-
-      await technician.update({
-        hasJob: false,
-      });
-
-      await job.update({
-        jobDate: new Date(),
-        status: JOB_STATUS.complete,
-        checkList: checklistValues,
-      });
-
-      const response: HttpResponse<Job> = {
-        code: HttpStatus.OK.code,
-        message: `Successfully created Job Check List`,
-        result: job,
-      };
-
-      return Promise.resolve(response);
-    } catch (e) {
-      return Promise.reject(e);
-    }
+    });
   }
 
   public static async update(req: Request) {

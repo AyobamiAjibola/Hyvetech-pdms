@@ -12,7 +12,7 @@ export default function fileUploadMiddleware(options?: formidable.Options) {
         req.fields = fields;
         req.files = files;
 
-        return resolve();
+        resolve(next());
       });
     });
 

@@ -1,13 +1,15 @@
-import settings from "../config/settings";
-import { v4 } from "uuid";
-import { sign } from "jsonwebtoken";
-import { appCommonTypes } from "../@types/app-common";
-import camelcase from "camelcase";
-import moment from "moment/moment";
-import { Op } from "sequelize";
-import { appModelTypes } from "../@types/app-model";
+import path from "node:path";
 import fs from "fs/promises";
-import { Moment } from "moment";
+
+import { v4 } from "uuid";
+import { Op } from "sequelize";
+import moment, { Moment } from "moment";
+import camelcase from "camelcase";
+import { sign } from "jsonwebtoken";
+
+import settings from "../config/settings";
+import { appCommonTypes } from "../@types/app-common";
+import { appModelTypes } from "../@types/app-model";
 import Appointment from "../models/Appointment";
 import dataStore from "../config/dataStore";
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
@@ -37,9 +39,7 @@ export default class Generic {
 
     if (!exists) await fs.mkdir(params.basePath);
 
-    const newFileName = `${v4()}.${
-      params.filename.split(".")[params.filename.split(".").length - 1]
-    }`;
+    const newFileName = `${v4()}${path.extname(params.filename)}`;
 
     const newPath = `${params.basePath}/${newFileName}`;
 

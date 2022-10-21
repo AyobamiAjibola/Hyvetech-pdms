@@ -85,15 +85,13 @@ function JobCheckListReportPage() {
   const { isSuperAdmin, isTechAdmin } = useAdmin();
 
   useEffect(() => {
-    if (jobReducer.getJobStatus === "idle") {
-      if (location.state) {
-        const state = location.state as ILocationState;
+    if (location.state) {
+      const state = location.state as ILocationState;
 
-        const jobId = state.job.id;
-        dispatch(getJobAction(jobId));
-      }
+      const jobId = state.job.id;
+      dispatch(getJobAction(jobId));
     }
-  }, [dispatch, jobReducer.getJobStatus, location.state]);
+  }, [dispatch, location.state]);
 
   useEffect(() => {
     if (jobReducer.getJobStatus === "completed") {
@@ -348,7 +346,7 @@ function JobCheckListReportPage() {
                                               alt={image.title}
                                               src={`${settings.api.baseURL}/${image.url}`}
                                               crossOrigin="anonymous"
-                                              width="10%"
+                                              width="30%"
                                             />
                                           );
                                         })}

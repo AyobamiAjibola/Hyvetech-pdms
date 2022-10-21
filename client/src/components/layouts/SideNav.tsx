@@ -1,24 +1,25 @@
-import React, { useContext, useEffect, useState } from "react";
-import List from "@mui/material/List";
-import { ISideNav, sideNavs } from "../../routes";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import { useLocation, useNavigate } from "react-router-dom";
-import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProps } from "@app-interfaces";
-import IconButton from "@mui/material/IconButton";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import Divider from "@mui/material/Divider";
-import { Logout } from "@mui/icons-material";
-import { CSSObject, styled, Theme, useTheme } from "@mui/material/styles";
-import MuiDrawer from "@mui/material/Drawer";
-import useLogout from "../../hooks/useLogout";
-import { DRAWER_WIDTH } from "../../config/constants";
-import DrawerHeader from "./DrawerHeader";
-import useAdmin from "../../hooks/useAdmin";
+import { AppContextProps } from '@app-interfaces';
+import { Logout } from '@mui/icons-material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Divider from '@mui/material/Divider';
+import MuiDrawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
+import React, { useContext, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { DRAWER_WIDTH } from '../../config/constants';
+import { AppContext } from '../../context/AppContextProvider';
+import useAdmin from '../../hooks/useAdmin';
+import useLogout from '../../hooks/useLogout';
+import { ISideNav, sideNavs } from '../../routes';
+import DrawerHeader from './DrawerHeader';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: DRAWER_WIDTH,
@@ -79,7 +80,7 @@ function SideNav() {
       );
     if (admin.isTechAdmin)
       setNavs(
-        sideNavs.filter((value) => value.tag === "all" || value.tag === "techs")
+        sideNavs.filter((value) => value.tag === "techs")
       );
     if (admin.isDriverAdmin)
       setNavs(

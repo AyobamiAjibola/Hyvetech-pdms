@@ -4,7 +4,6 @@ import {
   Column,
   DataType,
   ForeignKey,
-  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -49,9 +48,6 @@ export default class Job extends Model<
   @Column(DataType.DATE)
   declare jobDate: Date;
 
-  @HasOne(() => Vehicle, { onDelete: "cascade" })
-  declare vehicle: NonAttribute<Vehicle>;
-
   @Column(DataType.STRING(50000))
   declare checkList: string;
 
@@ -82,4 +78,11 @@ export default class Job extends Model<
   @ForeignKey(() => CustomerSubscription)
   @Column(DataType.INTEGER)
   declare customerSubscriptionId: NonAttribute<number>;
+
+  @BelongsTo(() => Vehicle, { onDelete: "cascade" })
+  declare vehicle: NonAttribute<Vehicle>;
+
+  @ForeignKey(() => Vehicle)
+  @Column(DataType.INTEGER)
+  declare vehicleId: number;
 }

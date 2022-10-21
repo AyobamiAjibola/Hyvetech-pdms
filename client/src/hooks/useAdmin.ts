@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
-import { LOCAL_STORAGE } from "../config/constants";
-import { IPermission, IUser } from "@app-models";
-import cookie from "../utils/cookie";
-import settings from "../config/settings";
-import jwt from "jsonwebtoken";
-import { CustomJwtPayload } from "@app-interfaces";
-import useAppSelector from "./useAppSelector";
-import { getUserAction } from "../store/actions/userActions";
-import useAppDispatch from "./useAppDispatch";
+import { CustomJwtPayload } from '@app-interfaces';
+import { IPermission, IUser } from '@app-models';
+import jwt from 'jsonwebtoken';
+import { useEffect, useState } from 'react';
+
+import { LOCAL_STORAGE } from '../config/constants';
+import settings from '../config/settings';
+import { getUserAction } from '../store/actions/userActions';
+import cookie from '../utils/cookie';
+import useAppDispatch from './useAppDispatch';
+import useAppSelector from './useAppSelector';
 
 export default function useAdmin() {
   const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);

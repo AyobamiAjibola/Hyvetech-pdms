@@ -17,14 +17,18 @@ import {
   INITIAL_CHECK_LIST_VALUES,
   JOB_STATUS,
   MOBILE_CATEGORY,
+  UPLOAD_BASE_PATH,
 } from "../config/constants";
 import Plan from "../models/Plan";
 import Generic from "../utils/Generic";
 import Vehicle from "../models/Vehicle";
 import Partner from "../models/Partner";
 import Contact from "../models/Contact";
+import formidable, { File } from "formidable";
 import HttpResponse = appCommonTypes.HttpResponse;
 import CheckListType = appCommonTypes.CheckListType;
+
+const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 
 export default class JobController {
   public static async jobs(partnerId?: number) {
@@ -231,7 +235,7 @@ export default class JobController {
       const job = await dataSources.jobDAOService.create(jobValues);
 
       //associate job with vehicle
-      await job.$set("vehicle", vehicle[0]);
+      await vehicle[0].$add("jobs", [job]);
 
       //associate job with subscription
       await rideShareSub.$add("jobs", [job]);
@@ -381,7 +385,7 @@ export default class JobController {
       const job = await dataSources.jobDAOService.create(jobValues);
 
       //associate job with vehicle
-      await job.$set("vehicle", vehicle[0]);
+      await vehicle[0].$add("jobs", [job]);
 
       //associate job with subscription
       await customerSub.$add("jobs", [job]);
@@ -497,6 +501,88 @@ export default class JobController {
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  public static async updateJobVehicle(
+    req: Request
+  ): Promise<HttpResponse<Vehicle>> {
+    return new Promise((resolve, reject) => {
+      form.parse(req, async (err, fields, files) => {
+        try {
+          const { error, value } = Joi.object({
+            vehicleInfo: Joi.string().required().label("Vehicle Info"),
+          }).validate(fields);
+
+          if (error)
+            return reject(
+              CustomAPIError.response(
+                error.details[0].message,
+                HttpStatus.BAD_REQUEST.code
+              )
+            );
+
+          const jobId = req.params.jobId as string;
+          const job = await dataSources.jobDAOService.findById(+jobId);
+
+          if (!job)
+            return reject(
+              CustomAPIError.response(
+                `Job does not exist`,
+                HttpStatus.NOT_FOUND.code
+              )
+            );
+
+          const vehicle = await job.$get("vehicle");
+
+          if (!vehicle)
+            return reject(
+              CustomAPIError.response(
+                `Vehicle does not exist`,
+                HttpStatus.NOT_FOUND.code
+              )
+            );
+
+          const vehicleInfo = JSON.parse(value.vehicleInfo);
+
+          const basePath = `${UPLOAD_BASE_PATH}/vehicles`;
+          const updateData: { [p: string]: any } = {
+            make: vehicleInfo.make,
+            model: vehicleInfo.model,
+            modelYear: vehicleInfo.modelYear,
+            plateNumber: vehicleInfo.plateNumber,
+            vin: vehicleInfo.vin,
+            mileageUnit: vehicleInfo.mileageUnit,
+            mileageValue: vehicleInfo.mileageValue,
+            frontTireSpec: vehicleInfo.frontTireSpec,
+            rearTireSpec: vehicleInfo.rearTireSpec,
+          };
+
+          for (const file of Object.keys(files)) {
+            const { originalFilename, filepath } = files[file] as File;
+
+            Object.assign(updateData, {
+              [file]: await Generic.getImagePath({
+                basePath,
+                tempPath: filepath,
+                filename: <string>originalFilename,
+              }),
+            });
+          }
+
+          const result = await vehicle.update(updateData);
+
+          const response: HttpResponse<Vehicle> = {
+            code: HttpStatus.OK.code,
+            message: HttpStatus.OK.value,
+            result: result,
+          };
+
+          resolve(response);
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    });
   }
 
   private static async incrementServiceModeCount(

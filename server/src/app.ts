@@ -12,8 +12,6 @@ import globalExceptionHandler from "./middleware/globalExceptionHandler";
 import config from "./config";
 
 import router from "./routes";
-import fileUploadMiddleware from "./middleware/fileUploadMiddleware";
-import { UPLOAD_BASE_PATH } from "./config/constants";
 
 const app = express();
 const openapiSpecification = swaggerJsdoc(config.swagger); //configure swagger API documentation
@@ -42,8 +40,6 @@ app.use("/uploads", _static(path.resolve("uploads")));
 
 // Route API documentation
 app.use(`${settings.service.apiRoot}/docs`, serve, setup(openapiSpecification));
-
-app.use(fileUploadMiddleware({ uploadDir: UPLOAD_BASE_PATH }));
 
 app.use(`${settings.service.apiRoot}`, router); //All routes middleware
 

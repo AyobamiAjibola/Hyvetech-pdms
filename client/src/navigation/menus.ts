@@ -1,19 +1,18 @@
-import Vehicles from "../components/customer/Vehicles";
-import Appointments from "../components/customer/Appointments";
-import Transactions from "../components/customer/Transactions";
-import Quotes from "../components/customer/Quotes";
-import { ITab } from "@app-interfaces";
-import Plans from "../components/partner/rideShare/Plans";
-import PaymentPlans from "../components/partner/rideShare/PaymentPlans";
-import RideShareDriver from "../components/partner/garage/RideShareDriver";
-import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from "../config/constants";
-import RideShareSettings from "../components/partner/rideShare/RideShareSettings";
-import VehicleOwner from "../components/partner/garage/VehicleOwner";
-import GarageProfileAndSetting from "../components/partner/garage/GarageProfileAndSetting";
-import DriverProfile from "../components/partner/garage/DriverProfile";
-import DriverVehicles from "../components/partner/garage/DriverVehicles";
-import TechniciansPage from "../pages/technician/TechniciansPage";
-import Estimate from "../components/partner/garage/Estimate";
+import { ITab } from '@app-interfaces';
+
+import Appointments from '../components/customer/Appointments';
+import Quotes from '../components/customer/Quotes';
+import Transactions from '../components/customer/Transactions';
+import Vehicles from '../components/customer/Vehicles';
+import DriverProfile from '../components/partner/garage/DriverProfile';
+import DriverVehicles from '../components/partner/garage/DriverVehicles';
+import GarageProfileAndSetting from '../components/partner/garage/GarageProfileAndSetting';
+import RideShareDriver from '../components/partner/garage/RideShareDriver';
+import PaymentPlans from '../components/partner/rideShare/PaymentPlans';
+import Plans from '../components/partner/rideShare/Plans';
+import RideShareSettings from '../components/partner/rideShare/RideShareSettings';
+import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from '../config/constants';
+import TechniciansPage from '../pages/technician/TechniciansPage';
 
 export const customerDetailTabs: ITab[] = [
   { name: "Vehicles", Element: Vehicles },
@@ -34,11 +33,11 @@ export const partnerDetailTabs: ITab[] = [
     name: "Settings",
     Element: RideShareSettings,
   },
-  {
-    tag: GARAGE_CATEGORY,
-    name: "Jiffix Hyve",
-    Element: VehicleOwner,
-  },
+  // {
+  //   tag: GARAGE_CATEGORY,
+  //   name: "Jiffix Hyve",
+  //   Element: VehicleOwner,
+  // },
   {
     tag: GARAGE_CATEGORY,
     name: "Ride Share Hyve",
@@ -59,5 +58,5 @@ export const partnerDetailTabs: ITab[] = [
 export const driverSearchResultTabs: ITab[] = [
   { tag: "driver", name: "Driver Profile", Element: DriverProfile },
   { tag: "driver", name: "Vehicles", Element: DriverVehicles },
-  { tag: "driver", name: "Create Estimate", Element: Estimate },
+  // { tag: "driver", name: "Create Estimate", Element: Estimate },
 ];

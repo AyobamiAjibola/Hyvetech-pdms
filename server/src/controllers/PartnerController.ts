@@ -26,6 +26,7 @@ import JobController from "./JobController";
 import email_content from "../resources/templates/email/email_content";
 import { QueueManager } from "rabbitmq-email-manager";
 import create_partner_success_email from "../resources/templates/email/create_partner_success_email";
+import formidable, { File } from "formidable";
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 
@@ -85,6 +86,8 @@ export interface IDriverFilterProps {
   fullName?: string;
   query?: string;
 }
+
+const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 
 export default class PartnerController {
   private declare passwordEncoder: BcryptPasswordEncoder;
@@ -350,79 +353,88 @@ export default class PartnerController {
    * @name createSettings
    * @param req
    */
-  public async createSettings(req: Request) {
+  public async createSettings(
+    req: Request
+  ): Promise<HttpResponse<InferAttributes<Partner>>> {
     const partnerId = req.params.partnerId as string;
-    const fields = req.fields;
-    const logo = req.files.logo as { [p: string]: any };
-    const basePath = `${UPLOAD_BASE_PATH}/partners`;
 
-    try {
-      const { error, value } = Joi.object({
-        accountName: Joi.string().allow("").label("Account Name"),
-        accountNumber: Joi.string().allow("").label("Account Number"),
-        bankName: Joi.string().allow("").label("Bank Name"),
-        googleMap: Joi.string().allow("").label("Google Map Link"),
-        logo: Joi.binary().allow().label("Company Logo"),
-        phone: Joi.string().allow("").label("Phone"),
-        totalStaff: Joi.string().allow("").label("Total Staff"),
-        totalTechnicians: Joi.string().allow("").label("Total Technicians"),
-        brands: Joi.string().allow("").label("Company Brands"),
-        workingHours: Joi.string().allow("").label("Working Hours"),
-      }).validate(fields);
+    return new Promise((resolve, reject) => {
+      form.parse(req, async (err, fields, files) => {
+        const logo = files.logo as File;
+        const basePath = `${UPLOAD_BASE_PATH}/partners`;
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        try {
+          const { error, value } = Joi.object({
+            accountName: Joi.string().allow("").label("Account Name"),
+            accountNumber: Joi.string().allow("").label("Account Number"),
+            bankName: Joi.string().allow("").label("Bank Name"),
+            googleMap: Joi.string().allow("").label("Google Map Link"),
+            logo: Joi.binary().allow().label("Company Logo"),
+            phone: Joi.string().allow("").label("Phone"),
+            totalStaff: Joi.string().allow("").label("Total Staff"),
+            totalTechnicians: Joi.string().allow("").label("Total Technicians"),
+            brands: Joi.string().allow("").label("Company Brands"),
+            workingHours: Joi.string().allow("").label("Working Hours"),
+          }).validate(fields);
 
-      const partner = await dataSources.partnerDAOService.findById(+partnerId, {
-        include: [{ all: true }],
-      });
+          if (error)
+            return reject(
+              CustomAPIError.response(
+                error.details[0].message,
+                HttpStatus.BAD_REQUEST.code
+              )
+            );
 
-      if (!partner)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Partner with id ${partnerId} does not exist`,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+          const partner = await dataSources.partnerDAOService.findById(
+            +partnerId,
+            {
+              include: [{ all: true }],
+            }
+          );
 
-      value.brands = JSON.parse(value.brands);
-      value.workingHours = JSON.parse(value.workingHours);
+          if (!partner)
+            return reject(
+              CustomAPIError.response(
+                `Partner with id ${partnerId} does not exist`,
+                HttpStatus.BAD_REQUEST.code
+              )
+            );
 
-      for (const valueKey in value) {
-        if (valueKey !== "logo" && value[valueKey].length) {
-          await partner.update({ [valueKey]: value[valueKey] });
+          value.brands = JSON.parse(value.brands);
+          value.workingHours = JSON.parse(value.workingHours);
+
+          for (const valueKey in value) {
+            if (valueKey !== "logo" && value[valueKey].length) {
+              await partner.update({ [valueKey]: value[valueKey] });
+            }
+          }
+
+          if (logo) {
+            partner.set({
+              logo: await Generic.getImagePath({
+                tempPath: logo.filepath,
+                filename: <string>logo.originalFilename,
+                basePath,
+              }),
+            });
+
+            await partner.save();
+          }
+
+          const partnerJson = partner.toJSON();
+
+          const response: HttpResponse<InferAttributes<Partner>> = {
+            code: HttpStatus.OK.code,
+            message: `Updated Settings Successfully`,
+            result: partnerJson,
+          };
+
+          resolve(response);
+        } catch (e) {
+          return reject(e);
         }
-      }
-
-      if (logo) {
-        partner.set({
-          logo: await Generic.getImagePath({
-            tempPath: logo.filepath,
-            filename: logo.originalFilename,
-            basePath,
-          }),
-        });
-
-        await partner.save();
-      }
-
-      const partnerJson = partner.toJSON();
-
-      const response: HttpResponse<InferAttributes<Partner>> = {
-        code: HttpStatus.OK.code,
-        message: `Updated Settings Successfully`,
-        result: partnerJson,
-      };
-
-      return Promise.resolve(response);
-    } catch (e) {
-      return Promise.reject(e);
-    }
+      });
+    });
   }
 
   /**

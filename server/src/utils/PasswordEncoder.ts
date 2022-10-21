@@ -1,13 +1,14 @@
-import { compare, genSalt, hash } from "bcryptjs";
+import { compare, genSalt, hash } from 'bcryptjs';
 
-import { appCommonTypes } from "../@types/app-common";
+import { appCommonTypes } from '../@types/app-common';
+
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
 export default class PasswordEncoder implements BcryptPasswordEncoder {
-  private readonly saltRounds: number;
+  private readonly saltRounds: number = 12;
 
   constructor() {
-    this.saltRounds = +(<string>process.env.BCRYPT_SALT);
+    if (process.env.BCRYPT_SALT) this.saltRounds = +process.env.BCRYPT_SALT;
   }
 
   async encode(rawPassword: string): Promise<string> {

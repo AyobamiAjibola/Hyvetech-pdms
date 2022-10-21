@@ -5,6 +5,7 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
@@ -114,7 +115,16 @@ export default class Vehicle extends Model<
   declare nickname: string;
 
   @Column(DataType.STRING)
-  declare mileage: string;
+  declare mileageUnit: string;
+
+  @Column(DataType.STRING)
+  declare mileageValue: string;
+
+  @Column(DataType.STRING)
+  declare frontTireSpec: string;
+
+  @Column(DataType.STRING)
+  declare rearTireSpec: string;
 
   @Column(DataType.STRING)
   declare plateNumber: string;
@@ -169,12 +179,8 @@ export default class Vehicle extends Model<
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: number;
 
-  @BelongsTo(() => Job, { onDelete: "cascade" })
-  declare job: NonAttribute<Job>;
-
-  @ForeignKey(() => Job)
-  @Column(DataType.INTEGER)
-  declare jobId: number;
+  @HasMany(() => Job, { onDelete: "cascade" })
+  declare jobs: NonAttribute<Array<Job>>;
 
   @BelongsToMany(() => Tag, () => VehicleTag)
   declare tags: NonAttribute<Array<Tag & { VehicleTag: VehicleTag }>>;

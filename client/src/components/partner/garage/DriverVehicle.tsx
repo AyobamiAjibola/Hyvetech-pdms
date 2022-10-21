@@ -3,7 +3,6 @@ import { useLocation, useParams } from "react-router-dom";
 
 import moment from "moment";
 import { FileOpen } from "@mui/icons-material";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack5";
 import {
   Avatar,
   Box,
@@ -33,7 +32,6 @@ import { getDriverVehicleSubscriptionAction } from "../../../store/actions/vehic
 import settings from "../../../config/settings";
 import axiosClient from "../../../config/axiosClient";
 import AppModal from "../../modal/AppModal";
-import generatePageNumbers from "../../../utils/generic";
 import DriverSubscription from "./DriverSubscription";
 import { DriverVehiclesContext } from "./DriverVehicles";
 import { DriverVehiclesContextProps } from "@app-interfaces";
@@ -400,12 +398,9 @@ export default function DriverVehicle(props: ILocationState) {
         show={viewImage}
         title="Vehicle paper"
         size="sm"
+        fullWidth
         Content={
-          <Document file={imageUrl}>
-            {generatePageNumbers(10).map((value, index) => (
-              <Page key={index} pageNumber={value} />
-            ))}
-          </Document>
+          <img src={imageUrl} alt="Vehicle paper" crossOrigin="anonymous" />
         }
         onClose={() => setViewImage(false)}
       />
