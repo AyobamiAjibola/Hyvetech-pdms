@@ -93,10 +93,10 @@ export default class TechnicianController {
       const user = await dataSources.technicianDAOService.create(value);
 
       //associate user with role
-      await user.$set("roles", [role]);
+      await user.$add("roles", [role]);
 
       //associate partner with technician
-      await partner.$set("technicians", [user]);
+      await partner.$add("technicians", [user]);
 
       const mailText = create_technician_success_email({
         username: user.email,
@@ -163,7 +163,7 @@ export default class TechnicianController {
         password: Joi.string().allow("").label("Password"),
         phone: Joi.string().required().label("Phone Number"),
         active: Joi.boolean().truthy().required().label("Active"),
-        partnerId: Joi.string().required().label("Partner Id"),
+        partnerId: Joi.string().allow("").label("Partner Id"),
       }).validate(req.body);
 
       if (error)
