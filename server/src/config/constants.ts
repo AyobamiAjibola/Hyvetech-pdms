@@ -45,6 +45,7 @@ export const LOG_LEVEL_COLORS = {
 
 export const BOOKINGS = "cache:BOOKINGS";
 export const PAY_STACK_PLANS = "cache:PAY_STACK_PLANS";
+export const PAY_STACK_BANKS = "cache:PAY_STACK_BANKS";
 export const TWENTY_FOUR_HOUR_EXPIRY = 24 * 60 * 60 * 1000;
 export const VIN_PATTERN = /^(?=.*[0-9])(?=.*[A-z])[0-9A-z-]{17}$/;
 

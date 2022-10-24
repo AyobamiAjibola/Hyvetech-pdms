@@ -87,8 +87,8 @@ export default class TechnicianController {
 
       const password = value.password;
       value.rawPassword = password;
-
       value.password = await this.passwordEncoder.encode(password);
+      value.enabled = true;
 
       const user = await dataSources.technicianDAOService.create(value);
 

@@ -22,6 +22,7 @@ declare module "@app-models" {
     loginDate: Date;
     contacts: IContact[];
     partner: IPartner;
+    partnerId: number;
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
@@ -108,6 +109,14 @@ declare module "@app-models" {
     motorReceiptFileUrl: string;
     vehicleInspectionFileUrl: string;
     thirdPartyInsuranceFileUrl: string;
+    frontImageUrl: string;
+    rearImageUrl: string;
+    rightSideImageUrl: string;
+    leftSideImageUrl: string;
+    engineBayImageUrl: string;
+    instrumentClusterImageUrl: string;
+    mileageUnit: string;
+    mileageValue: string;
     nickname: string;
     plateNumber: string;
     type: string;

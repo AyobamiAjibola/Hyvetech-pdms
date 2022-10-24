@@ -42,6 +42,7 @@ import {
   ONE_TIME_DRIVE_IN_PLAN,
   ONE_TIME_MOBILE_PLAN,
   ONE_TIME_SUBSCRIPTION,
+  PAY_STACK_BANKS,
   PAY_STACK_PLANS,
   PAYMENT_PLANS,
   PAYMENT_TERMS,
@@ -49,6 +50,7 @@ import {
   SERVICES,
   SUBSCRIPTIONS,
   TWENTY_FOUR_HOUR_EXPIRY,
+  UPLOAD_BASE_PATH,
 } from "../config/constants";
 import Category from "../models/Category";
 import PaymentPlan from "../models/PaymentPlan";
@@ -67,6 +69,8 @@ import axiosClient from "../services/api/axiosClient";
 import dataStore from "../config/dataStore";
 import Role from "../models/Role";
 import Permission from "../models/Permission";
+import Generic from "../utils/Generic";
+import fs from "fs/promises";
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 
 export default class CommandLineRunner {
@@ -113,6 +117,7 @@ export default class CommandLineRunner {
   }
 
   public static async run() {
+    await this.singleton.createUploadDirectory();
     await this.singleton.loadDefaultEmailConfig();
     await this.singleton.loadDefaultRolesAndPermissions();
     await this.singleton.loadDefaultTimeSlotAndSlots();
@@ -124,6 +129,12 @@ export default class CommandLineRunner {
     await this.singleton.loadDefaultTags();
     await this.singleton.loadDefaultAdmin();
     await this.singleton.loadPayStackPlans();
+    await this.singleton.loadPayStackBanks();
+  }
+
+  async createUploadDirectory() {
+    const dirExist = await Generic.fileExist(UPLOAD_BASE_PATH);
+    if (!dirExist) await fs.mkdir(UPLOAD_BASE_PATH);
   }
 
   async loadPayStackPlans() {
@@ -139,6 +150,23 @@ export default class CommandLineRunner {
     const response = await axiosClient.get("/plan");
 
     await dataStore.setEx(PAY_STACK_PLANS, JSON.stringify(response.data.data), {
+      PX: TWENTY_FOUR_HOUR_EXPIRY,
+    });
+  }
+
+  async loadPayStackBanks() {
+    const paymentGateway = (await this.paymentGatewayRepository.findOne({
+      where: { default: true },
+    })) as PaymentGateway;
+
+    axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
+    axiosClient.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${paymentGateway.secretKey}`;
+
+    const response = await axiosClient.get("/bank");
+
+    await dataStore.setEx(PAY_STACK_BANKS, JSON.stringify(response.data.data), {
       PX: TWENTY_FOUR_HOUR_EXPIRY,
     });
   }

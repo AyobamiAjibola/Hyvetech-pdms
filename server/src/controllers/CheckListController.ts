@@ -104,6 +104,7 @@ export default class CheckListController {
         try {
           const { error, value } = Joi.object({
             checkList: Joi.string().required().label("Check List"),
+            vehicleInfo: Joi.string().allow("").label("Vehicle Info"),
           }).validate(fields);
 
           if (error)

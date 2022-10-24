@@ -1,14 +1,14 @@
-import { CustomJwtPayload } from '@app-interfaces';
-import { IPermission, IUser } from '@app-models';
-import jwt from 'jsonwebtoken';
-import { useEffect, useState } from 'react';
+import { CustomJwtPayload } from "@app-interfaces";
+import { IPermission, IUser } from "@app-models";
+import jwt from "jsonwebtoken";
+import { useEffect, useMemo, useState } from "react";
 
-import { LOCAL_STORAGE } from '../config/constants';
-import settings from '../config/settings';
-import { getUserAction } from '../store/actions/userActions';
-import cookie from '../utils/cookie';
-import useAppDispatch from './useAppDispatch';
-import useAppSelector from './useAppSelector';
+import { LOCAL_STORAGE } from "../config/constants";
+import settings from "../config/settings";
+import { getUserAction } from "../store/actions/userActions";
+import cookie from "../utils/cookie";
+import useAppDispatch from "./useAppDispatch";
+import useAppSelector from "./useAppSelector";
 
 export default function useAdmin() {
   const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
@@ -18,6 +18,8 @@ export default function useAdmin() {
 
   const userReducer = useAppSelector((state) => state.userReducer);
   const dispatch = useAppDispatch();
+
+  const token = useMemo(() => cookie.get(settings.auth.admin), []);
 
   useEffect(() => {
     const localPermissions = JSON.parse(
@@ -42,14 +44,12 @@ export default function useAdmin() {
   }, []);
 
   useEffect(() => {
-    const token = cookie.get(settings.auth.admin);
-
     if (token) {
       const payload = jwt.decode(token) as CustomJwtPayload;
 
       dispatch(getUserAction(payload.userId));
     } else throw new Error("You are not authorized to access this resource");
-  }, [dispatch]);
+  }, [dispatch, token]);
 
   useEffect(() => {
     if (userReducer.getUserStatus === "completed") {

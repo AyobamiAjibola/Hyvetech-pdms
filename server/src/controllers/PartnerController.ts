@@ -573,7 +573,7 @@ export default class PartnerController {
         );
 
       Object.assign(value, {
-        label: Generic.generateSlug(`${value.label} ${value.serviceMode}`),
+        label: Generic.generateSlug(`${value.label} (${value.serviceMode})`),
       });
 
       const plan = await dataSources.planDAOService.create(value);
@@ -1028,6 +1028,13 @@ export default class PartnerController {
               HttpStatus.NOT_FOUND.code
             )
           );
+
+        const subscription = await plan.$get("subscriptions");
+
+        if (subscription) {
+          await subscription.$remove("plans", plan);
+          await subscription.destroy();
+        }
 
         await plan.destroy();
 

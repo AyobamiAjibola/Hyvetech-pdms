@@ -35,7 +35,7 @@ function PartnerPage() {
 
   const partnerId = useMemo(() => {
     if (admin.isTechAdmin && admin.user) {
-      return admin.user.partner.id;
+      return admin.user.partnerId;
     }
 
     if (params.id) {

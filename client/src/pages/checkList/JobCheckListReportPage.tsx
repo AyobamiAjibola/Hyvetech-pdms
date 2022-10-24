@@ -63,7 +63,9 @@ const computeScore = (sections: CheckListSectionType[]) => {
     }
   }
 
-  return (totalScore * 100) / _answers.length;
+  const result = (totalScore * 100) / _answers.length;
+
+  return result.toFixed(2);
 };
 
 const getQuestionAnswer = (question: CheckListQuestionType) => {
@@ -213,14 +215,15 @@ function JobCheckListReportPage() {
                       License Plate: {job.vehicle.plateNumber}
                     </Typography>
                     <Typography variant="caption" component="div" gutterBottom>
-                      Mileage:
+                      Mileage: {job.vehicle.mileageValue}/
+                      {job.vehicle.mileageUnit}
                     </Typography>
                   </Grid>
                   <Grid item xs>
                     <ButtonBase>
                       <img
                         width="100%"
-                        height="110px"
+                        height="100%"
                         crossOrigin="anonymous"
                         alt=""
                         src={`${settings.api.driverBaseURL}/${job.vehicle.imageUrl}`}
@@ -231,25 +234,26 @@ function JobCheckListReportPage() {
                 <Paper
                   sx={{
                     mt: 4,
+                    p: 2,
                     bgcolor: "#FFEAAB",
                     color: (theme) =>
                       theme.palette.mode === "dark" ? "#263238" : "#000000",
                   }}
                 >
                   <Grid item container xs={12} spacing={1}>
-                    <Grid item xs={2}>
+                    <Grid item xs={2} alignSelf="center">
                       <Avatar
                         sx={{ width: 24, height: 24 }}
                         src={checkListVectorImg}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} alignSelf="center">
                       <Typography variant="subtitle2" component="p">
                         {job.checkList.description}
                       </Typography>
                     </Grid>
                     <Grid item>
-                      <Typography variant="h3">
+                      <Typography variant="h4">
                         {computeScore(job.checkList.sections)}%
                       </Typography>
                     </Grid>
@@ -258,14 +262,12 @@ function JobCheckListReportPage() {
                 <Divider flexItem orientation="horizontal" sx={{ mt: 4 }} />
                 <Grid item container xs={12} spacing={1}>
                   <Grid item xs alignSelf="center">
-                    <ButtonBase>
-                      <img
-                        src={`${settings.api.baseURL}/${job.partner.logo}`}
-                        crossOrigin="anonymous"
-                        alt=""
-                        width="100%"
-                      />
-                    </ButtonBase>
+                    <img
+                      src={`${settings.api.baseURL}/${job.partner.logo}`}
+                      crossOrigin="anonymous"
+                      alt="logo"
+                      width="100%"
+                    />
                   </Grid>
                   <Grid item xs={9}>
                     <List>
@@ -301,13 +303,74 @@ function JobCheckListReportPage() {
                   </Grid>
                 </Grid>
                 <Divider flexItem orientation="horizontal" sx={{ mb: 4 }} />
+
+                {!job.vehicle ? null : (
+                  <Grid item xs={12} container spacing={1}>
+                    <Grid item xs={4}>
+                      <img
+                        alt="front"
+                        src={`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`}
+                        crossOrigin="anonymous"
+                        width="100%"
+                      />
+                      <Typography variant="caption">Front</Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <img
+                        alt="rear"
+                        src={`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`}
+                        crossOrigin="anonymous"
+                        width="100%"
+                      />
+                      <Typography variant="caption">Rear</Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <img
+                        alt="right"
+                        src={`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`}
+                        crossOrigin="anonymous"
+                        width="100%"
+                      />
+                      <Typography variant="caption">Right</Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <img
+                        alt="left"
+                        src={`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`}
+                        crossOrigin="anonymous"
+                        width="100%"
+                      />
+                      <Typography variant="caption">Left</Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <img
+                        alt="engine bay"
+                        src={`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`}
+                        crossOrigin="anonymous"
+                        width="100%"
+                      />
+                      <Typography variant="caption">Engine Bay</Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <img
+                        alt="instrument cluster"
+                        src={`${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`}
+                        crossOrigin="anonymous"
+                        width="100%"
+                      />
+                      <Typography variant="caption">
+                        Instrument Cluster
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                )}
               </Paper>
             </Grid>
             <Grid item xs={12} md={8} container spacing={0.5}>
               {job.checkList.sections.map((section, idx1) => {
                 return (
                   <Grid key={idx1} item xs={12} md={6}>
-                    <Card>
+                    <Card sx={{ height: "100%" }}>
                       <CardHeader title={section.title} />
                       {section.questions.map((question, idx2) => {
                         const { color, answer } = getQuestionAnswer(question);
@@ -346,7 +409,7 @@ function JobCheckListReportPage() {
                                               alt={image.title}
                                               src={`${settings.api.baseURL}/${image.url}`}
                                               crossOrigin="anonymous"
-                                              width="30%"
+                                              width="25%"
                                             />
                                           );
                                         })}
