@@ -196,11 +196,9 @@ export default class TechnicianController {
       //Return same result with no modification
       if (exist) {
         if (value.password.length) {
-          const password = Generic.generateRandomString(8);
+          value.rawPassword = value.password;
 
-          value.password = await this.passwordEncoder.encode(password);
-
-          value.rawPassword = password;
+          value.password = await this.passwordEncoder.encode(value.password);
         } else delete value.password;
 
         await exist.update(value);
