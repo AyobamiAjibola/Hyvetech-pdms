@@ -268,7 +268,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(getPartnerAction.pending, (state) => {
-        state.getPartnerStatus = "idle";
+        state.getPartnerStatus = "loading";
       })
       .addCase(getPartnerAction.fulfilled, (state, action) => {
         state.getPartnerStatus = "completed";
@@ -283,7 +283,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(addPlanAction.pending, (state) => {
-        state.addPlanStatus = "idle";
+        state.addPlanStatus = "loading";
       })
       .addCase(addPlanAction.fulfilled, (state, action) => {
         state.addPlanStatus = "completed";
@@ -298,7 +298,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(getPlansAction.pending, (state) => {
-        state.getPlansStatus = "idle";
+        state.getPlansStatus = "loading";
       })
       .addCase(getPlansAction.fulfilled, (state, action) => {
         state.getPlansStatus = "completed";
@@ -314,7 +314,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(addPaymentPlanAction.pending, (state) => {
-        state.addPaymentPlanStatus = "idle";
+        state.addPaymentPlanStatus = "loading";
       })
       .addCase(addPaymentPlanAction.fulfilled, (state, action) => {
         state.addPaymentPlanStatus = "completed";
@@ -330,7 +330,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(getPaymentPlansAction.pending, (state) => {
-        state.getPaymentPlansStatus = "idle";
+        state.getPaymentPlansStatus = "loading";
       })
       .addCase(getPaymentPlansAction.fulfilled, (state, action) => {
         state.getPaymentPlansStatus = "completed";
@@ -346,7 +346,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(getDriversFilterDataAction.pending, (state) => {
-        state.getDriversFilterDataStatus = "idle";
+        state.getDriversFilterDataStatus = "loading";
       })
       .addCase(getDriversFilterDataAction.fulfilled, (state, action) => {
         state.getDriversFilterDataStatus = "completed";
@@ -363,7 +363,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(getOwnersFilterDataAction.pending, (state) => {
-        state.getOwnersFilterDataStatus = "idle";
+        state.getOwnersFilterDataStatus = "loading";
       })
       .addCase(getOwnersFilterDataAction.fulfilled, (state, action) => {
         state.getOwnersFilterDataStatus = "completed";
@@ -379,7 +379,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(deletePlanAction.pending, (state) => {
-        state.deletePlanStatus = "idle";
+        state.deletePlanStatus = "loading";
       })
       .addCase(deletePlanAction.fulfilled, (state, action) => {
         state.deletePlanStatus = "completed";
@@ -403,7 +403,7 @@ const partnerSlice = createSlice({
 
     builder
       .addCase(deletePaymentPlanAction.pending, (state) => {
-        state.deletePaymentPlanStatus = "idle";
+        state.deletePaymentPlanStatus = "loading";
       })
       .addCase(deletePaymentPlanAction.fulfilled, (state, action) => {
         state.deletePaymentPlanStatus = "completed";

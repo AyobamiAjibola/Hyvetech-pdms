@@ -59,6 +59,8 @@ export default function DriverVehicle(props: ILocationState) {
 
   const location = useLocation();
 
+  console.log(vehicle);
+
   useEffect(() => {
     const partnerId = params.id as string;
 

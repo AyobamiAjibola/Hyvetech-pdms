@@ -9,6 +9,7 @@ import { IJob } from "@app-models";
 import { useLocation } from "react-router-dom";
 import {
   Avatar,
+  Box,
   Button,
   ButtonBase,
   Card,
@@ -43,6 +44,8 @@ import useAdmin from "../../hooks/useAdmin";
 import AppLoader from "../../components/loader/AppLoader";
 import AppAlert from "../../components/alerts/AppAlert";
 import { clearApproveJobCheckListStatus } from "../../store/reducers/jobReducer";
+import AppModal from "../../components/modal/AppModal";
+import axiosClient from "../../config/axiosClient";
 
 interface ILocationState {
   job: IJob;
@@ -77,6 +80,8 @@ const getQuestionAnswer = (question: CheckListQuestionType) => {
 function JobCheckListReportPage() {
   const [job, setJob] = useState<IJob | null>(null);
   const [approved, setApproved] = useState<boolean>(false);
+  const [viewImage, setViewImage] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<string>();
   const [error, setError] = useState<CustomHookMessage>();
   const [success, setSuccess] = useState<CustomHookMessage>();
 
@@ -142,6 +147,22 @@ function JobCheckListReportPage() {
   const handleApproveReport = (jobId: number, approved: boolean) => {
     setApproved(approved);
     dispatch(approveJobCheckListAction({ jobId, approved }));
+  };
+
+  const handleViewImage = async (imageUrl: string) => {
+    const response = await axiosClient.get(imageUrl, {
+      responseType: "blob",
+    });
+
+    const reader = new FileReader();
+    reader.readAsDataURL(response.data);
+
+    reader.onloadend = function () {
+      const base64data = reader.result as string;
+      setImageUrl(base64data);
+    };
+
+    setTimeout(() => setViewImage(true), 500);
   };
 
   return (
@@ -220,7 +241,13 @@ function JobCheckListReportPage() {
                     </Typography>
                   </Grid>
                   <Grid item xs>
-                    <ButtonBase>
+                    <ButtonBase
+                      onClick={() =>
+                        handleViewImage(
+                          `${settings.api.driverBaseURL}/${job.vehicle.imageUrl}`
+                        )
+                      }
+                    >
                       <img
                         width="100%"
                         height="100%"
@@ -262,12 +289,20 @@ function JobCheckListReportPage() {
                 <Divider flexItem orientation="horizontal" sx={{ mt: 4 }} />
                 <Grid item container xs={12} spacing={1}>
                   <Grid item xs alignSelf="center">
-                    <img
-                      src={`${settings.api.baseURL}/${job.partner.logo}`}
-                      crossOrigin="anonymous"
-                      alt="logo"
-                      width="100%"
-                    />
+                    <ButtonBase
+                      onClick={() =>
+                        handleViewImage(
+                          `${settings.api.baseURL}/${job.partner.logo}`
+                        )
+                      }
+                    >
+                      <img
+                        src={`${settings.api.baseURL}/${job.partner.logo}`}
+                        crossOrigin="anonymous"
+                        alt="logo"
+                        width="100%"
+                      />
+                    </ButtonBase>
                   </Grid>
                   <Grid item xs={9}>
                     <List>
@@ -307,57 +342,105 @@ function JobCheckListReportPage() {
                 {!job.vehicle ? null : (
                   <Grid item xs={12} container spacing={1}>
                     <Grid item xs={4}>
-                      <img
-                        alt="front"
-                        src={`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`}
-                        crossOrigin="anonymous"
-                        width="100%"
-                      />
+                      <ButtonBase
+                        onClick={() =>
+                          handleViewImage(
+                            `${settings.api.baseURL}/${job.vehicle.frontImageUrl}`
+                          )
+                        }
+                      >
+                        <img
+                          alt="front"
+                          src={`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`}
+                          crossOrigin="anonymous"
+                          width="100%"
+                        />
+                      </ButtonBase>
                       <Typography variant="caption">Front</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <img
-                        alt="rear"
-                        src={`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`}
-                        crossOrigin="anonymous"
-                        width="100%"
-                      />
+                      <ButtonBase
+                        onClick={() =>
+                          handleViewImage(
+                            `${settings.api.baseURL}/${job.vehicle.rearImageUrl}`
+                          )
+                        }
+                      >
+                        <img
+                          alt="rear"
+                          src={`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`}
+                          crossOrigin="anonymous"
+                          width="100%"
+                        />
+                      </ButtonBase>
                       <Typography variant="caption">Rear</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <img
-                        alt="right"
-                        src={`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`}
-                        crossOrigin="anonymous"
-                        width="100%"
-                      />
+                      <ButtonBase
+                        onClick={() =>
+                          handleViewImage(
+                            `${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`
+                          )
+                        }
+                      >
+                        <img
+                          alt="right"
+                          src={`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`}
+                          crossOrigin="anonymous"
+                          width="100%"
+                        />
+                      </ButtonBase>
                       <Typography variant="caption">Right</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <img
-                        alt="left"
-                        src={`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`}
-                        crossOrigin="anonymous"
-                        width="100%"
-                      />
+                      <ButtonBase
+                        onClick={() =>
+                          handleViewImage(
+                            `${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`
+                          )
+                        }
+                      >
+                        <img
+                          alt="left"
+                          src={`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`}
+                          crossOrigin="anonymous"
+                          width="100%"
+                        />
+                      </ButtonBase>
                       <Typography variant="caption">Left</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <img
-                        alt="engine bay"
-                        src={`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`}
-                        crossOrigin="anonymous"
-                        width="100%"
-                      />
+                      <ButtonBase
+                        onClick={() =>
+                          handleViewImage(
+                            `${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`
+                          )
+                        }
+                      >
+                        <img
+                          alt="engine bay"
+                          src={`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`}
+                          crossOrigin="anonymous"
+                          width="100%"
+                        />
+                      </ButtonBase>
                       <Typography variant="caption">Engine Bay</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <img
-                        alt="instrument cluster"
-                        src={`${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`}
-                        crossOrigin="anonymous"
-                        width="100%"
-                      />
+                      <ButtonBase
+                        onClick={() =>
+                          handleViewImage(
+                            `${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`
+                          )
+                        }
+                      >
+                        <img
+                          alt="instrument cluster"
+                          src={`${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`}
+                          crossOrigin="anonymous"
+                          width="100%"
+                        />
+                      </ButtonBase>
                       <Typography variant="caption">
                         Instrument Cluster
                       </Typography>
@@ -404,13 +487,22 @@ function JobCheckListReportPage() {
                                         )
                                         .map((image, index) => {
                                           return (
-                                            <img
+                                            <Box
+                                              sx={{ cursor: "pointer" }}
                                               key={index}
-                                              alt={image.title}
-                                              src={`${settings.api.baseURL}/${image.url}`}
-                                              crossOrigin="anonymous"
-                                              width="25%"
-                                            />
+                                              onClick={() =>
+                                                handleViewImage(
+                                                  `${settings.api.baseURL}/${image.url}`
+                                                )
+                                              }
+                                            >
+                                              <img
+                                                alt={image.title}
+                                                src={`${settings.api.baseURL}/${image.url}`}
+                                                crossOrigin="anonymous"
+                                                width="25%"
+                                              />
+                                            </Box>
                                           );
                                         })}
                                 </Stack>
@@ -432,6 +524,22 @@ function JobCheckListReportPage() {
           </Grid>
         </React.Fragment>
       )}
+      <AppModal
+        show={viewImage}
+        title=""
+        size="sm"
+        fullWidth
+        Content={
+          <img
+            width="100%"
+            height="100%"
+            src={imageUrl}
+            alt="Driver license"
+            crossOrigin="anonymous"
+          />
+        }
+        onClose={() => setViewImage(false)}
+      />
       <AppAlert
         alertType="success"
         show={undefined !== success}

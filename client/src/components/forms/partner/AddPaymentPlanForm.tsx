@@ -323,6 +323,7 @@ export default function AddPaymentPlanForm() {
       </Grid>
       <Grid item mt={1} sx={{ mx: "auto" }}>
         <LoadingButton
+          loading={partnerReducer.addPaymentPlanStatus === "loading"}
           fullWidth
           variant="contained"
           type="submit"
