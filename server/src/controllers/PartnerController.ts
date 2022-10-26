@@ -25,8 +25,9 @@ import _ from "lodash";
 import JobController from "./JobController";
 import email_content from "../resources/templates/email/email_content";
 import { QueueManager } from "rabbitmq-email-manager";
-import create_partner_success_email from "../resources/templates/email/create_partner_success_email";
 import formidable, { File } from "formidable";
+import garage_partner_welcome_email from "../resources/templates/email/garage_partner_welcome_email";
+import ride_share_partner_welcome_email from "../resources/templates/email/ride_share_partner_welcome_email";
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 
@@ -173,12 +174,16 @@ export default class PartnerController {
         country: "Nigeria",
       };
 
-      let category, role, mailSubject, partnerType;
+      let category, role, mailSubject, mailText;
 
       //Garage Partner
       if (value?.category === CATEGORIES[3].name) {
-        partnerType = "Garage";
-        mailSubject = `Welcome ${partnerValues.name}, to Jiffix ${partnerType}`;
+        mailSubject = `Welcome to AutoHyve!`;
+        mailText = garage_partner_welcome_email({
+          partnerName: partnerValues.name,
+          password: userValues.rawPassword,
+          appUrl: <string>process.env.CLIENT_HOST,
+        });
 
         //find garage category
         category = await dataSources.categoryDAOService.findByAny({
@@ -195,8 +200,12 @@ export default class PartnerController {
 
       //Ride-Share Partner
       if (value?.category === CATEGORIES[4].name) {
-        partnerType = "Ride-Share";
-        mailSubject = `Welcome ${partnerValues.name}, to Jiffix ${partnerType}`;
+        mailSubject = `Welcome to Jiffix Hyve!`;
+        mailText = ride_share_partner_welcome_email({
+          partnerName: partnerValues.name,
+          password: userValues.rawPassword,
+          appUrl: <string>process.env.CLIENT_HOST,
+        });
 
         //find ride-share category
         category = await dataSources.categoryDAOService.findByAny({
@@ -241,13 +250,6 @@ export default class PartnerController {
       await partner.$set("users", user);
 
       const result = PartnerController.formatPartner(partner);
-
-      const mailText = create_partner_success_email({
-        username: userValues.email,
-        password: userValues.rawPassword,
-        appUrl: <string>process.env.CLIENT_HOST,
-        partnerType,
-      });
 
       const mail = email_content({
         firstName: partnerValues.name,
@@ -578,8 +580,8 @@ export default class PartnerController {
 
       const plan = await dataSources.planDAOService.create(value);
 
-      await subscription.$set("plans", [plan]);
-      await partner.$set("plans", [plan]);
+      await subscription.$add("plans", [plan]);
+      await partner.$add("plans", [plan]);
 
       await plan.$add("categories", [category]);
 
