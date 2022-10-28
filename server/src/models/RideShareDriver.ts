@@ -98,6 +98,9 @@ export default class RideShareDriver extends Model<
   declare gatewayId: string;
 
   @Column(DataType.STRING)
+  declare eventId: string;
+
+  @Column(DataType.STRING)
   declare category: string;
 
   @Column(DataType.DATE)

@@ -269,7 +269,6 @@ export default class JobController {
       const jobs = await partner.$get("jobs");
 
       appEventEmitter.emit(ASSIGN_DRIVER_JOB, {
-        jobs: await technician.$get("jobs"),
         techId: +value.techId,
         partner,
       } as AssignJobProps);

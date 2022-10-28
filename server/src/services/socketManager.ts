@@ -1,6 +1,8 @@
 import { Server } from "socket.io";
 import moment from "moment";
 
+import dataSources from "../services/dao";
+
 import { appEventEmitter } from "./AppEventEmitter";
 import {
   APPROVE_JOB,
@@ -21,7 +23,6 @@ interface AppointmentProps {
 }
 
 export interface AssignJobProps {
-  jobs: Job[];
   techId: number;
   partner: Partner;
 }
@@ -59,20 +60,27 @@ export default function socketManager(io: Server) {
   });
 
   appEventEmitter.on(ASSIGN_DRIVER_JOB, (props: AssignJobProps) => {
-    const { techId, jobs, partner } = props;
+    const { techId, partner } = props;
 
     (async () => {
+      const technician = await dataSources.technicianDAOService.findById(
+        techId
+      );
+
+      if (!technician)
+        throw new Error(`Technician with Id: ${techId} does not exist`);
+
       const notification = await NotificationModel.create({
         seen: false,
         from: `${partner.name}`,
         to: techId,
         type: "Job",
         subject: "Vehicle Inspection",
-        message: jobs,
+        message: `New Job Assigned`,
       });
 
-      io.emit(ASSIGN_DRIVER_JOB, {
-        notification,
+      io.to(technician.eventId).emit(ASSIGN_DRIVER_JOB, {
+        notification: notification.toJSON({ flattenMaps: true }),
       });
     })();
   });
@@ -84,10 +92,10 @@ export default function socketManager(io: Server) {
       const notification = await NotificationModel.create({
         seen: false,
         from: `${job.partner.name}`,
-        to: job.vehicle.rideShareDriverId,
+        to: job.id,
         type: "Job",
         subject: "Approved Job",
-        message: job,
+        message: `Job on your vehicle ${job.vehicle.make} ${job.vehicle.model} has been approved`,
       });
 
       io.emit(APPROVE_JOB, {

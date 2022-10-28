@@ -97,6 +97,9 @@ export default class Technician extends Model<
   @Column(DataType.STRING)
   declare gatewayId: string;
 
+  @Column(DataType.STRING)
+  declare eventId: string;
+
   @Column(DataType.DATE)
   declare loginDate: Date;
 
