@@ -32,7 +32,7 @@ ${header()}
                             <td>
                                 <h4
                                     style="font-size: 16px; font-weight:700; margin-left: 30px; font-family: 'Inter', sans-serif;">
-                                   ${partnerName}’s Hyve has beencreated
+                                   ${partnerName}’s Hyve has been created
                                 </h4>
                                 <p
                                     style="font-size: 12px; font-weight:400; line-height: 19px; margin-left: 30px; max-width: 500px; font-family: 'Inter', sans-serif;">
@@ -53,7 +53,7 @@ ${header()}
                                     Your username is your email address. Sign in with your password below and complete
                                     your onboarding</p>
 
-                                <p class="password-btn">[${password}]</p>
+                                <p class="password-btn">${password}</p>
                                 <a href="${appUrl}" class="sign-btn">Sign In</a>
                             </td>
                         </tr>

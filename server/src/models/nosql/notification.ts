@@ -1,6 +1,15 @@
 import mongoose from "mongoose";
 
-const Schema = new mongoose.Schema(
+export interface INotificationModel {
+  to: any;
+  subject: string;
+  type: string;
+  message: any;
+  from: string;
+  seen: boolean;
+}
+
+const Schema = new mongoose.Schema<INotificationModel>(
   {
     to: mongoose.SchemaTypes.Mixed,
     subject: mongoose.SchemaTypes.String,

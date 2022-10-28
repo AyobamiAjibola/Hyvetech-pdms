@@ -12,6 +12,8 @@ import Job from "../models/Job";
 import RideShareDriver from "../models/RideShareDriver";
 import Customer from "../models/Customer";
 import {
+  APPROVE_JOB,
+  ASSIGN_DRIVER_JOB,
   DRIVE_IN_CATEGORY,
   HYBRID_CATEGORY,
   INITIAL_CHECK_LIST_VALUES,
@@ -25,6 +27,8 @@ import Vehicle from "../models/Vehicle";
 import Partner from "../models/Partner";
 import Contact from "../models/Contact";
 import formidable, { File } from "formidable";
+import { appEventEmitter } from "../services/AppEventEmitter";
+import { AssignJobProps } from "../services/socketManager";
 import HttpResponse = appCommonTypes.HttpResponse;
 import CheckListType = appCommonTypes.CheckListType;
 
@@ -264,6 +268,12 @@ export default class JobController {
 
       const jobs = await partner.$get("jobs");
 
+      appEventEmitter.emit(ASSIGN_DRIVER_JOB, {
+        jobs: await technician.$get("jobs"),
+        techId: +value.techId,
+        partner,
+      } as AssignJobProps);
+
       const response: HttpResponse<Job> = {
         code: HttpStatus.OK.code,
         message: HttpStatus.OK.value,
@@ -490,6 +500,8 @@ export default class JobController {
         ...job.toJSON(),
         checkList: list,
       };
+
+      appEventEmitter.emit(APPROVE_JOB, { job: result });
 
       const response: HttpResponse<any> = {
         code: HttpStatus.OK.code,

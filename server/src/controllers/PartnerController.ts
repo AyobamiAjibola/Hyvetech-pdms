@@ -23,7 +23,6 @@ import PaymentPlan, { $paymentPlanSchema } from "../models/PaymentPlan";
 import axiosClient from "../services/api/axiosClient";
 import _ from "lodash";
 import JobController from "./JobController";
-import email_content from "../resources/templates/email/email_content";
 import { QueueManager } from "rabbitmq-email-manager";
 import formidable, { File } from "formidable";
 import garage_partner_welcome_email from "../resources/templates/email/garage_partner_welcome_email";
@@ -180,7 +179,7 @@ export default class PartnerController {
       if (value?.category === CATEGORIES[3].name) {
         mailSubject = `Welcome to AutoHyve!`;
         mailText = garage_partner_welcome_email({
-          partnerName: partnerValues.name,
+          partnerName: capitalize(partnerValues.name),
           password: userValues.rawPassword,
           appUrl: <string>process.env.CLIENT_HOST,
         });
@@ -202,7 +201,7 @@ export default class PartnerController {
       if (value?.category === CATEGORIES[4].name) {
         mailSubject = `Welcome to Jiffix Hyve!`;
         mailText = ride_share_partner_welcome_email({
-          partnerName: partnerValues.name,
+          partnerName: capitalize(partnerValues.name),
           password: userValues.rawPassword,
           appUrl: <string>process.env.CLIENT_HOST,
         });
@@ -251,12 +250,6 @@ export default class PartnerController {
 
       const result = PartnerController.formatPartner(partner);
 
-      const mail = email_content({
-        firstName: partnerValues.name,
-        text: mailText,
-        signature: <string>process.env.SMTP_EMAIL_SIGNATURE,
-      });
-
       await QueueManager.publish({
         queue: QUEUE_EVENTS.name,
         data: {
@@ -266,7 +259,7 @@ export default class PartnerController {
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
           subject: mailSubject,
-          html: mail,
+          html: mailText,
           bcc: [
             <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
             <string>process.env.SMTP_EMAIL_FROM,

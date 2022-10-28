@@ -48,7 +48,7 @@ ${header()}
                                 Your username is your email address. Sign in with your password below and complete
                                 your onboarding</p>
 
-                            <p class="password-btn">[${password}]</p>
+                            <p class="password-btn">${password}</p>
                             <a href="${appUrl}" class="sign-btn">Sign In</a>
                         </td>
                     </tr>
@@ -93,7 +93,7 @@ ${header()}
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><a href="" class="click-bnt firstBnt">Click to see how</a></td>
+                                                <td><a href="https://youtu.be/_tXCGBpqVHI" class="click-bnt firstBnt">Click to see how</a></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -119,7 +119,7 @@ ${header()}
                                 </td>
                                 </tr>
                                 <tr>
-                                    <td><a href="" class="click-bnt secondBtn">Click to see how</a></td>
+                                    <td><a href="https://youtu.be/_JCPypYhYQE" class="click-bnt secondBtn">Click to see how</a></td>
                                 </tr>
                             </table>
                         </td>

@@ -427,6 +427,8 @@ export const MOBILE_INSPECTION_TIME = 3; //3hrs;
 
 export const BOOK_APPOINTMENT = "event:BOOK_APPOINTMENT";
 export const RESCHEDULE_APPOINTMENT = "event:RESCHEDULE_APPOINTMENT";
+export const ASSIGN_DRIVER_JOB = "event:ASSIGN_DRIVER_JOB";
+export const APPROVE_JOB = "event:APPROVE_JOB";
 export const CANCEL_APPOINTMENT = "event:CANCEL_APPOINTMENT";
 export const AGENDA_COLLECTION_NAME = "appointment_jobs";
 
