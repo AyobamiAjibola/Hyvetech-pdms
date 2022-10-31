@@ -5,6 +5,7 @@ import useAppDispatch from "./useAppDispatch";
 import {
   createTechnicianAction,
   deleteTechnicianAction,
+  getPartnerTechniciansAction,
   getTechniciansAction,
   updateTechnicianAction,
 } from "../store/actions/technicianActions";
@@ -45,9 +46,11 @@ export default function useTechnician() {
 
   useEffect(() => {
     if (technicianReducer.getTechniciansStatus === "idle") {
-      dispatch(getTechniciansAction());
+      if (params.id) {
+        dispatch(getPartnerTechniciansAction(+params.id));
+      } else dispatch(getTechniciansAction());
     }
-  }, [dispatch, technicianReducer.getTechniciansStatus]);
+  }, [dispatch, params.id, technicianReducer.getTechniciansStatus]);
 
   useEffect(() => {
     if (technicianReducer.createTechnicianStatus === "loading") {

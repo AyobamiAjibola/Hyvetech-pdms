@@ -40,6 +40,13 @@ export const getTechniciansHandler = authenticateRouteWrapper(
   }
 );
 
+export const getPartnerTechniciansHandler = authenticateRouteWrapper(
+  async (req, res) => {
+    const response = await technicianController.partnerTechnicians(req);
+    res.status(response.code).json(response);
+  }
+);
+
 export const signInTechnicianHandler = authenticateRouteWrapper(
   async (req, res) => {
     const response = await technicianController.signIn(req);

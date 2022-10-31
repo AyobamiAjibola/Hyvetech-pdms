@@ -3,6 +3,7 @@ import { IThunkAPIStatus } from "@app-types";
 import {
   createTechnicianAction,
   deleteTechnicianAction,
+  getPartnerTechniciansAction,
   getTechnicianAction,
   getTechniciansAction,
   updateTechnicianAction,
@@ -166,6 +167,23 @@ const technicianSlice = createSlice({
         state.technicians = action.payload.results as ITechnician[];
       })
       .addCase(getTechniciansAction.rejected, (state, action) => {
+        state.getTechniciansStatus = "failed";
+
+        if (action.payload) {
+          state.getTechniciansError = action.payload.message;
+        } else state.getTechniciansError = action.error.message;
+      });
+
+    builder
+      .addCase(getPartnerTechniciansAction.pending, (state) => {
+        state.getTechniciansStatus = "loading";
+      })
+      .addCase(getPartnerTechniciansAction.fulfilled, (state, action) => {
+        state.getTechniciansStatus = "completed";
+        state.getTechniciansSuccess = action.payload.message;
+        state.technicians = action.payload.results as ITechnician[];
+      })
+      .addCase(getPartnerTechniciansAction.rejected, (state, action) => {
         state.getTechniciansStatus = "failed";
 
         if (action.payload) {

@@ -5,6 +5,7 @@ import axiosClient from "../../config/axiosClient";
 import settings from "../../config/settings";
 
 const GET_TECHNICIANS = "technicians:GET_TECHNICIANS";
+const GET_PARTNER_TECHNICIANS = "technicians:GET_PARTNER_TECHNICIANS";
 const GET_TECHNICIAN = "technicians:GET_TECHNICIAN";
 const CREATE_TECHNICIAN = "technicians:CREATE_TECHNICIAN";
 const UPDATE_TECHNICIAN = "technicians:UPDATE_TECHNICIAN";
@@ -17,6 +18,17 @@ export const getTechniciansAction = asyncThunkWrapper<
   void
 >(GET_TECHNICIANS, async () => {
   const response = await axiosClient.get(`${API_ROOT}/technicians`);
+
+  return response.data;
+});
+
+export const getPartnerTechniciansAction = asyncThunkWrapper<
+  ApiResponseSuccess<ITechnician>,
+  number
+>(GET_PARTNER_TECHNICIANS, async (partnerId) => {
+  const response = await axiosClient.get(
+    `${API_ROOT}/technicians/${partnerId}/partner`
+  );
 
   return response.data;
 });

@@ -1,6 +1,7 @@
 import {
   createTechnicianHandler,
   deleteTechnicianHandler,
+  getPartnerTechniciansHandler,
   getTechnicianHandler,
   getTechniciansHandler,
   signInTechnicianHandler,
@@ -44,6 +45,12 @@ const technicianEndpoints: RouteEndpoints = [
     method: "get",
     path: "/technicians",
     handler: getTechniciansHandler,
+  },
+  {
+    name: "get partner technicians",
+    method: "get",
+    path: "/technicians/:partnerId/partner",
+    handler: getPartnerTechniciansHandler,
   },
 
   {

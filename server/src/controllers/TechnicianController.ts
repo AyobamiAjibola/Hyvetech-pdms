@@ -322,6 +322,36 @@ export default class TechnicianController {
     }
   }
 
+  public async partnerTechnicians(req: Request) {
+    const partnerId = req.params.partnerId as unknown as string;
+
+    try {
+      const partner = await dataSources.partnerDAOService.findById(+partnerId);
+
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Partner does not exist`,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      const technicians = await partner.$get("technicians", {
+        attributes: { exclude: ["password", "loginToken", "rawPassword"] },
+        include: [{ model: Job, include: [Vehicle] }],
+      });
+      const response: HttpResponse<Technician> = {
+        code: HttpStatus.OK.code,
+        message: HttpStatus.OK.value,
+        results: technicians,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
   public async signIn(req: Request) {
     try {
       //validate request body
