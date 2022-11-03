@@ -1,5 +1,5 @@
 import asyncThunkWrapper from "../../helpers/asyncThunkWrapper";
-import { ApiResponseSuccess } from "@app-interfaces";
+import { ApiResponseSuccess, IVINDecoderSchema } from "@app-interfaces";
 import {
   ICustomerSubscription,
   IRideShareDriverSubscription,
@@ -9,6 +9,7 @@ import settings from "../../config/settings";
 
 const GET_CUSTOMER_VEHICLE_SUBS = "vehicle:GET_CUSTOMER_VEHICLE_SUBS";
 const GET_DRIVER_VEHICLE_SUBS = "vehicle:GET_DRIVER_VEHICLE_SUBS";
+const GET_VEHICLE_VIN = "GET_VEHICLE_VIN";
 const API_ROOT = settings.api.rest;
 
 export const getDriverVehicleSubscriptionAction = asyncThunkWrapper<
@@ -29,6 +30,15 @@ export const getCustomerVehicleSubscriptionAction = asyncThunkWrapper<
   const response = await axiosClient.get(
     `${API_ROOT}/vehicle/${id}/customer-subs`
   );
+
+  return response.data;
+});
+
+export const getVehicleVINAction = asyncThunkWrapper<
+  ApiResponseSuccess<IVINDecoderSchema>,
+  string
+>(GET_VEHICLE_VIN, async (vin: string) => {
+  const response = await axiosClient.get(`${API_ROOT}/vehicle?vin=${vin}`);
 
   return response.data;
 });

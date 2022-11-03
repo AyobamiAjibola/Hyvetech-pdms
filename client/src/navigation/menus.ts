@@ -1,18 +1,19 @@
-import { ITab } from '@app-interfaces';
+import { ITab } from "@app-interfaces";
 
-import Appointments from '../components/customer/Appointments';
-import Quotes from '../components/customer/Quotes';
-import Transactions from '../components/customer/Transactions';
-import Vehicles from '../components/customer/Vehicles';
-import DriverProfile from '../components/partner/garage/DriverProfile';
-import DriverVehicles from '../components/partner/garage/DriverVehicles';
-import GarageProfileAndSetting from '../components/partner/garage/GarageProfileAndSetting';
-import RideShareDriver from '../components/partner/garage/RideShareDriver';
-import PaymentPlans from '../components/partner/rideShare/PaymentPlans';
-import Plans from '../components/partner/rideShare/Plans';
-import RideShareSettings from '../components/partner/rideShare/RideShareSettings';
-import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from '../config/constants';
-import TechniciansPage from '../pages/technician/TechniciansPage';
+import Appointments from "../components/customer/Appointments";
+import Quotes from "../components/customer/Quotes";
+import Transactions from "../components/customer/Transactions";
+import Vehicles from "../components/customer/Vehicles";
+import DriverProfile from "../components/partner/garage/DriverProfile";
+import DriverVehicles from "../components/partner/garage/DriverVehicles";
+import GarageProfileAndSetting from "../components/partner/garage/GarageProfileAndSetting";
+import RideShareDriver from "../components/partner/garage/RideShareDriver";
+import PaymentPlans from "../components/partner/rideShare/PaymentPlans";
+import Plans from "../components/partner/rideShare/Plans";
+import RideShareSettings from "../components/partner/rideShare/RideShareSettings";
+import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from "../config/constants";
+import TechniciansPage from "../pages/technician/TechniciansPage";
+import Estimate from "../components/partner/garage/Estimate";
 
 export const customerDetailTabs: ITab[] = [
   { name: "Vehicles", Element: Vehicles },
@@ -58,5 +59,5 @@ export const partnerDetailTabs: ITab[] = [
 export const driverSearchResultTabs: ITab[] = [
   { tag: "driver", name: "Driver Profile", Element: DriverProfile },
   { tag: "driver", name: "Vehicles", Element: DriverVehicles },
-  // { tag: "driver", name: "Create Estimate", Element: Estimate },
+  { tag: "driver", name: "Create Estimate", Element: Estimate },
 ];

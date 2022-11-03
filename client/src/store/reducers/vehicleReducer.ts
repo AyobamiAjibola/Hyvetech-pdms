@@ -8,7 +8,9 @@ import {
 import {
   getCustomerVehicleSubscriptionAction,
   getDriverVehicleSubscriptionAction,
+  getVehicleVINAction,
 } from "../actions/vehicleActions";
+import { IVINDecoderSchema } from "@app-interfaces";
 
 interface IVehicleState {
   getDriverVehicleSubscriptionStatus: IThunkAPIStatus;
@@ -19,11 +21,18 @@ interface IVehicleState {
   getCustomerVehicleSubscriptionSuccess: string;
   getCustomerVehicleSubscriptionError?: string;
 
+  getVehicleVINStatus: IThunkAPIStatus;
+  getVehicleVINError?: string;
+
   driverSubscriptions: IRideShareDriverSubscription[];
   customerSubscriptions: ICustomerSubscription[];
+  vehicleVINDetails: Array<IVINDecoderSchema>;
 }
 
 const initialState: IVehicleState = {
+  getVehicleVINError: "",
+  getVehicleVINStatus: "idle",
+  vehicleVINDetails: [],
   customerSubscriptions: [],
   driverSubscriptions: [],
   getCustomerVehicleSubscriptionError: "",
@@ -47,6 +56,11 @@ const vehicleSlice = createSlice({
       state.getCustomerVehicleSubscriptionStatus = "idle";
       state.getCustomerVehicleSubscriptionSuccess = "";
       state.getCustomerVehicleSubscriptionError = "";
+    },
+    clearGetVehicleVINStatus(state) {
+      state.getVehicleVINStatus = "idle";
+      state.getVehicleVINError = "";
+      state.vehicleVINDetails = [];
     },
   },
   extraReducers: (builder) => {
@@ -91,11 +105,28 @@ const vehicleSlice = createSlice({
           state.getDriverVehicleSubscriptionError = action.payload.message;
         } else state.getDriverVehicleSubscriptionError = action.error.message;
       });
+
+    builder
+      .addCase(getVehicleVINAction.pending, (state) => {
+        state.getVehicleVINStatus = "loading";
+      })
+      .addCase(getVehicleVINAction.fulfilled, (state, action) => {
+        state.getVehicleVINStatus = "completed";
+        state.vehicleVINDetails = action.payload.results as IVINDecoderSchema[];
+      })
+      .addCase(getVehicleVINAction.rejected, (state, action) => {
+        state.getVehicleVINStatus = "failed";
+
+        if (action.payload) {
+          state.getVehicleVINError = action.payload.message;
+        } else state.getVehicleVINError = action.error.message;
+      });
   },
 });
 
 export const {
   clearGetCustomerVehicleSubscriptionStatus,
   clearGetDriverVehicleSubscriptionStatus,
+  clearGetVehicleVINStatus,
 } = vehicleSlice.actions;
 export default vehicleSlice.reducer;

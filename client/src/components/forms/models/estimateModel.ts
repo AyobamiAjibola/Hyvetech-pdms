@@ -1,10 +1,13 @@
 import * as Yup from "yup";
 
+export type IPartWarranty = { warranty: string; interval: string };
+export type IPartQuantity = { quantity: string; unit: string };
+
 export interface IPart {
   name: string;
-  warranty: { count: string; interval: string };
-  quantity: { count: string; unit: string };
-  cost: string;
+  warranty: IPartWarranty;
+  quantity: IPartQuantity;
+  price: string;
 }
 
 export interface ILabour {
@@ -16,7 +19,6 @@ export interface IEstimateValues {
   parts: IPart[];
   labours: ILabour[];
   tax: string;
-  discount: string;
   vin: string;
   make: string;
   model: string;
@@ -178,14 +180,13 @@ const initialValues: IEstimateValues = {
   parts: [
     {
       name: "",
-      warranty: { count: "", interval: "" },
-      quantity: { count: "", unit: "" },
-      cost: "",
+      warranty: { warranty: "", interval: "" },
+      quantity: { quantity: "", unit: "" },
+      price: "0",
     },
   ],
-  labours: [{ title: "", cost: "" }],
-  discount: "",
-  tax: "",
+  labours: [{ title: "", cost: "0" }],
+  tax: "0",
 };
 
 const jobIntervalSchema = Yup.object().shape({
@@ -200,9 +201,7 @@ const schema = Yup.object().shape({
   lastName: Yup.string()
     .required(fields.lastName.error.required)
     .label(fields.lastName.label),
-  address: Yup.string()
-    .required(fields.address.error.required)
-    .label(fields.address.label),
+  address: Yup.string().nullable().label(fields.address.label),
   phone: Yup.string()
     .required(fields.phone.error.required)
     .label(fields.phone.label),
@@ -217,7 +216,6 @@ const schema = Yup.object().shape({
     .required(fields.modelYear.error.required)
     .label(fields.modelYear.label),
   tax: Yup.string().nullable().label(fields.tax.label),
-  discount: Yup.string().nullable().label(fields.discount.label),
   depositAmount: Yup.string().nullable().label(fields.depositAmount.label),
 });
 

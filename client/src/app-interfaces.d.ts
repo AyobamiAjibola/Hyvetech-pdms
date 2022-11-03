@@ -198,4 +198,9 @@ declare module "@app-interfaces" {
     questionId?: any;
     file?: File;
   }
+
+  interface IVINDecoderSchema {
+    label: string;
+    value: any;
+  }
 }

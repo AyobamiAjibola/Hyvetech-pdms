@@ -24,7 +24,7 @@ import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 import VINProvider = appCommonTypes.VINProvider;
 
-interface VINData {
+export interface VINData {
   label: string;
   value: string;
 }
