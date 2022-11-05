@@ -430,6 +430,8 @@ export const RESCHEDULE_APPOINTMENT = "event:RESCHEDULE_APPOINTMENT";
 export const ASSIGN_DRIVER_JOB = "event:ASSIGN_DRIVER_JOB";
 export const APPROVE_JOB = "event:APPROVE_JOB";
 export const CANCEL_APPOINTMENT = "event:CANCEL_APPOINTMENT";
+export const TXN_CANCELLED = "event:TXN_CANCELLED";
+export const TXN_REFERENCE = "event:TXN_REFERENCE";
 export const AGENDA_COLLECTION_NAME = "appointment_jobs";
 
 export const JOB_STATUS = {

@@ -8,6 +8,8 @@ import {
   APPROVE_JOB,
   ASSIGN_DRIVER_JOB,
   RESCHEDULE_APPOINTMENT,
+  TXN_CANCELLED,
+  TXN_REFERENCE,
 } from "../config/constants";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
@@ -102,5 +104,13 @@ export default function socketManager(io: Server) {
         notification,
       });
     })();
+  });
+
+  appEventEmitter.on(TXN_CANCELLED, (args) => {
+    io.emit(TXN_CANCELLED, args);
+  });
+
+  appEventEmitter.on(TXN_REFERENCE, (args) => {
+    io.emit(TXN_REFERENCE, args);
   });
 }

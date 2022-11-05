@@ -6,6 +6,7 @@ export interface ICreatePartnerModel {
   email: string;
   category: string;
   state: string;
+  logo: Blob | string | File;
 }
 
 export interface IKycValues {
@@ -232,12 +233,13 @@ const fields = {
   },
 };
 
-const initialValues = {
+const initialValues: ICreatePartnerModel = {
   name: "",
   phone: "",
   email: "",
   category: "",
   state: "",
+  logo: "",
 };
 
 const schema = Yup.object().shape({
@@ -258,6 +260,7 @@ const schema = Yup.object().shape({
   state: Yup.string()
     .required(fields.state.error.required)
     .label(fields.state.label),
+  logo: Yup.mixed().nullable().label(fields.logo.label),
 });
 
 const partnerModel = {

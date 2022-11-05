@@ -4,10 +4,11 @@ import SelectField, { ISelectData } from "../fields/SelectField";
 import { Form, useFormikContext } from "formik";
 import partnerModel, { ICreatePartnerModel } from "../models/partnerModel";
 import useAppSelector from "../../../hooks/useAppSelector";
-import { Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import TextInputField from "../fields/TextInputField";
 import { LoadingButton } from "@mui/lab";
-import { Save } from "@mui/icons-material";
+import { PhotoCamera, Save } from "@mui/icons-material";
+import { getImageUrl } from "../../../utils/generic";
 
 const categories = [
   { label: "Garage", value: "Garage" },
@@ -21,7 +22,7 @@ interface ICreateFormProps {
 export default function CreatePartnerForm(props: ICreateFormProps) {
   const [states, setStates] = useState<ISelectData[]>([]);
 
-  const { handleChange, values, resetForm } =
+  const { handleChange, values, resetForm, setFieldValue } =
     useFormikContext<ICreatePartnerModel>();
 
   const miscReducer = useAppSelector((state) => state.miscellaneousReducer);
@@ -96,7 +97,50 @@ export default function CreatePartnerForm(props: ICreateFormProps) {
             data={states}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+
+        <Grid
+          item
+          container
+          xs={12}
+          md={6}
+          justifyContent="space-evenly"
+          alignItems="center"
+          spacing={2}
+        >
+          <Grid item>
+            <Button
+              endIcon={<PhotoCamera />}
+              color="primary"
+              aria-label="upload picture"
+              component="label"
+            >
+              upload logo
+              <input
+                hidden
+                name={partnerModel.fields.logo.name}
+                onChange={(event) => {
+                  const files = event.target.files;
+                  if (files) {
+                    setFieldValue(partnerModel.fields.logo.name, files[0]);
+                  }
+                }}
+                accept="image/*"
+                type="file"
+              />
+            </Button>
+          </Grid>
+          <Grid item xs>
+            {values.logo && (
+              <img
+                src={getImageUrl(values.logo)}
+                crossOrigin="anonymous"
+                width="10%"
+                alt="logo"
+              />
+            )}
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
           <LoadingButton
             type="submit"
             variant="contained"

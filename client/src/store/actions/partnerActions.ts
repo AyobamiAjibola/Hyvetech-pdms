@@ -27,7 +27,17 @@ const API_ROOT = settings.api.rest;
 export const createPartnerAction = asyncThunkWrapper<any, ICreatePartnerModel>(
   CREATE_PARTNER,
   async (args: ICreatePartnerModel) => {
-    const response = await axiosClient.post(`${API_ROOT}/partners`, args);
+    const formData = new FormData();
+
+    if (args.logo) formData.append("logo", args.logo);
+
+    formData.append("name", args.name);
+    formData.append("email", args.email);
+    formData.append("phone", args.phone);
+    formData.append("state", args.state);
+    formData.append("category", args.category);
+
+    const response = await axiosClient.post(`${API_ROOT}/partners`, formData);
     return response.data;
   }
 );

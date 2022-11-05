@@ -11,6 +11,7 @@ import technicianEndpoints from "./technician.endpoints";
 import jobEndpoints from "./job.endpoints";
 import userEndpoints from "./user.endpoints";
 import checkListEndpoints from "./check-list.endpoints";
+import transactionEndpoints from "./transaction.endpoints";
 
 const endpoints = authEndpoints
   .concat(appointmentEndpoints)
@@ -24,6 +25,7 @@ const endpoints = authEndpoints
   .concat(technicianEndpoints)
   .concat(jobEndpoints)
   .concat(userEndpoints)
-  .concat(checkListEndpoints);
+  .concat(checkListEndpoints)
+  .concat(transactionEndpoints);
 
 export default endpoints;
