@@ -1,14 +1,24 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FieldArray, Form, useFormikContext } from "formik";
 import { Divider, Grid, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Add, Remove, Save } from "@mui/icons-material";
-import estimateModel, { IEstimateValues } from "../models/estimateModel";
+import estimateModel, { IEstimateValues, IPart } from "../models/estimateModel";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import TextInputField from "../fields/TextInputField";
 import { formatNumberToIntl } from "../../../utils/generic";
 import SelectField from "../fields/SelectField";
+import WarrantyFields from "./WarrantyFields";
+import QuantityFields from "./QuantityFields";
+import VehicleInformationFields from "./VehicleInformationFields";
+import useAppDispatch from "../../../hooks/useAppDispatch";
+import { getVehicleVINAction } from "../../../store/actions/vehicleActions";
+import useAppSelector from "../../../hooks/useAppSelector";
+import { IVINDecoderSchema } from "@app-interfaces";
+import { CustomHookMessage } from "@app-types";
+import AppAlert from "../../alerts/AppAlert";
+import { clearGetVehicleVINStatus } from "../../../store/reducers/vehicleReducer";
 
 interface IProps {
   isSubmitting?: boolean;
@@ -16,375 +26,451 @@ interface IProps {
 
 const { fields } = estimateModel;
 
-function EstimateForm(props: IProps) {
-  const { values, handleChange } = useFormikContext<IEstimateValues>();
+export type PartArgs = IPart & {
+  handleChange: any;
+  index: number;
+  values: IEstimateValues;
+};
 
-  const totalPartsCost = useMemo(() => {
+function EstimateForm(props: IProps) {
+  const [labourTotal, setLabourTotal] = useState<number>(0);
+  const [partTotal, setPartTotal] = useState<number>(0);
+  const [grandTotal, setGrandTotal] = useState<number>(0);
+  const [vat, setVat] = useState<number>(0);
+  const [timer, setTimer] = useState<NodeJS.Timer>();
+  const [error, setError] = useState<CustomHookMessage>();
+
+  const vehicleReducer = useAppSelector((state) => state.vehicleReducer);
+  const dispatch = useAppDispatch();
+
+  const { values, handleChange, setFieldValue } =
+    useFormikContext<IEstimateValues>();
+
+  useEffect(() => {
     let total = 0;
 
-    for (const part of values.parts) total += parseInt(part.cost);
-
-    return formatNumberToIntl(total);
+    for (let i = 0; i < values.parts.length; i++) {
+      if (values.parts[i].price) {
+        total += parseInt(values.parts[i].price);
+      }
+    }
+    setPartTotal(total);
   }, [values.parts]);
 
+  useEffect(() => {
+    let total = 0;
+
+    for (let i = 0; i < values.labours.length; i++) {
+      if (values.labours[i].cost) {
+        total += parseInt(values.labours[i].cost);
+      }
+    }
+    setLabourTotal(total);
+  }, [values.labours]);
+
+  useEffect(() => {
+    const vat = 7.5 * 0.01;
+    const tax = labourTotal * vat;
+
+    setFieldValue("tax", formatNumberToIntl(tax));
+    setVat(tax);
+  }, [labourTotal, setFieldValue]);
+
+  useEffect(() => {
+    setGrandTotal(vat + partTotal + labourTotal);
+  }, [vat, partTotal, labourTotal]);
+
+  const _handleChangeVIN = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const vin = e.target.value;
+
+      setTimer(
+        setTimeout(() => {
+          dispatch(getVehicleVINAction(vin));
+        }, 2000)
+      );
+
+      setFieldValue("vin", vin);
+    },
+    [dispatch, setFieldValue]
+  );
+
+  useEffect(() => {
+    if (vehicleReducer.getVehicleVINStatus === "completed") {
+      const tempVehicleDetails = vehicleReducer.vehicleVINDetails;
+
+      tempVehicleDetails.forEach((detail: IVINDecoderSchema) => {
+        const newDetail: IVINDecoderSchema = { ...detail };
+
+        if (detail.label === "engineCylinders")
+          newDetail.value = `${detail.value} cylinders`;
+
+        setFieldValue(newDetail.label, newDetail.value);
+      });
+    }
+  }, [
+    vehicleReducer.getVehicleVINStatus,
+    vehicleReducer.vehicleVINDetails,
+    setFieldValue,
+  ]);
+
+  useEffect(() => {
+    if (vehicleReducer.getVehicleVINStatus === "failed") {
+      if (vehicleReducer.getVehicleVINError)
+        setError({ message: vehicleReducer.getVehicleVINError });
+    }
+  }, [vehicleReducer.getVehicleVINError, vehicleReducer.getVehicleVINStatus]);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timer);
+      dispatch(clearGetVehicleVINStatus());
+    };
+  }, [timer, dispatch]);
+
   return (
-    <Form autoComplete="off" autoCorrect="off">
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        sx={{ p: 1 }}
-      >
-        <Grid item xs={12}>
-          <Typography gutterBottom variant="subtitle1" component="h1">
-            Customer Information
-          </Typography>
-          <Divider orientation="horizontal" />
-        </Grid>
-        <Grid item xs={3}>
-          <TextInputField
-            onChange={handleChange}
-            label={fields.firstName.label}
-            value={values.firstName}
-            name={fields.firstName.name}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextInputField
-            onChange={handleChange}
-            label={fields.lastName.label}
-            value={values.lastName}
-            name={fields.lastName.name}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextInputField
-            type="tel"
-            onChange={handleChange}
-            label={fields.phone.label}
-            value={values.phone}
-            name={fields.phone.name}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextInputField
-            onChange={handleChange}
-            value={values.address}
-            name={fields.address.name}
-            label={fields.address.label}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Typography gutterBottom variant="subtitle1" component="h1">
-            Vehicle Information
-          </Typography>
-          <Divider orientation="horizontal" />
-        </Grid>
-        <Grid item xs={4}>
-          <TextInputField
-            onChange={handleChange}
-            label={fields.vin.label}
-            value={values.vin}
-            name={fields.vin.name}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <TextInputField
-            onChange={handleChange}
-            label={fields.modelYear.label}
-            value={values.modelYear}
-            name={fields.modelYear.name}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <TextInputField
-            onChange={handleChange}
-            label={fields.make.label}
-            value={values.make}
-            name={fields.make.name}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <TextInputField
-            onChange={handleChange}
-            value={values.model}
-            name={fields.model.name}
-            label={fields.model.label}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <TextInputField
-            onChange={handleChange}
-            value={values.plateNumber}
-            name={fields.plateNumber.name}
-            label={fields.plateNumber.label}
-          />
-        </Grid>
-        <Grid item xs={4} container spacing={0.5}>
-          <Grid item xs={8}>
+    <React.Fragment>
+      <Form autoComplete="off" autoCorrect="off">
+        <Grid
+          container
+          spacing={{ xs: 2, md: 3 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+          sx={{ p: 1 }}
+        >
+          <Grid item xs={12}>
+            <Typography gutterBottom variant="subtitle1" component="h1">
+              Customer Information
+            </Typography>
+            <Divider orientation="horizontal" />
+          </Grid>
+          <Grid item xs={3}>
             <TextInputField
               onChange={handleChange}
-              value={values.mileage.count}
-              name="mileage.count"
-              label={fields.mileage.label}
+              label={fields.firstName.label}
+              value={values.firstName}
+              name={fields.firstName.name}
             />
           </Grid>
-          <Grid item xs>
-            <SelectField
-              data={[
-                { label: "mph", value: "mph" },
-                { label: "kmph", value: "kmph" },
-              ]}
+          <Grid item xs={3}>
+            <TextInputField
               onChange={handleChange}
-              value={values.mileage.unit}
-              name="mileage.unit"
-              label="Unit"
-              fullWidth
+              label={fields.lastName.label}
+              value={values.lastName}
+              name={fields.lastName.name}
             />
           </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography gutterBottom variant="subtitle1" component="h1">
-            {fields.parts.label}
-          </Typography>
-          <Divider orientation="horizontal" />
-        </Grid>
-        <Grid item xs={12} container>
-          <FieldArray
-            name={fields.parts.name}
-            render={(partsProps) => {
-              return (
-                <React.Fragment>
-                  {values.parts.length > 0 &&
-                    values.parts.map((part, index) => {
-                      return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
-                          {Object.keys(part).map((value) => {
-                            return (
-                              <React.Fragment key={`${value}`}>
-                                {value === "warranty" ? (
-                                  <Grid item xs={3} container spacing={0.5}>
-                                    {Object.keys(part.warranty).map(
-                                      (warranty, idx1) => {
-                                        return warranty === "count" ? (
-                                          <Grid key={idx1} item xs={8}>
-                                            <TextInputField
-                                              onChange={handleChange}
-                                              value={values.jobDuration.count}
-                                              name="jobDuration.count"
-                                              label={warranty}
-                                            />
-                                          </Grid>
-                                        ) : (
-                                          <Grid key={idx1} item xs>
-                                            <TextInputField
-                                              onChange={handleChange}
-                                              value={values.jobDuration.count}
-                                              name="jobDuration.count"
-                                              label={warranty}
-                                            />
-                                          </Grid>
-                                        );
-                                      }
-                                    )}
-                                  </Grid>
-                                ) : (
-                                  <Grid item xs={3} sx={{ mb: 2 }}>
-                                    <TextField
-                                      fullWidth
-                                      variant="outlined"
-                                      name={`parts.${index}.${value}`}
-                                      label={value}
-                                      //@ts-ignore
-                                      value={part[value]}
-                                      onChange={handleChange}
+          <Grid item xs={3}>
+            <TextInputField
+              type="tel"
+              onChange={handleChange}
+              label={fields.phone.label}
+              value={values.phone}
+              name={fields.phone.name}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextInputField
+              onChange={handleChange}
+              value={values.address}
+              name={fields.address.name}
+              label={fields.address.label}
+            />
+          </Grid>
+          <VehicleInformationFields
+            values={values}
+            handleChange={_handleChangeVIN}
+          />
+          <Grid item xs={12}>
+            <Typography gutterBottom variant="subtitle1" component="h1">
+              {fields.parts.label}
+            </Typography>
+            <Divider orientation="horizontal" />
+          </Grid>
+          <Grid item xs={12} container>
+            <FieldArray
+              name={fields.parts.name}
+              render={(partsProps) => {
+                return (
+                  <React.Fragment>
+                    {values.parts.length > 0 &&
+                      values.parts.map((part, index) => {
+                        return (
+                          <Grid
+                            container
+                            item
+                            spacing={2}
+                            xs={13}
+                            key={index}
+                            columns={14}
+                            mb={2}
+                          >
+                            {Object.keys(part).map((value) => {
+                              return (
+                                <React.Fragment key={`${value}`}>
+                                  {value === "name" && (
+                                    <Grid item xs={4}>
+                                      <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        name={`parts.${index}.${value}`}
+                                        label={value}
+                                        //@ts-ignore
+                                        value={part[value]}
+                                        onChange={handleChange}
+                                      />
+                                    </Grid>
+                                  )}
+                                  {value === "warranty" && (
+                                    <WarrantyFields
+                                      {...part}
+                                      handleChange={handleChange}
+                                      index={index}
+                                      values={values}
                                     />
-                                  </Grid>
-                                )}
-                              </React.Fragment>
-                            );
-                          })}
-                          <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => partsProps.remove(index)}
-                            >
-                              <Remove />
-                            </IconButton>
+                                  )}
+                                  {value === "quantity" && (
+                                    <QuantityFields
+                                      {...part}
+                                      handleChange={handleChange}
+                                      index={index}
+                                      values={values}
+                                    />
+                                  )}
+                                  {value === "price" && (
+                                    <Grid item xs={2}>
+                                      <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        name={`parts.${index}.${value}`}
+                                        label={value}
+                                        //@ts-ignore
+                                        value={part[value]}
+                                        onChange={handleChange}
+                                        type="number"
+                                        inputProps={{
+                                          min: "0",
+                                        }}
+                                      />
+                                    </Grid>
+                                  )}
+                                </React.Fragment>
+                              );
+                            })}
+                            <Grid item xs={1}>
+                              <IconButton
+                                onClick={() => partsProps.remove(index)}
+                              >
+                                <Remove />
+                              </IconButton>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                      );
-                    })}
-                  <Grid item xs>
-                    <IconButton
-                      onClick={() =>
-                        partsProps.push({
-                          name: "",
-                          warranty: { count: "", interval: "" },
-                          quantity: { count: "", unit: "" },
-                          cost: "",
-                        })
-                      }
-                    >
-                      <Add />
-                    </IconButton>
-                  </Grid>
-                  <Grid item xs={12} container spacing={2} columns={13}>
-                    <Grid item xs={8} />
-                    <Grid item xs={4}>
-                      Total: {totalPartsCost}
+                        );
+                      })}
+                    <Grid item xs>
+                      <IconButton
+                        onClick={() =>
+                          partsProps.push({
+                            name: "",
+                            warranty: { warranty: "", interval: "" },
+                            quantity: { quantity: "", unit: "" },
+                            price: "0",
+                          })
+                        }
+                      >
+                        <Add />
+                      </IconButton>
                     </Grid>
-                    <Grid item />
-                  </Grid>
-                </React.Fragment>
-              );
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Typography gutterBottom variant="subtitle1" component="h1">
-            {fields.labours.label}
-          </Typography>
-          <Divider orientation="horizontal" />
-        </Grid>
-        <Grid item xs={12} container>
-          <FieldArray
-            name={fields.labours.name}
-            render={(laboursProps) => {
-              return (
-                <React.Fragment>
-                  {values.labours.length > 0 &&
-                    values.labours.map((labour, index) => {
-                      return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
-                          {Object.keys(labour).map((value) => {
-                            return (
-                              <React.Fragment key={`${value}`}>
-                                <Grid
-                                  item
-                                  xs={value === "title" ? 8 : 4}
-                                  sx={{ mb: 2 }}
-                                >
-                                  <TextField
-                                    fullWidth
-                                    variant="outlined"
-                                    name={`labours.${index}.${value}`}
-                                    label={value}
-                                    //@ts-ignore
-                                    value={labour[value]}
-                                    onChange={handleChange}
-                                  />
-                                </Grid>
-                              </React.Fragment>
-                            );
-                          })}
-                          <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => laboursProps.remove(index)}
-                            >
-                              <Remove />
-                            </IconButton>
-                          </Grid>
-                        </Grid>
-                      );
-                    })}
-                  <Grid item xs>
-                    <IconButton
-                      onClick={() =>
-                        laboursProps.push({
-                          title: "",
-                          cost: "",
-                        })
-                      }
-                    >
-                      <Add />
-                    </IconButton>
-                  </Grid>
-                </React.Fragment>
-              );
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} container spacing={2} columns={13}>
-          <Grid item xs={8} />
-          <Grid item xs={4}>
-            <TextField
-              name={fields.tax.name}
-              value={values.tax}
-              label={`${fields.tax.label} (VAT)`}
-              variant="outlined"
-              fullWidth
+                    <Grid item xs={12} container spacing={2} columns={13}>
+                      <Grid item xs={8} />
+                      <Grid item xs={4}>
+                        Sub Total: ₦{formatNumberToIntl(partTotal)}
+                      </Grid>
+                      <Grid item />
+                    </Grid>
+                  </React.Fragment>
+                );
+              }}
             />
           </Grid>
-          <Grid item />
-        </Grid>
-        <Grid item xs={12}>
-          <Typography gutterBottom variant="subtitle1" component="h1">
-            Job Information
-          </Typography>
-          <Divider flexItem orientation="horizontal" />
-        </Grid>
-        <Grid item xs={6}>
-          <TextInputField
-            onChange={handleChange}
-            value={values.depositAmount}
-            name={fields.depositAmount.name}
-            label={fields.depositAmount.label}
-          />
-        </Grid>
-        <Grid item xs={6} container spacing={0.5}>
-          <Grid item xs={8}>
+          <Grid item xs={12}>
+            <Typography gutterBottom variant="subtitle1" component="h1">
+              {fields.labours.label}
+            </Typography>
+            <Divider orientation="horizontal" />
+          </Grid>
+          <Grid item xs={12} container>
+            <FieldArray
+              name={fields.labours.name}
+              render={(laboursProps) => {
+                return (
+                  <React.Fragment>
+                    {values.labours.length > 0 &&
+                      values.labours.map((labour, index) => {
+                        return (
+                          <Grid
+                            container
+                            item
+                            spacing={2}
+                            xs={12}
+                            key={index}
+                            columns={13}
+                            mb={2}
+                          >
+                            {Object.keys(labour).map((value) => {
+                              return (
+                                <React.Fragment key={`${value}`}>
+                                  {value === "title" && (
+                                    <Grid item xs={8}>
+                                      <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        name={`labours.${index}.${value}`}
+                                        label={value}
+                                        //@ts-ignore
+                                        value={labour[value]}
+                                        onChange={handleChange}
+                                      />
+                                    </Grid>
+                                  )}
+                                  {value === "cost" && (
+                                    <Grid item xs={4}>
+                                      <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        name={`labours.${index}.${value}`}
+                                        label={value}
+                                        //@ts-ignore
+                                        value={labour[value]}
+                                        onChange={handleChange}
+                                        type="number"
+                                        inputProps={{
+                                          min: "0",
+                                        }}
+                                      />
+                                    </Grid>
+                                  )}
+                                </React.Fragment>
+                              );
+                            })}
+                            <Grid item xs={1}>
+                              <IconButton
+                                onClick={() => laboursProps.remove(index)}
+                              >
+                                <Remove />
+                              </IconButton>
+                            </Grid>
+                          </Grid>
+                        );
+                      })}
+                    <Grid item xs>
+                      <IconButton
+                        onClick={() =>
+                          laboursProps.push({
+                            title: "",
+                            cost: "0",
+                          })
+                        }
+                      >
+                        <Add />
+                      </IconButton>
+                    </Grid>
+                  </React.Fragment>
+                );
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} container spacing={2} columns={13}>
+            <Grid item xs={8} />
+            <Grid item xs={4}>
+              <TextField
+                name={fields.tax.name}
+                value={values.tax}
+                label={`${fields.tax.label} (VAT 7.5%)`}
+                variant="outlined"
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <Typography>
+                {" "}
+                Sub Total: ₦{formatNumberToIntl(labourTotal)}
+              </Typography>
+            </Grid>
+            <Grid item />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography gutterBottom variant="subtitle1" component="h1">
+              Job Information
+            </Typography>
+            <Divider flexItem orientation="horizontal" />
+          </Grid>
+          <Grid item xs={4} alignSelf="center">
+            <Typography variant="h6">
+              Grand Total: ₦{formatNumberToIntl(grandTotal)}
+            </Typography>
+          </Grid>
+          <Grid item xs={4}>
             <TextInputField
               onChange={handleChange}
-              value={values.jobDuration.count}
-              name="jobDuration.count"
-              label={fields.jobDuration.label}
+              value={values.depositAmount}
+              name={fields.depositAmount.name}
+              label={fields.depositAmount.label}
+              type="number"
+              inputProps={{
+                min: "0",
+              }}
             />
           </Grid>
-          <Grid item xs>
-            <SelectField
-              data={[
-                { label: "week", value: "week" },
-                { label: "month", value: "month" },
-                { label: "year", value: "year" },
-              ]}
-              onChange={handleChange}
-              value={values.jobDuration.interval}
-              name="jobDuration.interval"
-              label="Interval"
-              fullWidth
-            />
+          <Grid item xs={4} container spacing={0.5}>
+            <Grid item xs={8}>
+              <TextInputField
+                onChange={handleChange}
+                value={values.jobDuration.count}
+                name="jobDuration.count"
+                label={fields.jobDuration.label}
+                type="number"
+                inputProps={{
+                  min: "0",
+                }}
+              />
+            </Grid>
+            <Grid item xs>
+              <SelectField
+                data={[
+                  { label: "week", value: "week" },
+                  { label: "month", value: "month" },
+                  { label: "year", value: "year" },
+                ]}
+                onChange={handleChange}
+                value={values.jobDuration.interval}
+                name="jobDuration.interval"
+                label="Interval"
+                fullWidth
+              />
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider sx={{ mb: 1 }} flexItem orientation="horizontal" />
+            <LoadingButton
+              type="submit"
+              loading={props.isSubmitting}
+              disabled={props.isSubmitting}
+              variant="contained"
+              color="secondary"
+              endIcon={<Save />}
+              size="large"
+            >
+              Save
+            </LoadingButton>
           </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Divider sx={{ mb: 1 }} flexItem orientation="horizontal" />
-          <LoadingButton
-            type="submit"
-            loading={props.isSubmitting}
-            disabled={props.isSubmitting}
-            variant="contained"
-            color="secondary"
-            endIcon={<Save />}
-            size="large"
-          >
-            Save
-          </LoadingButton>
-        </Grid>
-      </Grid>
-    </Form>
+      </Form>
+      <AppAlert
+        alertType="error"
+        show={undefined !== error}
+        message={error?.message}
+        onClose={() => setError(undefined)}
+      />
+    </React.Fragment>
   );
 }
 

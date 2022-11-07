@@ -40,6 +40,17 @@ export const $vehicleSchema = {
   modelYear: Joi.string().allow("").label("Car Model Year"),
 };
 
+export const $vinSchema: Joi.SchemaMap<Vehicle> = {
+  vin: Joi.string()
+    .pattern(VIN_PATTERN)
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Invalid VIN. Please provide valid VIN like: KL1JH526XXX11864",
+    })
+    .label("Vehicle Identification Number"),
+};
+
 @Table({
   timestamps: true,
 

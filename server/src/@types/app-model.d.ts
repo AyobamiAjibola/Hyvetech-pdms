@@ -370,6 +370,39 @@ export declare namespace appModelTypes {
     available: boolean;
   }
 
+  export type IPartWarranty = { warranty: string; interval: string };
+  export type IPartQuantity = { quantity: string; unit: string };
+
+  export interface IPart {
+    name: string;
+    warranty: IPartWarranty;
+    quantity: IPartQuantity;
+    price: string;
+  }
+
+  export interface ILabour {
+    title: string;
+    cost: string;
+  }
+
+  export interface IEstimateValues {
+    parts: IPart[];
+    labours: ILabour[];
+    tax: string;
+    vin: string;
+    make: string;
+    model: string;
+    modelYear: string;
+    plateNumber: string;
+    mileage: { count: string; unit: string };
+    address: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    depositAmount: string;
+    jobDuration: { count: string; interval: string };
+  }
+
   type DomainClass<M> = new () => M;
 
   abstract class AbstractCrudRepository<
