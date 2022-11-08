@@ -7,6 +7,7 @@ import {
   brown,
   cyan,
   deepOrange,
+  green,
   indigo,
   teal,
 } from "@mui/material/colors";
@@ -24,6 +25,7 @@ import AppLoader from "../loader/AppLoader";
 
 import { getTechniciansAction } from "../../store/actions/technicianActions";
 import DataCard from "../data/DataCard";
+import { getPartnersAction } from "../../store/actions/partnerActions";
 
 function AdminDashboard() {
   const [barChartSeries, setBarChartSeries] = useState<any[]>();
@@ -32,6 +34,7 @@ function AdminDashboard() {
   const customerReducer = useAppSelector((state) => state.customerReducer);
   const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
   const technicianReducer = useAppSelector((state) => state.technicianReducer);
+  const partnerReducer = useAppSelector((state) => state.partnerReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -44,6 +47,7 @@ function AdminDashboard() {
     dispatch(getCustomersAction());
     dispatch(getDriversAction());
     dispatch(getTechniciansAction());
+    dispatch(getPartnersAction());
   }, [dispatch]);
 
   useEffect(() => {
@@ -75,6 +79,11 @@ function AdminDashboard() {
     [technicianReducer.technicians]
   );
 
+  const totalPartners = useMemo(
+    () => partnerReducer.partners.length,
+    [partnerReducer.partners]
+  );
+
   return (
     <React.Fragment>
       <Grid
@@ -87,6 +96,13 @@ function AdminDashboard() {
       >
         <Grid item xs={12} container direction="column">
           <Grid item container xs spacing={2}>
+            <Grid item xs={12} md={3}>
+              <DataCard
+                title="Total Partners"
+                data={totalPartners}
+                bgColor={green[600]}
+              />
+            </Grid>
             <Grid item xs={12} md={3}>
               <DataCard
                 data={totalCustomers}
