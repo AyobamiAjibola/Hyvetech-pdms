@@ -59,7 +59,7 @@ storage
 keys
 .vscode
 .idea
-server/.env
+.env*
 build
 *.rdb
 .DS_Store
