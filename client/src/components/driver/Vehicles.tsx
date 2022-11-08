@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Chip, Stack } from "@mui/material";
-import { CustomerPageContext } from "../../pages/customer/CustomerPage";
-import { CustomerPageContextProps } from "@app-interfaces";
+import { DriverPageContext } from "../../pages/driver/DriverPage";
+import { DriverPageContextProps } from "@app-interfaces";
 import useAppDispatch from "../../hooks/useAppDispatch";
 import useAppSelector from "../../hooks/useAppSelector";
-import { getCustomerVehiclesAction } from "../../store/actions/customerActions";
+import { getDriverVehiclesAction } from "../../store/actions/rideShareActions";
 import moment from "moment";
 import { IVehicle } from "@app-models";
 import AppDataGrid from "../tables/AppDataGrid";
@@ -15,27 +15,25 @@ import { useNavigate } from "react-router-dom";
 function Vehicles() {
   const [_vehicles, _setVehicles] = useState<IVehicle[]>([]);
 
-  const { customer } = useContext(
-    CustomerPageContext
-  ) as CustomerPageContextProps;
+  const { driver } = useContext(DriverPageContext) as DriverPageContextProps;
 
-  const customerReducer = useAppSelector((state) => state.customerReducer);
+  const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
 
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (customer) {
-      dispatch(getCustomerVehiclesAction(customer.id));
+    if (driver) {
+      dispatch(getDriverVehiclesAction(driver.id));
     }
-  }, [customer, dispatch]);
+  }, [driver, dispatch]);
 
   useEffect(() => {
-    if (customerReducer.getCustomerVehiclesStatus === "completed") {
-      _setVehicles(customerReducer.vehicles);
+    if (rideShareReducer.getDriverVehiclesStatus === "completed") {
+      _setVehicles(rideShareReducer.vehicles);
     }
-  }, [customerReducer.getCustomerVehiclesStatus, customerReducer.vehicles]);
+  }, [rideShareReducer.getDriverVehiclesStatus, rideShareReducer.vehicles]);
 
   const handleView = (vehicle: IVehicle) => {
     navigate(`/vehicles/${vehicle.id}`, { state: { vehicle } });
@@ -50,7 +48,7 @@ function Vehicles() {
           checkboxSelection
           disableSelectionOnClick
           showToolbar
-          loading={customerReducer.getCustomerVehiclesStatus === "loading"}
+          loading={rideShareReducer.getDriverVehiclesStatus === "loading"}
         />
       </Stack>
     </Box>

@@ -1,56 +1,58 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Chip, Stack } from "@mui/material";
-import { CustomerPageContext } from "../../pages/customer/CustomerPage";
-import { CustomerPageContextProps } from "@app-interfaces";
-import useAppDispatch from "../../hooks/useAppDispatch";
+import { DriverPageContext } from "../../pages/driver/DriverPage";
+import { DriverPageContextProps } from "@app-interfaces";
 import useAppSelector from "../../hooks/useAppSelector";
-import { getCustomerVehiclesAction } from "../../store/actions/customerActions";
-import moment from "moment";
-import { IVehicle } from "@app-models";
+import useAppDispatch from "../../hooks/useAppDispatch";
+import { getDriverTransactionsAction } from "../../store/actions/rideShareActions";
+import { ITransaction } from "@app-models";
 import AppDataGrid from "../tables/AppDataGrid";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import moment from "moment";
 import { Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { MESSAGES } from "../../config/constants";
 
-function Vehicles() {
-  const [_vehicles, _setVehicles] = useState<IVehicle[]>([]);
+function Transactions() {
+  const [_transactions, _setTransactions] = useState<ITransaction[]>([]);
 
-  const { customer } = useContext(
-    CustomerPageContext
-  ) as CustomerPageContextProps;
+  const { driver } = useContext(DriverPageContext) as DriverPageContextProps;
 
-  const customerReducer = useAppSelector((state) => state.customerReducer);
+  const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
 
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (customer) {
-      dispatch(getCustomerVehiclesAction(customer.id));
+    if (driver) {
+      dispatch(getDriverTransactionsAction(driver.id));
     }
-  }, [customer, dispatch]);
+  }, [dispatch, driver]);
 
   useEffect(() => {
-    if (customerReducer.getCustomerVehiclesStatus === "completed") {
-      _setVehicles(customerReducer.vehicles);
+    if (rideShareReducer.getDriverTransactionsStatus === "completed") {
+      _setTransactions(rideShareReducer.transactions);
     }
-  }, [customerReducer.getCustomerVehiclesStatus, customerReducer.vehicles]);
+  }, [
+    rideShareReducer.getDriverTransactionsStatus,
+    rideShareReducer.transactions,
+  ]);
 
-  const handleView = (vehicle: IVehicle) => {
-    navigate(`/vehicles/${vehicle.id}`, { state: { vehicle } });
+  const handleView = (txn: ITransaction) => {
+    navigate(`/transactions/${txn.id}`, { state: { transaction: txn } });
   };
 
   return (
     <Box>
       <Stack direction="row" spacing={2}>
         <AppDataGrid
-          rows={_vehicles}
+          rows={_transactions}
           columns={columns({ onView: handleView })}
           checkboxSelection
           disableSelectionOnClick
           showToolbar
-          loading={customerReducer.getCustomerVehiclesStatus === "loading"}
+          loading={rideShareReducer.getDriverTransactionsStatus === "loading"}
         />
       </Stack>
     </Box>
@@ -68,58 +70,73 @@ const columns = (options?: any) =>
       type: "number",
     },
     {
-      field: "plateNumber",
-      headerName: "Plate Number",
-      headerAlign: "center",
-      width: 160,
-      align: "center",
-      type: "string",
-      sortable: true,
-    },
-    {
-      field: "make",
-      headerName: "Make",
-      headerAlign: "center",
-      width: 160,
-      align: "center",
-      type: "string",
-      sortable: true,
-    },
-    {
-      field: "model",
-      headerName: "Model",
-      headerAlign: "center",
-      width: 160,
-      align: "center",
-      type: "string",
-      sortable: true,
-    },
-    {
-      field: "modelYear",
-      headerName: "Year",
+      field: "reference",
+      headerName: "Reference",
       headerAlign: "center",
       align: "center",
       type: "string",
       sortable: true,
     },
     {
-      field: "isBooked",
-      headerName: "Booked",
+      field: "amount",
+      headerName: "Amount",
       headerAlign: "center",
       align: "center",
+      type: "number",
+      sortable: true,
+    },
+    {
+      field: "purpose",
+      headerName: "Purpose",
+      headerAlign: "center",
+      width: 200,
+      align: "center",
+      type: "string",
+      sortable: true,
+    },
+    {
+      field: "status",
+      headerName: "PaymentStatus",
+      headerAlign: "center",
+      align: "center",
+      width: 150,
       type: "string",
       sortable: true,
       renderCell: (params) => {
-        const status = params.row.isBooked;
+        const status = params.row.status;
 
-        return status ? (
-          <Chip label="Yes" color="success" size="small" />
+        return status === "success" ? (
+          <Chip label={status} color="success" size="small" />
+        ) : status === MESSAGES.txn_init ? (
+          <Chip label="pending" color="warning" size="small" />
         ) : (
-          <Chip label="No" color="error" size="small" />
+          <Chip label={status} color="error" size="small" />
         );
       },
     },
-
+    {
+      field: "serviceStatus",
+      headerName: "Service Status",
+      headerAlign: "center",
+      width: 150,
+      align: "center",
+      type: "string",
+      sortable: true,
+    },
+    {
+      field: "paidAt",
+      headerName: "Paid At",
+      headerAlign: "center",
+      align: "center",
+      type: "dateTime",
+      sortable: true,
+      width: 200,
+      valueFormatter: (params) => {
+        return params.value
+          ? moment(params.value).utc(true).format("LLL")
+          : "-";
+      },
+    },
     {
       field: "createdAt",
       headerName: "Created At",
@@ -127,7 +144,7 @@ const columns = (options?: any) =>
       align: "center",
       type: "dateTime",
       sortable: true,
-      width: 160,
+      width: 200,
       valueFormatter: (params) => {
         return moment(params.value).utc(true).format("LLL");
       },
@@ -139,7 +156,7 @@ const columns = (options?: any) =>
       align: "center",
       type: "dateTime",
       sortable: true,
-      width: 160,
+      width: 200,
       valueFormatter: (params) => {
         return moment(params.value).utc(true).format("LLL");
       },
@@ -159,6 +176,6 @@ const columns = (options?: any) =>
         />,
       ],
     },
-  ] as GridColDef<IVehicle>[];
+  ] as GridColDef<ITransaction>[];
 
-export default Vehicles;
+export default Transactions;

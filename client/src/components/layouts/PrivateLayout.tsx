@@ -89,8 +89,9 @@ function PrivateLayout() {
             <Route path="/technicians" element={<TechniciansPage />} />
             <Route path="/technician/:id" element={<TechnicianPage />} />
             <Route path="/drivers" element={<DriversPage />} />
-            <Route path="/driver/:id" element={<DriverPage />} />
+            <Route path="/drivers/:id" element={<DriverPage />} />
             <Route path="/garage" element={<PartnerPage />} />
+            <Route path="/ride-share" element={<PartnerPage />} />
             <Route path="/checkLists" element={<CheckListsPage />} />
             <Route path="/checkLists/:id" element={<CheckListPage />} />
             <Route path="/job-check-list/:id" element={<JobCheckListPage />} />

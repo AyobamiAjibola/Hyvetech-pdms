@@ -21,9 +21,10 @@ interface ISelectFieldProps {
   helperStyle?: { [p: string]: string };
   fullWidth?: boolean;
   size?: "small" | "medium";
+  multiple?: boolean;
   onChange: (event: SelectChangeEvent<any>) => void;
   onBlur?: (event: FocusEvent<any>) => void;
-  value: string | number | boolean;
+  value: any;
   name: string;
   label: string;
   data: ISelectData[];
@@ -31,6 +32,17 @@ interface ISelectFieldProps {
 
   [p: string]: any;
 }
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 export default function SelectField(props: ISelectFieldProps) {
   const { errors, touched } = useFormikContext();
@@ -47,24 +59,28 @@ export default function SelectField(props: ISelectFieldProps) {
           sx={props.textInputStyle}
           size={props.size}
           labelId={props.name}
+          multiple={props.multiple}
           id={props.name}
           value={props.value}
           name={props.name}
           label={props.label}
           onChange={props.onChange}
+          MenuProps={MenuProps}
         >
           <MenuItem value="">...</MenuItem>
-          {props.data.map((item, index) => (
-            <MenuItem
-              onClick={() => {
-                if (props.onClick) props.onClick(item);
-              }}
-              key={index}
-              value={item.value}
-            >
-              {item.label}
-            </MenuItem>
-          ))}
+          {props.data.map((item, index) => {
+            return (
+              <MenuItem
+                onClick={() => {
+                  if (props.onClick) props.onClick(item);
+                }}
+                key={index}
+                value={item.value}
+              >
+                {item.label}
+              </MenuItem>
+            );
+          })}
         </Select>
       </FormControl>
       <ErrorField

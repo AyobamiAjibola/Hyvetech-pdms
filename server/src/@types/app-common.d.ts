@@ -95,7 +95,11 @@ export declare namespace appCommonTypes {
 
   type CustomJwtPayload = JwtPayload & AuthPayload;
 
-  type AppRequestParams = { customerId: string; appointmentId: string };
+  type AppRequestParams = {
+    customerId: string;
+    appointmentId: string;
+    driverId: string;
+  };
 
   type QueueMailTypes = "DEFAULT" | "WEBSITE" | "BOOKING" | "CUSTOMER";
 

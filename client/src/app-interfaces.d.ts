@@ -97,6 +97,8 @@ declare module "@app-interfaces" {
     setIsSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
     customer: ICustomer | null;
     setCustomer: React.Dispatch<React.SetStateAction<ICustomer | null>>;
+    driver: IRideShareDriver | null;
+    setDriver: React.Dispatch<React.SetStateAction<IRideShareDriver | null>>;
     vehicle: IVehicle | null;
     setVehicle: React.Dispatch<React.SetStateAction<IVehicle | null>>;
     vehicles: IVehicle[];
@@ -108,6 +110,13 @@ declare module "@app-interfaces" {
   interface CustomerPageContextProps {
     customer?: ICustomer;
     setCustomer: React.Dispatch<React.SetStateAction<ICustomer | undefined>>;
+  }
+
+  interface DriverPageContextProps {
+    driver?: IRideShareDriver;
+    setDriver: React.Dispatch<
+      React.SetStateAction<IRideShareDriver | undefined>
+    >;
   }
 
   interface TechniciansPageContextProps {
@@ -208,5 +217,12 @@ declare module "@app-interfaces" {
   interface IVINDecoderSchema {
     label: string;
     value: any;
+  }
+
+  interface ILocationState {
+    customerId?: number;
+    customer?: ICustomer;
+    driverId?: number;
+    driver?: IRideShareDriver;
   }
 }

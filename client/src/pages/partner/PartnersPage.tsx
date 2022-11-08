@@ -34,6 +34,7 @@ import {
   clearCreatePartnerStatus,
   clearGetPartnersStatus,
 } from "../../store/reducers/partnerReducer";
+import AppLoader from "../../components/loader/AppLoader";
 
 export default function PartnersPage() {
   const [createPartner, setCreatePartner] = useState<boolean>(false);
@@ -174,6 +175,7 @@ export default function PartnersPage() {
         }
         onClose={handleCloseCreatePartner}
       />
+      <AppLoader show={partnerReducer.getPartnersStatus === "loading"} />
     </React.Fragment>
   );
 }

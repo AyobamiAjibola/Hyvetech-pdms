@@ -3,7 +3,7 @@ import * as Yup from "yup";
 export interface ICheckListValues {
   checkList: string;
   description: string;
-  partner: string;
+  partners: string[];
 }
 
 const fields = {
@@ -15,8 +15,8 @@ const fields = {
       require: "Check List name is required",
     },
   },
-  partner: {
-    name: "partner",
+  partners: {
+    name: "partners",
     label: "Partner*",
     error: {
       invalid: "Partner is invalid",
@@ -59,14 +59,14 @@ const fields = {
 
 const initialValues: ICheckListValues = {
   checkList: "",
-  partner: "",
+  partners: [],
   description: "",
 };
 
 const schema = Yup.object().shape({
   checkList: Yup.string().required().label("Check List name"),
   description: Yup.string().required().label("Check List Description"),
-  partner: Yup.string().required().label("Partner"),
+  partners: Yup.array(Yup.string()).required().label("Partners"),
 });
 
 const checkListModel = {

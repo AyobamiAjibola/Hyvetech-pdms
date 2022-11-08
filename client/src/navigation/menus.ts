@@ -1,11 +1,14 @@
 import { ITab } from "@app-interfaces";
 
-import Appointments from "../components/customer/Appointments";
-import Quotes from "../components/customer/Quotes";
-import Transactions from "../components/customer/Transactions";
-import Vehicles from "../components/customer/Vehicles";
+import CustomerAppointments from "../components/customer/Appointments";
+import CustomerQuotes from "../components/customer/Quotes";
+import CustomerTransactions from "../components/customer/Transactions";
+import CustomerVehicles from "../components/customer/Vehicles";
+import DriverQuotes from "../components/driver/Quotes";
+import DriverTransactions from "../components/driver/Transactions";
+import DriverVehicles from "../components/driver/Vehicles";
 import DriverProfile from "../components/partner/garage/DriverProfile";
-import DriverVehicles from "../components/partner/garage/DriverVehicles";
+import GarageVehicles from "../components/partner/garage/DriverVehicles";
 import GarageProfileAndSetting from "../components/partner/garage/GarageProfileAndSetting";
 import RideShareDriver from "../components/partner/garage/RideShareDriver";
 import PaymentPlans from "../components/partner/rideShare/PaymentPlans";
@@ -16,10 +19,16 @@ import TechniciansPage from "../pages/technician/TechniciansPage";
 import Estimate from "../components/partner/garage/Estimate";
 
 export const customerDetailTabs: ITab[] = [
-  { name: "Vehicles", Element: Vehicles },
-  { name: "Appointments", Element: Appointments },
-  { name: "Transactions", Element: Transactions },
-  { name: "Quotes", Element: Quotes },
+  { name: "Vehicles", Element: CustomerVehicles },
+  { name: "Appointments", Element: CustomerAppointments },
+  { name: "Transactions", Element: CustomerTransactions },
+  { name: "Quotes", Element: CustomerQuotes },
+];
+
+export const driverDetailTabs: ITab[] = [
+  { name: "Vehicles", Element: DriverVehicles },
+  { name: "Transactions", Element: DriverTransactions },
+  { name: "Estimates", Element: DriverQuotes },
 ];
 
 export const partnerDetailTabs: ITab[] = [
@@ -58,6 +67,6 @@ export const partnerDetailTabs: ITab[] = [
 
 export const driverSearchResultTabs: ITab[] = [
   { tag: "driver", name: "Driver Profile", Element: DriverProfile },
-  { tag: "driver", name: "Vehicles", Element: DriverVehicles },
+  { tag: "driver", name: "Vehicles", Element: GarageVehicles },
   { tag: "driver", name: "Create Estimate", Element: Estimate },
 ];

@@ -3,13 +3,8 @@ import { useLocation } from "react-router-dom";
 import { Divider, Paper, Stack } from "@mui/material";
 import CustomerTab from "../../components/tabs/CustomerTab";
 import { customerDetailTabs } from "../../navigation/menus";
-import { CustomerPageContextProps } from "@app-interfaces";
+import { CustomerPageContextProps, ILocationState } from "@app-interfaces";
 import { ICustomer } from "@app-models";
-
-interface ILocationState {
-  customerId?: number;
-  customer?: ICustomer;
-}
 
 export const CustomerPageContext =
   createContext<CustomerPageContextProps | null>(null);

@@ -26,6 +26,7 @@ import {
   clearCreateCheckListStatus,
   clearGetCheckListsStatus,
 } from "../../store/reducers/checkListReducer";
+import AppLoader from "../../components/loader/AppLoader";
 
 export const CheckListsPageContext =
   createContext<CheckListsPageContextProps | null>(null);
@@ -213,6 +214,7 @@ function CheckListsPage() {
         message={error?.message}
         onClose={() => setError(undefined)}
       />
+      <AppLoader show={checkListReducer.getCheckListsStatus === "loading"} />
     </CheckListsPageContext.Provider>
   );
 }

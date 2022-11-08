@@ -15,6 +15,7 @@ import {
 import Job from "../models/Job";
 import formidable, { File } from "formidable";
 import Generic from "../utils/Generic";
+import Partner from "../models/Partner";
 import HttpResponse = appCommonTypes.HttpResponse;
 import IImageButtonData = appCommonTypes.IImageButtonData;
 import CheckListType = appCommonTypes.CheckListType;
@@ -25,7 +26,7 @@ export default class CheckListController {
   public static async create(req: Request) {
     try {
       const { error, value } = Joi.object({
-        partner: Joi.string().required().label("Partner Id"),
+        partners: Joi.array<string>().required().label("Partner Id"),
         checkList: Joi.string().required().label("Check List Name"),
         description: Joi.string().required().label("Check List Description"),
       }).validate(req.body);
@@ -38,19 +39,10 @@ export default class CheckListController {
           )
         );
 
-      const partnerId = value.partner as string;
+      const partners = value.partners as unknown as string[];
       const name = value.checkList;
       const description = value.description;
-
-      const partner = await dataSources.partnerDAOService.findById(+partnerId);
-
-      if (!partner)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Partner does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+      const $partners: Partner[] = [];
 
       const exist = await dataSources.checkListDAOService.findByAny({
         where: { name },
@@ -64,11 +56,31 @@ export default class CheckListController {
           )
         );
 
+      for (let i = 0; i < partners.length; i++) {
+        const partnerId = +partners[i];
+
+        const partner = await dataSources.partnerDAOService.findById(
+          +partnerId
+        );
+
+        if (!partner)
+          return Promise.reject(
+            CustomAPIError.response(
+              `Partner does not exist`,
+              HttpStatus.NOT_FOUND.code
+            )
+          );
+
+        $partners.push(partner);
+      }
+
       const data: any = { name, description };
 
       const checkList = await dataSources.checkListDAOService.create(data);
 
-      await partner.$add("checkLists", [checkList]);
+      for (let i = 0; i < $partners.length; i++) {
+        await $partners[i].$add("checkLists", [checkList]);
+      }
 
       const checkLists = await dataSources.checkListDAOService.findAll({
         include: [{ all: true }],

@@ -63,9 +63,10 @@ export default function CheckListForm(props: ICheckListFormProps) {
         <Grid item xs={12}>
           <SelectField
             onChange={handleChange}
-            value={values.partner}
-            name={fields.partner.name}
-            label={fields.partner.label}
+            value={values.partners}
+            name={fields.partners.name}
+            label={fields.partners.label}
+            multiple
             data={options}
           />
         </Grid>
