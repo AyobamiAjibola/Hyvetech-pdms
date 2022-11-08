@@ -26,6 +26,7 @@ export default function AppStackedColumnChart(props: IProps) {
   const options: Highcharts.Options = {
     chart: {
       type: "column",
+      width: 1660,
     },
     title: {
       text: props.title,
@@ -86,6 +87,7 @@ export default function AppStackedColumnChart(props: IProps) {
       sx={{
         boxShadow: 5,
         width: "100%",
+        minWidth: 1660,
       }}
     >
       <HighchartsReact

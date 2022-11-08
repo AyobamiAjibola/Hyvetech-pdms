@@ -1,7 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Divider, Paper, Stack, Typography } from "@mui/material";
+import { Divider, Grid, Paper } from "@mui/material";
 import AnalyticsCard from "../data/AnalyticsCard";
-import { cyan, lime, orange, teal } from "@mui/material/colors";
+import {
+  blue,
+  blueGrey,
+  brown,
+  cyan,
+  deepOrange,
+  indigo,
+  teal,
+} from "@mui/material/colors";
 import AppPieChart from "../charts/AppPieChart";
 import moment from "moment";
 import AppStackedColumnChart from "../charts/AppStackedColumnChart";
@@ -11,12 +19,18 @@ import useAppDispatch from "../../hooks/useAppDispatch";
 import { getAnalyticsAction } from "../../store/actions/dashboardActions";
 import { getCustomersAction } from "../../store/actions/customerActions";
 import { computeMonthlyColumnChartData } from "../../utils/generic";
+import { getDriversAction } from "../../store/actions/rideShareActions";
+import AppLoader from "../loader/AppLoader";
+import DataCard from "../data/DataCard";
+import { getTechniciansAction } from "../../store/actions/technicianActions";
 
 function AdminDashboard() {
   const [barChartSeries, setBarChartSeries] = useState<any[]>();
 
   const dashboardReducer = useAppSelector((state) => state.dashboardReducer);
   const customerReducer = useAppSelector((state) => state.customerReducer);
+  const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
+  const technicianReducer = useAppSelector((state) => state.technicianReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -26,10 +40,10 @@ function AdminDashboard() {
   }, [dashboardReducer.getAnalyticsStatus, dispatch]);
 
   useEffect(() => {
-    if (customerReducer.getCustomersStatus === "idle") {
-      dispatch(getCustomersAction());
-    }
-  }, [customerReducer.getCustomersStatus, dispatch]);
+    dispatch(getCustomersAction());
+    dispatch(getDriversAction());
+    dispatch(getTechniciansAction());
+  }, [dispatch]);
 
   useEffect(() => {
     if (dashboardReducer.getAnalyticsStatus === "completed") {
@@ -50,85 +64,143 @@ function AdminDashboard() {
     [customerReducer.customers]
   );
 
+  const totalDrivers = useMemo(
+    () => rideShareReducer.drivers.length,
+    [rideShareReducer.drivers]
+  );
+
+  const totalTechnicians = useMemo(
+    () => technicianReducer.technicians.length,
+    [technicianReducer.technicians]
+  );
+
   return (
     <React.Fragment>
-      <Typography
-        variant="h6"
-        component="h6"
-        sx={{ m: { xs: 1, sm: 1, md: 2 } }}
-      >
-        Total customers: {totalCustomers}
-      </Typography>
-      <Stack
-        direction="column"
-        spacing={5}
+      <Grid
+        container
+        spacing={{ xs: 2, md: 3 }}
+        columns={{ xs: 4, sm: 8, md: 12 }}
         justifyContent="center"
         alignItems="center"
-        divider={<Divider orientation="horizontal" flexItem />}
+        sx={{ p: 1 }}
       >
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={{ xs: 1, sm: 2, md: 4 }}
-        >
-          <AnalyticsCard
-            data={dashboardReducer.analytics?.dailyData.appointments.data[0]}
-            bgColor={teal[400]}
-          />
-          <AnalyticsCard
-            data={dashboardReducer.analytics?.dailyData.customers.data[0]}
-            bgColor={cyan[400]}
-          />
-          <AnalyticsCard
-            data={dashboardReducer.analytics?.dailyData.vehicles.data[0]}
-            bgColor={lime[400]}
-          />
-          <AnalyticsCard
-            data={dashboardReducer.analytics?.dailyData.transactions.data[0]}
-            bgColor={orange[300]}
-          />
-        </Stack>
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={{ xs: 1, sm: 2, md: 4 }}
-        >
-          <Paper>
-            <AppPieChart
-              title={`Appointments, ${moment().format("MMM YYYY")}.`}
-              series={dashboardReducer.analytics?.monthlyData.appointments}
-            />
-          </Paper>
-          <Paper>
-            <AppPieChart
-              title={`Customers, ${moment().format("MMM YYYY")}.`}
-              series={dashboardReducer.analytics?.monthlyData.customers}
-            />
-          </Paper>
-          <Paper>
-            <AppPieChart
-              title={`DriverVehicles, ${moment().format("MMM YYYY")}.`}
-              series={dashboardReducer.analytics?.monthlyData.vehicles}
-            />
-          </Paper>
-          <Paper>
-            <AppPieChart
-              title={`Transactions, ${moment().format("MMM YYYY")}.`}
-              series={dashboardReducer.analytics?.monthlyData.transactions}
-            />
-          </Paper>
-        </Stack>
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={{ xs: 1, sm: 2, md: 4 }}
-          sx={{ width: "100%" }}
-        >
+        <Grid item xs={12} container direction="column">
+          <Grid item container xs spacing={2}>
+            <Grid item xs={12} md={3}>
+              <DataCard
+                data={totalCustomers}
+                title="Total Customers"
+                bgColor={blueGrey[600]}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <DataCard
+                title="Total Drivers"
+                data={totalDrivers}
+                bgColor={indigo[600]}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <DataCard
+                title="Total Technicians"
+                data={totalTechnicians}
+                bgColor={brown[600]}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Divider orientation="horizontal" flexItem />
+        </Grid>
+        <Grid item xs={12} container direction="column">
+          <Grid item container xs spacing={2}>
+            <Grid item xs={12} md={3}>
+              <AnalyticsCard
+                data={
+                  dashboardReducer.analytics?.dailyData.appointments.data[0]
+                }
+                bgColor={teal[600]}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <AnalyticsCard
+                data={dashboardReducer.analytics?.dailyData.customers.data[0]}
+                bgColor={cyan[600]}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <AnalyticsCard
+                data={dashboardReducer.analytics?.dailyData.vehicles.data[0]}
+                bgColor={blue[600]}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <AnalyticsCard
+                data={
+                  dashboardReducer.analytics?.dailyData.transactions.data[0]
+                }
+                bgColor={deepOrange[600]}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Divider orientation="horizontal" flexItem />
+        </Grid>
+        <Grid item xs={12} container direction="column">
+          <Grid item container xs spacing={2}>
+            <Grid item xs={12} md={3}>
+              <Paper>
+                <AppPieChart
+                  title={`Customers, ${moment().format("MMM YYYY")}.`}
+                  series={dashboardReducer.analytics?.monthlyData.customers}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <Paper>
+                <AppPieChart
+                  title={`Appointments, ${moment().format("MMM YYYY")}.`}
+                  series={dashboardReducer.analytics?.monthlyData.appointments}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <Paper>
+                <AppPieChart
+                  title={`Vehicles, ${moment().format("MMM YYYY")}.`}
+                  series={dashboardReducer.analytics?.monthlyData.vehicles}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <Paper>
+                <AppPieChart
+                  title={`Transactions, ${moment().format("MMM YYYY")}.`}
+                  series={dashboardReducer.analytics?.monthlyData.transactions}
+                />
+              </Paper>
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Divider orientation="horizontal" flexItem />
+        </Grid>
+
+        <Grid item xs={12}>
           <AppStackedColumnChart
             title=""
             categories={MONTHS}
             yAxisText="Monthly Appointments, Customers, DriverVehicles and Transactions"
             series={barChartSeries}
           />
-        </Stack>
-      </Stack>
+        </Grid>
+      </Grid>
+      <AppLoader show={dashboardReducer.getAnalyticsStatus === "loading"} />
+      <AppLoader show={customerReducer.getCustomersStatus === "loading"} />
+      <AppLoader show={rideShareReducer.getDriversStatus === "loading"} />
+      <AppLoader show={technicianReducer.getTechniciansStatus === "loading"} />
     </React.Fragment>
   );
 }

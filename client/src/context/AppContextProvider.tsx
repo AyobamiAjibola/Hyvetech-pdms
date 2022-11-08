@@ -8,7 +8,7 @@ import PrivateLayout from "../components/layouts/PrivateLayout";
 export const AppContext = createContext<AppContextProps | null>(null);
 
 export default function AppContextProvider() {
-  const [openSideNav, setOpenSideNav] = useState<boolean>(true);
+  const [openSideNav, setOpenSideNav] = useState<boolean>(false);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [showBooking, setShowBooking] = useState<boolean>(false);
   const [showBookingBtn, setShowBookingBtn] = useState<boolean>(false);

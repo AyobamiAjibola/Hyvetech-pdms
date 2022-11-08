@@ -27,6 +27,7 @@ export default function AppPieChart(props: IProps) {
       plotBorderWidth: undefined,
       plotShadow: false,
       type: "pie",
+      width: 400,
     },
     title: {
       text: props.title,
@@ -57,12 +58,7 @@ export default function AppPieChart(props: IProps) {
   };
 
   return (
-    <Box
-      sx={{
-        boxShadow: 5,
-        minWidth: 300,
-      }}
-    >
+    <Box component="div" sx={{ width: "100%", minWidth: 400 }}>
       <HighchartsReact
         highcharts={Highcharts}
         options={options}
