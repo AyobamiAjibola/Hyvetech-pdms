@@ -25,6 +25,7 @@ import RideShareDriverSubscription from "./RideShareDriverSubscription";
 import RideShareDriverPlanSubscription from "./RideShareDriverPlanSubscription";
 import PartnerRideShareDriver from "./PartnerRideShareDriver";
 import Partner from "./Partner";
+import Estimate from "./Estimate";
 
 @Table({
   timestamps: true,
@@ -117,6 +118,9 @@ export default class RideShareDriver extends Model<
 
   @HasMany(() => Transaction, { onDelete: "cascade" })
   declare transactions: NonAttribute<Transaction[]>;
+
+  @HasMany(() => Estimate, { onDelete: "cascade" })
+  declare estimates: NonAttribute<Estimate[]>;
 
   @HasMany(() => Appointment, { onDelete: "cascade" })
   declare appointments: NonAttribute<Appointment[]>;

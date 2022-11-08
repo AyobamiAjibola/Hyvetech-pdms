@@ -61,6 +61,8 @@ import JobRepository from "../../repositories/JobRepository";
 import JobDAOService from "./JobDAOService";
 import CheckListRepository from "../../repositories/CheckListRepository";
 import CheckListDAOService from "./CheckListDAOService";
+import EstimateRepository from "../../repositories/EstimateRepository";
+import EstimateDAOService from "./EstimateDAOService";
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -95,6 +97,7 @@ const rideShareDriverSubscriptionRepository =
 const technicianRepository = new TechnicianRepository();
 const jobRepository = new JobRepository();
 const checkListRepository = new CheckListRepository();
+const estimateRepository = new EstimateRepository();
 
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
@@ -147,6 +150,7 @@ const rideShareDriverSubscriptionDAOService =
 const technicianDAOService = new TechnicianDAOService(technicianRepository);
 const jobDAOService = new JobDAOService(jobRepository);
 const checkListDAOService = new CheckListDAOService(checkListRepository);
+const estimateDAOService = new EstimateDAOService(estimateRepository);
 
 export default {
   customerDAOService,
@@ -179,4 +183,5 @@ export default {
   technicianDAOService,
   jobDAOService,
   checkListDAOService,
+  estimateDAOService,
 };
