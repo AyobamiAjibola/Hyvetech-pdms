@@ -21,8 +21,9 @@ import { getCustomersAction } from "../../store/actions/customerActions";
 import { computeMonthlyColumnChartData } from "../../utils/generic";
 import { getDriversAction } from "../../store/actions/rideShareActions";
 import AppLoader from "../loader/AppLoader";
-import DataCard from "../data/DataCard";
+
 import { getTechniciansAction } from "../../store/actions/technicianActions";
+import DataCard from "../data/DataCard";
 
 function AdminDashboard() {
   const [barChartSeries, setBarChartSeries] = useState<any[]>();
