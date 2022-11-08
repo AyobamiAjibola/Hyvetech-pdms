@@ -26,7 +26,7 @@ export default class CheckListController {
   public static async create(req: Request) {
     try {
       const { error, value } = Joi.object({
-        partners: Joi.array<string>().required().label("Partner Id"),
+        partners: Joi.array().required().label("Partner Id"),
         checkList: Joi.string().required().label("Check List Name"),
         description: Joi.string().required().label("Check List Description"),
       }).validate(req.body);
