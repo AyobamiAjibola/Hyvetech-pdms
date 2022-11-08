@@ -27,6 +27,7 @@ import CustomerSubscription from "./CustomerSubscription";
 import RideShareDriver from "./RideShareDriver";
 import RideShareDriverSubscription from "./RideShareDriverSubscription";
 import Job from "./Job";
+import Estimate from "./Estimate";
 
 export const $vehicleSchema = {
   model: Joi.string().required().label("Car Model"),
@@ -192,6 +193,9 @@ export default class Vehicle extends Model<
 
   @HasMany(() => Job, { onDelete: "cascade" })
   declare jobs: NonAttribute<Array<Job>>;
+
+  @HasMany(() => Estimate, { onDelete: "cascade" })
+  declare estimates: NonAttribute<Array<Estimate>>;
 
   @BelongsToMany(() => Tag, () => VehicleTag)
   declare tags: NonAttribute<Array<Tag & { VehicleTag: VehicleTag }>>;

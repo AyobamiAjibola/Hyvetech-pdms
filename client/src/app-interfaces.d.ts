@@ -7,6 +7,7 @@ declare module "@app-interfaces" {
     IJob,
     IPartner,
     IPermission,
+    IRideShareDriver,
     IRideShareDriverSubscription,
     ITechnician,
     IVehicle,
@@ -170,6 +171,11 @@ declare module "@app-interfaces" {
     images: IImageButtonData[];
     setImages: React.Dispatch<React.SetStateAction<IImageButtonData[]>>;
     imageRef: React.RefObject<HTMLInputElement>;
+  }
+
+  interface RideShareDriverPageContextProps {
+    driver: IRideShareDriver | null;
+    setDriver: React.Dispatch<React.SetStateAction<IRideShareDriver | null>>;
   }
 
   export interface IComponentErrorState {

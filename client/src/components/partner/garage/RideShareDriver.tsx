@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { createContext, useEffect, useMemo, useState } from "react";
 import useAppSelector from "../../../hooks/useAppSelector";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import { getDriversFilterDataAction } from "../../../store/actions/partnerActions";
@@ -15,7 +15,10 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { IDriversFilterData } from "@app-interfaces";
+import {
+  IDriversFilterData,
+  RideShareDriverPageContextProps,
+} from "@app-interfaces";
 import { getDriverAction } from "../../../store/actions/rideShareActions";
 import { IRideShareDriver } from "@app-models";
 import AppLoader from "../../loader/AppLoader";
@@ -27,6 +30,9 @@ const filterOptions = createFilterOptions({
   matchFrom: "any",
   stringify: (option: IDriversFilterData) => `${option.query}`,
 });
+
+export const RideShareDriverPageContext =
+  createContext<RideShareDriverPageContextProps | null>(null);
 
 function RideShareDriver() {
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
@@ -86,7 +92,7 @@ function RideShareDriver() {
   };
 
   return (
-    <React.Fragment>
+    <RideShareDriverPageContext.Provider value={{ driver, setDriver }}>
       <Stack direction="column" spacing={5}>
         <Grid container justifyContent="center" alignItems="center">
           <Grid item xs={12} md={6}>
@@ -137,7 +143,7 @@ function RideShareDriver() {
         </Box>
       </Stack>
       <AppLoader show={rideShareReducer.getDriverStatus === "loading"} />
-    </React.Fragment>
+    </RideShareDriverPageContext.Provider>
   );
 }
 
