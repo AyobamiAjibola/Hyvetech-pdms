@@ -16,15 +16,13 @@ function DriverPage() {
   const [tabs, setTabs] = useState<ITab[]>([]);
 
   const location = useLocation();
-  const { isSuperAdmin } = useAdmin();
+  const { isSuperAdmin, isDriverAdmin } = useAdmin();
 
   useEffect(() => {
-    setTabs(
-      driverDetailTabs.filter(
-        (value) => !isSuperAdmin && value.name === "Vehicles"
-      )
-    );
-  }, [isSuperAdmin]);
+    if (isSuperAdmin) setTabs(driverDetailTabs);
+    if (isDriverAdmin)
+      setTabs(driverDetailTabs.filter((value) => value.name === "Vehicles"));
+  }, [isSuperAdmin, isDriverAdmin]);
 
   useEffect(() => {
     if (location.state) {
