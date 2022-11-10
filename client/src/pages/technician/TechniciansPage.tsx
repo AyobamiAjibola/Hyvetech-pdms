@@ -1,16 +1,7 @@
 import React, { createContext, useEffect, useMemo } from "react";
 import useAppSelector from "../../hooks/useAppSelector";
 import useAppDispatch from "../../hooks/useAppDispatch";
-import {
-  Box,
-  Button,
-  DialogActions,
-  DialogContentText,
-  Divider,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, DialogActions, DialogContentText, Divider, Grid, Stack, Typography } from "@mui/material";
 import moment from "moment";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Cancel, Edit, PersonAdd, Visibility } from "@mui/icons-material";
@@ -33,8 +24,7 @@ import AppAlert from "../../components/alerts/AppAlert";
 import TechnicianPage from "./TechnicianPage";
 import { MESSAGES } from "../../config/constants";
 
-export const TechniciansPageContext =
-  createContext<TechniciansPageContextProps | null>(null);
+export const TechniciansPageContext = createContext<TechniciansPageContextProps | null>(null);
 
 function TechniciansPage() {
   const technician = useTechnician();
@@ -69,6 +59,10 @@ function TechniciansPage() {
     };
     // eslint-disable-next-line
   }, [dispatch]);
+
+  const getTechnicians = useMemo(() => {
+    return technicianReducer.technicians;
+  }, [technicianReducer.technicians]);
 
   const columns = useMemo(() => {
     return [
@@ -240,7 +234,7 @@ function TechniciansPage() {
           <Stack direction="row" sx={{ width: "100%" }}>
             <AppDataGrid
               loading={technicianReducer.getTechniciansStatus === "loading"}
-              rows={technicianReducer.technicians}
+              rows={getTechnicians}
               columns={columns}
               showToolbar
             />
@@ -291,9 +285,7 @@ function TechniciansPage() {
         Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
         ActionComponent={
           <DialogActions>
-            <Button onClick={() => technician.setShowDelete(false)}>
-              Disagree
-            </Button>
+            <Button onClick={() => technician.setShowDelete(false)}>Disagree</Button>
             <Button onClick={technician.handleDelete}>Agree</Button>
           </DialogActions>
         }

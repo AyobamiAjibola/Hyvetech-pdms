@@ -19,11 +19,8 @@ interface ICheckListFormProps {
 export default function CheckListForm(props: ICheckListFormProps) {
   const [options, setOptions] = useState<ISelectData[]>([]);
 
-  const { handleChange, values, resetForm } =
-    useFormikContext<ICheckListValues>();
-  const { partners, showCreate, showEdit } = useContext(
-    CheckListsPageContext
-  ) as CheckListsPageContextProps;
+  const { handleChange, values, resetForm } = useFormikContext<ICheckListValues>();
+  const { partners, showCreate, showEdit } = useContext(CheckListsPageContext) as CheckListsPageContextProps;
 
   useEffect(() => {
     if (!showCreate || !showEdit) resetForm();
@@ -46,12 +43,7 @@ export default function CheckListForm(props: ICheckListFormProps) {
 
   return (
     <Form>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        sx={{ p: 1 }}
-      >
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }}>
         <Grid item xs={12}>
           <TextInputField
             onChange={handleChange}
@@ -67,6 +59,7 @@ export default function CheckListForm(props: ICheckListFormProps) {
             name={fields.partners.name}
             label={fields.partners.label}
             multiple
+            fullWidth
             data={options}
           />
         </Grid>

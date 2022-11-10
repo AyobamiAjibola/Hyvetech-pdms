@@ -254,7 +254,7 @@ function CheckListsPage() {
 
       <AppModal
         fullWidth
-        size="xs"
+        size="sm"
         show={showCreate}
         Content={
           <Formik
@@ -269,7 +269,7 @@ function CheckListsPage() {
       />
       <AppModal
         fullWidth
-        size="xs"
+        size="sm"
         show={showEdit}
         Content={
           <Formik
