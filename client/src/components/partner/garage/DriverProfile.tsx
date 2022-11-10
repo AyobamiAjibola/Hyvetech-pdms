@@ -1,13 +1,4 @@
-import {
-  Avatar,
-  Box,
-  LinearProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-} from "@mui/material";
+import { Avatar, Box, LinearProgress, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import useAppSelector from "../../../hooks/useAppSelector";
 import settings from "../../../config/settings";
@@ -47,10 +38,7 @@ function DriverProfile() {
 
   return (
     <React.Fragment>
-      <TableContainer
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-        component={Box}
-      >
+      <TableContainer sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} component={Box}>
         <Table sx={{ maxWidth: 500 }} aria-label="simple table">
           {driver ? (
             <TableBody>
@@ -85,9 +73,7 @@ function DriverProfile() {
                 <TableCell colSpan={4} align="right">
                   {driver.frontLicenseImageUrl && (
                     <Avatar
-                      onClick={() =>
-                        handleViewImage(driver.frontLicenseImageUrl)
-                      }
+                      onClick={() => handleViewImage(driver.frontLicenseImageUrl)}
                       sx={{ cursor: "pointer" }}
                       variant="square"
                       src={driver.frontLicenseImageUrl}
@@ -104,9 +90,7 @@ function DriverProfile() {
                 <TableCell colSpan={4} align="right">
                   {driver.rearLicenseImageUrl && (
                     <Avatar
-                      onClick={() =>
-                        handleViewImage(driver.rearLicenseImageUrl)
-                      }
+                      onClick={() => handleViewImage(driver.rearLicenseImageUrl)}
                       sx={{ cursor: "pointer" }}
                       variant="square"
                       src={driver.rearLicenseImageUrl}
@@ -131,13 +115,11 @@ function DriverProfile() {
         </Table>
       </TableContainer>
       <AppModal
+        fullScreen
         show={viewImage}
         title="Driver license"
-        size="sm"
-        fullWidth
-        Content={
-          <img src={imageUrl} alt="Driver license" crossOrigin="anonymous" />
-        }
+        size="xl"
+        Content={<img src={imageUrl} alt="Driver license" crossOrigin="anonymous" />}
         onClose={() => setViewImage(false)}
       />
     </React.Fragment>

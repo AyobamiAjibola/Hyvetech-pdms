@@ -59,8 +59,6 @@ export default function DriverVehicle(props: ILocationState) {
 
   const location = useLocation();
 
-  console.log(vehicle);
-
   useEffect(() => {
     const partnerId = params.id as string;
 
@@ -73,10 +71,7 @@ export default function DriverVehicle(props: ILocationState) {
     if (vehicleReducer.getDriverVehicleSubscriptionStatus === "completed") {
       // console.log(vehicleReducer.driverSubscriptions);
     }
-  }, [
-    vehicleReducer.driverSubscriptions,
-    vehicleReducer.getDriverVehicleSubscriptionStatus,
-  ]);
+  }, [vehicleReducer.driverSubscriptions, vehicleReducer.getDriverVehicleSubscriptionStatus]);
 
   useEffect(() => {
     if (location.state) {
@@ -91,14 +86,7 @@ export default function DriverVehicle(props: ILocationState) {
     if (vehicle) {
       dispatch(getDriverVehicleSubscriptionAction(vehicle.id));
     }
-  }, [
-    dispatch,
-    location.state,
-    props.isCustomer,
-    props.isDriver,
-    setVehicle,
-    vehicle,
-  ]);
+  }, [dispatch, location.state, props.isCustomer, props.isDriver, setVehicle, vehicle]);
 
   const handleViewImage = async (file: string) => {
     file = `${settings.api.driverBaseURL}/${file}`;
@@ -126,19 +114,10 @@ export default function DriverVehicle(props: ILocationState) {
   return (
     <React.Fragment>
       {vehicle ? (
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 2, sm: 8, md: 12 }}
-        >
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 2, sm: 8, md: 12 }}>
           <Grid item xs={12} sm={3} md={3}>
             <Card>
-              <CardMedia
-                component="img"
-                alt="green iguana"
-                height="140"
-                image={carImg}
-              />
+              <CardMedia component="img" alt="green iguana" height="140" image={carImg} />
               <CardContent>
                 <Typography variant="h5" component="div">
                   {vehicle.modelYear} {vehicle.make} {vehicle.model}
@@ -161,29 +140,19 @@ export default function DriverVehicle(props: ILocationState) {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Model Year</Typography>
-                    <Typography variant="caption">
-                      {vehicle.modelYear}
-                    </Typography>
+                    <Typography variant="caption">{vehicle.modelYear}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Engine Type</Typography>
-                    <Typography variant="caption">
-                      {vehicle.engineCylinders}
-                    </Typography>
+                    <Typography variant="caption">{vehicle.engineCylinders}</Typography>
                   </Box>
                   <Box>
-                    <Typography variant="subtitle2">
-                      Vehicle Ownership
-                    </Typography>
-                    <Typography variant="caption">
-                      {vehicle.isOwner ? "Owner" : "-"}
-                    </Typography>
+                    <Typography variant="subtitle2">Vehicle Ownership</Typography>
+                    <Typography variant="caption">{vehicle.isOwner ? "Owner" : "-"}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Date Added</Typography>
-                    <Typography variant="caption">
-                      {moment(vehicle.createdAt).format("LL")}
-                    </Typography>
+                    <Typography variant="caption">{moment(vehicle.createdAt).format("LL")}</Typography>
                   </Box>
                 </Stack>
                 <Divider sx={{ my: 2 }} />
@@ -194,9 +163,7 @@ export default function DriverVehicle(props: ILocationState) {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Engine Model</Typography>
-                    <Typography variant="caption">
-                      {vehicle.engineModel}
-                    </Typography>
+                    <Typography variant="caption">{vehicle.engineModel}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">VIN</Typography>
@@ -208,24 +175,18 @@ export default function DriverVehicle(props: ILocationState) {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Plate Number</Typography>
-                    <Typography variant="caption">
-                      {vehicle.plateNumber}
-                    </Typography>
+                    <Typography variant="caption">{vehicle.plateNumber}</Typography>
                   </Box>
                 </Stack>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="subtitle1">Vehicle Papers</Typography>
                 <Stack direction="row" spacing={1}>
                   <Box sx={{ minWidth: 160 }}>
-                    <Typography variant="caption">
-                      Vehicle Inspection
-                    </Typography>
+                    <Typography variant="caption">Vehicle Inspection</Typography>
                     {vehicle.vehicleInspectionFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.vehicleInspectionFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.vehicleInspectionFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.vehicleInspectionFileUrl}
@@ -239,9 +200,7 @@ export default function DriverVehicle(props: ILocationState) {
                     {vehicle.motorReceiptFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.motorReceiptFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.motorReceiptFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.motorReceiptFileUrl}
@@ -251,15 +210,11 @@ export default function DriverVehicle(props: ILocationState) {
                     )}
                   </Box>
                   <Box sx={{ minWidth: 160 }}>
-                    <Typography variant="caption">
-                      Proof Of Ownership
-                    </Typography>
+                    <Typography variant="caption">Proof Of Ownership</Typography>
                     {vehicle.proofOfOwnershipFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.proofOfOwnershipFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.proofOfOwnershipFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.proofOfOwnershipFileUrl}
@@ -273,9 +228,7 @@ export default function DriverVehicle(props: ILocationState) {
                     {vehicle.roadWorthinessFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.roadWorthinessFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.roadWorthinessFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.roadWorthinessFileUrl}
@@ -285,15 +238,11 @@ export default function DriverVehicle(props: ILocationState) {
                     )}
                   </Box>
                   <Box sx={{ minWidth: 160 }}>
-                    <Typography variant="caption">
-                      Registration Number
-                    </Typography>
+                    <Typography variant="caption">Registration Number</Typography>
                     {vehicle.registrationNumberFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.registrationNumberFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.registrationNumberFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.registrationNumberFileUrl}
@@ -303,15 +252,11 @@ export default function DriverVehicle(props: ILocationState) {
                     )}
                   </Box>
                   <Box sx={{ minWidth: 160 }}>
-                    <Typography variant="caption">
-                      Third Party Insurance
-                    </Typography>
+                    <Typography variant="caption">Third Party Insurance</Typography>
                     {vehicle.thirdPartyInsuranceFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.thirdPartyInsuranceFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.thirdPartyInsuranceFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.thirdPartyInsuranceFileUrl}
@@ -340,18 +285,14 @@ export default function DriverVehicle(props: ILocationState) {
                       <List>
                         {vehicleReducer.driverSubscriptions.length ? (
                           vehicleReducer.driverSubscriptions
-                            .filter(
-                              (sub) => sub.status !== APPOINTMENT_STATUS.cancel
-                            )
+                            .filter((sub) => sub.status !== APPOINTMENT_STATUS.cancel)
                             .map((sub, index) => {
                               return (
                                 <ListItem
                                   key={index}
                                   secondaryAction={
                                     <IconButton
-                                      onClick={() =>
-                                        handleViewSubscription(sub)
-                                      }
+                                      onClick={() => handleViewSubscription(sub)}
                                       edge="end"
                                       aria-label="view"
                                     >
@@ -385,11 +326,7 @@ export default function DriverVehicle(props: ILocationState) {
           </Grid>
         </Grid>
       ) : (
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 2, sm: 8, md: 12 }}
-        >
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 2, sm: 8, md: 12 }}>
           <Grid item xs={12}>
             <Typography>No Data</Typography>
           </Grid>
@@ -399,20 +336,11 @@ export default function DriverVehicle(props: ILocationState) {
       <AppModal
         show={viewImage}
         title="Vehicle paper"
-        size="sm"
-        fullWidth
-        Content={
-          <img src={imageUrl} alt="Vehicle paper" crossOrigin="anonymous" />
-        }
+        fullScreen
+        Content={<img src={imageUrl} alt="Vehicle paper" crossOrigin="anonymous" />}
         onClose={() => setViewImage(false)}
       />
-      <AppModal
-        fullWidth
-        size="xs"
-        show={viewSub}
-        Content={<DriverSubscription />}
-        onClose={() => setViewSub(false)}
-      />
+      <AppModal fullWidth size="xs" show={viewSub} Content={<DriverSubscription />} onClose={() => setViewSub(false)} />
     </React.Fragment>
   );
 }
