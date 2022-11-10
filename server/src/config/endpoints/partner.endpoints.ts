@@ -4,6 +4,7 @@ import {
   createPartnerHandler,
   createPartnerKycHandler,
   createPartnerSettingsHandler,
+  deletePartnerHandler,
   deletePlanHandler,
   driversFilterDataHandler,
   filterDriversHandler,
@@ -108,6 +109,12 @@ const partnerEndpoints: RouteEndpoints = [
     method: "delete",
     path: "/partners",
     handler: deletePlanHandler,
+  },
+  {
+    name: "delete partner",
+    method: "delete",
+    path: "/partners/:partnerId",
+    handler: deletePartnerHandler,
   },
 ];
 

@@ -530,6 +530,7 @@ declare module "@app-models" {
     isSubmitted: boolean;
     partner: IPartner;
     partnerId: number;
+    partners: IPartner[];
     job: IJob;
     jobId: number;
     createdAt: Date;

@@ -6,11 +6,7 @@ import { InferAttributes, Op } from "sequelize";
 import CustomAPIError from "../exceptions/CustomAPIError";
 import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
-import {
-  CATEGORIES,
-  QUEUE_EVENTS,
-  UPLOAD_BASE_PATH,
-} from "../config/constants";
+import { CATEGORIES, QUEUE_EVENTS, UPLOAD_BASE_PATH } from "../config/constants";
 import Generic from "../utils/Generic";
 import { appCommonTypes } from "../@types/app-common";
 import settings from "../config/settings";
@@ -114,13 +110,7 @@ export default class PartnerController {
             phone: Joi.string().max(11).required().label("Phone Number"),
           }).validate(fields);
 
-          if (error)
-            return reject(
-              CustomAPIError.response(
-                error.details[0].message,
-                HttpStatus.BAD_REQUEST.code
-              )
-            );
+          if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
           //check if partner with email or name already exist
           const _partner = await dataSources.partnerDAOService.findByAny({
@@ -128,12 +118,7 @@ export default class PartnerController {
           });
 
           if (_partner)
-            return reject(
-              CustomAPIError.response(
-                `Partner with name already exist`,
-                HttpStatus.BAD_REQUEST.code
-              )
-            );
+            return reject(CustomAPIError.response(`Partner with name already exist`, HttpStatus.BAD_REQUEST.code));
 
           const state = await dataSources.stateDAOService.findByAny({
             where: {
@@ -141,13 +126,7 @@ export default class PartnerController {
             },
           });
 
-          if (!state)
-            return reject(
-              CustomAPIError.response(
-                `State does not exist`,
-                HttpStatus.NOT_FOUND.code
-              )
-            );
+          if (!state) return reject(CustomAPIError.response(`State does not exist`, HttpStatus.NOT_FOUND.code));
 
           const password = <string>process.env.PARTNER_PASS;
           const partnerValues: any = {
@@ -219,21 +198,9 @@ export default class PartnerController {
             });
           }
 
-          if (!category)
-            return reject(
-              CustomAPIError.response(
-                `Category does not exist`,
-                HttpStatus.BAD_REQUEST.code
-              )
-            );
+          if (!category) return reject(CustomAPIError.response(`Category does not exist`, HttpStatus.BAD_REQUEST.code));
 
-          if (!role)
-            return reject(
-              CustomAPIError.response(
-                `Role does not exist`,
-                HttpStatus.NOT_FOUND.code
-              )
-            );
+          if (!role) return reject(CustomAPIError.response(`Role does not exist`, HttpStatus.NOT_FOUND.code));
 
           const logo = files.logo as File;
           const basePath = `${UPLOAD_BASE_PATH}/partners`;
@@ -247,16 +214,12 @@ export default class PartnerController {
           }
 
           //create partner
-          const partner = await dataSources.partnerDAOService.create(
-            partnerValues
-          );
+          const partner = await dataSources.partnerDAOService.create(partnerValues);
 
           //create default admin user
           const user = await dataSources.userDAOService.create(userValues);
 
-          const contact = await dataSources.contactDAOService.create(
-            contactValues
-          );
+          const contact = await dataSources.contactDAOService.create(contactValues);
 
           await user.$add("roles", [role]);
           await partner.$add("categories", [category]);
@@ -275,10 +238,7 @@ export default class PartnerController {
               },
               subject: mailSubject,
               html: mailText,
-              bcc: [
-                <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-                <string>process.env.SMTP_EMAIL_FROM,
-              ],
+              bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
             },
           });
 
@@ -294,6 +254,26 @@ export default class PartnerController {
         }
       });
     });
+  }
+
+  public async deletePartner(req: Request) {
+    try {
+      const partnerId = req.params.partnerId as unknown as string;
+
+      const partner = await dataSources.partnerDAOService.findById(+partnerId);
+
+      if (!partner)
+        return Promise.reject(CustomAPIError.response("Customer does not exist", HttpStatus.NOT_FOUND.code));
+
+      await partner.destroy();
+
+      return Promise.resolve({
+        code: HttpStatus.OK.code,
+        message: `Partner deleted successfully.`,
+      } as HttpResponse<void>);
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 
   /**
@@ -313,13 +293,7 @@ export default class PartnerController {
         workshopAddress: Joi.string().allow("").label("Workshop Address"),
       }).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       const partner = await dataSources.partnerDAOService.findById(+partnerId, {
         include: [{ all: true }],
@@ -327,10 +301,7 @@ export default class PartnerController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(
-            `Partner with id ${partnerId} does not exist`,
-            HttpStatus.BAD_REQUEST.code
-          )
+          CustomAPIError.response(`Partner with id ${partnerId} does not exist`, HttpStatus.BAD_REQUEST.code)
         );
 
       for (const valueKey in value) {
@@ -365,9 +336,7 @@ export default class PartnerController {
    * @name createSettings
    * @param req
    */
-  public async createSettings(
-    req: Request
-  ): Promise<HttpResponse<InferAttributes<Partner>>> {
+  public async createSettings(req: Request): Promise<HttpResponse<InferAttributes<Partner>>> {
     const partnerId = req.params.partnerId as string;
 
     return new Promise((resolve, reject) => {
@@ -389,27 +358,15 @@ export default class PartnerController {
             workingHours: Joi.string().allow("").label("Working Hours"),
           }).validate(fields);
 
-          if (error)
-            return reject(
-              CustomAPIError.response(
-                error.details[0].message,
-                HttpStatus.BAD_REQUEST.code
-              )
-            );
+          if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-          const partner = await dataSources.partnerDAOService.findById(
-            +partnerId,
-            {
-              include: [{ all: true }],
-            }
-          );
+          const partner = await dataSources.partnerDAOService.findById(+partnerId, {
+            include: [{ all: true }],
+          });
 
           if (!partner)
             return reject(
-              CustomAPIError.response(
-                `Partner with id ${partnerId} does not exist`,
-                HttpStatus.BAD_REQUEST.code
-              )
+              CustomAPIError.response(`Partner with id ${partnerId} does not exist`, HttpStatus.BAD_REQUEST.code)
             );
 
           value.brands = JSON.parse(value.brands);
@@ -485,12 +442,7 @@ export default class PartnerController {
       });
 
       if (!partner)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.NOT_FOUND.value,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
 
       const result = PartnerController.formatPartner(partner);
 
@@ -516,21 +468,10 @@ export default class PartnerController {
     try {
       const { error, value } = Joi.object($planSchema).validate(body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       if (undefined === value)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.BAD_REQUEST.value,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
 
       const planExist = await dataSources.planDAOService.findByAny({
         where: { label: value.label },
@@ -538,20 +479,14 @@ export default class PartnerController {
 
       if (planExist)
         return Promise.reject(
-          CustomAPIError.response(
-            `Plan with name ${value.label} already exist.`,
-            HttpStatus.BAD_REQUEST.code
-          )
+          CustomAPIError.response(`Plan with name ${value.label} already exist.`, HttpStatus.BAD_REQUEST.code)
         );
 
       const partner = await dataSources.partnerDAOService.findById(partnerId);
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(
-            `Partner with ${partnerId} does not exist.`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code)
         );
 
       const category = await dataSources.categoryDAOService.findByAny({
@@ -560,10 +495,7 @@ export default class PartnerController {
 
       if (!category)
         return Promise.reject(
-          CustomAPIError.response(
-            `Category with ${value.serviceMode} does not exist.`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Category with ${value.serviceMode} does not exist.`, HttpStatus.NOT_FOUND.code)
         );
 
       //todo: use type of programme to find subscription
@@ -572,17 +504,10 @@ export default class PartnerController {
         slug: Generic.generateSlug(value.label),
       };
 
-      const subscription = await dataSources.subscriptionDAOService.create(
-        subValues
-      );
+      const subscription = await dataSources.subscriptionDAOService.create(subValues);
 
       if (!subscription)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Error adding subscription.`,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Error adding subscription.`, HttpStatus.BAD_REQUEST.code));
 
       Object.assign(value, {
         label: Generic.generateSlug(`${value.label} (${value.serviceMode})`),
@@ -619,33 +544,18 @@ export default class PartnerController {
 
   public async addPaymentPlan(body: ICreatePaymentPlanBody, partnerId: number) {
     try {
-      const { value, error } =
-        Joi.object<ICreatePaymentPlanBody>($paymentPlanSchema).validate(body);
+      const { value, error } = Joi.object<ICreatePaymentPlanBody>($paymentPlanSchema).validate(body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       if (undefined === value)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.BAD_REQUEST.value,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
 
       const partner = await dataSources.partnerDAOService.findById(partnerId);
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(
-            `Partner with ${partnerId} does not exist.`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code)
         );
 
       const plan = await dataSources.planDAOService.findByAny({
@@ -654,18 +564,14 @@ export default class PartnerController {
 
       if (!plan)
         return Promise.reject(
-          CustomAPIError.response(
-            `Plan with ${value.plan} does not exist.`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Plan with ${value.plan} does not exist.`, HttpStatus.NOT_FOUND.code)
         );
 
       const serviceMode = plan.serviceMode;
 
-      const serviceModeCategory =
-        await dataSources.categoryDAOService.findByAny({
-          where: { name: serviceMode },
-        });
+      const serviceModeCategory = await dataSources.categoryDAOService.findByAny({
+        where: { name: serviceMode },
+      });
 
       if (!serviceModeCategory)
         return Promise.reject(
@@ -675,24 +581,18 @@ export default class PartnerController {
           )
         );
 
-      const paymentGateway =
-        await dataSources.paymentGatewayDAOService.findByAny({
-          where: { default: true },
-        });
+      const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
+        where: { default: true },
+      });
 
       if (!paymentGateway)
         return Promise.reject(
-          CustomAPIError.response(
-            `No default payment gateway available.`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`No default payment gateway available.`, HttpStatus.NOT_FOUND.code)
         );
 
       const pricing = value.pricing;
 
-      const axiosResponse = await axiosClient.get(
-        `${paymentGateway.baseUrl}/plan`
-      );
+      const axiosResponse = await axiosClient.get(`${paymentGateway.baseUrl}/plan`);
 
       const _gwPaymentPlans = axiosResponse.data.data;
 
@@ -709,15 +609,11 @@ export default class PartnerController {
             amount: `${+price.amount * 100}`,
           };
 
-          const response = await axiosClient.post(
-            `${paymentGateway.baseUrl}/plan`,
-            payload,
-            {
-              headers: {
-                Authorization: `Bearer ${paymentGateway.secretKey}`,
-              },
-            }
-          );
+          const response = await axiosClient.post(`${paymentGateway.baseUrl}/plan`, payload, {
+            headers: {
+              Authorization: `Bearer ${paymentGateway.secretKey}`,
+            },
+          });
 
           return response.data;
         }
@@ -732,12 +628,8 @@ export default class PartnerController {
         label: Generic.generateSlug(`${plan.serviceMode} ${value.name}`),
         value: price.amount,
         coverage: value.coverage,
-        descriptions: value.descriptions.map((value) =>
-          JSON.stringify({ ...value })
-        ),
-        parameters: value.parameters.map((value) =>
-          JSON.stringify({ ...value })
-        ),
+        descriptions: value.descriptions.map((value) => JSON.stringify({ ...value })),
+        parameters: value.parameters.map((value) => JSON.stringify({ ...value })),
         pricing: value.pricing.map((value) => JSON.stringify({ ...value })),
       }));
 
@@ -751,17 +643,12 @@ export default class PartnerController {
 
         if (exist) {
           return Promise.reject(
-            CustomAPIError.response(
-              `Payment Plan with info: ${datum.name} already exist.`,
-              HttpStatus.BAD_REQUEST.code
-            )
+            CustomAPIError.response(`Payment Plan with info: ${datum.name} already exist.`, HttpStatus.BAD_REQUEST.code)
           );
         }
       }
 
-      const paymentPlan = await dataSources.paymentPlanDAOService.bulkCreate(
-        paymentPlanData
-      );
+      const paymentPlan = await dataSources.paymentPlanDAOService.bulkCreate(paymentPlanData);
 
       //link plan payment plans
       await plan.$add("paymentPlans", paymentPlan);
@@ -818,10 +705,7 @@ export default class PartnerController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(
-            `Partner with ${partnerId} does not exist.`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code)
         );
 
       const paymentPlans = await dataSources.paymentPlanDAOService.findAll({
@@ -859,29 +743,15 @@ export default class PartnerController {
         plateNumber: Joi.string().allow("").label("Plate Number"),
       }).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
-      if (!partner)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Partner does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+      if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist`, HttpStatus.NOT_FOUND.code));
 
       const driverInfo: IDriverFilterProps[] = [];
 
-      const hasValues = _.values<IDriverFilter>(value).some(
-        (filter) => filter.length > 0
-      );
+      const hasValues = _.values<IDriverFilter>(value).some((filter) => filter.length > 0);
 
       if (!hasValues) return Promise.resolve(response);
 
@@ -947,13 +817,7 @@ export default class PartnerController {
     try {
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
-      if (!partner)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Partner does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+      if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist`, HttpStatus.NOT_FOUND.code));
 
       let drivers: any[] = [];
 
@@ -1013,9 +877,7 @@ export default class PartnerController {
 
     if (workingHours || brands) {
       Object.assign(partner, {
-        workingHours: workingHours.map((workingHour) =>
-          JSON.parse(workingHour)
-        ),
+        workingHours: workingHours.map((workingHour) => JSON.parse(workingHour)),
         brands: brands.map((brand) => JSON.parse(brand)),
       });
     }
@@ -1033,13 +895,7 @@ export default class PartnerController {
 
         const result = plan;
 
-        if (!plan)
-          return Promise.reject(
-            CustomAPIError.response(
-              `Plan does not exist`,
-              HttpStatus.NOT_FOUND.code
-            )
-          );
+        if (!plan) return Promise.reject(CustomAPIError.response(`Plan does not exist`, HttpStatus.NOT_FOUND.code));
 
         const subscription = await plan.$get("subscriptions");
 
@@ -1060,31 +916,16 @@ export default class PartnerController {
       }
 
       if (paymentPlanId) {
-        const paymentPlan = await dataSources.paymentPlanDAOService.findById(
-          +paymentPlanId
-        );
+        const paymentPlan = await dataSources.paymentPlanDAOService.findById(+paymentPlanId);
 
         const result = paymentPlan;
 
         if (!paymentPlan)
-          return Promise.reject(
-            CustomAPIError.response(
-              `Payment Plan does not exist`,
-              HttpStatus.NOT_FOUND.code
-            )
-          );
+          return Promise.reject(CustomAPIError.response(`Payment Plan does not exist`, HttpStatus.NOT_FOUND.code));
 
-        const plan = await dataSources.planDAOService.findById(
-          paymentPlan.planId
-        );
+        const plan = await dataSources.planDAOService.findById(paymentPlan.planId);
 
-        if (!plan)
-          return Promise.reject(
-            CustomAPIError.response(
-              `Plan does not exist`,
-              HttpStatus.NOT_FOUND.code
-            )
-          );
+        if (!plan) return Promise.reject(CustomAPIError.response(`Plan does not exist`, HttpStatus.NOT_FOUND.code));
 
         await plan.$remove("paymentPlans", paymentPlan);
         await paymentPlan.destroy();

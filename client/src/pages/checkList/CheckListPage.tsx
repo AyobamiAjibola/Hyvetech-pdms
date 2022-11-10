@@ -11,14 +11,12 @@ import { Formik } from "formik";
 import SectionForm from "../../components/forms/checkList/SectionForm";
 import useAppDispatch from "../../hooks/useAppDispatch";
 import useAppSelector from "../../hooks/useAppSelector";
-import {
-  getCheckListAction,
-  updateCheckListAction,
-} from "../../store/actions/checkListActions";
+import { getCheckListAction, updateJobCheckListAction } from "../../store/actions/checkListActions";
 import checkListSectionModel from "../../components/forms/models/checkListSectionModel";
 import {
+  clearCreateJobCheckListStatus,
   clearGetCheckListsStatus,
-  clearUpdateCheckListStatus,
+  clearUpdateJobCheckListStatus,
 } from "../../store/reducers/checkListReducer";
 
 interface ILocationState {
@@ -26,8 +24,7 @@ interface ILocationState {
   checkListId: number;
 }
 
-export const CheckListPageContext =
-  createContext<CheckListPageContextProps | null>(null);
+export const CheckListPageContext = createContext<CheckListPageContextProps | null>(null);
 
 const { initialValues } = checkListSectionModel;
 
@@ -37,10 +34,8 @@ function CheckListPage() {
   const [checkList, setCheckList] = useState<ICheckList>();
   const [error, setError] = useState<CustomHookMessage>();
   const [success, setSuccess] = useState<CustomHookMessage>();
-  const [locationStateError, setLocationStateError] =
-    useState<CustomHookMessage>();
-  const [currentValues, setCurrentValues] =
-    useState<CheckListType>(initialValues);
+  const [locationStateError, setLocationStateError] = useState<CustomHookMessage>();
+  const [currentValues, setCurrentValues] = useState<CheckListType>(initialValues);
 
   const checkListReducer = useAppSelector((state) => state.checkListReducer);
   const dispatch = useAppDispatch();
@@ -53,9 +48,7 @@ function CheckListPage() {
     if (state) {
       setCheckListId(state.checkListId);
       setCheckLists(state.checkLists);
-      setCheckList(
-        state.checkLists.find((value) => value.id == state.checkListId)
-      );
+      setCheckList(state.checkLists.find((value) => value.id == state.checkListId));
       dispatch(getCheckListAction(state.checkListId));
     } else setLocationStateError({ message: MESSAGES.internalError });
   }, [location.state, dispatch]);
@@ -63,8 +56,7 @@ function CheckListPage() {
   useEffect(() => {
     if (checkListReducer.getCheckListStatus === "completed") {
       if (checkListReducer.checkList) {
-        const checkList =
-          checkListReducer.checkList as unknown as CheckListType;
+        const checkList = checkListReducer.checkList as unknown as CheckListType;
 
         setCurrentValues((prevState) => ({
           ...prevState,
@@ -75,77 +67,58 @@ function CheckListPage() {
   }, [checkListReducer.getCheckListStatus, checkListReducer.checkList]);
 
   useEffect(() => {
-    if (checkListReducer.updateCheckListStatus === "completed") {
+    if (checkListReducer.updateJobCheckListStatus === "completed") {
       if (checkListReducer.checkList) {
-        const checkList =
-          checkListReducer.checkList as unknown as CheckListType;
+        const checkList = checkListReducer.checkList as unknown as CheckListType;
 
         setCurrentValues((prevState) => ({
           ...prevState,
           sections: JSON.parse(JSON.stringify(checkList.sections)),
         }));
       }
-      setSuccess({ message: checkListReducer.updateCheckListSuccess });
+      setSuccess({ message: checkListReducer.updateJobCheckListSuccess });
     }
   }, [
-    checkListReducer.updateCheckListStatus,
+    checkListReducer.updateJobCheckListStatus,
     checkListReducer.checkList,
-    checkListReducer.updateCheckListSuccess,
+    checkListReducer.updateJobCheckListSuccess,
   ]);
 
   useEffect(() => {
-    if (checkListReducer.updateCheckListStatus === "failed") {
-      if (checkListReducer.updateCheckListError) {
-        setError({ message: checkListReducer.updateCheckListError });
+    if (checkListReducer.updateJobCheckListStatus === "failed") {
+      if (checkListReducer.updateJobCheckListError) {
+        setError({ message: checkListReducer.updateJobCheckListError });
       }
     }
-  }, [
-    checkListReducer.updateCheckListStatus,
-    checkListReducer.updateCheckListError,
-  ]);
+  }, [checkListReducer.updateJobCheckListStatus, checkListReducer.updateJobCheckListError]);
 
   useEffect(() => {
     return () => {
       dispatch(clearGetCheckListsStatus());
-      dispatch(clearUpdateCheckListStatus());
+      dispatch(clearUpdateJobCheckListStatus());
+      dispatch(clearCreateJobCheckListStatus());
       setCurrentValues(initialValues);
     };
   }, [dispatch]);
 
   const handleSubmit = (values: CheckListType) => {
-    if (undefined === checkListId)
-      return setError({ message: MESSAGES.internalError });
+    if (undefined === checkListId) return setError({ message: MESSAGES.internalError });
 
     const data = JSON.stringify(values);
 
-    dispatch(updateCheckListAction({ id: checkListId, data }));
+    dispatch(updateJobCheckListAction({ id: checkListId, data }));
   };
 
   if (locationStateError) {
-    return (
-      <Navigate
-        to={{ pathname: "/error" }}
-        state={{ message: locationStateError.message }}
-      />
-    );
+    return <Navigate to={{ pathname: "/error" }} state={{ message: locationStateError.message }} />;
   } else
     return (
-      <CheckListPageContext.Provider
-        value={{ checkListId, setCheckListId, checkLists, setCheckLists }}
-      >
+      <CheckListPageContext.Provider value={{ checkListId, setCheckListId, checkLists, setCheckLists }}>
         {checkList ? (
           <Stack spacing={3}>
             <h1>{checkList.name}</h1>
-            <Formik
-              initialValues={currentValues}
-              onSubmit={handleSubmit}
-              enableReinitialize
-            >
-              <SectionForm
-                isSubmitting={
-                  checkListReducer.updateCheckListStatus === "loading"
-                }
-              />
+            <Formik initialValues={currentValues} onSubmit={handleSubmit} enableReinitialize>
+              <SectionForm isSubmitting={checkListReducer.updateJobCheckListStatus === "loading"} />
             </Formik>
           </Stack>
         ) : (

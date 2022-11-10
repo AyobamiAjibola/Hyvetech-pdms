@@ -1,9 +1,11 @@
 import {
   createCheckListHandler,
   createJobCheckListHandler,
+  deleteCheckListHandler,
   getCheckListHandler,
   getCheckListsHandler,
   updateCheckListHandler,
+  updateJobCheckListHandler,
 } from "../../routes/checkListRoute";
 import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -18,9 +20,15 @@ const checkListEndpoints: RouteEndpoints = [
   },
   {
     name: "checkList",
-    method: "patch",
+    method: "put",
     path: checkListIdPath,
     handler: updateCheckListHandler,
+  },
+  {
+    name: "checkList",
+    method: "patch",
+    path: checkListIdPath,
+    handler: updateJobCheckListHandler,
   },
   {
     name: "checkList",
@@ -39,6 +47,12 @@ const checkListEndpoints: RouteEndpoints = [
     method: "post",
     path: "/checkLists/:jobId",
     handler: createJobCheckListHandler,
+  },
+  {
+    name: "checkList",
+    method: "delete",
+    path: checkListIdPath,
+    handler: deleteCheckListHandler,
   },
 ];
 

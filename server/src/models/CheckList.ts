@@ -1,29 +1,13 @@
-import {
-  AutoIncrement,
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { AutoIncrement, BelongsToMany, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Partner from "./Partner";
+import PartnerCheckList from "./PartnerCheckList";
 
 @Table({
   timestamps: true,
   tableName: "check_lists",
 })
-export default class CheckList extends Model<
-  InferAttributes<CheckList>,
-  InferCreationAttributes<CheckList>
-> {
+export default class CheckList extends Model<InferAttributes<CheckList>, InferCreationAttributes<CheckList>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "check_list_id", allowNull: false })
@@ -44,10 +28,6 @@ export default class CheckList extends Model<
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare isSubmitted: boolean;
 
-  @BelongsTo(() => Partner)
-  declare partner: NonAttribute<Partner>;
-
-  @ForeignKey(() => Partner)
-  @Column(DataType.INTEGER)
-  declare partnerId: NonAttribute<number>;
+  @BelongsToMany(() => Partner, () => PartnerCheckList)
+  declare partners: NonAttribute<Array<Partner & { PartnerCheckList: PartnerCheckList }>>;
 }

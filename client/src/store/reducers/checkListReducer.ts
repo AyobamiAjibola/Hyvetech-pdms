@@ -7,6 +7,7 @@ import {
   getCheckListAction,
   getCheckListsAction,
   updateCheckListAction,
+  updateJobCheckListAction,
 } from "../actions/checkListActions";
 import { ICheckList } from "@app-models";
 
@@ -15,13 +16,17 @@ interface ICheckListState {
   createCheckListSuccess: string;
   createCheckListError?: string;
 
+  updateCheckListStatus: IThunkAPIStatus;
+  updateCheckListSuccess: string;
+  updateCheckListError?: string;
+
   createJobCheckListStatus: IThunkAPIStatus;
   createJobCheckListSuccess: string;
   createJobCheckListError?: string;
 
-  updateCheckListStatus: IThunkAPIStatus;
-  updateCheckListSuccess: string;
-  updateCheckListError?: string;
+  updateJobCheckListStatus: IThunkAPIStatus;
+  updateJobCheckListSuccess: string;
+  updateJobCheckListError?: string;
 
   deleteCheckListStatus: IThunkAPIStatus;
   deleteCheckListSuccess: string;
@@ -44,13 +49,17 @@ const initialState: ICheckListState = {
   createCheckListSuccess: "",
   createCheckListError: "",
 
+  updateCheckListStatus: "idle",
+  updateCheckListSuccess: "",
+  updateCheckListError: "",
+
   createJobCheckListStatus: "idle",
   createJobCheckListSuccess: "",
   createJobCheckListError: "",
 
-  updateCheckListStatus: "idle",
-  updateCheckListSuccess: "",
-  updateCheckListError: "",
+  updateJobCheckListStatus: "idle",
+  updateJobCheckListSuccess: "",
+  updateJobCheckListError: "",
 
   deleteCheckListStatus: "idle",
   deleteCheckListSuccess: "",
@@ -78,16 +87,21 @@ const checkListSlice = createSlice({
       state.createCheckListError = "";
     },
 
+    clearUpdateCheckListStatus(state: ICheckListState) {
+      state.updateCheckListStatus = "idle";
+      state.updateCheckListSuccess = "";
+      state.updateCheckListError = "";
+    },
     clearCreateJobCheckListStatus(state: ICheckListState) {
       state.createJobCheckListStatus = "idle";
       state.createJobCheckListSuccess = "";
       state.createJobCheckListError = "";
     },
 
-    clearUpdateCheckListStatus(state: ICheckListState) {
-      state.updateCheckListStatus = "idle";
-      state.updateCheckListSuccess = "";
-      state.updateCheckListError = "";
+    clearUpdateJobCheckListStatus(state: ICheckListState) {
+      state.updateJobCheckListStatus = "idle";
+      state.updateJobCheckListSuccess = "";
+      state.updateJobCheckListError = "";
     },
     clearDeleteCheckListStatus(state: ICheckListState) {
       state.deleteCheckListStatus = "idle";
@@ -124,6 +138,23 @@ const checkListSlice = createSlice({
       });
 
     builder
+      .addCase(updateCheckListAction.pending, (state) => {
+        state.updateCheckListStatus = "loading";
+      })
+      .addCase(updateCheckListAction.fulfilled, (state, action) => {
+        state.updateCheckListStatus = "completed";
+        state.updateCheckListSuccess = action.payload.message;
+        state.checkLists = action.payload.results as ICheckList[];
+      })
+      .addCase(updateCheckListAction.rejected, (state, action) => {
+        state.updateCheckListStatus = "failed";
+
+        if (action.payload) {
+          state.updateCheckListError = action.payload.message;
+        } else state.updateCheckListError = action.error.message;
+      });
+
+    builder
       .addCase(createJobCheckListAction.pending, (state) => {
         state.createJobCheckListStatus = "loading";
       })
@@ -142,21 +173,21 @@ const checkListSlice = createSlice({
       });
 
     builder
-      .addCase(updateCheckListAction.pending, (state) => {
-        state.updateCheckListStatus = "loading";
+      .addCase(updateJobCheckListAction.pending, (state) => {
+        state.updateJobCheckListStatus = "loading";
       })
-      .addCase(updateCheckListAction.fulfilled, (state, action) => {
-        state.updateCheckListStatus = "completed";
-        state.updateCheckListSuccess = action.payload.message;
+      .addCase(updateJobCheckListAction.fulfilled, (state, action) => {
+        state.updateJobCheckListStatus = "completed";
+        state.updateJobCheckListSuccess = action.payload.message;
         state.checkLists = action.payload.results as ICheckList[];
         state.checkList = action.payload.result as ICheckList;
       })
-      .addCase(updateCheckListAction.rejected, (state, action) => {
-        state.updateCheckListStatus = "failed";
+      .addCase(updateJobCheckListAction.rejected, (state, action) => {
+        state.updateJobCheckListStatus = "failed";
 
         if (action.payload) {
-          state.updateCheckListError = action.payload.message;
-        } else state.updateCheckListError = action.error.message;
+          state.updateJobCheckListError = action.payload.message;
+        } else state.updateJobCheckListError = action.error.message;
       });
 
     builder
@@ -218,6 +249,7 @@ export const {
   clearUpdateCheckListStatus,
   clearGetCheckListStatus,
   clearGetCheckListsStatus,
+  clearUpdateJobCheckListStatus,
   clearCreateJobCheckListStatus,
 } = checkListSlice.actions;
 export default checkListSlice.reducer;

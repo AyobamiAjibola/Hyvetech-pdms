@@ -114,9 +114,7 @@ declare module "@app-interfaces" {
 
   interface DriverPageContextProps {
     driver?: IRideShareDriver;
-    setDriver: React.Dispatch<
-      React.SetStateAction<IRideShareDriver | undefined>
-    >;
+    setDriver: React.Dispatch<React.SetStateAction<IRideShareDriver | undefined>>;
   }
 
   interface TechniciansPageContextProps {
@@ -163,15 +161,15 @@ declare module "@app-interfaces" {
     setModeOfService: React.Dispatch<React.SetStateAction<string>>;
     partner: IPartner | null;
     setPartner: React.Dispatch<React.SetStateAction<IPartner | null>>;
+    showDelete: boolean;
+    setShowDelete: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
   interface DriverVehiclesContextProps {
     viewSub: boolean;
     setViewSub: React.Dispatch<React.SetStateAction<boolean>>;
     driverSub: IRideShareDriverSubscription | null;
-    setDriverSub: React.Dispatch<
-      React.SetStateAction<IRideShareDriverSubscription | null>
-    >;
+    setDriverSub: React.Dispatch<React.SetStateAction<IRideShareDriverSubscription | null>>;
     vehicle: IVehicle | null;
     setVehicle: React.Dispatch<React.SetStateAction<IVehicle | null>>;
   }

@@ -6,6 +6,7 @@ import {
   createPartnerAction,
   createPartnerKycAction,
   createPartnerSettingsAction,
+  deletePartnerAction,
   deletePaymentPlanAction,
   deletePlanAction,
   getDriversFilterDataAction,
@@ -22,6 +23,10 @@ interface IPartnerState {
   createPartnerStatus: IThunkAPIStatus;
   createPartnerSuccess: string;
   createPartnerError?: string;
+
+  deletePartnerStatus: IThunkAPIStatus;
+  deletePartnerSuccess: string;
+  deletePartnerError?: string;
 
   createPartnerKycStatus: IThunkAPIStatus;
   createPartnerKycSuccess: string;
@@ -85,6 +90,10 @@ const initialState: IPartnerState = {
   createPartnerError: "",
   createPartnerStatus: "idle",
   createPartnerSuccess: "",
+
+  deletePartnerError: "",
+  deletePartnerStatus: "idle",
+  deletePartnerSuccess: "",
 
   createPartnerKycError: "",
   createPartnerKycStatus: "idle",
@@ -153,6 +162,12 @@ const partnerSlice = createSlice({
       state.createPartnerSuccess = "";
       state.createPartnerError = "";
     },
+
+    clearDeletePartnerStatus(state: IPartnerState) {
+      state.deletePartnerStatus = "idle";
+      state.deletePartnerSuccess = "";
+      state.deletePartnerError = "";
+    },
     clearCreatePartnerKycStatus(state: IPartnerState) {
       state.createPartnerKycStatus = "idle";
       state.createPartnerKycSuccess = "";
@@ -216,6 +231,21 @@ const partnerSlice = createSlice({
         if (action.payload) {
           state.createPartnerError = action.payload.message;
         } else state.createPartnerError = action.error.message;
+      });
+
+    builder
+      .addCase(deletePartnerAction.pending, (state) => {
+        state.deletePartnerStatus = "loading";
+      })
+      .addCase(deletePartnerAction.fulfilled, (state, action) => {
+        state.deletePartnerStatus = "completed";
+        state.deletePartnerSuccess = action.payload.message;
+      })
+      .addCase(deletePartnerAction.rejected, (state, action) => {
+        state.deletePartnerStatus = "failed";
+        if (action.payload) {
+          state.deletePartnerError = action.payload.message;
+        } else state.deletePartnerError = action.error.message;
       });
 
     builder
@@ -350,8 +380,7 @@ const partnerSlice = createSlice({
       })
       .addCase(getDriversFilterDataAction.fulfilled, (state, action) => {
         state.getDriversFilterDataStatus = "completed";
-        state.driversFilterData = action.payload
-          .results as IDriversFilterData[];
+        state.driversFilterData = action.payload.results as IDriversFilterData[];
       })
       .addCase(getDriversFilterDataAction.rejected, (state, action) => {
         state.getDriversFilterDataStatus = "failed";
@@ -413,9 +442,7 @@ const partnerSlice = createSlice({
         if (state.paymentPlan) {
           const _paymentPlan = state.paymentPlan;
           let paymentPlans = [...state.paymentPlans];
-          paymentPlans = paymentPlans.filter(
-            (paymentPlan) => paymentPlan.id !== _paymentPlan.id
-          );
+          paymentPlans = paymentPlans.filter((paymentPlan) => paymentPlan.id !== _paymentPlan.id);
           state.paymentPlans = paymentPlans;
         }
       })
@@ -440,6 +467,7 @@ export const {
   clearCreatePartnerSettingsStatus,
   clearDeletePaymentPlanStatus,
   clearDeletePlanStatus,
+  clearDeletePartnerStatus,
 } = partnerSlice.actions;
 
 export default partnerSlice.reducer;

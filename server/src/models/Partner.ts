@@ -22,15 +22,13 @@ import Job from "./Job";
 import Technician from "./Technician";
 import PartnerTechnician from "./PartnerTechnician";
 import CheckList from "./CheckList";
+import PartnerCheckList from "./PartnerCheckList";
 
 @Table({
   timestamps: true,
   tableName: "partners",
 })
-export default class Partner extends Model<
-  InferAttributes<Partner>,
-  InferCreationAttributes<Partner>
-> {
+export default class Partner extends Model<InferAttributes<Partner>, InferCreationAttributes<Partner>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "partner_id", allowNull: false })
@@ -105,21 +103,15 @@ export default class Partner extends Model<
   @HasMany(() => User)
   declare users: NonAttribute<Array<User>>;
 
-  @HasMany(() => CheckList)
-  declare checkLists: NonAttribute<Array<CheckList>>;
+  @BelongsToMany(() => CheckList, () => PartnerCheckList)
+  declare checkLists: NonAttribute<Array<CheckList & { PartnerCheckList: PartnerCheckList }>>;
 
   @BelongsToMany(() => RideShareDriver, () => PartnerRideShareDriver)
-  declare rideShareDrivers: NonAttribute<
-    Array<RideShareDriver & { PartnerRideShareDriver: PartnerRideShareDriver }>
-  >;
+  declare rideShareDrivers: NonAttribute<Array<RideShareDriver & { PartnerRideShareDriver: PartnerRideShareDriver }>>;
 
   @BelongsToMany(() => Technician, () => PartnerTechnician)
-  declare technicians: NonAttribute<
-    Array<Technician & { PartnerTechnician: PartnerTechnician }>
-  >;
+  declare technicians: NonAttribute<Array<Technician & { PartnerTechnician: PartnerTechnician }>>;
 
   @BelongsToMany(() => Category, () => PartnerCategory)
-  declare categories: NonAttribute<
-    Array<Category & { PartnerCategory: PartnerCategory }>
-  >;
+  declare categories: NonAttribute<Array<Category & { PartnerCategory: PartnerCategory }>>;
 }
