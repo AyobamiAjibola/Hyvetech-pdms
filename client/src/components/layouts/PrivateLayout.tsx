@@ -34,15 +34,13 @@ import CheckListsPage from "../../pages/checkList/CheckListsPage";
 import CheckListPage from "../../pages/checkList/CheckListPage";
 import JobCheckListPage from "../../pages/checkList/JobCheckListPage";
 import JobCheckListReportPage from "../../pages/checkList/JobCheckListReportPage";
+import EstimatesPage from "../../pages/estimates/EstimatesPage";
+import EstimatePage from "../../pages/estimates/EstimatePage";
 
 function PrivateLayout() {
-  const { setOpenSideNav, openSideNav } = useContext(
-    AppContext
-  ) as AppContextProps;
+  const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
 
-  const appointmentReducer = useAppSelector(
-    (state) => state.appointmentReducer
-  );
+  const appointmentReducer = useAppSelector((state) => state.appointmentReducer);
 
   const handleDrawerOpen = () => {
     setOpenSideNav(true);
@@ -95,16 +93,13 @@ function PrivateLayout() {
             <Route path="/checkLists" element={<CheckListsPage />} />
             <Route path="/checkLists/:id" element={<CheckListPage />} />
             <Route path="/job-check-list/:id" element={<JobCheckListPage />} />
-            <Route
-              path="/job-check-list-report/:id"
-              element={<JobCheckListReportPage />}
-            />
+            <Route path="/estimates" element={<EstimatesPage />} />
+            <Route path="/estimates/:id" element={<EstimatePage />} />
+            <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />
           </Routes>
         </Box>
       </Box>
-      <AppLoader
-        show={appointmentReducer.updateAppointmentStatus === "loading"}
-      />
+      <AppLoader show={appointmentReducer.updateAppointmentStatus === "loading"} />
     </React.Fragment>
   );
 }

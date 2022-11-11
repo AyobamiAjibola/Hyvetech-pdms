@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 import { DriverVehiclesContextProps } from "@app-interfaces";
 import {
@@ -30,10 +24,7 @@ import useTechnician from "../../../hooks/useTechnician";
 import { ISelectData } from "../../forms/fields/SelectField";
 import { useNavigate, useParams } from "react-router-dom";
 import useAppDispatch from "../../../hooks/useAppDispatch";
-import {
-  driverAssignJobAction,
-  getJobsAction,
-} from "../../../store/actions/jobActions";
+import { driverAssignJobAction, getJobsAction } from "../../../store/actions/jobActions";
 import { CustomHookMessage } from "@app-types";
 import AppAlert from "../../alerts/AppAlert";
 import { FileDownload } from "@mui/icons-material";
@@ -56,9 +47,7 @@ function DriverSubscription() {
   const [checkLists, setCheckLists] = useState<ICheckList[]>([]);
   const [checkList, setCheckList] = useState<number>();
 
-  const { driverSub, vehicle, setViewSub } = useContext(
-    DriverVehiclesContext
-  ) as DriverVehiclesContextProps;
+  const { driverSub, vehicle, setViewSub } = useContext(DriverVehiclesContext) as DriverVehiclesContextProps;
 
   const navigate = useNavigate();
   useTechnician();
@@ -84,18 +73,16 @@ function DriverSubscription() {
   useEffect(() => {
     if (checkListReducer.getCheckListsStatus === "completed") {
       if (partnerId) {
-        setCheckLists(
-          checkListReducer.checkLists.filter(
-            (checkList) => checkList.partnerId === partnerId
-          )
+        let _checkLists = checkListReducer.checkLists;
+
+        _checkLists = _checkLists.filter((_checkList) =>
+          _checkList.partners.find((partner) => partner.id === partnerId)
         );
+
+        if (_checkLists.length) setCheckLists(_checkLists);
       }
     }
-  }, [
-    checkListReducer.getCheckListsStatus,
-    checkListReducer.checkLists,
-    partnerId,
-  ]);
+  }, [checkListReducer.getCheckListsStatus, checkListReducer.checkLists, partnerId]);
 
   useEffect(() => {
     if (technicianReducer.getTechniciansStatus === "completed") {
@@ -118,14 +105,7 @@ function DriverSubscription() {
       dispatch(getDriverVehicleSubscriptionAction(vehicle.id));
       setViewSub(false);
     }
-  }, [
-    dispatch,
-    jobReducer.driverAssignJobStatus,
-    jobReducer.driverAssignJobSuccess,
-    partnerId,
-    setViewSub,
-    vehicle,
-  ]);
+  }, [dispatch, jobReducer.driverAssignJobStatus, jobReducer.driverAssignJobSuccess, partnerId, setViewSub, vehicle]);
 
   useEffect(() => {
     if (jobReducer.driverAssignJobStatus === "failed") {
@@ -153,9 +133,7 @@ function DriverSubscription() {
 
   const vehicleIsBusy = useMemo(() => {
     if (driverSub) {
-      return driverSub.vehicles.every(
-        (vehicle) => vehicle.onInspection || vehicle.onMaintenance
-      );
+      return driverSub.vehicles.every((vehicle) => vehicle.onInspection || vehicle.onMaintenance);
     }
     return true;
   }, [driverSub]);
@@ -182,17 +160,13 @@ function DriverSubscription() {
   };
 
   const handleViewReport = useCallback(
-    (job: Partial<IJob>) =>
-      navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
+    (job: Partial<IJob>) => navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
     [navigate]
   );
 
   return (
     <React.Fragment>
-      <TableContainer
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-        component={Box}
-      >
+      <TableContainer sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} component={Box}>
         {driverSub ? (
           <TableBody>
             <TableRow>
@@ -264,13 +238,7 @@ function DriverSubscription() {
           </TableBody>
         )}
       </TableContainer>
-      <Typography
-        variant="h6"
-        component="div"
-        display="block"
-        sx={{ mt: 2 }}
-        gutterBottom
-      >
+      <Typography variant="h6" component="div" display="block" sx={{ mt: 2 }} gutterBottom>
         Inspections
       </Typography>
       <Grid container direction="column" spacing={1}>
@@ -282,9 +250,7 @@ function DriverSubscription() {
             onChange={(event, option) => {
               if (option) setCheckList(option.id);
             }}
-            renderInput={(params) => (
-              <TextField {...params} fullWidth label="Check List" />
-            )}
+            renderInput={(params) => <TextField {...params} fullWidth label="Check List" />}
           />
         </Grid>
         {jobs.map((job, index) => {
@@ -300,18 +266,14 @@ function DriverSubscription() {
                         handleAssignJob(option.value);
                       }
                     }}
-                    renderInput={(params) => (
-                      <TextField {...params} fullWidth label="Assign To" />
-                    )}
+                    renderInput={(params) => <TextField {...params} fullWidth label="Assign To" />}
                   />
                 </Grid>
               )}
               {!_.isEmpty(job) && (
                 <Grid item>
                   <Alert
-                    severity={
-                      JOB_STATUS.complete === job.status ? "success" : "info"
-                    }
+                    severity={JOB_STATUS.complete === job.status ? "success" : "info"}
                     action={
                       JOB_STATUS.complete === job.status && (
                         <IconButton

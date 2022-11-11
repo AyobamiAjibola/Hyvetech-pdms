@@ -299,7 +299,7 @@ export default class CheckListController {
     }
   }
 
-  public static async checkLists() {
+  public static async checkLists(req: Request) {
     try {
       const checkLists = await dataSources.checkListDAOService.findAll({
         include: [{ all: true }],

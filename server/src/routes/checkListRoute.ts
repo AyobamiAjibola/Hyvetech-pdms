@@ -27,7 +27,7 @@ export const updateJobCheckListHandler = authenticateRouteWrapper(async (req, re
 });
 
 export const getCheckListsHandler = authenticateRouteWrapper(async (req, res) => {
-  const response = await CheckListController.checkLists();
+  const response = await CheckListController.checkLists(req);
   res.status(response.code).json(response);
 });
 

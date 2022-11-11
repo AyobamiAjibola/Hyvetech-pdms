@@ -185,6 +185,11 @@ declare module "@app-interfaces" {
     setDriver: React.Dispatch<React.SetStateAction<IRideShareDriver | null>>;
   }
 
+  interface EstimatePageContextProps {
+    driver: IRideShareDriver | null;
+    setDriver: React.Dispatch<React.SetStateAction<IRideShareDriver | null>>;
+  }
+
   export interface IComponentErrorState {
     hasError: boolean;
     errorMessage: string;

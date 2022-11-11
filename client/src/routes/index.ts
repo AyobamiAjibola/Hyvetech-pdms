@@ -7,11 +7,12 @@ import {
   HomeRepairService,
   Payments,
   PlaylistAddCheck,
+  RequestQuote,
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
-} from '@mui/icons-material';
-import React from 'react';
+} from "@mui/icons-material";
+import React from "react";
 
 export interface ISideNav {
   tag: string;
@@ -20,9 +21,7 @@ export interface ISideNav {
   Icon: SvgIconComponent;
 }
 
-const SignInPage = React.lazy(
-  () => import("../pages/authentication/SignInPage")
-);
+const SignInPage = React.lazy(() => import("../pages/authentication/SignInPage"));
 
 const HomePage = React.lazy(() => import("../context/AppContextProvider"));
 
@@ -34,6 +33,12 @@ export const sideNavs: ISideNav[] = [
     name: "Check Lists",
     path: "/checkLists",
     Icon: PlaylistAddCheck,
+  },
+  {
+    tag: "super",
+    name: "Estimates",
+    path: "/estimates",
+    Icon: RequestQuote,
   },
   { tag: "drivers", name: "Drivers", path: "/drivers", Icon: TaxiAlert },
   {
