@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import jwt from "jsonwebtoken";
-import estimateModel, { IEstimateValues, ILabour, IPart } from "../components/forms/models/estimateModel";
-import { createEstimateAction, getEstimatesAction } from "../store/actions/estimateActions";
-import useAppSelector from "./useAppSelector";
-import useAppDispatch from "./useAppDispatch";
-import { CustomHookMessage } from "@app-types";
-import { IEstimate, IRideShareDriver } from "@app-models";
-import { useParams } from "react-router-dom";
-import cookie from "../utils/cookie";
-import settings from "../config/settings";
-import { CustomJwtPayload } from "@app-interfaces";
+import { useEffect, useState } from 'react';
+import jwt from 'jsonwebtoken';
+import estimateModel, { IEstimateValues, ILabour, IPart } from '../components/forms/models/estimateModel';
+import { createEstimateAction, getEstimatesAction } from '../store/actions/estimateActions';
+import useAppSelector from './useAppSelector';
+import useAppDispatch from './useAppDispatch';
+import { CustomHookMessage, GenericObjectType } from '@app-types';
+import { IEstimate, IRideShareDriver } from '@app-models';
+import { useParams } from 'react-router-dom';
+import cookie from '../utils/cookie';
+import settings from '../config/settings';
+import { CustomJwtPayload } from '@app-interfaces';
 
 export default function useEstimate() {
   const [driver, setDriver] = useState<IRideShareDriver | null>(null);
@@ -26,7 +26,7 @@ export default function useEstimate() {
   const [estimateId, setEstimateId] = useState<number>();
   const [partnerId, setPartnerId] = useState<number>();
 
-  const estimateReducer = useAppSelector((state) => state.estimateReducer);
+  const estimateReducer = useAppSelector(state => state.estimateReducer);
   const dispatch = useAppDispatch();
 
   const params = useParams();
@@ -44,36 +44,36 @@ export default function useEstimate() {
   }, [params]);
 
   useEffect(() => {
-    if (estimateReducer.createEstimateStatus === "completed") {
+    if (estimateReducer.createEstimateStatus === 'completed') {
       setSuccess({ message: estimateReducer.createEstimateSuccess });
     }
   }, [estimateReducer.createEstimateStatus, estimateReducer.createEstimateSuccess]);
 
   useEffect(() => {
-    if (estimateReducer.createEstimateStatus === "failed") {
+    if (estimateReducer.createEstimateStatus === 'failed') {
       if (estimateReducer.createEstimateError) setError({ message: estimateReducer.createEstimateError });
     }
   }, [estimateReducer.createEstimateError, estimateReducer.createEstimateStatus]);
 
   useEffect(() => {
-    if (estimateReducer.getEstimatesStatus === "idle") {
+    if (estimateReducer.getEstimatesStatus === 'idle') {
       dispatch(getEstimatesAction());
     }
   }, [dispatch, estimateReducer.getEstimatesStatus]);
 
   useEffect(() => {
-    if (estimateReducer.getEstimatesStatus === "completed") {
+    if (estimateReducer.getEstimatesStatus === 'completed') {
       setEstimates(estimateReducer.estimates);
     }
   }, [estimateReducer.estimates, estimateReducer.getEstimatesStatus]);
 
   useEffect(() => {
-    if (estimateReducer.getEstimatesStatus === "failed") {
+    if (estimateReducer.getEstimatesStatus === 'failed') {
       if (estimateReducer.getEstimatesError) setError({ message: estimateReducer.getEstimatesError });
     }
   }, [estimateReducer.getEstimatesError, estimateReducer.getEstimatesStatus]);
 
-  const handleCreateEstimate = (values: IEstimateValues) => {
+  const handleCreateEstimate = (values: IEstimateValues, options?: GenericObjectType) => {
     const data = {
       id: partnerId,
       parts: values.parts,
@@ -97,13 +97,14 @@ export default function useEstimate() {
       partsTotal: partTotal,
       laboursTotal: labourTotal,
       grandTotal,
+      url: options?.url,
     };
 
     dispatch(createEstimateAction(data));
   };
 
   const onEdit = (estimateId: number) => {
-    const estimate = estimates.find((estimate) => estimate.id === estimateId);
+    const estimate = estimates.find(estimate => estimate.id === estimateId);
 
     if (estimate) {
       const driver = estimate.rideShareDriver;
@@ -113,7 +114,7 @@ export default function useEstimate() {
       const parts = estimate.parts as unknown as IPart[];
       const labours = estimate.labours as unknown as ILabour[];
 
-      setInitialValues((prevState) => ({
+      setInitialValues(prevState => ({
         ...prevState,
         firstName: driver ? driver.firstName : customer.firstName,
         lastName: driver ? driver.lastName : customer.lastName,
@@ -121,16 +122,16 @@ export default function useEstimate() {
         make: vehicle.make,
         model: vehicle.model,
         plateNumber: vehicle.plateNumber,
-        vin: vehicle.vin ? vehicle.vin : "",
+        vin: vehicle.vin ? vehicle.vin : '',
         modelYear: vehicle.modelYear,
-        address: estimate.address ? estimate.address : "",
-        addressType: estimate.addressType ? estimate.addressType : "",
+        address: estimate.address ? estimate.address : '',
+        addressType: estimate.addressType ? estimate.addressType : '',
         jobDuration: { count: `${estimate.jobDurationValue}`, interval: estimate.jobDurationUnit },
         depositAmount: `${estimate.depositAmount}`,
         tax: `${estimate.tax}`,
         mileage: {
-          count: vehicle.mileageValue ? vehicle.mileageValue : "",
-          unit: vehicle.mileageUnit ? vehicle.mileageUnit : "",
+          count: vehicle.mileageValue ? vehicle.mileageValue : '',
+          unit: vehicle.mileageUnit ? vehicle.mileageUnit : '',
         },
         parts,
         labours,
@@ -141,7 +142,7 @@ export default function useEstimate() {
       setLabourTotal(estimate.laboursTotal);
       setEstimateId(estimateId);
       setShowEdit(true);
-    } else setError({ message: "An Error Occurred. Please try again or contact support" });
+    } else setError({ message: 'An Error Occurred. Please try again or contact support' });
   };
 
   const onView = (estimateId: number) => {

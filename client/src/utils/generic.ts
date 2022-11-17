@@ -1,9 +1,9 @@
-import { IDashboardData } from "@app-interfaces";
-import { IJob, IVehicle } from "@app-models";
-import settings from "../config/settings";
+import { IDashboardData } from '@app-interfaces';
+import { IJob, IVehicle } from '@app-models';
+import settings from '../config/settings';
 
 export function formatNumberToIntl(amount: number) {
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat('en-GB', {
     minimumFractionDigits: 2,
   }).format(amount);
 }
@@ -13,28 +13,28 @@ export function computeMonthlyColumnChartData(dashboardData: IDashboardData) {
   const appointment = {
     name: dashboardData.monthlyData.appointments.name,
     data: appointmentData,
-    stack: "A",
+    stack: 'A',
   };
 
   const customerData = dashboardData.monthlyData.customers.data.map((value: any) => value.y);
   const customer = {
     name: dashboardData.monthlyData.customers.name,
     data: customerData,
-    stack: "A",
+    stack: 'A',
   };
 
   const vehicleData = dashboardData.monthlyData.vehicles.data.map((value: any) => value.y);
   const vehicle = {
     name: dashboardData.monthlyData.vehicles.name,
     data: vehicleData,
-    stack: "B",
+    stack: 'B',
   };
 
   const transactionData = dashboardData.monthlyData.transactions.data.map((value: any) => value.y);
   const transaction = {
     name: dashboardData.monthlyData.transactions.name,
     data: transactionData,
-    stack: "B",
+    stack: 'B',
   };
 
   return [appointment, customer, vehicle, transaction];
@@ -93,7 +93,7 @@ export default function generatePageNumbers(count: number) {
 }
 
 export function getImageUrl(imageUrl: any) {
-  if (typeof imageUrl === "object") return URL.createObjectURL(imageUrl);
+  if (typeof imageUrl === 'object') return URL.createObjectURL(imageUrl);
 
   return `${settings.api.baseURL}/${imageUrl}`;
 }

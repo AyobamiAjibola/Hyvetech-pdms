@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import StateRepository from "../../repositories/StateRepository";
-import State from "../../models/State";
-import { appModelTypes } from "../../@types/app-model";
+import StateRepository from '../../repositories/StateRepository';
+import State from '../../models/State';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class StateDAOService implements ICrudDAO<State> {

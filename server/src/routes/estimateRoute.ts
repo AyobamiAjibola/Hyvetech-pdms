@@ -1,5 +1,5 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import EstimateController from "../controllers/EstimateController";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import EstimateController from '../controllers/EstimateController';
 
 const estimateController = new EstimateController();
 

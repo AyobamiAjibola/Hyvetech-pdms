@@ -1,6 +1,6 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent } from 'react';
 
-import { Radio, RadioGroup, Sheet } from "@mui/joy";
+import { Radio, RadioGroup, Sheet } from '@mui/joy';
 
 interface IProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -11,7 +11,7 @@ interface IProps {
 function CustomRadioGroupField(props: IProps) {
   return (
     <RadioGroup aria-labelledby="radio-group-label" size="lg" sx={{ gap: 1.5 }}>
-      <Sheet sx={{ p: 2, borderRadius: "md" }}>
+      <Sheet sx={{ p: 2, borderRadius: 'md' }}>
         <Radio
           label={props.label}
           overlay
@@ -21,16 +21,16 @@ function CustomRadioGroupField(props: IProps) {
           componentsProps={{
             label: ({ checked }) => ({
               sx: {
-                fontWeight: "lg",
-                fontSize: "md",
-                color: checked ? "text.primary" : "text.secondary",
+                fontWeight: 'lg',
+                fontSize: 'md',
+                color: checked ? 'text.primary' : 'text.secondary',
               },
             }),
             action: ({ checked }) => ({
-              sx: (theme) => ({
+              sx: theme => ({
                 ...(checked && {
-                  "--variant-borderWidth": "2px",
-                  "&&": {
+                  '--variant-borderWidth': '2px',
+                  '&&': {
                     // && to increase the specificity to win the base :hover styles
                     borderColor: theme.vars.palette.primary[500],
                   },

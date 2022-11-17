@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import PaymentTermRepository from "../../repositories/PaymentTermRepository";
-import PaymentTerm from "../../models/PaymentTerm";
-import { appModelTypes } from "../../@types/app-model";
+import PaymentTermRepository from '../../repositories/PaymentTermRepository';
+import PaymentTerm from '../../models/PaymentTerm';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class PaymentTermDAOService implements ICrudDAO<PaymentTerm> {
@@ -22,7 +22,7 @@ export default class PaymentTermDAOService implements ICrudDAO<PaymentTerm> {
 
   create(
     values: CreationAttributes<PaymentTerm>,
-    options?: CreateOptions<Attributes<PaymentTerm>>
+    options?: CreateOptions<Attributes<PaymentTerm>>,
   ): Promise<PaymentTerm> {
     return this.paymentTerm.save(values, options);
   }
@@ -46,7 +46,7 @@ export default class PaymentTermDAOService implements ICrudDAO<PaymentTerm> {
   update(
     paymentTerm: PaymentTerm,
     values: InferAttributes<PaymentTerm>,
-    options: UpdateOptions<Attributes<PaymentTerm>>
+    options: UpdateOptions<Attributes<PaymentTerm>>,
   ): Promise<PaymentTerm> {
     return this.paymentTerm.updateOne(paymentTerm, values, options);
   }

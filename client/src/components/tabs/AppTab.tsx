@@ -1,12 +1,12 @@
-import React, { SyntheticEvent, useRef, useState } from "react";
-import { Box, Slide, Tab, Tabs, useTheme } from "@mui/material";
-import a11yProps from "./a11yProps";
-import TabPanel from "./TabPanel";
-import { ITab } from "@app-interfaces";
+import React, { SyntheticEvent, useRef, useState } from 'react';
+import { Box, Slide, Tab, Tabs, useTheme } from '@mui/material';
+import a11yProps from './a11yProps';
+import TabPanel from './TabPanel';
+import { ITab } from '@app-interfaces';
 
 interface IProps {
   tabMenus: ITab[];
-  slideDirection?: "right" | "left";
+  slideDirection?: 'right' | 'left';
 }
 
 export default function AppTab(props: IProps) {

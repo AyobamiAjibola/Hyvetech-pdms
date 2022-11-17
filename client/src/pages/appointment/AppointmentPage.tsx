@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEvent, useContext, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, MouseEvent, useContext, useEffect, useRef, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -23,35 +23,35 @@ import {
   Stack,
   styled,
   Typography,
-} from "@mui/material";
-import { IAppointment } from "@app-models";
+} from '@mui/material';
+import { IAppointment } from '@app-models';
 
-import car1 from "../../assets/images/vehicle/car1.jpg";
-import { useLocation, useParams } from "react-router-dom";
-import moment from "moment";
-import generatePageNumbers, { formatNumberToIntl } from "../../utils/generic";
-import { Assignment, Delete, Download, UploadFile } from "@mui/icons-material";
+import car1 from '../../assets/images/vehicle/car1.jpg';
+import { useLocation, useParams } from 'react-router-dom';
+import moment from 'moment';
+import generatePageNumbers, { formatNumberToIntl } from '../../utils/generic';
+import { Assignment, Delete, Download, UploadFile } from '@mui/icons-material';
 
-import pdfImg from "../../assets/images/pdf4.jpg";
-import styles from "./appointmentPage.module.css";
+import pdfImg from '../../assets/images/pdf4.jpg';
+import styles from './appointmentPage.module.css';
 import {
   cancelInspectionAction,
   getAppointmentAction,
   IAppointmentUpdate,
   updateAppointmentAction,
-} from "../../store/actions/appointmentActions";
-import useAppDispatch from "../../hooks/useAppDispatch";
-import settings from "../../config/settings";
-import axiosClient from "../../config/axiosClient";
-import useAppSelector from "../../hooks/useAppSelector";
-import AppModal from "../../components/modal/AppModal";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack5";
-import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProps } from "@app-interfaces";
-import { APPOINTMENT_STATUS, ESTIMATE, INVENTORY, REPORT } from "../../config/constants";
-import BookingModal from "../../components/modal/BookingModal";
-import BookingForm from "../../components/forms/booking/BookingForm";
-import useTimeslot from "../../hooks/useTimeslot";
+} from '../../store/actions/appointmentActions';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import settings from '../../config/settings';
+import axiosClient from '../../config/axiosClient';
+import useAppSelector from '../../hooks/useAppSelector';
+import AppModal from '../../components/modal/AppModal';
+import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
+import { AppContext } from '../../context/AppContextProvider';
+import { AppContextProps } from '@app-interfaces';
+import { APPOINTMENT_STATUS, ESTIMATE, INVENTORY, REPORT } from '../../config/constants';
+import BookingModal from '../../components/modal/BookingModal';
+import BookingForm from '../../components/forms/booking/BookingForm';
+import useTimeslot from '../../hooks/useTimeslot';
 
 interface IImageListProps {
   img: string;
@@ -65,15 +65,15 @@ function AppointmentPage() {
   const [inventoryFile, setInventoryFile] = useState<File>();
   const [reportFile, setReportFile] = useState<File>();
   const [estimateFile, setEstimateFile] = useState<File>();
-  const [$status, $setStatus] = useState<string>("");
+  const [$status, $setStatus] = useState<string>('');
   const [viewFile, setViewFile] = useState<boolean>(false);
   const [viewImage, setViewImage] = useState<boolean>(false);
   const [pdfFile, setPdfFile] = useState<any>();
   const [imageUrl, setImageUrl] = useState<string>();
-  const [pdfFilename, setPdfFilename] = useState<string>("");
+  const [pdfFilename, setPdfFilename] = useState<string>('');
   const [_timeout, _setTimeout] = useState<any>();
   const [cancel, setCancel] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<string>('');
 
   const inventoryRef = useRef<HTMLInputElement>(null);
   const reportRef = useRef<HTMLInputElement>(null);
@@ -85,7 +85,7 @@ function AppointmentPage() {
 
   const { showBooking, setShowBooking } = useContext(AppContext) as AppContextProps;
 
-  const appointmentReducer = useAppSelector((state) => state.appointmentReducer);
+  const appointmentReducer = useAppSelector(state => state.appointmentReducer);
 
   const dispatch = useAppDispatch();
 
@@ -95,13 +95,13 @@ function AppointmentPage() {
   }, [location.state, dispatch, urlParams.id]);
 
   useEffect(() => {
-    if (appointmentReducer.getAppointmentStatus === "completed") {
+    if (appointmentReducer.getAppointmentStatus === 'completed') {
       setAppointment(appointmentReducer.appointment);
     }
   }, [appointmentReducer.getAppointmentStatus, appointmentReducer.appointment]);
 
   useEffect(() => {
-    if (appointmentReducer.updateAppointmentStatus === "completed") {
+    if (appointmentReducer.updateAppointmentStatus === 'completed') {
       setImageList([]);
 
       setAppointment(appointmentReducer.appointment);
@@ -112,18 +112,18 @@ function AppointmentPage() {
     evt.preventDefault();
 
     url = `${settings.api.baseURL}/${url}`;
-    const filename = url.split("/docs/")[1].trim();
+    const filename = url.split('/docs/')[1].trim();
 
     const response = await axiosClient({
       url,
-      method: "GET",
-      responseType: "blob",
+      method: 'GET',
+      responseType: 'blob',
     });
 
     const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = fileUrl;
-    link.setAttribute("download", filename);
+    link.setAttribute('download', filename);
     document.body.appendChild(link);
     link.click();
   };
@@ -139,7 +139,7 @@ function AppointmentPage() {
     const tempImageList = [...imageList];
 
     if (tempImageList.length) {
-      const img = tempImageList.find((value) => value.title === name);
+      const img = tempImageList.find(value => value.title === name);
 
       if (img) {
         const index = tempImageList.indexOf(img);
@@ -147,7 +147,7 @@ function AppointmentPage() {
         tempImageList[index].img = pdfImg;
 
         setImageList(tempImageList);
-      } else setImageList((prevState) => [...prevState, { img: pdfImg, title: file.name, showDeleteIcon: true }]);
+      } else setImageList(prevState => [...prevState, { img: pdfImg, title: file.name, showDeleteIcon: true }]);
     } else setImageList([{ img: pdfImg, title: file.name, showDeleteIcon: true }]);
 
     if (name === INVENTORY) setInventoryFile(file);
@@ -157,22 +157,22 @@ function AppointmentPage() {
 
   const handleResetImage = (title?: string) => {
     if (inventoryRef.current) {
-      inventoryRef.current.value = "";
+      inventoryRef.current.value = '';
     }
 
     if (reportRef.current) {
-      reportRef.current.value = "";
+      reportRef.current.value = '';
     }
 
     if (estimateRef.current) {
-      estimateRef.current.value = "";
+      estimateRef.current.value = '';
     }
 
     const tempImageList = [...imageList];
     let img;
 
     if (title) {
-      img = tempImageList.find((value) => value.title === title);
+      img = tempImageList.find(value => value.title === title);
       if (img) {
         const index = tempImageList.indexOf(img);
         tempImageList.splice(index, 1);
@@ -214,7 +214,7 @@ function AppointmentPage() {
     _setTimeout(
       setTimeout(() => {
         setViewFile(true);
-      }, 100)
+      }, 100),
     );
   };
 
@@ -256,9 +256,9 @@ function AppointmentPage() {
         <Grid container justifyContent="space-between" marginBottom={2}>
           <Grid item>
             <div>
-              <span className={styles.title}>Appointment</span> -{" "}
+              <span className={styles.title}>Appointment</span> -{' '}
               <span className={styles.subtitle}>
-                {appointment?.customer?.firstName} {appointment?.customer?.lastName} | {appointment?.customer?.email} |{" "}
+                {appointment?.customer?.firstName} {appointment?.customer?.lastName} | {appointment?.customer?.email} |{' '}
                 {appointment?.customer?.phone}
               </span>
             </div>
@@ -283,9 +283,8 @@ function AppointmentPage() {
                   elevation={5}
                   sx={{
                     p: 2,
-                    backgroundColor: (theme) => (theme.palette.mode === "dark" ? "#1A2027" : "#fff"),
-                  }}
-                >
+                    backgroundColor: theme => (theme.palette.mode === 'dark' ? '#1A2027' : '#fff'),
+                  }}>
                   <Grid container spacing={2}>
                     <Grid item>
                       <ButtonBase>
@@ -312,11 +311,10 @@ function AppointmentPage() {
               </Grid>
               <Grid item xs={12} md={8}>
                 <Stack
-                  direction={{ xs: "column", sm: "row" }}
+                  direction={{ xs: 'column', sm: 'row' }}
                   spacing={{ xs: 1, sm: 2, md: 2 }}
                   justifyContent="center"
-                  alignItems="center"
-                >
+                  alignItems="center">
                   <Item elevation={5}>
                     <Typography>Programme</Typography>
                     <Typography variant="caption">{appointment.programme}</Typography>
@@ -336,15 +334,14 @@ function AppointmentPage() {
                 </Stack>
                 <Box sx={{ my: { xs: 1, sm: 2, md: 2 } }} />
                 <Stack
-                  direction={{ xs: "column", sm: "row" }}
+                  direction={{ xs: 'column', sm: 'row' }}
                   spacing={{ xs: 1, sm: 2, md: 2 }}
                   justifyContent="center"
-                  alignItems="center"
-                >
+                  alignItems="center">
                   <Item elevation={5}>
                     <Typography>Date & Time</Typography>
                     <Typography variant="caption">
-                      {moment(appointment.appointmentDate).format("LLL")}
+                      {moment(appointment.appointmentDate).format('LLL')}
                       <br />
                       {appointment.timeSlot}
                     </Typography>
@@ -359,10 +356,9 @@ function AppointmentPage() {
                         <Grid item xs={4}>
                           <Avatar
                             onClick={() => handleViewImage(appointment.vehicleFault.imagePath)}
-                            sx={{ cursor: "pointer" }}
+                            sx={{ cursor: 'pointer' }}
                             variant="square"
-                            src={appointment.vehicleFault.imagePath}
-                          >
+                            src={appointment.vehicleFault.imagePath}>
                             <Assignment />
                           </Avatar>
                         </Grid>
@@ -380,8 +376,7 @@ function AppointmentPage() {
                   justifyContent="space-between"
                   alignItems="center"
                   spacing={{ xs: 2, md: 3 }}
-                  columns={{ xs: 4, sm: 8, md: 12 }}
-                >
+                  columns={{ xs: 4, sm: 8, md: 12 }}>
                   <Grid item xs>
                     <Button
                       disabled={
@@ -391,8 +386,7 @@ function AppointmentPage() {
                       onClick={handleReschedule}
                       size="small"
                       variant="outlined"
-                      color="info"
-                    >
+                      color="info">
                       Reschedule
                     </Button>
                     <Button
@@ -404,23 +398,21 @@ function AppointmentPage() {
                       size="small"
                       sx={{ ml: 1 }}
                       variant="outlined"
-                      color="error"
-                    >
+                      color="error">
                       Cancel
                     </Button>
                   </Grid>
                   <Grid item container xs justifyContent="space-between" alignItems="center">
                     <Grid item xs>
                       <Stack direction="row" spacing={1}>
-                        <FormControl size="small" sx={{ maxWidth: 100, width: "100%" }}>
+                        <FormControl size="small" sx={{ maxWidth: 100, width: '100%' }}>
                           <InputLabel id="demo-select-small">Status</InputLabel>
                           <Select
                             labelId="demo-select-small"
                             id="demo-select-small"
                             value={$status}
                             label="Status"
-                            onChange={(e) => $setStatus(e.target.value)}
-                          >
+                            onChange={e => $setStatus(e.target.value)}>
                             <MenuItem value="">
                               <em>...</em>
                             </MenuItem>
@@ -432,9 +424,8 @@ function AppointmentPage() {
                         {appointment.inventoryFile ? (
                           <Button
                             variant="outlined"
-                            onClick={(evt) => downloadFile(evt, appointment?.inventoryFile)}
-                            startIcon={<Download />}
-                          >
+                            onClick={evt => downloadFile(evt, appointment?.inventoryFile)}
+                            startIcon={<Download />}>
                             {INVENTORY}
                           </Button>
                         ) : (
@@ -455,9 +446,8 @@ function AppointmentPage() {
                         {appointment.reportFile ? (
                           <Button
                             variant="outlined"
-                            onClick={(evt) => downloadFile(evt, appointment?.reportFile)}
-                            startIcon={<Download />}
-                          >
+                            onClick={evt => downloadFile(evt, appointment?.reportFile)}
+                            startIcon={<Download />}>
                             {REPORT}
                           </Button>
                         ) : (
@@ -478,9 +468,8 @@ function AppointmentPage() {
                         {appointment.estimateFile ? (
                           <Button
                             variant="outlined"
-                            onClick={(evt) => downloadFile(evt, appointment?.estimateFile)}
-                            startIcon={<Download />}
-                          >
+                            onClick={evt => downloadFile(evt, appointment?.estimateFile)}
+                            startIcon={<Download />}>
                             {ESTIMATE}
                           </Button>
                         ) : (
@@ -507,8 +496,7 @@ function AppointmentPage() {
                   justifyContent="space-between"
                   alignItems="center"
                   spacing={{ xs: 2, md: 3 }}
-                  columns={{ xs: 4, sm: 8, md: 12 }}
-                >
+                  columns={{ xs: 4, sm: 8, md: 12 }}>
                   <Grid item xs />
                   <Grid item xs>
                     <Stack direction="row" spacing={1} sx={{ mt: { xs: 2, md: 3 } }}>
@@ -520,8 +508,7 @@ function AppointmentPage() {
                               sx={{
                                 minWidth: 150,
                                 maxHeight: 250,
-                              }}
-                            >
+                              }}>
                               <CardActionArea>
                                 <CardMedia
                                   onClick={handleViewFile}
@@ -535,9 +522,8 @@ function AppointmentPage() {
                                 {item.showDeleteIcon && (
                                   <IconButton
                                     onClick={() => handleResetImage(item.title)}
-                                    sx={{ color: "red" }}
-                                    aria-label={`info about ${item.title}`}
-                                  >
+                                    sx={{ color: 'red' }}
+                                    aria-label={`info about ${item.title}`}>
                                     <Delete />
                                   </IconButton>
                                 )}
@@ -598,19 +584,19 @@ function AppointmentPage() {
 }
 
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  textAlign: "center",
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  textAlign: 'center',
   color: theme.palette.text.secondary,
   height: 80,
   width: 250,
   flexGrow: 1,
 }));
 
-const Img = styled("img")({
-  margin: "auto",
-  display: "block",
-  maxWidth: "100%",
-  maxHeight: "100%",
+const Img = styled('img')({
+  margin: 'auto',
+  display: 'block',
+  maxWidth: '100%',
+  maxHeight: '100%',
   borderRadius: 10,
 });
 

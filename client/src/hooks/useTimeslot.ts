@@ -1,16 +1,16 @@
-import { useEffect } from "react";
-import { getCurrentDateAction, getTimeslotsAction, initCurrentTimeSlotsAction } from "../store/actions/timeSlotActions";
-import useAppSelector from "./useAppSelector";
-import useAppDispatch from "./useAppDispatch";
-import moment from "moment";
-import { clearInitTimeslots } from "../store/reducers/timeSlotReducer";
+import { useEffect } from 'react';
+import { getCurrentDateAction, getTimeslotsAction, initCurrentTimeSlotsAction } from '../store/actions/timeSlotActions';
+import useAppSelector from './useAppSelector';
+import useAppDispatch from './useAppDispatch';
+import moment from 'moment';
+import { clearInitTimeslots } from '../store/reducers/timeSlotReducer';
 
 export default function useTimeslot() {
-  const timeslotReducer = useAppSelector((state) => state.timeSlotReducer);
+  const timeslotReducer = useAppSelector(state => state.timeSlotReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (timeslotReducer.getTimeSlotsStatus === "idle") {
+    if (timeslotReducer.getTimeSlotsStatus === 'idle') {
       dispatch(getTimeslotsAction());
     }
   }, [timeslotReducer.getTimeSlotsStatus, dispatch]);
@@ -23,8 +23,8 @@ export default function useTimeslot() {
   useEffect(() => {
     const now = moment();
 
-    if (timeslotReducer.getTimeSlotsStatus === "completed") {
-      const shortDate = now.format("YYYY-MM-DD");
+    if (timeslotReducer.getTimeSlotsStatus === 'completed') {
+      const shortDate = now.format('YYYY-MM-DD');
       const fullDate = now.toISOString();
 
       //@ts-ignore
@@ -45,7 +45,7 @@ export default function useTimeslot() {
           date: shortDate,
           slots: slots,
           now: true,
-        })
+        }),
       );
 
       return () => {

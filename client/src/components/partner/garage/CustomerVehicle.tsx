@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 
-import moment from "moment";
-import { FileOpen } from "@mui/icons-material";
+import moment from 'moment';
+import { FileOpen } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -20,22 +20,22 @@ import {
   ListItemText,
   Stack,
   Typography,
-} from "@mui/material";
+} from '@mui/material';
 
-import { ICustomerSubscription, IVehicle } from "@app-models";
-import carImg from "../../../assets/images/vehicle/car1.jpg";
-import { FaExpandAlt, FaGift } from "react-icons/fa";
-import useAppSelector from "../../../hooks/useAppSelector";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import { getJobsAction } from "../../../store/actions/jobActions";
-import { getDriverVehicleSubscriptionAction } from "../../../store/actions/vehicleActions";
-import settings from "../../../config/settings";
-import axiosClient from "../../../config/axiosClient";
-import AppModal from "../../modal/AppModal";
-import { DriverVehiclesContext } from "./DriverVehicles";
-import { DriverVehiclesContextProps } from "@app-interfaces";
-import { APPOINTMENT_STATUS } from "../../../config/constants";
-import CustomerSubscription from "./CustomerSubscription";
+import { ICustomerSubscription, IVehicle } from '@app-models';
+import carImg from '../../../assets/images/vehicle/car1.jpg';
+import { FaExpandAlt, FaGift } from 'react-icons/fa';
+import useAppSelector from '../../../hooks/useAppSelector';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { getJobsAction } from '../../../store/actions/jobActions';
+import { getDriverVehicleSubscriptionAction } from '../../../store/actions/vehicleActions';
+import settings from '../../../config/settings';
+import axiosClient from '../../../config/axiosClient';
+import AppModal from '../../modal/AppModal';
+import { DriverVehiclesContext } from './DriverVehicles';
+import { DriverVehiclesContextProps } from '@app-interfaces';
+import { APPOINTMENT_STATUS } from '../../../config/constants';
+import CustomerSubscription from './CustomerSubscription';
 
 interface ILocationState {
   vehicle?: IVehicle;
@@ -48,13 +48,13 @@ export default function CustomerVehicle(props: ILocationState) {
   const [imageUrl, setImageUrl] = useState<string>();
 
   const { setCustomerSub, vehicle, setVehicle, viewSub, setViewSub } = useContext(
-    DriverVehiclesContext
+    DriverVehiclesContext,
   ) as DriverVehiclesContextProps;
 
   const params = useParams();
 
-  const vehicleReducer = useAppSelector((state) => state.vehicleReducer);
-  const jobReducer = useAppSelector((state) => state.jobReducer);
+  const vehicleReducer = useAppSelector(state => state.vehicleReducer);
+  const jobReducer = useAppSelector(state => state.jobReducer);
   const dispatch = useAppDispatch();
 
   const location = useLocation();
@@ -62,13 +62,13 @@ export default function CustomerVehicle(props: ILocationState) {
   useEffect(() => {
     const partnerId = params.id as string;
 
-    if (jobReducer.getJobsStatus === "idle") {
+    if (jobReducer.getJobsStatus === 'idle') {
       dispatch(getJobsAction(+partnerId));
     }
   }, [dispatch, jobReducer.getJobsStatus, params.id]);
 
   useEffect(() => {
-    if (vehicleReducer.getDriverVehicleSubscriptionStatus === "completed") {
+    if (vehicleReducer.getDriverVehicleSubscriptionStatus === 'completed') {
       // console.log(vehicleReducer.driverSubscriptions);
     }
   }, [vehicleReducer.driverSubscriptions, vehicleReducer.getDriverVehicleSubscriptionStatus]);
@@ -92,7 +92,7 @@ export default function CustomerVehicle(props: ILocationState) {
     file = `${settings.api.driverBaseURL}/${file}`;
 
     const response = await axiosClient.get(file, {
-      responseType: "blob",
+      responseType: 'blob',
     });
 
     const reader = new FileReader();
@@ -148,11 +148,11 @@ export default function CustomerVehicle(props: ILocationState) {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Vehicle Ownership</Typography>
-                    <Typography variant="caption">{vehicle.isOwner ? "Owner" : "-"}</Typography>
+                    <Typography variant="caption">{vehicle.isOwner ? 'Owner' : '-'}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Date Added</Typography>
-                    <Typography variant="caption">{moment(vehicle.createdAt).format("LL")}</Typography>
+                    <Typography variant="caption">{moment(vehicle.createdAt).format('LL')}</Typography>
                   </Box>
                 </Stack>
                 <Divider sx={{ my: 2 }} />
@@ -185,12 +185,11 @@ export default function CustomerVehicle(props: ILocationState) {
                     <Typography variant="caption">Vehicle Inspection</Typography>
                     {vehicle.vehicleInspectionFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.vehicleInspectionFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.vehicleInspectionFileUrl}
-                      >
+                        src={vehicle.vehicleInspectionFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -199,12 +198,11 @@ export default function CustomerVehicle(props: ILocationState) {
                     <Typography variant="caption">Motor Receipt</Typography>
                     {vehicle.motorReceiptFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.motorReceiptFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.motorReceiptFileUrl}
-                      >
+                        src={vehicle.motorReceiptFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -213,12 +211,11 @@ export default function CustomerVehicle(props: ILocationState) {
                     <Typography variant="caption">Proof Of Ownership</Typography>
                     {vehicle.proofOfOwnershipFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.proofOfOwnershipFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.proofOfOwnershipFileUrl}
-                      >
+                        src={vehicle.proofOfOwnershipFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -227,12 +224,11 @@ export default function CustomerVehicle(props: ILocationState) {
                     <Typography variant="caption">Road Worthiness</Typography>
                     {vehicle.roadWorthinessFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.roadWorthinessFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.roadWorthinessFileUrl}
-                      >
+                        src={vehicle.roadWorthinessFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -241,12 +237,11 @@ export default function CustomerVehicle(props: ILocationState) {
                     <Typography variant="caption">Registration Number</Typography>
                     {vehicle.registrationNumberFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.registrationNumberFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.registrationNumberFileUrl}
-                      >
+                        src={vehicle.registrationNumberFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -255,12 +250,11 @@ export default function CustomerVehicle(props: ILocationState) {
                     <Typography variant="caption">Third Party Insurance</Typography>
                     {vehicle.thirdPartyInsuranceFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.thirdPartyInsuranceFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.thirdPartyInsuranceFileUrl}
-                      >
+                        src={vehicle.thirdPartyInsuranceFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -285,7 +279,7 @@ export default function CustomerVehicle(props: ILocationState) {
                       <List>
                         {vehicleReducer.customerSubscriptions.length ? (
                           vehicleReducer.customerSubscriptions
-                            .filter((sub) => sub.status !== APPOINTMENT_STATUS.cancel)
+                            .filter(sub => sub.status !== APPOINTMENT_STATUS.cancel)
                             .map((sub, index) => {
                               return (
                                 <ListItem
@@ -294,12 +288,10 @@ export default function CustomerVehicle(props: ILocationState) {
                                     <IconButton
                                       onClick={() => handleViewSubscription(sub)}
                                       edge="end"
-                                      aria-label="view"
-                                    >
+                                      aria-label="view">
                                       <FaExpandAlt />
                                     </IconButton>
-                                  }
-                                >
+                                  }>
                                   <ListItemAvatar>
                                     <Avatar>
                                       <FaGift />

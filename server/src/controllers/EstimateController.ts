@@ -1,21 +1,32 @@
-import { Request } from "express";
-import Joi from "joi";
-import Estimate, { $createEstimateSchema, CreateEstimateType } from "../models/Estimate";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import dataSources from "../services/dao";
-import { appCommonTypes } from "../@types/app-common";
-import Contact from "../models/Contact";
-import Generic from "../utils/Generic";
-import { INITIAL_LABOURS_VALUE, INITIAL_PARTS_VALUE } from "../config/constants";
-import Vehicle from "../models/Vehicle";
-import Partner from "../models/Partner";
-import Customer from "../models/Customer";
-import RideShareDriver from "../models/RideShareDriver";
+import { Request } from 'express';
+import Joi from 'joi';
+import Estimate, { $createEstimateSchema, CreateEstimateType } from '../models/Estimate';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import dataSources from '../services/dao';
+import { appCommonTypes } from '../@types/app-common';
+import Contact from '../models/Contact';
+import Generic from '../utils/Generic';
+import {
+  CREATED_ESTIMATE,
+  ESTIMATE_EXPIRY_DAYS,
+  INITIAL_LABOURS_VALUE,
+  INITIAL_PARTS_VALUE,
+} from '../config/constants';
+import Vehicle from '../models/Vehicle';
+import Partner from '../models/Partner';
+import Customer from '../models/Customer';
+import RideShareDriver from '../models/RideShareDriver';
+import { appEventEmitter } from '../services/AppEventEmitter';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class EstimateController {
   public async create(req: Request) {
+    const response: HttpResponse<Estimate> = {
+      code: HttpStatus.OK.code,
+      message: 'Estimate created successfully.',
+    };
+
     try {
       const { error, value } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
 
@@ -23,14 +34,14 @@ export default class EstimateController {
 
       if (!value)
         return Promise.reject(
-          CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code)
+          CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
         );
 
       const partner = await dataSources.partnerDAOService.findById(value.id);
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
       const findVehicle = await dataSources.vehicleDAOService.findByPlateNumber(value.plateNumber);
@@ -74,25 +85,23 @@ export default class EstimateController {
         };
 
         customer = await dataSources.customerDAOService.create(data);
-        await customer.$add("vehicles", [vehicle]);
+        await customer.$set('vehicles', [vehicle]);
       } else {
-        await findCustomer.$add("vehicles", [vehicle]);
+        await findCustomer.$add('vehicles', [vehicle]);
         customer = findCustomer;
       }
 
       const estimate = await this.doCreateEstimate(value);
 
-      await partner.$add("estimates", [estimate]);
+      await partner.$add('estimates', [estimate]);
 
-      await vehicle.$add("estimates", [estimate]);
+      await vehicle.$add('estimates', [estimate]);
 
-      await customer.$add("estimates", [estimate]);
+      await customer.$add('estimates', [estimate]);
 
-      const response: HttpResponse<Estimate> = {
-        code: HttpStatus.OK.code,
-        message: "Estimate created successfully.",
-        result: estimate,
-      };
+      appEventEmitter.emit(CREATED_ESTIMATE, { estimate });
+
+      response.result = estimate;
 
       return Promise.resolve(response);
     } catch (e) {
@@ -112,17 +121,17 @@ export default class EstimateController {
           include: [Vehicle, Customer, RideShareDriver, { model: Partner, include: [Contact] }],
         });
       } else {
-        estimates = await partner.$get("estimates", {
+        estimates = await partner.$get('estimates', {
           include: [Vehicle, Customer, RideShareDriver, { model: Partner, include: [Contact] }],
         });
       }
 
-      estimates = estimates.map((estimate) => {
+      estimates = estimates.map(estimate => {
         const parts = estimate.parts;
         const labours = estimate.labours;
 
-        estimate.parts = parts.length ? parts.map((part) => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
-        estimate.labours = labours.length ? labours.map((labour) => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+        estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+        estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
 
         return estimate;
       });
@@ -140,10 +149,10 @@ export default class EstimateController {
   }
 
   private async doCreateEstimate(values: CreateEstimateType): Promise<Estimate> {
-    const estimateValues = {
+    const estimateValues: any = {
       jobDurationUnit: values.jobDurationUnit,
-      labours: values.labours.map((value) => JSON.stringify(value)),
-      parts: values.parts.map((value) => JSON.stringify(value)),
+      labours: values.labours.map(value => JSON.stringify(value)),
+      parts: values.parts.map(value => JSON.stringify(value)),
       depositAmount: values.depositAmount,
       grandTotal: values.grandTotal,
       jobDurationValue: values.jobDurationValue,
@@ -153,6 +162,7 @@ export default class EstimateController {
       addressType: values.addressType,
       tax: values.tax,
       code: Generic.randomize({ count: 6, number: true }),
+      expiresIn: ESTIMATE_EXPIRY_DAYS,
     };
 
     return await dataSources.estimateDAOService.create(estimateValues);

@@ -1,10 +1,10 @@
-import axiosClient from "../../config/axiosClient";
-import settings from "../../config/settings";
-import asyncThunkWrapper from "../../helpers/asyncThunkWrapper";
-import { ApiResponseSuccess } from "@app-interfaces";
+import axiosClient from '../../config/axiosClient';
+import settings from '../../config/settings';
+import asyncThunkWrapper from '../../helpers/asyncThunkWrapper';
+import { ApiResponseSuccess } from '@app-interfaces';
 
-const SIGN_IN = "authentication:SIGN_IN";
-const SIGN_OUT = "authentication:SIGN_OUT";
+const SIGN_IN = 'authentication:SIGN_IN';
+const SIGN_OUT = 'authentication:SIGN_OUT';
 const API_ROOT = settings.api.rest;
 
 export const signInAction = asyncThunkWrapper<ApiResponseSuccess<string>, any>(SIGN_IN, async (args: any) => {

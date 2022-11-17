@@ -7,39 +7,39 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
+} from 'sequelize-typescript';
 
-import Joi from "joi";
+import Joi from 'joi';
 
-import Role from "./Role";
-import CustomerRole from "./CustomerRole";
-import Contact from "./Contact";
-import PaymentDetail from "./PaymentDetail";
-import Appointment from "./Appointment";
-import Vehicle, { $vehicleSchema } from "./Vehicle";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import Transaction from "./Transaction";
-import CustomerSubscription from "./CustomerSubscription";
-import CustomerPlanSubscription from "./CustomerPlanSubscription";
-import Estimate from "./Estimate";
+import Role from './Role';
+import CustomerRole from './CustomerRole';
+import Contact from './Contact';
+import PaymentDetail from './PaymentDetail';
+import Appointment from './Appointment';
+import Vehicle, { $vehicleSchema } from './Vehicle';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Transaction from './Transaction';
+import CustomerSubscription from './CustomerSubscription';
+import CustomerPlanSubscription from './CustomerPlanSubscription';
+import Estimate from './Estimate';
 
 export const $customerSchema = {
-  firstName: Joi.string().required().label("First Name"),
-  lastName: Joi.string().required().label("Last Name"),
-  email: Joi.string().email().required().label("Email"),
-  phone: Joi.string().max(11).required().label("Phone Number"),
-  state: Joi.string().required().label("State"),
-  district: Joi.string().required().label("District"),
+  firstName: Joi.string().required().label('First Name'),
+  lastName: Joi.string().required().label('Last Name'),
+  email: Joi.string().email().required().label('Email'),
+  phone: Joi.string().max(11).required().label('Phone Number'),
+  state: Joi.string().required().label('State'),
+  district: Joi.string().required().label('District'),
 };
 
 export const $initTransactionSchema = {
   email: $customerSchema.email,
   phone: $customerSchema.phone,
-  callbackUrl: Joi.string().allow("Payment Callback URL"),
-  subscriptionName: Joi.string().label("Subscription Name"),
-  planCategory: Joi.string().label("Plans Category"),
-  paymentPlan: Joi.string().label("Payment Plans"),
-  amount: Joi.string().label("Amount"),
+  callbackUrl: Joi.string().allow('Payment Callback URL'),
+  subscriptionName: Joi.string().label('Subscription Name'),
+  planCategory: Joi.string().label('Plans Category'),
+  paymentPlan: Joi.string().label('Payment Plans'),
+  amount: Joi.string().label('Amount'),
 };
 
 export const $verifyTransactionSchema = {
@@ -48,22 +48,22 @@ export const $verifyTransactionSchema = {
   paymentPlan: $initTransactionSchema.paymentPlan,
   planCategory: $initTransactionSchema.planCategory,
   subscriptionName: $initTransactionSchema.subscriptionName,
-  reference: Joi.string().required().label("Payment Reference"),
+  reference: Joi.string().required().label('Payment Reference'),
 };
 
 export const $addVehicleSchema = {
-  customerId: Joi.number().required().label("Customer Id"),
+  customerId: Joi.number().required().label('Customer Id'),
   ...$vehicleSchema,
 };
 
 @Table({
   timestamps: true,
-  tableName: "customers",
+  tableName: 'customers',
 })
 export default class Customer extends Model<InferAttributes<Customer>, InferCreationAttributes<Customer>> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "customer_id" })
+  @Column({ type: DataType.INTEGER, field: 'customer_id' })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)
@@ -114,25 +114,28 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
   @Column(DataType.STRING)
   declare gatewayId: string;
 
+  @Column(DataType.STRING)
+  declare eventId: string;
+
   @Column(DataType.DATE)
   declare loginDate: Date;
 
-  @HasMany(() => Estimate, { onDelete: "cascade" })
+  @HasMany(() => Estimate, { onDelete: 'cascade' })
   declare estimates: NonAttribute<Estimate[]>;
 
-  @HasMany(() => Contact, { onDelete: "cascade" })
+  @HasMany(() => Contact, { onDelete: 'cascade' })
   declare contacts: NonAttribute<Contact[]>;
 
-  @HasMany(() => PaymentDetail, { onDelete: "cascade" })
+  @HasMany(() => PaymentDetail, { onDelete: 'cascade' })
   declare paymentDetails: NonAttribute<PaymentDetail[]>;
 
-  @HasMany(() => Vehicle, { onDelete: "cascade" })
+  @HasMany(() => Vehicle, { onDelete: 'cascade' })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasMany(() => Transaction, { onDelete: "cascade" })
+  @HasMany(() => Transaction, { onDelete: 'cascade' })
   declare transactions: NonAttribute<Transaction[]>;
 
-  @HasMany(() => Appointment, { onDelete: "cascade" })
+  @HasMany(() => Appointment, { onDelete: 'cascade' })
   declare appointments: NonAttribute<Appointment[]>;
 
   @BelongsToMany(() => CustomerSubscription, () => CustomerPlanSubscription)

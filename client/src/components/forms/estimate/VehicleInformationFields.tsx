@@ -1,9 +1,9 @@
-import React, { memo } from "react";
-import { CircularProgress, Divider, Grid, InputAdornment, Typography } from "@mui/material";
-import TextInputField from "../fields/TextInputField";
-import SelectField from "../fields/SelectField";
-import estimateModel, { IEstimateValues } from "../models/estimateModel";
-import useAppSelector from "../../../hooks/useAppSelector";
+import React, { memo } from 'react';
+import { CircularProgress, Divider, Grid, InputAdornment, Typography } from '@mui/material';
+import TextInputField from '../fields/TextInputField';
+import SelectField from '../fields/SelectField';
+import estimateModel, { IEstimateValues } from '../models/estimateModel';
+import useAppSelector from '../../../hooks/useAppSelector';
 
 const { fields } = estimateModel;
 
@@ -14,7 +14,7 @@ interface IProps {
 }
 
 function VehicleInformationFields(props: IProps) {
-  const vehicleReducer = useAppSelector((state) => state.vehicleReducer);
+  const vehicleReducer = useAppSelector(state => state.vehicleReducer);
 
   return (
     <React.Fragment>
@@ -32,8 +32,8 @@ function VehicleInformationFields(props: IProps) {
           onChange={props.handleChangeVIN}
           InputProps={{
             endAdornment: (
-              <InputAdornment position="end" sx={{ position: "absolute", left: "90%" }}>
-                {vehicleReducer.getVehicleVINStatus === "loading" && <CircularProgress size={25} />}
+              <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
               </InputAdornment>
             ),
           }}
@@ -83,8 +83,8 @@ function VehicleInformationFields(props: IProps) {
         <Grid item xs>
           <SelectField
             data={[
-              { label: "mph", value: "mph" },
-              { label: "kmph", value: "kmph" },
+              { label: 'mph', value: 'mph' },
+              { label: 'kmph', value: 'kmph' },
             ]}
             onChange={props.handleChange}
             value={props.values.mileage.unit}

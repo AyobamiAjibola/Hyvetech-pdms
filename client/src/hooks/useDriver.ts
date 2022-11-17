@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { GridSortItem } from "@mui/x-data-grid";
-import useAppSelector from "./useAppSelector";
-import useAppDispatch from "./useAppDispatch";
-import { deleteDriverAction, getDriversAction } from "../store/actions/rideShareActions";
+import { useEffect, useState } from 'react';
+import { GridSortItem } from '@mui/x-data-grid';
+import useAppSelector from './useAppSelector';
+import useAppDispatch from './useAppDispatch';
+import { deleteDriverAction, getDriversAction } from '../store/actions/rideShareActions';
 import {
   clearDeleteDriverStatus,
   clearGetDriversStatus,
   clearGetDriverStatus,
-} from "../store/reducers/rideShareReducer";
-import { IRideShareDriver } from "@app-models";
-import { CustomHookMessage } from "@app-types";
+} from '../store/reducers/rideShareReducer';
+import { IRideShareDriver } from '@app-models';
+import { CustomHookMessage } from '@app-types';
 
 export default function useDriver() {
   const [showDelete, setShowDelete] = useState<boolean>(false);
@@ -20,12 +20,12 @@ export default function useDriver() {
   const [success, setSuccess] = useState<CustomHookMessage>();
   const [sortModel, setSortModel] = useState<GridSortItem[]>([
     {
-      field: "id",
-      sort: "asc",
+      field: 'id',
+      sort: 'asc',
     },
   ]);
 
-  const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
+  const rideShareReducer = useAppSelector(state => state.rideShareReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -35,40 +35,40 @@ export default function useDriver() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (rideShareReducer.getDriversStatus === "idle") {
+    if (rideShareReducer.getDriversStatus === 'idle') {
       dispatch(getDriversAction());
     }
   }, [rideShareReducer.getDriversStatus, dispatch]);
 
   useEffect(() => {
-    if (rideShareReducer.getDriversStatus === "loading") {
+    if (rideShareReducer.getDriversStatus === 'loading') {
       setLoading(true);
     }
   }, [rideShareReducer.getDriversStatus, dispatch]);
 
   useEffect(() => {
-    if (rideShareReducer.getDriversStatus === "completed") {
+    if (rideShareReducer.getDriversStatus === 'completed') {
       setLoading(false);
       setRows(rideShareReducer.drivers);
     }
   }, [rideShareReducer.drivers, rideShareReducer.getDriversStatus]);
 
   useEffect(() => {
-    if (rideShareReducer.getDriversStatus === "failed") {
+    if (rideShareReducer.getDriversStatus === 'failed') {
       setLoading(false);
       if (rideShareReducer.getDriversError) setError({ message: rideShareReducer.getDriversError });
     }
   }, [rideShareReducer.getDriversError, rideShareReducer.getDriversStatus]);
 
   useEffect(() => {
-    if (rideShareReducer.deleteDriverStatus === "completed") {
+    if (rideShareReducer.deleteDriverStatus === 'completed') {
       setLoading(false);
       setSuccess({ message: rideShareReducer.deleteDriverSuccess });
     }
   }, [rideShareReducer.drivers, rideShareReducer.deleteDriverStatus, rideShareReducer.deleteDriverSuccess]);
 
   useEffect(() => {
-    if (rideShareReducer.deleteDriverStatus === "failed") {
+    if (rideShareReducer.deleteDriverStatus === 'failed') {
       setLoading(false);
       if (rideShareReducer.deleteDriverError) setError({ message: rideShareReducer.deleteDriverError });
     }

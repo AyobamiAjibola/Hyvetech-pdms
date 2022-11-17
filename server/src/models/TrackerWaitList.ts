@@ -1,11 +1,11 @@
-import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
-import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
 
 @Table({
   timestamps: true,
   paranoid: true,
-  tableName: "tracker_wait_lists",
+  tableName: 'tracker_wait_lists',
 })
 export default class TrackerWaitList extends Model<
   InferAttributes<TrackerWaitList>,
@@ -13,7 +13,7 @@ export default class TrackerWaitList extends Model<
 > {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "tracker_wait_list_id" })
+  @Column({ type: DataType.INTEGER, field: 'tracker_wait_list_id' })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)

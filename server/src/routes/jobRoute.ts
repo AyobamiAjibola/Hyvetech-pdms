@@ -1,5 +1,5 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import JobController from "../controllers/JobController";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import JobController from '../controllers/JobController';
 
 export const getJobsHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await JobController.jobs();

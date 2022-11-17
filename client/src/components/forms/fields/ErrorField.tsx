@@ -1,5 +1,5 @@
-import React from "react";
-import { FormHelperText } from "@mui/material";
+import React from 'react';
+import { FormHelperText } from '@mui/material';
 
 interface IErrorField {
   helperStyle?: { [p: string]: string };
@@ -14,7 +14,7 @@ function ErrorField(props: IErrorField) {
 }
 
 const style = {
-  color: "red",
+  color: 'red',
 };
 
 export default ErrorField;

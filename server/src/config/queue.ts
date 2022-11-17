@@ -1,5 +1,5 @@
-import {connect} from "amqplib";
-import settings from "./settings";
+import {connect} from 'amqplib';
+import settings from './settings';
 
 // @ts-ignore
 const config = settings.queue[settings.service.env];

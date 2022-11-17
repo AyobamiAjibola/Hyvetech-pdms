@@ -1,6 +1,6 @@
-import DistrictRepository from "../../repositories/DistrictRepository";
-import District from "../../models/District";
-import { appModelTypes } from "../../@types/app-model";
+import DistrictRepository from '../../repositories/DistrictRepository';
+import District from '../../models/District';
+import { appModelTypes } from '../../@types/app-model';
 import {
   CreateOptions,
   CreationAttributes,
@@ -8,8 +8,8 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize/types";
-import { Attributes } from "sequelize";
+} from 'sequelize/types';
+import { Attributes } from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class DistrictDAOService implements ICrudDAO<District> {
@@ -26,7 +26,7 @@ export default class DistrictDAOService implements ICrudDAO<District> {
   update(
     district: District,
     values: InferAttributes<District>,
-    options: UpdateOptions<InferAttributes<District>>
+    options: UpdateOptions<InferAttributes<District>>,
   ): Promise<District> {
     return this.districtRepository.updateOne(district, values, options);
   }

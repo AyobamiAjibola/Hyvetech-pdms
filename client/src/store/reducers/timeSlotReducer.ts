@@ -1,14 +1,14 @@
-import { createSlice } from "@reduxjs/toolkit";
-import moment, { Moment } from "moment";
+import { createSlice } from '@reduxjs/toolkit';
+import moment, { Moment } from 'moment';
 import {
   disableTimeSlotAction,
   getCurrentDateAction,
   getTimeslotsAction,
   initCurrentTimeSlotsAction,
-} from "../actions/timeSlotActions";
-import { ISchedule, ITimeSlot } from "@app-models";
-import { IThunkAPIStatus } from "@app-types";
-import { IThunkAPIPayloadError } from "@app-interfaces";
+} from '../actions/timeSlotActions';
+import { ISchedule, ITimeSlot } from '@app-models';
+import { IThunkAPIStatus } from '@app-types';
+import { IThunkAPIPayloadError } from '@app-interfaces';
 
 interface ITimeSlotState {
   getTimeSlotsStatus: IThunkAPIStatus;
@@ -30,57 +30,57 @@ interface ITimeSlotState {
 }
 
 const initialState: ITimeSlotState = {
-  getTimeSlotsStatus: "idle",
-  getTimeSlotsError: "",
+  getTimeSlotsStatus: 'idle',
+  getTimeSlotsError: '',
 
-  initTimeSlotsStatus: "idle",
-  initTimeSlotsError: "",
+  initTimeSlotsStatus: 'idle',
+  initTimeSlotsError: '',
 
-  disablingTimeSlotStatus: "idle",
-  disablingTimeSlotError: "",
+  disablingTimeSlotStatus: 'idle',
+  disablingTimeSlotError: '',
 
-  fetchingCurrentDateStatus: "idle",
-  fetchingCurrentDateError: "",
+  fetchingCurrentDateStatus: 'idle',
+  fetchingCurrentDateError: '',
 
   timeSlot: null,
-  shortDate: "",
-  fullDate: "",
+  shortDate: '',
+  fullDate: '',
   slots: [],
 };
 
 const timeSlotSlice = createSlice({
-  name: "timeSlot",
+  name: 'timeSlot',
   initialState,
   reducers: {
     clearInitTimeslots(state: ITimeSlotState) {
-      state.initTimeSlotsStatus = "idle";
-      state.initTimeSlotsError = "";
+      state.initTimeSlotsStatus = 'idle';
+      state.initTimeSlotsError = '';
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(getTimeslotsAction.pending, (state) => {
-        state.getTimeSlotsStatus = "loading";
+      .addCase(getTimeslotsAction.pending, state => {
+        state.getTimeSlotsStatus = 'loading';
       })
       .addCase(getTimeslotsAction.fulfilled, (state, action) => {
-        state.getTimeSlotsStatus = "completed";
+        state.getTimeSlotsStatus = 'completed';
         state.timeSlot = action.payload.result as ISchedule;
 
         state.slots = state.timeSlot.timeSlots;
       })
       .addCase(getTimeslotsAction.rejected, (state, action) => {
-        state.getTimeSlotsStatus = "failed";
+        state.getTimeSlotsStatus = 'failed';
 
         const payload = <IThunkAPIPayloadError>action.payload;
         state.getTimeSlotsError = action.payload ? payload.message : <string>action.error.message;
       });
 
     builder
-      .addCase(initCurrentTimeSlotsAction.pending, (state) => {
-        state.initTimeSlotsStatus = "loading";
+      .addCase(initCurrentTimeSlotsAction.pending, state => {
+        state.initTimeSlotsStatus = 'loading';
       })
       .addCase(initCurrentTimeSlotsAction.fulfilled, (state, action) => {
-        state.initTimeSlotsStatus = "completed";
+        state.initTimeSlotsStatus = 'completed';
         state.timeSlot = action.payload.timeSlot as ISchedule;
         state.slots = action.payload.slots as ITimeSlot[];
 
@@ -94,38 +94,38 @@ const timeSlotSlice = createSlice({
         state.slots = tempSlots;
       })
       .addCase(initCurrentTimeSlotsAction.rejected, (state, action) => {
-        state.initTimeSlotsStatus = "failed";
+        state.initTimeSlotsStatus = 'failed';
 
         const payload = <IThunkAPIPayloadError>action.payload;
         state.initTimeSlotsError = action.payload ? payload.message : <string>action.error.message;
       });
 
     builder
-      .addCase(disableTimeSlotAction.pending, (state) => {
-        state.disablingTimeSlotStatus = "loading";
+      .addCase(disableTimeSlotAction.pending, state => {
+        state.disablingTimeSlotStatus = 'loading';
       })
       .addCase(disableTimeSlotAction.fulfilled, (state, action) => {
-        state.disablingTimeSlotStatus = "completed";
+        state.disablingTimeSlotStatus = 'completed';
         state.timeSlot = action.payload.timeSlot;
         state.slots = action.payload.timeSlot.slots;
       })
       .addCase(disableTimeSlotAction.rejected, (state, action) => {
-        state.disablingTimeSlotStatus = "failed";
+        state.disablingTimeSlotStatus = 'failed';
         const payload = <IThunkAPIPayloadError>action.payload;
         state.disablingTimeSlotError = action.payload ? payload.message : <string>action.error.message;
       });
 
     builder
-      .addCase(getCurrentDateAction.pending, (state) => {
-        state.fetchingCurrentDateStatus = "loading";
+      .addCase(getCurrentDateAction.pending, state => {
+        state.fetchingCurrentDateStatus = 'loading';
       })
       .addCase(getCurrentDateAction.fulfilled, (state, action) => {
-        state.fetchingCurrentDateStatus = "completed";
+        state.fetchingCurrentDateStatus = 'completed';
         state.shortDate = action.payload.shortDate;
         state.fullDate = action.payload.fullDate;
       })
       .addCase(getCurrentDateAction.rejected, (state, action) => {
-        state.fetchingCurrentDateStatus = "failed";
+        state.fetchingCurrentDateStatus = 'failed';
         const payload = <IThunkAPIPayloadError>action.payload;
         state.fetchingCurrentDateError = action.payload ? payload.message : <string>action.error.message;
       });
@@ -134,8 +134,8 @@ const timeSlotSlice = createSlice({
 
 const setExpiredTimeSlot = (slots: ITimeSlot[], currentDate: Moment) => {
   return slots.map((slot: any) => {
-    const _slots = slot.time.split("-");
-    const slotTime = moment(_slots[0].trim(), "HH: a");
+    const _slots = slot.time.split('-');
+    const slotTime = moment(_slots[0].trim(), 'HH: a');
 
     const currentSlot = moment({
       year: currentDate.year(),
@@ -145,7 +145,7 @@ const setExpiredTimeSlot = (slots: ITimeSlot[], currentDate: Moment) => {
     });
 
     if (!currentDate.isBefore(currentSlot)) {
-      slot["available"] = currentDate.isBefore(currentSlot);
+      slot['available'] = currentDate.isBefore(currentSlot);
     }
 
     return slot;

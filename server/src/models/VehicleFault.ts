@@ -1,19 +1,19 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
-import Appointment from "./Appointment";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
+import Appointment from './Appointment';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
 
 @Table({
   timestamps: true,
 
-  tableName: "vehicle_faults",
+  tableName: 'vehicle_faults',
 })
 export default class VehicleFault extends Model<InferAttributes<VehicleFault>, InferCreationAttributes<VehicleFault>> {
   @PrimaryKey
   @AutoIncrement
   @Column({
     type: DataType.INTEGER,
-    field: "vehicle_fault_id",
+    field: 'vehicle_fault_id',
     allowNull: false,
   })
   declare id: CreationOptional<number>;
@@ -27,7 +27,7 @@ export default class VehicleFault extends Model<InferAttributes<VehicleFault>, I
   @Column(DataType.STRING)
   declare videoPath: string;
 
-  @BelongsTo(() => Appointment, { onDelete: "cascade" })
+  @BelongsTo(() => Appointment, { onDelete: 'cascade' })
   declare appointment: NonAttribute<Appointment>;
 
   @ForeignKey(() => Appointment)

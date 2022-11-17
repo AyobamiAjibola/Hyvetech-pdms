@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
-import { CustomHookMessage } from "@app-types";
-import useAppSelector from "./useAppSelector";
-import useAppDispatch from "./useAppDispatch";
+import { useEffect, useState } from 'react';
+import { CustomHookMessage } from '@app-types';
+import useAppSelector from './useAppSelector';
+import useAppDispatch from './useAppDispatch';
 import {
   createTechnicianAction,
   deleteTechnicianAction,
   getPartnerTechniciansAction,
   getTechniciansAction,
   updateTechnicianAction,
-} from "../store/actions/technicianActions";
-import { ITechnicianValues } from "../components/forms/models/technicianModel";
-import settings from "../config/settings";
-import useAdmin from "./useAdmin";
-import { useParams } from "react-router-dom";
-import { IJob, ITechnician } from "@app-models";
-import { MESSAGES } from "../config/constants";
+} from '../store/actions/technicianActions';
+import { ITechnicianValues } from '../components/forms/models/technicianModel';
+import settings from '../config/settings';
+import useAdmin from './useAdmin';
+import { useParams } from 'react-router-dom';
+import { IJob, ITechnician } from '@app-models';
+import { MESSAGES } from '../config/constants';
 
 export default function useTechnician() {
   const [showCreate, setShowCreate] = useState<boolean>(false);
@@ -30,22 +30,22 @@ export default function useTechnician() {
   const [loading, setLoading] = useState<boolean>(false);
   const [initialValues, setInitialValues] = useState<ITechnicianValues>({
     active: false,
-    confirmPassword: "",
-    email: "",
-    firstName: "",
-    lastName: "",
-    password: "",
-    phone: "",
+    confirmPassword: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    password: '',
+    phone: '',
   });
 
   const admin = useAdmin();
   const params = useParams();
 
-  const technicianReducer = useAppSelector((state) => state.technicianReducer);
+  const technicianReducer = useAppSelector(state => state.technicianReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (technicianReducer.getTechniciansStatus === "idle") {
+    if (technicianReducer.getTechniciansStatus === 'idle') {
       if (params.id) {
         dispatch(getPartnerTechniciansAction(+params.id));
       } else dispatch(getTechniciansAction());
@@ -53,13 +53,13 @@ export default function useTechnician() {
   }, [dispatch, params.id, technicianReducer.getTechniciansStatus]);
 
   useEffect(() => {
-    if (technicianReducer.createTechnicianStatus === "loading") {
-      setLoading(technicianReducer.createTechnicianStatus === "loading");
+    if (technicianReducer.createTechnicianStatus === 'loading') {
+      setLoading(technicianReducer.createTechnicianStatus === 'loading');
     }
   }, [dispatch, technicianReducer.createTechnicianStatus]);
 
   useEffect(() => {
-    if (technicianReducer.createTechnicianStatus === "completed") {
+    if (technicianReducer.createTechnicianStatus === 'completed') {
       setShowCreate(false);
       setLoading(false);
       setSuccess({ message: technicianReducer.createTechnicianSuccess });
@@ -68,7 +68,7 @@ export default function useTechnician() {
   }, [dispatch, technicianReducer.createTechnicianStatus, technicianReducer.createTechnicianSuccess]);
 
   useEffect(() => {
-    if (technicianReducer.createTechnicianStatus === "failed") {
+    if (technicianReducer.createTechnicianStatus === 'failed') {
       setShowCreate(false);
       setLoading(false);
       if (technicianReducer.createTechnicianError) {
@@ -78,13 +78,13 @@ export default function useTechnician() {
   }, [dispatch, technicianReducer.createTechnicianError, technicianReducer.createTechnicianStatus]);
 
   useEffect(() => {
-    if (technicianReducer.updateTechnicianStatus === "loading") {
-      setLoading(technicianReducer.updateTechnicianStatus === "loading");
+    if (technicianReducer.updateTechnicianStatus === 'loading') {
+      setLoading(technicianReducer.updateTechnicianStatus === 'loading');
     }
   }, [dispatch, technicianReducer.updateTechnicianStatus]);
 
   useEffect(() => {
-    if (technicianReducer.updateTechnicianStatus === "completed") {
+    if (technicianReducer.updateTechnicianStatus === 'completed') {
       setShowEdit(false);
       setLoading(false);
       setSuccess({ message: technicianReducer.updateTechnicianSuccess });
@@ -93,7 +93,7 @@ export default function useTechnician() {
   }, [dispatch, technicianReducer.updateTechnicianStatus, technicianReducer.updateTechnicianSuccess]);
 
   useEffect(() => {
-    if (technicianReducer.updateTechnicianStatus === "failed") {
+    if (technicianReducer.updateTechnicianStatus === 'failed') {
       setShowEdit(false);
       setLoading(false);
       if (technicianReducer.updateTechnicianError) {
@@ -103,13 +103,13 @@ export default function useTechnician() {
   }, [dispatch, technicianReducer.updateTechnicianError, technicianReducer.updateTechnicianStatus]);
 
   useEffect(() => {
-    if (technicianReducer.deleteTechnicianStatus === "loading") {
-      setLoading(technicianReducer.deleteTechnicianStatus === "loading");
+    if (technicianReducer.deleteTechnicianStatus === 'loading') {
+      setLoading(technicianReducer.deleteTechnicianStatus === 'loading');
     }
   }, [dispatch, technicianReducer.deleteTechnicianStatus]);
 
   useEffect(() => {
-    if (technicianReducer.deleteTechnicianStatus === "completed") {
+    if (technicianReducer.deleteTechnicianStatus === 'completed') {
       setShowDelete(false);
       setLoading(false);
       setSuccess({ message: technicianReducer.deleteTechnicianSuccess });
@@ -118,7 +118,7 @@ export default function useTechnician() {
   }, [dispatch, technicianReducer.deleteTechnicianStatus, technicianReducer.deleteTechnicianSuccess]);
 
   useEffect(() => {
-    if (technicianReducer.deleteTechnicianStatus === "failed") {
+    if (technicianReducer.deleteTechnicianStatus === 'failed') {
       setShowDelete(false);
       setLoading(false);
       if (technicianReducer.deleteTechnicianError) {
@@ -145,7 +145,7 @@ export default function useTechnician() {
       return;
     }
 
-    throw new Error("An error occurred. Contact support");
+    throw new Error('An error occurred. Contact support');
   };
 
   const handleDelete = () => {

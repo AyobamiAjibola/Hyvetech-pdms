@@ -1,9 +1,9 @@
-import { createLogger, format, Logger, transports } from "winston";
-import colors from "colors";
-import DailyRotateFile from "winston-daily-rotate-file";
+import { createLogger, format, Logger, transports } from 'winston';
+import colors from 'colors';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
-import { ConsoleTransportInstance } from "winston/lib/winston/transports";
-import { LOG_LEVEL_COLORS } from "../config/constants";
+import { ConsoleTransportInstance } from 'winston/lib/winston/transports';
+import { LOG_LEVEL_COLORS } from '../config/constants';
 
 export default class AppLogger {
   private readonly module: string;
@@ -31,22 +31,22 @@ export default class AppLogger {
     this._logger = createLogger({
       transports: [this.transports],
       exitOnError: false,
-      level: "info",
+      level: 'info',
       format: combine(
         errors({ stack: true }),
         label({ label: this.module }),
-        timestamp({ format: "YYYY-MM-DD hh:mm:ss a" })
+        timestamp({ format: 'YYYY-MM-DD hh:mm:ss a' }),
       ),
     });
   }
 
   private getTransports() {
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === 'production') {
       const options = {
-        datePattern: "YYYY-MM-DD-HH",
+        datePattern: 'YYYY-MM-DD-HH',
         zippedArchive: true,
-        maxSize: "20m",
-        maxFiles: "14d",
+        maxSize: '20m',
+        maxFiles: '14d',
         format: format.printf(({ level, label, timestamp, stack, message }) => {
           return `[${timestamp}] ${label}.${level}: ${stack ? stack : message}`;
         }),
@@ -54,12 +54,12 @@ export default class AppLogger {
 
       return new DailyRotateFile({
         ...options,
-        filename: "logs/app-%DATE%.log",
+        filename: 'logs/app-%DATE%.log',
       });
     }
 
     return new transports.Console({
-      level: "debug",
+      level: 'debug',
       format: format.printf(({ level, label, timestamp, stack, message }) => {
         //@ts-ignore
         return colors[LOG_LEVEL_COLORS[level]](`[${timestamp}] ${label}.${level}: ${stack ? stack : message}`);

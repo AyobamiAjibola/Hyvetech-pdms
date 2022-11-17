@@ -1,17 +1,17 @@
-import React, { useContext, useEffect } from "react";
-import { Box, Grid, TextField } from "@mui/material";
-import ServiceLocation from "../../components/forms/booking/ServiceLocation";
-import DriveInPlanCalendar from "../../components/forms/booking/DriveInPlanCalendar";
-import MobilePlanCalendar from "../../components/forms/booking/MobilePlanCalendar";
-import { useFormikContext } from "formik";
-import { HYBRID_PLAN, MOBILE_PLAN } from "../../config/constants";
-import { AppContext } from "../../context/AppContextProvider";
-import { IBookingFormValues } from "../../components/forms/booking/BookingForm";
-import { FaCamera } from "react-icons/fa";
-import "./uploadImage.css";
-import { AppContextProps } from "@app-interfaces";
-import bookingModel from "../../components/forms/models/bookingModel";
-import Vehicle from "../../components/forms/booking/Vehicle";
+import React, { useContext, useEffect } from 'react';
+import { Box, Grid, TextField } from '@mui/material';
+import ServiceLocation from '../../components/forms/booking/ServiceLocation';
+import DriveInPlanCalendar from '../../components/forms/booking/DriveInPlanCalendar';
+import MobilePlanCalendar from '../../components/forms/booking/MobilePlanCalendar';
+import { useFormikContext } from 'formik';
+import { HYBRID_PLAN, MOBILE_PLAN } from '../../config/constants';
+import { AppContext } from '../../context/AppContextProvider';
+import { IBookingFormValues } from '../../components/forms/booking/BookingForm';
+import { FaCamera } from 'react-icons/fa';
+import './uploadImage.css';
+import { AppContextProps } from '@app-interfaces';
+import bookingModel from '../../components/forms/models/bookingModel';
+import Vehicle from '../../components/forms/booking/Vehicle';
 
 interface Props {
   planCategory: string;
@@ -39,11 +39,10 @@ function MediaComponent(props: IMediaProps) {
           height={80}
           width={140}
           style={{
-            borderRadius: "10px",
-            cursor: "pointer",
-            marginRight: "10px",
-          }}
-        >
+            borderRadius: '10px',
+            cursor: 'pointer',
+            marginRight: '10px',
+          }}>
           <track default kind="captions" srcLang="en" src="" />
           Sorry, your browser does not support embedded videos.
         </video>
@@ -52,7 +51,7 @@ function MediaComponent(props: IMediaProps) {
         <img
           src={props.image}
           className="imageContainer"
-          style={{ borderRadius: "10px", cursor: "pointer" }}
+          style={{ borderRadius: '10px', cursor: 'pointer' }}
           alt="complaint"
         />
       )}
@@ -72,10 +71,10 @@ function ServiceLocationAndCalendar({ planCategory, date, setDate, height, width
     <Grid container rowSpacing={{ xs: 2, sm: 4, md: 6 }} columnSpacing={{ xs: 2, sm: 4, md: 6 }} sx={{ mb: 3 }}>
       <Grid item xs={12} md={6} className="topOne">
         <Vehicle />
-        {planCategory === "Mobile" && <Box sx={{ mt: 3 }} />}
+        {planCategory === 'Mobile' && <Box sx={{ mt: 3 }} />}
         <ServiceLocation planCategory={planCategory} />
-        {planCategory === "Mobile" && <Box sx={{ mt: 3 }} />}
-        {planCategory === "Drive-in" && <Box sx={{ mt: 3 }} />}
+        {planCategory === 'Mobile' && <Box sx={{ mt: 3 }} />}
+        {planCategory === 'Drive-in' && <Box sx={{ mt: 3 }} />}
         <TextField
           label={bookingModel.fields.vehicleFault.label}
           value={values.vehicleFault}
@@ -96,7 +95,7 @@ function ServiceLocationAndCalendar({ planCategory, date, setDate, height, width
               {image && <MediaComponent height={height} width={width} image={image} />}
             </div>
 
-            <label htmlFor="actual-btn" className={image ? "hideContainer" : "upload-image-container"}>
+            <label htmlFor="actual-btn" className={image ? 'hideContainer' : 'upload-image-container'}>
               <FaCamera className="single-icon" />
             </label>
           </Box>

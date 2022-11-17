@@ -1,6 +1,6 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
 
-import RideShareDriverController from "../controllers/RideShareDriverController";
+import RideShareDriverController from '../controllers/RideShareDriverController';
 
 export const getDriverHandler = authenticateRouteWrapper(async (req, res) => {
   const driverId = req.params.driverId as string;

@@ -1,5 +1,5 @@
-declare module "@app-models" {
-  import { CheckListType } from "@app-types";
+declare module '@app-models' {
+  import { CheckListType } from '@app-types';
 
   interface IUser {
     id: number;
@@ -564,5 +564,6 @@ declare module "@app-models" {
     partner: IPartner;
     partnerId: number;
     tax: number;
+    expiresIn: number;
   }
 }

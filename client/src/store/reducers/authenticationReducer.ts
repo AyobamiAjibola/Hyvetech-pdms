@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
-import jwt from "jsonwebtoken";
+import { createSlice } from '@reduxjs/toolkit';
+import jwt from 'jsonwebtoken';
 
-import { IThunkAPIStatus } from "@app-types";
-import { signInAction, signOutAction } from "../actions/authenicationActions";
-import { IPermission } from "@app-models";
-import { LOCAL_STORAGE } from "../../config/constants";
-import { CustomJwtPayload } from "@app-interfaces";
+import { IThunkAPIStatus } from '@app-types';
+import { signInAction, signOutAction } from '../actions/authenicationActions';
+import { IPermission } from '@app-models';
+import { LOCAL_STORAGE } from '../../config/constants';
+import { CustomJwtPayload } from '@app-interfaces';
 
 interface IAuthenticationState {
   signingInStatus: IThunkAPIStatus;
@@ -21,39 +21,39 @@ interface IAuthenticationState {
 }
 
 const initialState: IAuthenticationState = {
-  signOutError: "",
-  signOutStatus: "idle",
-  signOutSuccess: "",
-  authToken: "",
-  signingInError: "",
-  signingInSuccess: "",
-  signingInStatus: "idle",
+  signOutError: '',
+  signOutStatus: 'idle',
+  signOutSuccess: '',
+  authToken: '',
+  signingInError: '',
+  signingInSuccess: '',
+  signingInStatus: 'idle',
   permissions: [],
 };
 
 const authenticationSlice = createSlice({
-  name: "authentication",
+  name: 'authentication',
   initialState,
   reducers: {
     clearLoginStatus(state: IAuthenticationState) {
-      state.signingInStatus = "idle";
-      state.signingInSuccess = "";
-      state.signingInError = "";
+      state.signingInStatus = 'idle';
+      state.signingInSuccess = '';
+      state.signingInError = '';
     },
 
     clearLogoutStatus(state: IAuthenticationState) {
-      state.signOutStatus = "idle";
-      state.signOutSuccess = "";
-      state.signOutError = "";
+      state.signOutStatus = 'idle';
+      state.signOutSuccess = '';
+      state.signOutError = '';
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(signInAction.pending, (state) => {
-        state.signingInStatus = "loading";
+      .addCase(signInAction.pending, state => {
+        state.signingInStatus = 'loading';
       })
       .addCase(signInAction.fulfilled, (state, action) => {
-        state.signingInStatus = "completed";
+        state.signingInStatus = 'completed';
         state.signingInSuccess = action.payload.message;
         state.authToken = action.payload.result as string;
 
@@ -64,7 +64,7 @@ const authenticationSlice = createSlice({
         localStorage.setItem(LOCAL_STORAGE.permissions, JSON.stringify(permissions));
       })
       .addCase(signInAction.rejected, (state, action) => {
-        state.signingInStatus = "failed";
+        state.signingInStatus = 'failed';
 
         if (action.payload) {
           state.signingInError = action.payload.message;
@@ -72,15 +72,15 @@ const authenticationSlice = createSlice({
       });
 
     builder
-      .addCase(signOutAction.pending, (state) => {
-        state.signOutStatus = "loading";
+      .addCase(signOutAction.pending, state => {
+        state.signOutStatus = 'loading';
       })
       .addCase(signOutAction.fulfilled, (state, action) => {
-        state.signOutStatus = "completed";
+        state.signOutStatus = 'completed';
         state.signOutSuccess = action.payload.message;
       })
       .addCase(signOutAction.rejected, (state, action) => {
-        state.signOutStatus = "failed";
+        state.signOutStatus = 'failed';
 
         if (action.payload) {
           state.signOutError = action.payload.message;

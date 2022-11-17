@@ -1,14 +1,14 @@
-import { CustomJwtPayload } from "@app-interfaces";
-import { IPermission, IUser } from "@app-models";
-import jwt from "jsonwebtoken";
-import { useEffect, useMemo, useState } from "react";
+import { CustomJwtPayload } from '@app-interfaces';
+import { IPermission, IUser } from '@app-models';
+import jwt from 'jsonwebtoken';
+import { useEffect, useMemo, useState } from 'react';
 
-import { LOCAL_STORAGE } from "../config/constants";
-import settings from "../config/settings";
-import { getUserAction } from "../store/actions/userActions";
-import cookie from "../utils/cookie";
-import useAppDispatch from "./useAppDispatch";
-import useAppSelector from "./useAppSelector";
+import { LOCAL_STORAGE } from '../config/constants';
+import settings from '../config/settings';
+import { getUserAction } from '../store/actions/userActions';
+import cookie from '../utils/cookie';
+import useAppDispatch from './useAppDispatch';
+import useAppSelector from './useAppSelector';
 
 export default function useAdmin() {
   const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
@@ -16,7 +16,7 @@ export default function useAdmin() {
   const [isDriverAdmin, setIsDriverAdmin] = useState<boolean>(false);
   const [user, setUser] = useState<IUser | null>(null);
 
-  const userReducer = useAppSelector((state) => state.userReducer);
+  const userReducer = useAppSelector(state => state.userReducer);
   const dispatch = useAppDispatch();
 
   const token = useMemo(() => cookie.get(settings.auth.admin), []);
@@ -27,12 +27,12 @@ export default function useAdmin() {
     if (null !== localPermissions) {
       const permissions = localPermissions as IPermission[];
 
-      permissions.forEach((permission) => {
-        if (permission.action === "manage" && permission.subject === "all") setIsSuperAdmin(true);
-        if (permission.action === "manage" && permission.subject === "technician") setIsTechAdmin(true);
-        if (permission.action === "manage" && permission.subject === "driver") setIsDriverAdmin(true);
+      permissions.forEach(permission => {
+        if (permission.action === 'manage' && permission.subject === 'all') setIsSuperAdmin(true);
+        if (permission.action === 'manage' && permission.subject === 'technician') setIsTechAdmin(true);
+        if (permission.action === 'manage' && permission.subject === 'driver') setIsDriverAdmin(true);
       });
-    } else throw new Error("You are not authorized to access this resource");
+    } else throw new Error('You are not authorized to access this resource');
   }, []);
 
   useEffect(() => {
@@ -40,11 +40,11 @@ export default function useAdmin() {
       const payload = jwt.decode(token) as CustomJwtPayload;
 
       dispatch(getUserAction(payload.userId));
-    } else throw new Error("You are not authorized to access this resource");
+    } else throw new Error('You are not authorized to access this resource');
   }, [dispatch, token]);
 
   useEffect(() => {
-    if (userReducer.getUserStatus === "completed") {
+    if (userReducer.getUserStatus === 'completed') {
       setUser(userReducer.user);
     }
   }, [userReducer.getUserStatus, userReducer.user]);

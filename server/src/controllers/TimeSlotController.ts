@@ -1,18 +1,18 @@
-import dataStore from "../config/dataStore";
-import { Request } from "express";
-import { appCommonTypes } from "../@types/app-common";
-import Joi from "joi";
-import HttpStatus from "../helpers/HttpStatus";
-import dataSources from "../services/dao";
-import TimeSlot from "../models/TimeSlot";
-import AppLogger from "../utils/AppLogger";
+import dataStore from '../config/dataStore';
+import { Request } from 'express';
+import { appCommonTypes } from '../@types/app-common';
+import Joi from 'joi';
+import HttpStatus from '../helpers/HttpStatus';
+import dataSources from '../services/dao';
+import TimeSlot from '../models/TimeSlot';
+import AppLogger from '../utils/AppLogger';
 import ISchedule = appCommonTypes.ISchedule;
 
 export default class TimeSlotController {
   private static LOGGER = AppLogger.init(TimeSlotController.name).logger;
 
   public static async initTimeSlot(req: Request) {
-    const timeSlot: ISchedule = { date: "", slots: [] };
+    const timeSlot: ISchedule = { date: '', slots: [] };
 
     const { error, value } = Joi.object({
       date: Joi.string(),
@@ -69,7 +69,7 @@ export default class TimeSlotController {
   }
 
   public static async disableTimeslot(req: Request) {
-    const timeSlot: ISchedule = { date: "", slots: [] };
+    const timeSlot: ISchedule = { date: '', slots: [] };
 
     const { error, value } = Joi.object({
       date: Joi.string(),
@@ -121,12 +121,12 @@ export default class TimeSlotController {
   public static async getDefaultTimeslots() {
     const timeslot = await dataSources.scheduleDAOService.findByAny({
       where: { default: true },
-      attributes: ["id", "name", "status", "default"],
+      attributes: ['id', 'name', 'status', 'default'],
       include: [
         {
           model: TimeSlot,
-          attributes: ["id", "time", "label", "available"],
-          order: [["id", "ASC"]],
+          attributes: ['id', 'time', 'label', 'available'],
+          order: [['id', 'ASC']],
         },
       ],
     });

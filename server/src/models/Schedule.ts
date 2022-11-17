@@ -1,16 +1,16 @@
-import { AutoIncrement, Column, DataType, HasMany, Model, PrimaryKey, Table } from "sequelize-typescript";
-import TimeSlot from "./TimeSlot";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
+import { AutoIncrement, Column, DataType, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import TimeSlot from './TimeSlot';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
 
 @Table({
   timestamps: true,
 
-  tableName: "schedules",
+  tableName: 'schedules',
 })
 export default class Schedule extends Model<InferAttributes<Schedule>, InferCreationAttributes<Schedule>> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "schedule_id" })
+  @Column({ type: DataType.INTEGER, field: 'schedule_id' })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)
@@ -22,6 +22,6 @@ export default class Schedule extends Model<InferAttributes<Schedule>, InferCrea
   @Column(DataType.BOOLEAN)
   declare default: boolean;
 
-  @HasMany(() => TimeSlot, { onDelete: "cascade" })
+  @HasMany(() => TimeSlot, { onDelete: 'cascade' })
   declare timeSlots: NonAttribute<TimeSlot[]>;
 }

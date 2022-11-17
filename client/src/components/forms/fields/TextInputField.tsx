@@ -1,14 +1,14 @@
-import React, { ChangeEvent, FocusEvent } from "react";
-import { FormGroup, TextField } from "@mui/material";
-import { useFormikContext } from "formik";
-import ErrorField from "./ErrorField";
+import React, { ChangeEvent, FocusEvent } from 'react';
+import { FormGroup, TextField } from '@mui/material';
+import { useFormikContext } from 'formik';
+import ErrorField from './ErrorField';
 
 interface ITextInputFieldProps {
   inputGroupStyle?: { [p: string]: string };
   textInputStyle?: { [p: string]: string };
   helperStyle?: { [p: string]: string };
   fullWidth?: boolean;
-  size?: "small" | "medium";
+  size?: 'small' | 'medium';
   onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   value: string | number | boolean;

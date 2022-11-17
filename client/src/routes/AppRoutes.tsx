@@ -1,8 +1,8 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { routes } from "./index";
-import PrivateRoute from "../components/auth/PrivateRoute";
-import ErrorPage from "../pages/error/ErrorPage";
+import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { routes } from './index';
+import PrivateRoute from '../components/auth/PrivateRoute';
+import ErrorPage from '../pages/error/ErrorPage';
 
 function AppRoutes() {
   return (

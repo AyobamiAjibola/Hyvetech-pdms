@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import moment from "moment";
-import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { TextField, Typography } from "@mui/material";
-import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
-import "./bookingForm.css";
-import { AppContext } from "../../../context/AppContextProvider";
-import { AppContextProps } from "@app-interfaces";
+import React, { useContext, useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import moment from 'moment';
+import { LocalizationProvider, MobileTimePicker } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { TextField, Typography } from '@mui/material';
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import './bookingForm.css';
+import { AppContext } from '../../../context/AppContextProvider';
+import { AppContextProps } from '@app-interfaces';
 
 interface IMobilePlanCalendarProps {
   date: any;
@@ -83,23 +83,22 @@ function MobilePlanCalendar({
       <Box
         sx={{
           mb: 2,
-          "& .PrivatePickersSlideTransition-root": {
+          '& .PrivatePickersSlideTransition-root': {
             minHeight: DATE_SIZE * 6,
             maxHeight: DATE_SIZE * 6,
-            height: "100%",
+            height: '100%',
           },
 
-          "& .MuiYearPicker-root": {
+          '& .MuiYearPicker-root': {
             minHeight: DATE_SIZE * 6,
             maxHeight: DATE_SIZE * 6,
-            height: "100%",
+            height: '100%',
           },
 
           '& .PrivatePickersSlideTransition-root [role="row"]': {
             margin: 0,
           },
-        }}
-      >
+        }}>
         <Typography
           textAlign="center"
           // className="time-header"
@@ -108,16 +107,15 @@ function MobilePlanCalendar({
           gutterBottom
           sx={{
             mb: 1,
-            fontSize: (theme) => theme.spacing(1),
-            color: (theme) => (theme.palette.mode === "dark" ? "#FFFFFF" : "#383838"),
-          }}
-        >
+            fontSize: theme => theme.spacing(1),
+            color: theme => (theme.palette.mode === 'dark' ? '#FFFFFF' : '#383838'),
+          }}>
           Select Preferred Date
         </Typography>
         <StaticDatePicker
           displayStaticWrapperAs="desktop"
           openTo="day"
-          renderInput={(props) => <TextField {...props} fullWidth sx={{ alignSelf: "center" }} />}
+          renderInput={props => <TextField {...props} fullWidth sx={{ alignSelf: 'center' }} />}
           value={_date}
           showToolbar={false}
           maxDate={_maxDate}
@@ -142,18 +140,17 @@ function MobilePlanCalendar({
               sx={{
                 mt: 2,
                 mb: 1,
-                fontSize: (theme) => theme.spacing(1),
-                color: (theme) => (theme.palette.mode === "dark" ? "#FFFFFF" : "#383838"),
+                fontSize: theme => theme.spacing(1),
+                color: theme => (theme.palette.mode === 'dark' ? '#FFFFFF' : '#383838'),
               }}
               textAlign="center"
               // className="time-header"
               variant="subtitle2"
-              display="block"
-            >
+              display="block">
               Select Preferred Time
             </Typography>
             <MobileTimePicker
-              renderInput={(props) => <TextField {...props} fullWidth />}
+              renderInput={props => <TextField {...props} fullWidth />}
               value={date}
               onChange={handleChangeTime}
               ampm

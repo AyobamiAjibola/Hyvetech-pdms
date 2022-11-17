@@ -1,15 +1,15 @@
-import React from "react";
-import { FieldArray, Form, useFormikContext } from "formik";
-import { Autocomplete, Button, Grid, Typography } from "@mui/material";
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
-import { Add, PhotoCamera, Remove, Save } from "@mui/icons-material";
-import partnerModel, { IGarageSettings } from "../models/partnerModel";
-import { LoadingButton } from "@mui/lab";
-import TextInputField from "../fields/TextInputField";
-import { DAYS } from "../../../config/constants";
-import TimePickerField from "../fields/TimePickerField";
-import { getImageUrl } from "../../../utils/generic";
+import React from 'react';
+import { FieldArray, Form, useFormikContext } from 'formik';
+import { Autocomplete, Button, Grid, Typography } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import { Add, PhotoCamera, Remove, Save } from '@mui/icons-material';
+import partnerModel, { IGarageSettings } from '../models/partnerModel';
+import { LoadingButton } from '@mui/lab';
+import TextInputField from '../fields/TextInputField';
+import { DAYS } from '../../../config/constants';
+import TimePickerField from '../fields/TimePickerField';
+import { getImageUrl } from '../../../utils/generic';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -30,7 +30,7 @@ function GarageSettingsForm(props: IProps) {
               <input
                 hidden
                 name={fields.logo.name}
-                onChange={(event) => {
+                onChange={event => {
                   const files = event.target.files;
                   if (files) {
                     setFieldValue(fields.logo.name, files[0]);
@@ -60,7 +60,7 @@ function GarageSettingsForm(props: IProps) {
             name={fields.totalStaff.name}
             label={fields.totalStaff.label}
             type="number"
-            inputProps={{ min: "0" }}
+            inputProps={{ min: '0' }}
           />
         </Grid>
         <Grid item xs={12} md={3}>
@@ -70,7 +70,7 @@ function GarageSettingsForm(props: IProps) {
             name={fields.totalTechnicians.name}
             label={fields.totalTechnicians.label}
             type="number"
-            inputProps={{ min: "0" }}
+            inputProps={{ min: '0' }}
           />
         </Grid>
         <Grid item xs={12} md={3}>
@@ -114,17 +114,17 @@ function GarageSettingsForm(props: IProps) {
         <Grid container item xs={12} spacing={2}>
           <FieldArray
             name={fields.brands.name}
-            render={(arrayHelpers) => {
+            render={arrayHelpers => {
               return (
                 <React.Fragment>
                   {values.brands.length > 0 &&
                     values.brands.map((brand, index) => {
                       return (
                         <Grid container item spacing={2} xs={12} key={index} columns={13}>
-                          {Object.keys(brand).map((value) => {
+                          {Object.keys(brand).map(value => {
                             return (
                               <React.Fragment key={`${value}`}>
-                                <Grid item xs={value === "name" ? 4 : 8} sx={{ mb: 2 }}>
+                                <Grid item xs={value === 'name' ? 4 : 8} sx={{ mb: 2 }}>
                                   <TextField
                                     fullWidth
                                     variant="outlined"
@@ -150,11 +150,10 @@ function GarageSettingsForm(props: IProps) {
                     <IconButton
                       onClick={() =>
                         arrayHelpers.push({
-                          name: "",
-                          description: "",
+                          name: '',
+                          description: '',
                         })
-                      }
-                    >
+                      }>
                       <Add />
                     </IconButton>
                   </Grid>
@@ -169,17 +168,17 @@ function GarageSettingsForm(props: IProps) {
         <Grid container item xs={12} spacing={2}>
           <FieldArray
             name={fields.workingHours.name}
-            render={(arrayHelpers) => {
+            render={arrayHelpers => {
               return (
                 <React.Fragment>
                   {values.workingHours.length > 0 &&
                     values.workingHours.map((workingHour, index) => {
                       return (
                         <Grid container item spacing={2} xs={12} key={index} columns={13}>
-                          {Object.keys(workingHour).map((value) => {
+                          {Object.keys(workingHour).map(value => {
                             return (
                               <React.Fragment key={`${value}`}>
-                                {value === "days" ? (
+                                {value === 'days' ? (
                                   <Grid item xs={6} sx={{ mb: 2 }}>
                                     <Autocomplete
                                       multiple
@@ -191,7 +190,7 @@ function GarageSettingsForm(props: IProps) {
                                       onInputChange={(event, newValue) => {
                                         setFieldValue(`workingHours.${index}.${value}`, newValue);
                                       }}
-                                      renderInput={(params) => (
+                                      renderInput={params => (
                                         <TextField {...params} name={`workingHours.${index}.${value}`} />
                                       )}
                                     />
@@ -227,8 +226,7 @@ function GarageSettingsForm(props: IProps) {
                           from: new Date(),
                           to: new Date(),
                         })
-                      }
-                    >
+                      }>
                       <Add />
                     </IconButton>
                   </Grid>
@@ -244,8 +242,7 @@ function GarageSettingsForm(props: IProps) {
             variant="contained"
             color="secondary"
             size="large"
-            endIcon={<Save />}
-          >
+            endIcon={<Save />}>
             Save
           </LoadingButton>
         </Grid>

@@ -1,17 +1,17 @@
-import { Request } from "express";
-import Joi from "joi";
+import { Request } from 'express';
+import Joi from 'joi';
 
-import dataSources from "../services/dao";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import { appCommonTypes } from "../@types/app-common";
-import CheckList from "../models/CheckList";
-import { InferAttributes } from "sequelize";
-import { INITIAL_CHECK_LIST_VALUES, JOB_STATUS, UPLOAD_BASE_PATH } from "../config/constants";
-import Job from "../models/Job";
-import formidable, { File } from "formidable";
-import Generic from "../utils/Generic";
-import Partner from "../models/Partner";
+import dataSources from '../services/dao';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import { appCommonTypes } from '../@types/app-common';
+import CheckList from '../models/CheckList';
+import { InferAttributes } from 'sequelize';
+import { INITIAL_CHECK_LIST_VALUES, JOB_STATUS, UPLOAD_BASE_PATH } from '../config/constants';
+import Job from '../models/Job';
+import formidable, { File } from 'formidable';
+import Generic from '../utils/Generic';
+import Partner from '../models/Partner';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IImageButtonData = appCommonTypes.IImageButtonData;
 import CheckListType = appCommonTypes.CheckListType;
@@ -22,9 +22,9 @@ export default class CheckListController {
   public static async create(req: Request) {
     try {
       const { error, value } = Joi.object({
-        partners: Joi.array().required().label("Partners"),
-        checkList: Joi.string().required().label("Check List Name"),
-        description: Joi.string().required().label("Check List Description"),
+        partners: Joi.array().required().label('Partners'),
+        checkList: Joi.string().required().label('Check List Name'),
+        description: Joi.string().required().label('Check List Description'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -40,7 +40,7 @@ export default class CheckListController {
 
       if (exist)
         return Promise.reject(
-          CustomAPIError.response(`Check list with name already exist`, HttpStatus.BAD_REQUEST.code)
+          CustomAPIError.response(`Check list with name already exist`, HttpStatus.BAD_REQUEST.code),
         );
 
       for (let i = 0; i < partners.length; i++) {
@@ -59,14 +59,14 @@ export default class CheckListController {
       const checkList = await dataSources.checkListDAOService.create(data);
 
       for (let i = 0; i < $partners.length; i++) {
-        await $partners[i].$add("checkLists", [checkList]);
+        await $partners[i].$add('checkLists', [checkList]);
       }
 
       const checkLists = await dataSources.checkListDAOService.findAll({
         include: [{ all: true }],
       });
 
-      const results = checkLists.map((checkList) => checkList.toJSON());
+      const results = checkLists.map(checkList => checkList.toJSON());
 
       const response: HttpResponse<InferAttributes<CheckList>> = {
         code: HttpStatus.OK.code,
@@ -85,9 +85,9 @@ export default class CheckListController {
       const checkListId = req.params.checkListId as unknown as string;
 
       const { error, value } = Joi.object({
-        partners: Joi.array().allow().label("Partners"),
-        checkList: Joi.string().allow("").label("Check List Name"),
-        description: Joi.string().allow("").label("Check List Description"),
+        partners: Joi.array().allow().label('Partners'),
+        checkList: Joi.string().allow('').label('Check List Name'),
+        description: Joi.string().allow('').label('Check List Description'),
       }).validate(req.body);
 
       const partnerIds = value.partners as unknown as string[];
@@ -111,22 +111,22 @@ export default class CheckListController {
         partners.push(partner);
       }
 
-      const checklistPartners = await checkList.$get("partners");
+      const checklistPartners = await checkList.$get('partners');
 
-      await checkList.$remove("partners", checklistPartners);
+      await checkList.$remove('partners', checklistPartners);
 
       await checkList.update({
         name: value.checkList,
         description: value.checkList,
       });
 
-      for (const partner of partners) await partner.$add("checkLists", [checkList]);
+      for (const partner of partners) await partner.$add('checkLists', [checkList]);
 
       const checkLists = await dataSources.checkListDAOService.findAll({
         include: [{ all: true }],
       });
 
-      const results = checkLists.map((checkList) => checkList.toJSON());
+      const results = checkLists.map(checkList => checkList.toJSON());
 
       const response: HttpResponse<InferAttributes<CheckList>> = {
         code: HttpStatus.OK.code,
@@ -149,20 +149,20 @@ export default class CheckListController {
       if (!checkList)
         return Promise.reject(CustomAPIError.response(`Check List does not exist`, HttpStatus.NOT_FOUND.code));
 
-      const partners = await checkList.$get("partners");
+      const partners = await checkList.$get('partners');
 
       if (!partners.length)
         return Promise.reject(CustomAPIError.response(`Partner does not exist`, HttpStatus.NOT_FOUND.code));
 
       for (const partner of partners) {
-        await partner.$remove("checkLists", checkList);
+        await partner.$remove('checkLists', checkList);
       }
 
       await checkList.destroy();
 
       return Promise.resolve({
         code: HttpStatus.OK.code,
-        message: "CheckList deleted successfully.",
+        message: 'CheckList deleted successfully.',
       } as HttpResponse<void>);
     } catch (e) {
       return Promise.reject(e);
@@ -179,8 +179,8 @@ export default class CheckListController {
 
         try {
           const { error, value } = Joi.object({
-            checkList: Joi.string().required().label("Check List"),
-            vehicleInfo: Joi.string().allow("").label("Vehicle Info"),
+            checkList: Joi.string().required().label('Check List'),
+            vehicleInfo: Joi.string().allow('').label('Vehicle Info'),
           }).validate(fields);
 
           if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -189,11 +189,11 @@ export default class CheckListController {
 
           if (!job) return reject(CustomAPIError.response(`Job does not exist`, HttpStatus.NOT_FOUND.code));
 
-          const vehicle = await job.$get("vehicle");
+          const vehicle = await job.$get('vehicle');
 
           if (!vehicle) return reject(CustomAPIError.response(`Vehicle does not exist`, HttpStatus.NOT_FOUND.code));
 
-          const technician = await job.$get("technician");
+          const technician = await job.$get('technician');
 
           if (!technician)
             return reject(CustomAPIError.response(`Technician does not exist`, HttpStatus.NOT_FOUND.code));
@@ -226,8 +226,8 @@ export default class CheckListController {
             });
           }
 
-          const newSections = sections.map((section) => {
-            section.questions.forEach((question) => {
+          const newSections = sections.map(section => {
+            section.questions.forEach(question => {
               question.images = images;
             });
 
@@ -289,7 +289,7 @@ export default class CheckListController {
 
       const response: HttpResponse<CheckList> = {
         code: HttpStatus.OK.code,
-        message: "Added Check List Section Successfully",
+        message: 'Added Check List Section Successfully',
         result: checkList,
       };
 
@@ -305,10 +305,10 @@ export default class CheckListController {
         include: [{ all: true }],
       });
 
-      const results = checkLists.map((checkList) => {
+      const results = checkLists.map(checkList => {
         const result = checkList.toJSON();
 
-        if (result.sections) result.sections = result.sections.map((section) => JSON.parse(section));
+        if (result.sections) result.sections = result.sections.map(section => JSON.parse(section));
         else result.sections = JSON.parse(JSON.stringify([INITIAL_CHECK_LIST_VALUES]));
 
         return result;
@@ -338,7 +338,7 @@ export default class CheckListController {
 
       const result = checkList.toJSON();
 
-      if (result.sections) result.sections = result.sections.map((section) => JSON.parse(section));
+      if (result.sections) result.sections = result.sections.map(section => JSON.parse(section));
       else result.sections = JSON.parse(JSON.stringify([INITIAL_CHECK_LIST_VALUES]));
 
       const response: HttpResponse<InferAttributes<CheckList>> = {

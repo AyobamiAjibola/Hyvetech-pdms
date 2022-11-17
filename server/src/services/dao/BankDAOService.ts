@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import BankRepository from "../../repositories/BankRepository";
-import Bank from "../../models/Bank";
-import { appModelTypes } from "../../@types/app-model";
+import BankRepository from '../../repositories/BankRepository';
+import Bank from '../../models/Bank';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class BankDAOService implements ICrudDAO<Bank> {

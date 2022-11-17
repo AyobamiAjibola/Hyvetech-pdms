@@ -1,9 +1,9 @@
-import * as React from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
-import { useFormikContext } from "formik";
-import { FormGroup } from "@mui/material";
-import ErrorField from "./ErrorField";
+import * as React from 'react';
+import TextField from '@mui/material/TextField';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import { useFormikContext } from 'formik';
+import { FormGroup } from '@mui/material';
+import ErrorField from './ErrorField';
 
 export interface ICreatableAutocompleteOptions {
   inputValue?: string;
@@ -33,7 +33,7 @@ export default function AppCreatableAutocomplete(props: IProps) {
       <Autocomplete
         value={props.value}
         onChange={(event, newValue) => {
-          if (typeof newValue === "string") {
+          if (typeof newValue === 'string') {
             handleChange(newValue);
           } else if (newValue && newValue.inputValue) {
             // Create a new value from the user input
@@ -47,8 +47,8 @@ export default function AppCreatableAutocomplete(props: IProps) {
 
           const { inputValue } = params;
           // Suggest the creation of a new value
-          const isExisting = options.some((option) => inputValue === option.label);
-          if (inputValue !== "" && !isExisting) {
+          const isExisting = options.some(option => inputValue === option.label);
+          if (inputValue !== '' && !isExisting) {
             filtered.push({
               inputValue,
               label: `Add "${inputValue}"`,
@@ -62,9 +62,9 @@ export default function AppCreatableAutocomplete(props: IProps) {
         handleHomeEndKeys
         id={props.label}
         options={props.options}
-        getOptionLabel={(option) => {
+        getOptionLabel={option => {
           // Value selected with enter, right from the input
-          if (typeof option === "string") {
+          if (typeof option === 'string') {
             return option;
           }
           // Add "xxx" option created dynamically
@@ -76,7 +76,7 @@ export default function AppCreatableAutocomplete(props: IProps) {
         }}
         renderOption={(props, option) => <li {...props}>{option.label}</li>}
         freeSolo
-        renderInput={(params) => (
+        renderInput={params => (
           <TextField
             {...params}
             // @ts-ignore

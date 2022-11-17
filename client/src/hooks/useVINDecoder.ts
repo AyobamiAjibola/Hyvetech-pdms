@@ -1,11 +1,11 @@
-import { useEffect } from "react";
-import { useFormikContext } from "formik";
-import { getVehicleVINAction } from "../store/actions/vehicleActions";
-import useAppSelector from "./useAppSelector";
-import useAppDispatch from "./useAppDispatch";
-import { clearGetVehicleVINStatus } from "../store/reducers/vehicleReducer";
-import { IVehicle } from "@app-models";
-import { IVINDecoderSchema } from "@app-interfaces";
+import { useEffect } from 'react';
+import { useFormikContext } from 'formik';
+import { getVehicleVINAction } from '../store/actions/vehicleActions';
+import useAppSelector from './useAppSelector';
+import useAppDispatch from './useAppDispatch';
+import { clearGetVehicleVINStatus } from '../store/reducers/vehicleReducer';
+import { IVehicle } from '@app-models';
+import { IVINDecoderSchema } from '@app-interfaces';
 
 export default function useVINDecoder() {
   const {
@@ -20,14 +20,14 @@ export default function useVINDecoder() {
     touched,
   } = useFormikContext<IVehicle>();
 
-  const vehicleReducer = useAppSelector((state) => state.vehicleReducer);
+  const vehicleReducer = useAppSelector(state => state.vehicleReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (values.vin.length && (values.vin.length < 17 || values.vin.length > 17)) {
-        setFieldError("vin", "VIN is invalid");
-        setFieldTouched("vin", true);
+        setFieldError('vin', 'VIN is invalid');
+        setFieldTouched('vin', true);
       }
 
       if (values.vin.length === 17) {
@@ -35,7 +35,7 @@ export default function useVINDecoder() {
       }
     }, 1000);
 
-    setFieldTouched("vin", false);
+    setFieldTouched('vin', false);
 
     return () => {
       clearTimeout(timer);
@@ -44,11 +44,11 @@ export default function useVINDecoder() {
   }, [values.vin]);
 
   useEffect(() => {
-    if (vehicleReducer.getVehicleVINStatus === "completed") {
+    if (vehicleReducer.getVehicleVINStatus === 'completed') {
       const tempVehicleDetails = JSON.parse(JSON.stringify([...vehicleReducer.vehicleVINDetails]));
 
       tempVehicleDetails.forEach((detail: IVINDecoderSchema) => {
-        if (detail.label === "engineCylinders") {
+        if (detail.label === 'engineCylinders') {
           detail.value = `${detail.value} cylinders`;
         }
 
@@ -64,13 +64,13 @@ export default function useVINDecoder() {
   ]);
 
   useEffect(() => {
-    if (vehicleReducer.getVehicleVINStatus === "failed") {
+    if (vehicleReducer.getVehicleVINStatus === 'failed') {
       if (vehicleReducer.getVehicleVINError === "Cannot read properties of undefined (reading 'map')") {
-        setFieldError("vin", "VIN is invalid");
+        setFieldError('vin', 'VIN is invalid');
       } else {
-        setFieldError("vin", vehicleReducer.getVehicleVINError);
+        setFieldError('vin', vehicleReducer.getVehicleVINError);
       }
-      setFieldTouched("vin", true);
+      setFieldTouched('vin', true);
     }
   }, [setFieldError, setFieldTouched, vehicleReducer.getVehicleVINError, vehicleReducer.getVehicleVINStatus]);
 

@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
-import { Button, Grid } from "@mui/material";
-import { MdEditCalendar } from "react-icons/md";
-import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProps } from "@app-interfaces";
+import React, { useContext } from 'react';
+import { Button, Grid } from '@mui/material';
+import { MdEditCalendar } from 'react-icons/md';
+import { AppContext } from '../../context/AppContextProvider';
+import { AppContextProps } from '@app-interfaces';
 
 function SkipAndSubmitButtons() {
   const { showBookingBtn, mobileDate } = useContext(AppContext) as AppContextProps;
@@ -19,8 +19,7 @@ function SkipAndSubmitButtons() {
             className="submit-book-btn"
             fullWidth
             variant="contained"
-            type="submit"
-          >
+            type="submit">
             Book appointment
           </Button>
         </Grid>

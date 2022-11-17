@@ -1,19 +1,19 @@
-import { Request } from "express";
+import { Request } from 'express';
 
-import ical, { ICalCalendarData, ICalCalendarMethod } from "ical-generator";
-import Joi from "joi";
-import moment from "moment";
-import { QueueManager } from "rabbitmq-email-manager";
+import ical, { ICalCalendarData, ICalCalendarMethod } from 'ical-generator';
+import Joi from 'joi';
+import moment from 'moment';
+import { QueueManager } from 'rabbitmq-email-manager';
 
-import { appCommonTypes } from "../@types/app-common";
-import HttpStatus from "../helpers/HttpStatus";
-import dataSources from "../services/dao";
-import Appointment, { $cancelInspectionSchema, $rescheduleInspectionSchema } from "../models/Appointment";
+import { appCommonTypes } from '../@types/app-common';
+import HttpStatus from '../helpers/HttpStatus';
+import dataSources from '../services/dao';
+import Appointment, { $cancelInspectionSchema, $rescheduleInspectionSchema } from '../models/Appointment';
 
-import CustomAPIError from "../exceptions/CustomAPIError";
-import Vehicle from "../models/Vehicle";
-import VehicleFault from "../models/VehicleFault";
-import Customer from "../models/Customer";
+import CustomAPIError from '../exceptions/CustomAPIError';
+import Vehicle from '../models/Vehicle';
+import VehicleFault from '../models/VehicleFault';
+import Customer from '../models/Customer';
 import {
   APPOINTMENT_STATUS,
   BOOK_APPOINTMENT,
@@ -28,22 +28,22 @@ import {
   SERVICES,
   SUBSCRIPTIONS,
   UPLOAD_BASE_PATH,
-} from "../config/constants";
+} from '../config/constants';
 
-import Generic from "../utils/Generic";
-import AppLogger from "../utils/AppLogger";
-import email_content from "../resources/templates/email/email_content";
-import { appEventEmitter } from "../services/AppEventEmitter";
-import booking_reschedule_email from "../resources/templates/email/booking_reschedule_email";
-import CustomerSubscription from "../models/CustomerSubscription";
-import booking_cancel_email from "../resources/templates/email/booking_cancel_email";
-import { Op } from "sequelize";
-import booking_success_email from "../resources/templates/email/booking_success_email";
-import formidable, { File } from "formidable";
+import Generic from '../utils/Generic';
+import AppLogger from '../utils/AppLogger';
+import email_content from '../resources/templates/email/email_content';
+import { appEventEmitter } from '../services/AppEventEmitter';
+import booking_reschedule_email from '../resources/templates/email/booking_reschedule_email';
+import CustomerSubscription from '../models/CustomerSubscription';
+import booking_cancel_email from '../resources/templates/email/booking_cancel_email';
+import { Op } from 'sequelize';
+import booking_success_email from '../resources/templates/email/booking_success_email';
+import formidable, { File } from 'formidable';
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
 
-const CUSTOMER_ID = "Customer Id";
+const CUSTOMER_ID = 'Customer Id';
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 
 export default class AppointmentController {
@@ -57,7 +57,7 @@ export default class AppointmentController {
           { model: VehicleFault },
           {
             model: Customer,
-            attributes: { exclude: ["password", "rawPassword", "loginToken"] },
+            attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
           },
         ],
       });
@@ -148,7 +148,7 @@ export default class AppointmentController {
 
       if (!subscription) {
         return Promise.reject(
-          CustomAPIError.response(`Subscription ${subscriptionName} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Subscription ${subscriptionName} does not exist`, HttpStatus.NOT_FOUND.code),
         );
       }
       /**** Find subscription -> end*****/
@@ -165,8 +165,8 @@ export default class AppointmentController {
           return Promise.reject(
             CustomAPIError.response(
               `Transaction reference ${value.reference} does not exist`,
-              HttpStatus.NOT_FOUND.code
-            )
+              HttpStatus.NOT_FOUND.code,
+            ),
           );
         }
       }
@@ -203,18 +203,18 @@ export default class AppointmentController {
       if (planCategory === MOBILE_CATEGORY || (planCategory === HYBRID_CATEGORY && serviceLocation !== MAIN_OFFICE)) {
         startDate = appointmentDate;
 
-        endDate = moment(appointmentDate).add(MOBILE_INSPECTION_TIME, "hours");
+        endDate = moment(appointmentDate).add(MOBILE_INSPECTION_TIME, 'hours');
         modeOfService = MOBILE_CATEGORY;
 
         message = `You have successfully booked a ${MOBILE_CATEGORY}
-         inspection service for ${appointmentDate.format("LLL")}.
+         inspection service for ${appointmentDate.format('LLL')}.
          We will confirm this appointment date and revert back to you.
         `;
       } else {
         //generate appointment calendar
-        const slots = value.timeSlot.split("-"); //9am - 11am
-        const startTime = moment(slots[0].trim(), "HH: a"); //9am
-        const endTime = moment(slots[1].trim(), "HH: a"); //11am
+        const slots = value.timeSlot.split('-'); //9am - 11am
+        const startTime = moment(slots[0].trim(), 'HH: a'); //9am
+        const endTime = moment(slots[1].trim(), 'HH: a'); //11am
 
         startDate = moment({ year, month, date, hours: startTime.hours() }); //create start date
         endDate = moment({ year, month, date, hours: endTime.hours() }); //create end date
@@ -223,7 +223,7 @@ export default class AppointmentController {
 
         message = `You have successfully booked a ${DRIVE_IN_CATEGORY}
         inspection service for ${value.timeSlot},
-         ${appointmentDate.format("LL")}`;
+         ${appointmentDate.format('LL')}`;
       }
 
       const bookingValues: any = {
@@ -247,21 +247,21 @@ export default class AppointmentController {
 
       const _vehicleFault = await dataSources.vehicleFaultDAOService.create(vehicleFaultValues);
 
-      await booking.$set("vehicleFault", _vehicleFault);
+      await booking.$set('vehicleFault', _vehicleFault);
 
       //update vehicle details booking status
       vehicle.isBooked = true;
       await vehicle.save();
 
       //associate booking with vehicle details
-      await booking.$set("vehicle", vehicle);
+      await booking.$set('vehicle', vehicle);
 
       //associate customer with booking
-      await customerData.$add("appointments", [booking]);
+      await customerData.$add('appointments', [booking]);
 
       //if this is a plan, then update mode of service of customer subscription
       if (value.subscriptionName !== SUBSCRIPTIONS[0].name && customerSubscription) {
-        const subscriptionPlan = await subscription.$get("plans", {
+        const subscriptionPlan = await subscription.$get('plans', {
           where: { label: planLabel },
         });
 
@@ -308,15 +308,15 @@ export default class AppointmentController {
 
       if (transaction) {
         await transaction.update({
-          serviceStatus: "processed",
-          status: "success",
+          serviceStatus: 'processed',
+          status: 'success',
           paidAt: transaction.createdAt,
         });
       }
 
       const eventData: ICalCalendarData = {
-        name: "Vehicle Inspection",
-        timezone: "Africa/Lagos",
+        name: 'Vehicle Inspection',
+        timezone: 'Africa/Lagos',
         description: `${subscriptionName} Vehicle Inspection`,
         method: ICalCalendarMethod.REQUEST,
         events: [
@@ -326,7 +326,7 @@ export default class AppointmentController {
             description: `${subscriptionName} Vehicle Inspection`,
             summary: `You have scheduled for ${subscriptionName} Vehicle Inspection`,
             organizer: {
-              name: "Jiffix Technologies",
+              name: 'Jiffix Technologies',
               email: <string>process.env.SMTP_EMAIL_FROM,
             },
           },
@@ -338,7 +338,7 @@ export default class AppointmentController {
       const mailText = booking_success_email({
         planCategory: planCategory,
         location: serviceLocation,
-        appointmentDate: appointmentDate.format("LL"),
+        appointmentDate: appointmentDate.format('LL'),
         loginUrl: <string>process.env.CUSTOMER_APP_HOST,
         vehicleFault: vehicleFault,
         vehicleDetail: {
@@ -363,13 +363,13 @@ export default class AppointmentController {
             name: <string>process.env.SMTP_EMAIL_FROM_NAME,
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
-          subject: "Jiffix Appointment Confirmation",
+          subject: 'Jiffix Appointment Confirmation',
           bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,
           icalEvent: {
-            method: "request",
+            method: 'request',
             content: eventCalendar,
-            filename: "invite.ics",
+            filename: 'invite.ics',
           },
         },
       });
@@ -401,7 +401,7 @@ export default class AppointmentController {
               {
                 model: Customer,
                 attributes: {
-                  exclude: ["password", "rawPassword", "loginToken"],
+                  exclude: ['password', 'rawPassword', 'loginToken'],
                 },
               },
             ],
@@ -415,7 +415,7 @@ export default class AppointmentController {
 
           if (undefined === fields || undefined === files) {
             return reject(
-              CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code)
+              CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
             );
           }
 
@@ -486,7 +486,7 @@ export default class AppointmentController {
 
       if (!customer) {
         return Promise.reject(
-          CustomAPIError.response(`Customer with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Customer with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code),
         );
       }
 
@@ -497,7 +497,7 @@ export default class AppointmentController {
 
       if (!appointment) {
         return Promise.reject(
-          CustomAPIError.response(`Appointment with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Appointment with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code),
         );
       }
 
@@ -518,7 +518,7 @@ export default class AppointmentController {
       const now = moment();
       if (appointmentDate.diff(now) === RESCHEDULE_CONSTRAINT) {
         return Promise.reject(
-          CustomAPIError.response("Sorry you cannot reschedule 1 hour to inspection", HttpStatus.BAD_REQUEST.code)
+          CustomAPIError.response('Sorry you cannot reschedule 1 hour to inspection', HttpStatus.BAD_REQUEST.code),
         );
       }
 
@@ -532,19 +532,19 @@ export default class AppointmentController {
       if (planCategory === MOBILE_CATEGORY || (planCategory === HYBRID_CATEGORY && serviceLocation !== MAIN_OFFICE)) {
         startDate = appointmentDate;
 
-        endDate = moment(appointmentDate).add(MOBILE_INSPECTION_TIME, "hours");
+        endDate = moment(appointmentDate).add(MOBILE_INSPECTION_TIME, 'hours');
 
         modeOfService = MOBILE_CATEGORY;
 
         message = `You have successfully rescheduled your ${MOBILE_CATEGORY}
-         inspection service for ${appointmentDate.format("LLL")}.
+         inspection service for ${appointmentDate.format('LLL')}.
          We will confirm this appointment date and revert back to you.
         `;
       } else {
         //generate appointment calendar
-        const slots = timeSlot.split("-"); //9am - 11am
-        const startTime = moment(slots[0].trim(), "HH: a"); //9am
-        const endTime = moment(slots[1].trim(), "HH: a"); //11am
+        const slots = timeSlot.split('-'); //9am - 11am
+        const startTime = moment(slots[0].trim(), 'HH: a'); //9am
+        const endTime = moment(slots[1].trim(), 'HH: a'); //11am
 
         startDate = moment({ year, month, date, hours: startTime.hours() }); //create start date
         endDate = moment({ year, month, date, hours: endTime.hours() }); //create end date
@@ -553,7 +553,7 @@ export default class AppointmentController {
 
         message = `You have successfully rescheduled
              your ${DRIVE_IN_CATEGORY} inspection service for 
-             ${timeSlot}, ${appointmentDate.format("LL")}`;
+             ${timeSlot}, ${appointmentDate.format('LL')}`;
       }
 
       const appointments = await dataSources.appointmentDAOService.findAll();
@@ -565,9 +565,9 @@ export default class AppointmentController {
         if (currDate === appointmentDate) {
           return Promise.reject(
             CustomAPIError.response(
-              `New date ${appointmentDate.format("LLL")} is already taken. Choose another date and time`,
-              HttpStatus.BAD_REQUEST.code
-            )
+              `New date ${appointmentDate.format('LLL')} is already taken. Choose another date and time`,
+              HttpStatus.BAD_REQUEST.code,
+            ),
           );
         }
       }
@@ -605,11 +605,11 @@ export default class AppointmentController {
       });
 
       const calendarData: ICalCalendarData = {
-        name: "(Reschedule) Vehicle Inspection",
-        timezone: "Africa/Lagos",
+        name: '(Reschedule) Vehicle Inspection',
+        timezone: 'Africa/Lagos',
         description: `(Reschedule) Vehicle Inspection`,
         method: ICalCalendarMethod.REQUEST,
-        url: "https://www.jiffixtech.com",
+        url: 'https://www.jiffixtech.com',
         events: [
           {
             start: startDate,
@@ -617,7 +617,7 @@ export default class AppointmentController {
             description: `(Reschedule) Vehicle Inspection`,
             summary: `(Reschedule) Vehicle Inspection`,
             organizer: {
-              name: "Jiffix Technologies",
+              name: 'Jiffix Technologies',
               email: <string>process.env.SMTP_EMAIL_FROM,
             },
           },
@@ -629,7 +629,7 @@ export default class AppointmentController {
       const mailText = booking_reschedule_email({
         planCategory: planCategory,
         location: serviceLocation,
-        appointmentDate: appointmentDate.format("LL"),
+        appointmentDate: appointmentDate.format('LL'),
         loginUrl: process.env.CUSTOMER_APP_HOST,
         vehicleFault: vehicleFault,
         vehicleDetail: {
@@ -654,13 +654,13 @@ export default class AppointmentController {
             name: <string>process.env.SMTP_EMAIL_FROM_NAME,
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
-          subject: "Vehicle Appointment Reschedule Confirmation",
+          subject: 'Vehicle Appointment Reschedule Confirmation',
           bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,
           icalEvent: {
-            method: "request",
+            method: 'request',
             content: eventCalendar,
-            filename: "invite.ics",
+            filename: 'invite.ics',
           },
         },
       });
@@ -697,7 +697,7 @@ export default class AppointmentController {
 
       if (!customer) {
         return Promise.reject(
-          CustomAPIError.response(`Customer with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Customer with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code),
         );
       }
 
@@ -708,7 +708,7 @@ export default class AppointmentController {
 
       if (!appointment) {
         return Promise.reject(
-          CustomAPIError.response(`Appointment with Id: ${id} does not exist`, HttpStatus.BAD_REQUEST.code)
+          CustomAPIError.response(`Appointment with Id: ${id} does not exist`, HttpStatus.BAD_REQUEST.code),
         );
       }
 
@@ -744,7 +744,7 @@ export default class AppointmentController {
       const mailText = booking_cancel_email({
         planCategory: planCategory,
         location: serviceLocation,
-        appointmentDate: appointmentDate.format("LL"),
+        appointmentDate: appointmentDate.format('LL'),
         loginUrl: process.env.CUSTOMER_APP_HOST,
         vehicleFault: vehicleFault,
         vehicleDetail: {
@@ -769,7 +769,7 @@ export default class AppointmentController {
             name: <string>process.env.SMTP_EMAIL_FROM_NAME,
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
-          subject: "Vehicle Appointment Cancellation Confirmation",
+          subject: 'Vehicle Appointment Cancellation Confirmation',
           bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,
         },
@@ -816,7 +816,7 @@ export default class AppointmentController {
   private static async mutateMobileServiceModeAfterReschedule(
     serviceLocation: string,
     subscription: CustomerSubscription,
-    appointment: Appointment
+    appointment: Appointment,
   ) {
     //Only update mobile count if it is less than 1
     if (serviceLocation !== MAIN_OFFICE && subscription.mobileCount < 1) {
@@ -834,8 +834,8 @@ export default class AppointmentController {
     return Promise.reject(
       CustomAPIError.response(
         `Maximum number of ${category} inspections reached for plan ${subscriptionName}`,
-        HttpStatus.BAD_REQUEST.code
-      )
+        HttpStatus.BAD_REQUEST.code,
+      ),
     );
   }
 }

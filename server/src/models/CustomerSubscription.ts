@@ -8,17 +8,17 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
-import { InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import Customer from "./Customer";
-import Vehicle from "./Vehicle";
-import CustomerPlanSubscription from "./CustomerPlanSubscription";
-import Job from "./Job";
-import Transaction from "./Transaction";
+} from 'sequelize-typescript';
+import { InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Customer from './Customer';
+import Vehicle from './Vehicle';
+import CustomerPlanSubscription from './CustomerPlanSubscription';
+import Job from './Job';
+import Transaction from './Transaction';
 
 @Table({
   timestamps: true,
-  tableName: "customer_subscriptions",
+  tableName: 'customer_subscriptions',
 })
 export default class CustomerSubscription extends Model<
   InferAttributes<CustomerSubscription>,
@@ -29,7 +29,7 @@ export default class CustomerSubscription extends Model<
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
-    field: "customer_subscription_id",
+    field: 'customer_subscription_id',
   })
   declare id: number;
 
@@ -96,10 +96,10 @@ export default class CustomerSubscription extends Model<
   @BelongsToMany(() => Customer, () => CustomerPlanSubscription)
   declare customers: NonAttribute<Array<Customer & { CustomerPlanSubscription: CustomerPlanSubscription }>>;
 
-  @HasMany(() => Vehicle, { onDelete: "cascade" })
+  @HasMany(() => Vehicle, { onDelete: 'cascade' })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasOne(() => Transaction, { onDelete: "cascade" })
+  @HasOne(() => Transaction, { onDelete: 'cascade' })
   declare transaction: NonAttribute<Transaction>;
 
   @HasMany(() => Job)

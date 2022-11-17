@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -16,8 +16,7 @@ export default function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
+      {...other}>
       {value === index && children}
     </div>
   );

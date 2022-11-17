@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
-import useAppSelector from "../../../hooks/useAppSelector";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import { getOwnersFilterDataAction } from "../../../store/actions/partnerActions";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from 'react';
+import useAppSelector from '../../../hooks/useAppSelector';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { getOwnersFilterDataAction } from '../../../store/actions/partnerActions';
+import { useParams } from 'react-router-dom';
 import {
   Autocomplete,
   Box,
@@ -13,31 +13,31 @@ import {
   Paper,
   Stack,
   TextField,
-} from "@mui/material";
-import { IDriversFilterData } from "@app-interfaces";
-import { ICustomer } from "@app-models";
-import AppLoader from "../../loader/AppLoader";
-import { getCustomerAction } from "../../../store/actions/customerActions";
-import useAdmin from "../../../hooks/useAdmin";
-import AppTab from "../../tabs/AppTab";
-import { customerSearchResultTabs } from "../../../navigation/menus";
-import { CustomerPageContext } from "../../../pages/customer/CustomerPage";
-import { clearGetOwnersFilterDataStatus } from "../../../store/reducers/partnerReducer";
-import { clearGetCustomersStatus } from "../../../store/reducers/customerReducer";
+} from '@mui/material';
+import { IDriversFilterData } from '@app-interfaces';
+import { ICustomer } from '@app-models';
+import AppLoader from '../../loader/AppLoader';
+import { getCustomerAction } from '../../../store/actions/customerActions';
+import useAdmin from '../../../hooks/useAdmin';
+import AppTab from '../../tabs/AppTab';
+import { customerSearchResultTabs } from '../../../navigation/menus';
+import { CustomerPageContext } from '../../../pages/customer/CustomerPage';
+import { clearGetOwnersFilterDataStatus } from '../../../store/reducers/partnerReducer';
+import { clearGetCustomersStatus } from '../../../store/reducers/customerReducer';
 
 const filterOptions = createFilterOptions({
-  matchFrom: "any",
+  matchFrom: 'any',
   stringify: (option: IDriversFilterData) => `${option.query}`,
 });
 
 export default function VehicleOwner() {
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
-  const [inputValue, setInputValue] = React.useState("");
+  const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
   const [customer, setCustomer] = useState<ICustomer>();
 
-  const partnerReducer = useAppSelector((state) => state.partnerReducer);
-  const customerReducer = useAppSelector((state) => state.customerReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
+  const customerReducer = useAppSelector(state => state.customerReducer);
   const dispatch = useAppDispatch();
 
   const params = useParams();
@@ -58,13 +58,13 @@ export default function VehicleOwner() {
   }, [dispatch, partnerId]);
 
   useEffect(() => {
-    if (partnerReducer.getOwnersFilterDataStatus === "completed") {
+    if (partnerReducer.getOwnersFilterDataStatus === 'completed') {
       setOptions(partnerReducer.ownersFilterData);
     }
   }, [partnerReducer.ownersFilterData, partnerReducer.getOwnersFilterDataStatus]);
 
   useEffect(() => {
-    if (customerReducer.getCustomerStatus === "completed") {
+    if (customerReducer.getCustomerStatus === 'completed') {
       if (customerReducer.customer) setCustomer(customerReducer.customer);
     }
   }, [customerReducer.customer, customerReducer.getCustomerStatus]);
@@ -92,8 +92,8 @@ export default function VehicleOwner() {
               filterOptions={filterOptions}
               inputValue={inputValue}
               value={value}
-              loading={partnerReducer.getDriversFilterDataStatus === "loading"}
-              getOptionLabel={(option) => option.fullName}
+              loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
+              getOptionLabel={option => option.fullName}
               isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
               onChange={(event: any, newValue: IDriversFilterData | null) => {
                 setValue(newValue);
@@ -101,9 +101,9 @@ export default function VehicleOwner() {
               }}
               onInputChange={(event, newInputValue, reason) => {
                 setInputValue(newInputValue);
-                if (reason === "clear") setCustomer(undefined);
+                if (reason === 'clear') setCustomer(undefined);
               }}
-              renderInput={(props) => (
+              renderInput={props => (
                 <TextField
                   {...props}
                   label="Search customer by First name, last name, car plate number."
@@ -111,7 +111,7 @@ export default function VehicleOwner() {
                     ...props.InputProps,
                     endAdornment: (
                       <React.Fragment>
-                        {partnerReducer.getDriversFilterDataStatus === "loading" ? (
+                        {partnerReducer.getDriversFilterDataStatus === 'loading' ? (
                           <CircularProgress color="inherit" size={20} />
                         ) : null}
                         {props.InputProps.endAdornment}
@@ -131,7 +131,7 @@ export default function VehicleOwner() {
           </Paper>
         </Box>
       </Stack>
-      <AppLoader show={customerReducer.getCustomerStatus === "loading"} />
+      <AppLoader show={customerReducer.getCustomerStatus === 'loading'} />
     </CustomerPageContext.Provider>
   );
 }

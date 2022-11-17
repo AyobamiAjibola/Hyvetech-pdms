@@ -1,11 +1,11 @@
-import React, { createContext, useEffect, useState } from "react";
-import { IRideShareDriver } from "@app-models";
-import { useLocation } from "react-router-dom";
-import { Divider, Paper, Stack } from "@mui/material";
-import CustomerTab from "../../components/tabs/CustomerTab";
-import { driverDetailTabs } from "../../navigation/menus";
-import { DriverPageContextProps, ILocationState, ITab } from "@app-interfaces";
-import useAdmin from "../../hooks/useAdmin";
+import React, { createContext, useEffect, useState } from 'react';
+import { IRideShareDriver } from '@app-models';
+import { useLocation } from 'react-router-dom';
+import { Divider, Paper, Stack } from '@mui/material';
+import CustomerTab from '../../components/tabs/CustomerTab';
+import { driverDetailTabs } from '../../navigation/menus';
+import { DriverPageContextProps, ILocationState, ITab } from '@app-interfaces';
+import useAdmin from '../../hooks/useAdmin';
 
 export const DriverPageContext = createContext<DriverPageContextProps | null>(null);
 
@@ -18,7 +18,7 @@ function DriverPage() {
 
   useEffect(() => {
     if (isSuperAdmin) setTabs(driverDetailTabs);
-    if (isDriverAdmin) setTabs(driverDetailTabs.filter((value) => value.name === "Vehicles"));
+    if (isDriverAdmin) setTabs(driverDetailTabs.filter(value => value.name === 'Vehicles'));
   }, [isSuperAdmin, isDriverAdmin]);
 
   useEffect(() => {

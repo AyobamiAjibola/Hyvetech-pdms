@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { IEstimate } from "@app-models";
-import { useLocation } from "react-router-dom";
-import { Alert, Avatar, Divider, Grid, Stack, Typography } from "@mui/material";
-import capitalize from "capitalize";
-import InsightImg from "../../assets/images/estimate_vector.png";
-import { IPart } from "../../components/forms/models/estimateModel";
-import { formatNumberToIntl } from "../../utils/generic";
-import settings from "../../config/settings";
+import React, { useEffect, useState } from 'react';
+import { IEstimate } from '@app-models';
+import { useLocation } from 'react-router-dom';
+import { Alert, Avatar, Divider, Grid, Stack, Typography } from '@mui/material';
+import capitalize from 'capitalize';
+import InsightImg from '../../assets/images/estimate_vector.png';
+import { IPart } from '../../components/forms/models/estimateModel';
+import { formatNumberToIntl } from '../../utils/generic';
+import settings from '../../config/settings';
 
 interface ILocationState {
   estimate?: IEstimate;
@@ -14,7 +14,7 @@ interface ILocationState {
 
 function EstimatePage() {
   const [estimate, setEstimate] = useState<IEstimate>();
-  const [owner, setOwner] = useState<string>("");
+  const [owner, setOwner] = useState<string>('');
   const [parts, setParts] = useState<IPart[]>([]);
   const location = useLocation();
 
@@ -134,11 +134,10 @@ function EstimatePage() {
           my={3}
           sx={{ pb: 1.5 }}
           borderBottom="3px solid"
-          borderColor={(theme) => (theme.palette.mode === "dark" ? "#676767" : "#000000")}
+          borderColor={theme => (theme.palette.mode === 'dark' ? '#676767' : '#000000')}
           justifyContent="center"
           alignItems="center"
-          columns={14}
-        >
+          columns={14}>
           <Grid item xs={2}>
             <Avatar src={InsightImg} sx={{ width: 20, height: 20 }} />
           </Grid>
@@ -169,8 +168,7 @@ function EstimatePage() {
                 columns={14}
                 sx={{ pb: 2.5 }}
                 borderBottom="0.01px solid"
-                borderColor="#676767"
-              >
+                borderColor="#676767">
                 <Grid item xs={2} />
                 <Grid item xs={3}>
                   {part.name}
@@ -207,8 +205,7 @@ function EstimatePage() {
             <Typography
               gutterBottom
               fontStyle="italic"
-              color={(theme) => (theme.palette.mode === "dark" ? "#ededed" : "#263238")}
-            >
+              color={theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238')}>
               Job Duration: {estimate.jobDurationValue} {estimate.jobDurationUnit}
             </Typography>
           </Grid>

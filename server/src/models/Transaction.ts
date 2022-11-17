@@ -1,21 +1,21 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import Customer from "./Customer";
-import RideShareDriver from "./RideShareDriver";
-import CustomerSubscription from "./CustomerSubscription";
-import RideShareDriverSubscription from "./RideShareDriverSubscription";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Customer from './Customer';
+import RideShareDriver from './RideShareDriver';
+import CustomerSubscription from './CustomerSubscription';
+import RideShareDriverSubscription from './RideShareDriverSubscription';
 
 @Table({
   timestamps: true,
 
   underscored: true,
   freezeTableName: true,
-  tableName: "transactions",
+  tableName: 'transactions',
 })
 export default class Transaction extends Model<InferAttributes<Transaction>, InferCreationAttributes<Transaction>> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "transaction_id", allowNull: false })
+  @Column({ type: DataType.INTEGER, field: 'transaction_id', allowNull: false })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)
@@ -27,7 +27,7 @@ export default class Transaction extends Model<InferAttributes<Transaction>, Inf
   @Column(DataType.STRING)
   declare status: string;
 
-  @Column({ type: DataType.STRING, defaultValue: "unprocessed" })
+  @Column({ type: DataType.STRING, defaultValue: 'unprocessed' })
   declare serviceStatus: string;
 
   @Column(DataType.STRING)
@@ -72,28 +72,28 @@ export default class Transaction extends Model<InferAttributes<Transaction>, Inf
   @Column(DataType.DATE)
   declare paidAt: Date;
 
-  @BelongsTo(() => CustomerSubscription, { onDelete: "cascade" })
+  @BelongsTo(() => CustomerSubscription, { onDelete: 'cascade' })
   declare customerSubscription: NonAttribute<CustomerSubscription>;
 
   @ForeignKey(() => CustomerSubscription)
   @Column(DataType.INTEGER)
   declare customerSubscriptionId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriverSubscription, { onDelete: "cascade" })
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'cascade' })
   declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
 
   @ForeignKey(() => RideShareDriverSubscription)
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: NonAttribute<number>;
 
-  @BelongsTo(() => Customer, { onDelete: "cascade" })
+  @BelongsTo(() => Customer, { onDelete: 'cascade' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriver, { onDelete: "cascade" })
+  @BelongsTo(() => RideShareDriver, { onDelete: 'cascade' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)

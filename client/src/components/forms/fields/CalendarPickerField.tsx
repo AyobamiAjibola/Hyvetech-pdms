@@ -1,19 +1,19 @@
-import React from "react";
-import { useFormikContext } from "formik";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { CalendarPicker } from "@mui/x-date-pickers";
-import { FormGroup } from "@mui/material";
-import ErrorField from "./ErrorField";
+import React from 'react';
+import { useFormikContext } from 'formik';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { CalendarPicker } from '@mui/x-date-pickers';
+import { FormGroup } from '@mui/material';
+import ErrorField from './ErrorField';
 
-type DateView = "day" | "month" | "year";
+type DateView = 'day' | 'month' | 'year';
 
 interface ICalendarPickerFieldProps {
   inputGroupStyle?: { [p: string]: string };
   textInputStyle?: { [p: string]: string };
   helperStyle?: { [p: string]: string };
   fullWidth?: boolean;
-  size?: "small" | "medium";
+  size?: 'small' | 'medium';
   value?: Date;
   name: string;
   label: string;
@@ -30,7 +30,7 @@ export default function CalendarPickerField(props: ICalendarPickerFieldProps) {
       <FormGroup sx={props.inputGroupStyle}>
         <CalendarPicker
           disablePast
-          onChange={(date) => {
+          onChange={date => {
             setFieldValue(props.name, date);
           }}
           date={props.value}

@@ -1,18 +1,18 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
-import SelectField, { ISelectData } from "../fields/SelectField";
-import { Form, useFormikContext } from "formik";
-import partnerModel, { ICreatePartnerModel } from "../models/partnerModel";
-import useAppSelector from "../../../hooks/useAppSelector";
-import { Button, Grid } from "@mui/material";
-import TextInputField from "../fields/TextInputField";
-import { LoadingButton } from "@mui/lab";
-import { PhotoCamera, Save } from "@mui/icons-material";
-import { getImageUrl } from "../../../utils/generic";
+import * as React from 'react';
+import { useEffect, useState } from 'react';
+import SelectField, { ISelectData } from '../fields/SelectField';
+import { Form, useFormikContext } from 'formik';
+import partnerModel, { ICreatePartnerModel } from '../models/partnerModel';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { Button, Grid } from '@mui/material';
+import TextInputField from '../fields/TextInputField';
+import { LoadingButton } from '@mui/lab';
+import { PhotoCamera, Save } from '@mui/icons-material';
+import { getImageUrl } from '../../../utils/generic';
 
 const categories = [
-  { label: "Garage", value: "Garage" },
-  { label: "Ride-Share", value: "Ride-Share" },
+  { label: 'Garage', value: 'Garage' },
+  { label: 'Ride-Share', value: 'Ride-Share' },
 ];
 
 interface ICreateFormProps {
@@ -24,8 +24,8 @@ export default function CreatePartnerForm(props: ICreateFormProps) {
 
   const { handleChange, values, resetForm, setFieldValue } = useFormikContext<ICreatePartnerModel>();
 
-  const miscReducer = useAppSelector((state) => state.miscellaneousReducer);
-  const partnerReducer = useAppSelector((state) => state.partnerReducer);
+  const miscReducer = useAppSelector(state => state.miscellaneousReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
 
   useEffect(() => {
     if (!props.createPartner) {
@@ -34,12 +34,12 @@ export default function CreatePartnerForm(props: ICreateFormProps) {
   }, [props.createPartner, resetForm]);
 
   useEffect(() => {
-    if (miscReducer.getStatesAndDistrictsStatus === "completed") {
+    if (miscReducer.getStatesAndDistrictsStatus === 'completed') {
       setStates(
-        miscReducer.states.map((state) => ({
+        miscReducer.states.map(state => ({
           label: state.name,
           value: state.alias,
-        }))
+        })),
       );
     }
   }, [miscReducer.getStatesAndDistrictsStatus, miscReducer.states]);
@@ -52,8 +52,7 @@ export default function CreatePartnerForm(props: ICreateFormProps) {
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, sm: 8, md: 12 }}
         justifyContent="center"
-        alignItems="center"
-      >
+        alignItems="center">
         <Grid item xs={12} md={6}>
           <TextInputField
             onChange={handleChange}
@@ -104,7 +103,7 @@ export default function CreatePartnerForm(props: ICreateFormProps) {
               <input
                 hidden
                 name={partnerModel.fields.logo.name}
-                onChange={(event) => {
+                onChange={event => {
                   const files = event.target.files;
                   if (files) {
                     setFieldValue(partnerModel.fields.logo.name, files[0]);
@@ -123,11 +122,10 @@ export default function CreatePartnerForm(props: ICreateFormProps) {
           <LoadingButton
             type="submit"
             variant="contained"
-            loading={partnerReducer.createPartnerStatus === "loading"}
+            loading={partnerReducer.createPartnerStatus === 'loading'}
             fullWidth
             color="primary"
-            endIcon={<Save />}
-          >
+            endIcon={<Save />}>
             Save
           </LoadingButton>
         </Grid>

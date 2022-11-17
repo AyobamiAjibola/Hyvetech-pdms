@@ -1,21 +1,21 @@
-import * as React from "react";
-import { useContext, useEffect, useState } from "react";
+import * as React from 'react';
+import { useContext, useEffect, useState } from 'react';
 
-import TextField from "@mui/material/TextField";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
-import Box from "@mui/material/Box";
-import moment from "moment";
-import { initCurrentTimeSlotsAction } from "../../../store/actions/timeSlotActions";
-import settings from "../../../config/settings";
-import { Typography } from "@mui/material";
-import { AppContext } from "../../../context/AppContextProvider";
+import TextField from '@mui/material/TextField';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import Box from '@mui/material/Box';
+import moment from 'moment';
+import { initCurrentTimeSlotsAction } from '../../../store/actions/timeSlotActions';
+import settings from '../../../config/settings';
+import { Typography } from '@mui/material';
+import { AppContext } from '../../../context/AppContextProvider';
 
-import "./bookingForm.css";
-import useAppSelector from "../../../hooks/useAppSelector";
-import { AppContextProps } from "@app-interfaces";
-import useAppDispatch from "../../../hooks/useAppDispatch";
+import './bookingForm.css';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { AppContextProps } from '@app-interfaces';
+import useAppDispatch from '../../../hooks/useAppDispatch';
 
 interface IDriveInPlanCalendarProps {
   date: Date | null;
@@ -45,7 +45,7 @@ function DriveInPlanCalendar({
     // eslint-disable-next-line
   }, []);
 
-  const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
+  const timeSlotReducer = useAppSelector(state => state.timeSlotReducer);
 
   const { setShowBookingBtn, showBookingBtn, checkedSlot, setCheckedSlot } = useContext(AppContext) as AppContextProps;
 
@@ -58,8 +58,8 @@ function DriveInPlanCalendar({
     date = moment(date);
     const _fullDate = moment(timeSlotReducer.fullDate);
 
-    if (date.format("LL") === _fullDate.format("LL")) {
-      const shortDate = date.format("YYYY-MM-DD");
+    if (date.format('LL') === _fullDate.format('LL')) {
+      const shortDate = date.format('YYYY-MM-DD');
 
       dispatch(
         //@ts-ignore
@@ -67,14 +67,14 @@ function DriveInPlanCalendar({
           date: shortDate,
           slots: settings.slots,
           now: true,
-        })
+        }),
       );
     } else {
-      const shortDate = date.format("YYYY-MM-DD");
+      const shortDate = date.format('YYYY-MM-DD');
 
       dispatch(
         //@ts-ignore
-        initCurrentTimeSlotsAction({ date: shortDate, slots: settings.slots })
+        initCurrentTimeSlotsAction({ date: shortDate, slots: settings.slots }),
       );
     }
   };
@@ -83,23 +83,22 @@ function DriveInPlanCalendar({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box
         sx={{
-          "& .PrivatePickersSlideTransition-root": {
+          '& .PrivatePickersSlideTransition-root': {
             minHeight: DATE_SIZE * 6,
             maxHeight: DATE_SIZE * 6,
-            height: "100%",
+            height: '100%',
           },
 
-          "& .MuiYearPicker-root": {
+          '& .MuiYearPicker-root': {
             minHeight: DATE_SIZE * 6,
             maxHeight: DATE_SIZE * 6,
-            height: "100%",
+            height: '100%',
           },
 
           '& .PrivatePickersSlideTransition-root [role="row"]': {
             margin: 0,
           },
-        }}
-      >
+        }}>
         <Typography
           textAlign="center"
           // className="time-header"
@@ -108,10 +107,9 @@ function DriveInPlanCalendar({
           gutterBottom
           sx={{
             mb: 1,
-            fontSize: (theme) => theme.spacing(1.5),
-            color: (theme) => (theme.palette.mode === "dark" ? "#FFFFFF" : "#383838"),
-          }}
-        >
+            fontSize: theme => theme.spacing(1.5),
+            color: theme => (theme.palette.mode === 'dark' ? '#FFFFFF' : '#383838'),
+          }}>
           Select Date
         </Typography>
 
@@ -119,7 +117,7 @@ function DriveInPlanCalendar({
           displayStaticWrapperAs="desktop"
           openTo="day"
           value={date}
-          onChange={(newValue) => {
+          onChange={newValue => {
             if (showBookingBtn) setShowBookingBtn(!showBookingBtn);
             if (checkedSlot) setCheckedSlot(!checkedSlot);
             setDate(newValue);
@@ -127,7 +125,7 @@ function DriveInPlanCalendar({
           onYearChange={handleChange}
           onMonthChange={handleChange}
           onAccept={handleChange}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={params => <TextField {...params} />}
           disablePast
           minDate={_minDate}
           maxDate={_maxDate}

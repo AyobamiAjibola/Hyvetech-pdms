@@ -1,7 +1,7 @@
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
-import React, { ChangeEvent } from "react";
-import { useFormikContext } from "formik";
-import ErrorField from "./ErrorField";
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import React, { ChangeEvent } from 'react';
+import { useFormikContext } from 'formik';
+import ErrorField from './ErrorField';
 
 interface IRadioButtonFieldProps {
   name: string;
@@ -26,8 +26,7 @@ function RadioButtonField(props: IRadioButtonFieldProps) {
   return (
     <FormControl
       // @ts-ignore
-      error={errors[props.name] && touched[props.name]}
-    >
+      error={errors[props.name] && touched[props.name]}>
       <FormLabel id="row-radio-buttons-group-label">{props.label}</FormLabel>
       <RadioGroup aria-labelledby="row-radio-buttons-group-label" row={props.row} {...props}>
         {props.buttons.map((item, index) => (

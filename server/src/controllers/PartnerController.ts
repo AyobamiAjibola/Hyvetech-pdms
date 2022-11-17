@@ -1,28 +1,28 @@
-import { Request } from "express";
-import Joi from "joi";
-import capitalize from "capitalize";
-import { InferAttributes, Op } from "sequelize";
+import { Request } from 'express';
+import Joi from 'joi';
+import capitalize from 'capitalize';
+import { InferAttributes, Op } from 'sequelize';
 
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import dataSources from "../services/dao";
-import { CATEGORIES, QUEUE_EVENTS, UPLOAD_BASE_PATH } from "../config/constants";
-import Generic from "../utils/Generic";
-import { appCommonTypes } from "../@types/app-common";
-import settings from "../config/settings";
-import Partner from "../models/Partner";
-import Category from "../models/Category";
-import User from "../models/User";
-import Contact from "../models/Contact";
-import Plan, { $planSchema } from "../models/Plan";
-import PaymentPlan, { $paymentPlanSchema } from "../models/PaymentPlan";
-import axiosClient from "../services/api/axiosClient";
-import _ from "lodash";
-import JobController from "./JobController";
-import { QueueManager } from "rabbitmq-email-manager";
-import formidable, { File } from "formidable";
-import garage_partner_welcome_email from "../resources/templates/email/garage_partner_welcome_email";
-import ride_share_partner_welcome_email from "../resources/templates/email/ride_share_partner_welcome_email";
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import dataSources from '../services/dao';
+import { CATEGORIES, QUEUE_EVENTS, UPLOAD_BASE_PATH } from '../config/constants';
+import Generic from '../utils/Generic';
+import { appCommonTypes } from '../@types/app-common';
+import settings from '../config/settings';
+import Partner from '../models/Partner';
+import Category from '../models/Category';
+import User from '../models/User';
+import Contact from '../models/Contact';
+import Plan, { $planSchema } from '../models/Plan';
+import PaymentPlan, { $paymentPlanSchema } from '../models/PaymentPlan';
+import axiosClient from '../services/api/axiosClient';
+import _ from 'lodash';
+import JobController from './JobController';
+import { QueueManager } from 'rabbitmq-email-manager';
+import formidable, { File } from 'formidable';
+import garage_partner_welcome_email from '../resources/templates/email/garage_partner_welcome_email';
+import ride_share_partner_welcome_email from '../resources/templates/email/ride_share_partner_welcome_email';
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 
@@ -93,7 +93,7 @@ export default class PartnerController {
   }
 
   private static formatPartners(partners: Partner[]) {
-    return partners.map((partner) => this.formatPartner(partner));
+    return partners.map(partner => this.formatPartner(partner));
   }
 
   private static formatPartner(partner: Partner) {
@@ -102,8 +102,8 @@ export default class PartnerController {
 
     if (workingHours || brands) {
       Object.assign(partner, {
-        workingHours: workingHours.map((workingHour) => JSON.parse(workingHour)),
-        brands: brands.map((brand) => JSON.parse(brand)),
+        workingHours: workingHours.map(workingHour => JSON.parse(workingHour)),
+        brands: brands.map(brand => JSON.parse(brand)),
       });
     }
 
@@ -121,11 +121,11 @@ export default class PartnerController {
       form.parse(req, async (err, fields, files) => {
         try {
           const { error, value } = Joi.object({
-            name: Joi.string().required().label("Name"),
-            email: Joi.string().email().required().label("Email"),
-            category: Joi.string().required().label("Category"),
-            state: Joi.string().required().label("State"),
-            phone: Joi.string().max(11).required().label("Phone Number"),
+            name: Joi.string().required().label('Name'),
+            email: Joi.string().email().required().label('Email'),
+            category: Joi.string().required().label('Category'),
+            state: Joi.string().required().label('State'),
+            phone: Joi.string().max(11).required().label('Phone Number'),
           }).validate(fields);
 
           if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -159,15 +159,15 @@ export default class PartnerController {
           const userValues: any = {
             username: value.email,
             email: value.email,
-            firstName: "Admin",
-            lastName: "Admin",
+            firstName: 'Admin',
+            lastName: 'Admin',
             active: true,
             password,
             rawPassword: password,
           };
           const contactValues: any = {
             state: state.name,
-            country: "Nigeria",
+            country: 'Nigeria',
           };
 
           let category, role, mailSubject, mailText;
@@ -239,10 +239,10 @@ export default class PartnerController {
 
           const contact = await dataSources.contactDAOService.create(contactValues);
 
-          await user.$add("roles", [role]);
-          await partner.$add("categories", [category]);
-          await partner.$set("contact", contact);
-          await partner.$set("users", user);
+          await user.$add('roles', [role]);
+          await partner.$add('categories', [category]);
+          await partner.$set('contact', contact);
+          await partner.$set('users', user);
 
           const result = PartnerController.formatPartner(partner);
 
@@ -281,7 +281,7 @@ export default class PartnerController {
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
       if (!partner)
-        return Promise.reject(CustomAPIError.response("Customer does not exist", HttpStatus.NOT_FOUND.code));
+        return Promise.reject(CustomAPIError.response('Customer does not exist', HttpStatus.NOT_FOUND.code));
 
       await partner.destroy();
 
@@ -303,12 +303,12 @@ export default class PartnerController {
 
     try {
       const { error, value } = Joi.object({
-        cac: Joi.string().allow("").label("CAC"),
-        name: Joi.string().label("Company Full Name"),
-        nameOfDirector: Joi.string().allow("").label("Name of Director"),
-        nameOfManager: Joi.string().allow("").label("Name of Manager"),
-        vatNumber: Joi.string().allow("").label("VAT Number"),
-        workshopAddress: Joi.string().allow("").label("Workshop Address"),
+        cac: Joi.string().allow('').label('CAC'),
+        name: Joi.string().label('Company Full Name'),
+        nameOfDirector: Joi.string().allow('').label('Name of Director'),
+        nameOfManager: Joi.string().allow('').label('Name of Manager'),
+        vatNumber: Joi.string().allow('').label('VAT Number'),
+        workshopAddress: Joi.string().allow('').label('Workshop Address'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -319,7 +319,7 @@ export default class PartnerController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(`Partner with id ${partnerId} does not exist`, HttpStatus.BAD_REQUEST.code)
+          CustomAPIError.response(`Partner with id ${partnerId} does not exist`, HttpStatus.BAD_REQUEST.code),
         );
 
       for (const valueKey in value) {
@@ -329,10 +329,10 @@ export default class PartnerController {
       }
 
       if (value.workshopAddress.length) {
-        const contact = await partner.$get("contact");
+        const contact = await partner.$get('contact');
         if (contact) {
           await contact.update({ address: value.workshopAddress });
-          await partner.$set("contact", contact);
+          await partner.$set('contact', contact);
         }
       }
 
@@ -364,16 +364,16 @@ export default class PartnerController {
 
         try {
           const { error, value } = Joi.object({
-            accountName: Joi.string().allow("").label("Account Name"),
-            accountNumber: Joi.string().allow("").label("Account Number"),
-            bankName: Joi.string().allow("").label("Bank Name"),
-            googleMap: Joi.string().allow("").label("Google Map Link"),
-            logo: Joi.binary().allow().label("Company Logo"),
-            phone: Joi.string().allow("").label("Phone"),
-            totalStaff: Joi.string().allow("").label("Total Staff"),
-            totalTechnicians: Joi.string().allow("").label("Total Technicians"),
-            brands: Joi.string().allow("").label("Company Brands"),
-            workingHours: Joi.string().allow("").label("Working Hours"),
+            accountName: Joi.string().allow('').label('Account Name'),
+            accountNumber: Joi.string().allow('').label('Account Number'),
+            bankName: Joi.string().allow('').label('Bank Name'),
+            googleMap: Joi.string().allow('').label('Google Map Link'),
+            logo: Joi.binary().allow().label('Company Logo'),
+            phone: Joi.string().allow('').label('Phone'),
+            totalStaff: Joi.string().allow('').label('Total Staff'),
+            totalTechnicians: Joi.string().allow('').label('Total Technicians'),
+            brands: Joi.string().allow('').label('Company Brands'),
+            workingHours: Joi.string().allow('').label('Working Hours'),
           }).validate(fields);
 
           if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -384,14 +384,14 @@ export default class PartnerController {
 
           if (!partner)
             return reject(
-              CustomAPIError.response(`Partner with id ${partnerId} does not exist`, HttpStatus.BAD_REQUEST.code)
+              CustomAPIError.response(`Partner with id ${partnerId} does not exist`, HttpStatus.BAD_REQUEST.code),
             );
 
           value.brands = JSON.parse(value.brands);
           value.workingHours = JSON.parse(value.workingHours);
 
           for (const valueKey in value) {
-            if (valueKey !== "logo" && value[valueKey].length) {
+            if (valueKey !== 'logo' && value[valueKey].length) {
               await partner.update({ [valueKey]: value[valueKey] });
             }
           }
@@ -497,14 +497,14 @@ export default class PartnerController {
 
       if (planExist)
         return Promise.reject(
-          CustomAPIError.response(`Plan with name ${value.label} already exist.`, HttpStatus.BAD_REQUEST.code)
+          CustomAPIError.response(`Plan with name ${value.label} already exist.`, HttpStatus.BAD_REQUEST.code),
         );
 
       const partner = await dataSources.partnerDAOService.findById(partnerId);
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code),
         );
 
       const category = await dataSources.categoryDAOService.findByAny({
@@ -513,7 +513,7 @@ export default class PartnerController {
 
       if (!category)
         return Promise.reject(
-          CustomAPIError.response(`Category with ${value.serviceMode} does not exist.`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Category with ${value.serviceMode} does not exist.`, HttpStatus.NOT_FOUND.code),
         );
 
       //todo: use type of programme to find subscription
@@ -533,10 +533,10 @@ export default class PartnerController {
 
       const plan = await dataSources.planDAOService.create(value);
 
-      await subscription.$add("plans", [plan]);
-      await partner.$add("plans", [plan]);
+      await subscription.$add('plans', [plan]);
+      await partner.$add('plans', [plan]);
 
-      await plan.$add("categories", [category]);
+      await plan.$add('categories', [category]);
 
       const plans = await dataSources.planDAOService.findAll({
         include: [{ model: Partner, where: { id: partnerId } }],
@@ -573,7 +573,7 @@ export default class PartnerController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code),
         );
 
       const plan = await dataSources.planDAOService.findByAny({
@@ -582,7 +582,7 @@ export default class PartnerController {
 
       if (!plan)
         return Promise.reject(
-          CustomAPIError.response(`Plan with ${value.plan} does not exist.`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Plan with ${value.plan} does not exist.`, HttpStatus.NOT_FOUND.code),
         );
 
       const serviceMode = plan.serviceMode;
@@ -595,8 +595,8 @@ export default class PartnerController {
         return Promise.reject(
           CustomAPIError.response(
             `Service Mode Category with ${serviceMode} does not exist.`,
-            HttpStatus.NOT_FOUND.code
-          )
+            HttpStatus.NOT_FOUND.code,
+          ),
         );
 
       const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
@@ -605,7 +605,7 @@ export default class PartnerController {
 
       if (!paymentGateway)
         return Promise.reject(
-          CustomAPIError.response(`No default payment gateway available.`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`No default payment gateway available.`, HttpStatus.NOT_FOUND.code),
         );
 
       const pricing = value.pricing;
@@ -614,7 +614,7 @@ export default class PartnerController {
 
       const _gwPaymentPlans = axiosResponse.data.data;
 
-      pricing.map(async (price) => {
+      pricing.map(async price => {
         const name = capitalize.words(`${price.interval} ${value.name}`);
 
         const exist = _gwPaymentPlans.find((value: any) => value.name === name);
@@ -639,16 +639,16 @@ export default class PartnerController {
         return exist;
       });
 
-      const paymentPlanData: any[] = pricing.map((price) => ({
+      const paymentPlanData: any[] = pricing.map(price => ({
         discount: +value.discount,
         hasPromo: value.discount.length !== 0,
         name: capitalize.words(`${price.interval} ${value.name}`),
         label: Generic.generateSlug(`${plan.serviceMode} ${value.name}`),
         value: price.amount,
         coverage: value.coverage,
-        descriptions: value.descriptions.map((value) => JSON.stringify({ ...value })),
-        parameters: value.parameters.map((value) => JSON.stringify({ ...value })),
-        pricing: value.pricing.map((value) => JSON.stringify({ ...value })),
+        descriptions: value.descriptions.map(value => JSON.stringify({ ...value })),
+        parameters: value.parameters.map(value => JSON.stringify({ ...value })),
+        pricing: value.pricing.map(value => JSON.stringify({ ...value })),
       }));
 
       //check if name and label already exist
@@ -661,7 +661,10 @@ export default class PartnerController {
 
         if (exist) {
           return Promise.reject(
-            CustomAPIError.response(`Payment Plan with info: ${datum.name} already exist.`, HttpStatus.BAD_REQUEST.code)
+            CustomAPIError.response(
+              `Payment Plan with info: ${datum.name} already exist.`,
+              HttpStatus.BAD_REQUEST.code,
+            ),
           );
         }
       }
@@ -669,7 +672,7 @@ export default class PartnerController {
       const paymentPlan = await dataSources.paymentPlanDAOService.bulkCreate(paymentPlanData);
 
       //link plan payment plans
-      await plan.$add("paymentPlans", paymentPlan);
+      await plan.$add('paymentPlans', paymentPlan);
 
       const paymentPlans = await dataSources.paymentPlanDAOService.findAll({
         include: [{ model: Plan, where: { partnerId: partnerId } }],
@@ -723,7 +726,7 @@ export default class PartnerController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Partner with ${partnerId} does not exist.`, HttpStatus.NOT_FOUND.code),
         );
 
       const paymentPlans = await dataSources.paymentPlanDAOService.findAll({
@@ -755,10 +758,10 @@ export default class PartnerController {
 
     try {
       const { error, value } = Joi.object<IDriverFilter>({
-        email: Joi.string().email().allow("").label("Email"),
-        firstName: Joi.string().allow("").label("First Name"),
-        lastName: Joi.string().allow("").label("Last Name"),
-        plateNumber: Joi.string().allow("").label("Plate Number"),
+        email: Joi.string().email().allow('').label('Email'),
+        firstName: Joi.string().allow('').label('First Name'),
+        lastName: Joi.string().allow('').label('Last Name'),
+        plateNumber: Joi.string().allow('').label('Plate Number'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -769,19 +772,19 @@ export default class PartnerController {
 
       const driverInfo: IDriverFilterProps[] = [];
 
-      const hasValues = _.values<IDriverFilter>(value).some((filter) => filter.length > 0);
+      const hasValues = _.values<IDriverFilter>(value).some(filter => filter.length > 0);
 
       if (!hasValues) return Promise.resolve(response);
 
       for (const valueKey in value) {
-        if (valueKey === "plateNumber") {
+        if (valueKey === 'plateNumber') {
           const vehicle = await dataSources.vehicleDAOService.findByAny({
             where: { plateNumber: value[valueKey] },
           });
 
           if (!vehicle) return Promise.resolve(response);
 
-          const driver = await vehicle.$get("rideShareDriver");
+          const driver = await vehicle.$get('rideShareDriver');
 
           if (!driver) return Promise.resolve(response);
 
@@ -822,7 +825,7 @@ export default class PartnerController {
     const partnerId = req.params.partnerId as string;
     const path = req.path;
 
-    path.search("owners-filter-data");
+    path.search('owners-filter-data');
 
     const driverInfo: IDriverFilterProps[] = [];
 
@@ -840,10 +843,10 @@ export default class PartnerController {
       let drivers: any[] = [];
 
       switch (path) {
-        case path.match("owners-filter-data")?.input:
+        case path.match('owners-filter-data')?.input:
           drivers = await dataSources.customerDAOService.findAll();
           break;
-        case path.match("drivers-filter-data")?.input:
+        case path.match('drivers-filter-data')?.input:
           drivers = await dataSources.rideShareDriverDAOService.findAll();
           break;
         default:
@@ -856,7 +859,7 @@ export default class PartnerController {
         const fullName = `${driver.firstName} ${driver.lastName}`;
         const email = driver.email;
 
-        const vehicles = await drivers[i].$get("vehicles");
+        const vehicles = await drivers[i].$get('vehicles');
 
         driverInfo[i] = {
           id: driver.id,
@@ -897,10 +900,10 @@ export default class PartnerController {
 
         if (!plan) return Promise.reject(CustomAPIError.response(`Plan does not exist`, HttpStatus.NOT_FOUND.code));
 
-        const subscription = await plan.$get("subscriptions");
+        const subscription = await plan.$get('subscriptions');
 
         if (subscription) {
-          await subscription.$remove("plans", plan);
+          await subscription.$remove('plans', plan);
           await subscription.destroy();
         }
 
@@ -927,7 +930,7 @@ export default class PartnerController {
 
         if (!plan) return Promise.reject(CustomAPIError.response(`Plan does not exist`, HttpStatus.NOT_FOUND.code));
 
-        await plan.$remove("paymentPlans", paymentPlan);
+        await plan.$remove('paymentPlans', paymentPlan);
         await paymentPlan.destroy();
 
         const response: HttpResponse<PaymentPlan> = {

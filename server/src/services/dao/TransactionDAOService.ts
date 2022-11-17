@@ -1,6 +1,6 @@
-import TransactionRepository from "../../repositories/TransactionRepository";
-import Transaction from "../../models/Transaction";
-import { appModelTypes } from "../../@types/app-model";
+import TransactionRepository from '../../repositories/TransactionRepository';
+import Transaction from '../../models/Transaction';
+import { appModelTypes } from '../../@types/app-model';
 import {
   CreateOptions,
   DestroyOptions,
@@ -9,11 +9,11 @@ import {
   InferCreationAttributes,
   Optional,
   UpdateOptions,
-} from "sequelize/types";
-import { NullishPropertiesOf } from "sequelize/types/utils";
-import moment from "moment/moment";
-import Generic from "../../utils/Generic";
-import { Attributes } from "sequelize";
+} from 'sequelize/types';
+import { NullishPropertiesOf } from 'sequelize/types/utils';
+import moment from 'moment/moment';
+import Generic from '../../utils/Generic';
+import { Attributes } from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class TransactionDAOService implements ICrudDAO<Transaction> {
@@ -31,7 +31,7 @@ export default class TransactionDAOService implements ICrudDAO<Transaction> {
 
   create(
     values: Optional<InferCreationAttributes<Transaction>, NullishPropertiesOf<InferCreationAttributes<Transaction>>>,
-    options?: CreateOptions<Attributes<Transaction>>
+    options?: CreateOptions<Attributes<Transaction>>,
   ): Promise<Transaction> {
     return this.transactionRepository.save(values, options);
   }
@@ -39,7 +39,7 @@ export default class TransactionDAOService implements ICrudDAO<Transaction> {
   update(
     transaction: Transaction,
     values: InferAttributes<Transaction>,
-    options: UpdateOptions<InferAttributes<Transaction>>
+    options: UpdateOptions<InferAttributes<Transaction>>,
   ): Promise<Transaction> {
     return this.transactionRepository.updateOne(transaction, values, options);
   }

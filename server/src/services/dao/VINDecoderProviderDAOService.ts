@@ -1,9 +1,9 @@
-import crypto from "crypto";
+import crypto from 'crypto';
 
-import VINDecoderProviderRepository from "../../repositories/VINDecoderProviderRepository";
-import VINDecoderProvider from "../../models/VINDecoderProvider";
-import { appModelTypes } from "../../@types/app-model";
-import axiosClient from "../api/axiosClient";
+import VINDecoderProviderRepository from '../../repositories/VINDecoderProviderRepository';
+import VINDecoderProvider from '../../models/VINDecoderProvider';
+import { appModelTypes } from '../../@types/app-model';
+import axiosClient from '../api/axiosClient';
 import {
   CreateOptions,
   DestroyOptions,
@@ -12,15 +12,15 @@ import {
   InferCreationAttributes,
   Optional,
   UpdateOptions,
-} from "sequelize/types";
-import { NullishPropertiesOf } from "sequelize/types/utils";
-import { appCommonTypes } from "../../@types/app-common";
-import { AxiosResponse } from "axios";
-import Generic from "../../utils/Generic";
-import { VIN_FILTER_CONSTRAINTS } from "../../config/constants";
-import VINRepository from "../../repositories/VINRepository";
-import VIN from "../../models/VIN";
-import { Attributes } from "sequelize";
+} from 'sequelize/types';
+import { NullishPropertiesOf } from 'sequelize/types/utils';
+import { appCommonTypes } from '../../@types/app-common';
+import { AxiosResponse } from 'axios';
+import Generic from '../../utils/Generic';
+import { VIN_FILTER_CONSTRAINTS } from '../../config/constants';
+import VINRepository from '../../repositories/VINRepository';
+import VIN from '../../models/VIN';
+import { Attributes } from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 import VINProvider = appCommonTypes.VINProvider;
 
@@ -43,7 +43,7 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
       InferCreationAttributes<VINDecoderProvider>,
       NullishPropertiesOf<InferCreationAttributes<VINDecoderProvider>>
     >,
-    options?: CreateOptions<Attributes<VINDecoderProvider>>
+    options?: CreateOptions<Attributes<VINDecoderProvider>>,
   ): Promise<VINDecoderProvider> {
     return this.vinDecoderProviderRepository.save(values, options);
   }
@@ -51,7 +51,7 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
   update(
     vinDecoderProvider: VINDecoderProvider,
     values: InferAttributes<VINDecoderProvider>,
-    options: UpdateOptions<InferAttributes<VINDecoderProvider>>
+    options: UpdateOptions<InferAttributes<VINDecoderProvider>>,
   ): Promise<VINDecoderProvider> {
     return this.vinDecoderProviderRepository.updateOne(vinDecoderProvider, values, options);
   }
@@ -86,7 +86,7 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
     if (findVIN) {
       const vinToJSON = findVIN.toJSON();
 
-      Object.keys(vinToJSON).forEach((key) => {
+      Object.keys(vinToJSON).forEach(key => {
         result.push({
           label: Generic.convertTextToCamelcase(key),
           //@ts-ignore
@@ -106,11 +106,11 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
       url = `${apiPrefix}/?id=${apiSecret}&key=${apiKey}&vin=${vin}`;
       response = await axiosClient.get(url);
 
-      if (response.data === "Error") return this.getOtherProvider(vin);
+      if (response.data === 'Error') return this.getOtherProvider(vin);
 
       const results = response.data.Results;
 
-      Object.keys(results[0]).forEach((key) => {
+      Object.keys(results[0]).forEach(key => {
         result.push({
           label: Generic.convertTextToCamelcase(key),
           //@ts-ignore
@@ -122,9 +122,9 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
 
       let temp = [...result];
 
-      temp = temp.filter((value) => value.label !== "vin");
+      temp = temp.filter(value => value.label !== 'vin');
 
-      const emptyResult = temp.every((item) => !item.value.length);
+      const emptyResult = temp.every(item => !item.value.length);
 
       if (emptyResult) return this.getOtherProvider(vin);
     } else {
@@ -132,8 +132,8 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
       const apiKey = provider.apiKey;
       const apiPrefix = provider.apiPrefix;
 
-      const id = "decode";
-      const hash = crypto.createHash("sha1").update(`${vin}|${id}|${apiKey}|${apiSecret}`).digest("hex");
+      const id = 'decode';
+      const hash = crypto.createHash('sha1').update(`${vin}|${id}|${apiKey}|${apiSecret}`).digest('hex');
 
       const controlSum = hash.substring(0, 10);
       url = `${apiPrefix}/${apiKey}/${controlSum}/decode/${vin}.json`;
@@ -153,7 +153,7 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
 
     const data = {};
 
-    result.forEach((detail) => {
+    result.forEach(detail => {
       //@ts-ignore
       data[detail.label] = detail.value;
     });
@@ -169,7 +169,7 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
       where: { default: false },
     });
 
-    if (!otherProvider) throw new Error("Provider does not exist");
+    if (!otherProvider) throw new Error('Provider does not exist');
 
     return this.decodeVIN(vin, otherProvider);
   }

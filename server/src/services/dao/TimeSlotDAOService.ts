@@ -1,6 +1,6 @@
-import TimeSlotRepository from "../../repositories/TimeSlotRepository";
-import TimeSlot from "../../models/TimeSlot";
-import { appModelTypes } from "../../@types/app-model";
+import TimeSlotRepository from '../../repositories/TimeSlotRepository';
+import TimeSlot from '../../models/TimeSlot';
+import { appModelTypes } from '../../@types/app-model';
 import {
   CreateOptions,
   CreationAttributes,
@@ -8,8 +8,8 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize/types";
-import { Attributes } from "sequelize";
+} from 'sequelize/types';
+import { Attributes } from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class TimeSlotDAOService implements ICrudDAO<TimeSlot> {
@@ -26,7 +26,7 @@ export default class TimeSlotDAOService implements ICrudDAO<TimeSlot> {
   update(
     timeSlot: TimeSlot,
     values: InferAttributes<TimeSlot>,
-    options: UpdateOptions<InferAttributes<TimeSlot>>
+    options: UpdateOptions<InferAttributes<TimeSlot>>,
   ): Promise<TimeSlot> {
     return this.timeSlotRepository.updateOne(timeSlot, values, options);
   }

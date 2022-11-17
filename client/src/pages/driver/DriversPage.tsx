@@ -1,18 +1,18 @@
-import React, { useContext } from "react";
-import { Button, Chip, DialogActions, DialogContentText, Divider, Stack, Typography } from "@mui/material";
-import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProps } from "@app-interfaces";
-import { useNavigate } from "react-router-dom";
-import { IRideShareDriver } from "@app-models";
-import useDriver from "../../hooks/useDriver";
-import AppDataGrid from "../../components/tables/AppDataGrid";
-import moment from "moment";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Delete, Visibility } from "@mui/icons-material";
-import AppModal from "../../components/modal/AppModal";
-import { MESSAGES } from "../../config/constants";
-import AppLoader from "../../components/loader/AppLoader";
-import AppAlert from "../../components/alerts/AppAlert";
+import React, { useContext } from 'react';
+import { Button, Chip, DialogActions, DialogContentText, Divider, Stack, Typography } from '@mui/material';
+import { AppContext } from '../../context/AppContextProvider';
+import { AppContextProps } from '@app-interfaces';
+import { useNavigate } from 'react-router-dom';
+import { IRideShareDriver } from '@app-models';
+import useDriver from '../../hooks/useDriver';
+import AppDataGrid from '../../components/tables/AppDataGrid';
+import moment from 'moment';
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import { Delete, Visibility } from '@mui/icons-material';
+import AppModal from '../../components/modal/AppModal';
+import { MESSAGES } from '../../config/constants';
+import AppLoader from '../../components/loader/AppLoader';
+import AppAlert from '../../components/alerts/AppAlert';
 
 export default function DriversPage() {
   const { setDriver } = useContext(AppContext) as AppContextProps;
@@ -35,9 +35,8 @@ export default function DriversPage() {
         spacing={5}
         justifyContent="center"
         alignItems="center"
-        divider={<Divider orientation="horizontal" flexItem />}
-      >
-        <Stack direction="row" sx={{ width: "100%" }}>
+        divider={<Divider orientation="horizontal" flexItem />}>
+        <Stack direction="row" sx={{ width: '100%' }}>
           <AppDataGrid
             loading={driver.loading}
             rows={driver.rows}
@@ -90,34 +89,34 @@ interface IColumn {
 const getTableColumn = (options: IColumn) =>
   [
     {
-      field: "id",
-      headerName: "ID",
-      headerAlign: "center",
-      align: "center",
+      field: 'id',
+      headerName: 'ID',
+      headerAlign: 'center',
+      align: 'center',
       sortable: true,
-      type: "number",
+      type: 'number',
     },
     {
-      field: "fullName",
-      headerName: "Full Name",
-      headerAlign: "center",
-      align: "center",
-      type: "string",
+      field: 'fullName',
+      headerName: 'Full Name',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'string',
       width: 250,
       sortable: true,
-      valueGetter: (param) => {
-        return param ? `${param.row.firstName} ${param.row.lastName}` : "";
+      valueGetter: param => {
+        return param ? `${param.row.firstName} ${param.row.lastName}` : '';
       },
     },
     {
-      field: "enabled",
-      headerName: "Status",
-      headerAlign: "center",
-      align: "center",
-      type: "boolean",
+      field: 'enabled',
+      headerName: 'Status',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'boolean',
       width: 100,
       sortable: true,
-      renderCell: (params) => {
+      renderCell: params => {
         return params.row.enabled ? (
           <Chip label="Active" size="small" color="success" />
         ) : (
@@ -126,62 +125,62 @@ const getTableColumn = (options: IColumn) =>
       },
     },
     {
-      field: "email",
-      headerName: "Email",
-      headerAlign: "center",
-      align: "center",
-      type: "string",
+      field: 'email',
+      headerName: 'Email',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'string',
       width: 200,
       sortable: true,
-      valueGetter: (param) => {
-        return param ? param.value : "";
+      valueGetter: param => {
+        return param ? param.value : '';
       },
     },
     {
-      field: "phone",
-      headerName: "Phone Number",
-      headerAlign: "center",
-      align: "center",
-      type: "string",
+      field: 'phone',
+      headerName: 'Phone Number',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'string',
       width: 150,
       sortable: true,
     },
     {
-      field: "createdAt",
-      headerName: "Created Date",
-      headerAlign: "center",
-      align: "center",
+      field: 'createdAt',
+      headerName: 'Created Date',
+      headerAlign: 'center',
+      align: 'center',
       width: 200,
-      type: "string",
-      valueGetter: ({ value }) => value && moment(value).format("LLL"),
+      type: 'string',
+      valueGetter: ({ value }) => value && moment(value).format('LLL'),
       sortable: true,
     },
     {
-      field: "updatedAt",
-      headerName: "Modified Date",
-      headerAlign: "center",
-      align: "center",
+      field: 'updatedAt',
+      headerName: 'Modified Date',
+      headerAlign: 'center',
+      align: 'center',
       width: 200,
-      type: "string",
-      valueGetter: ({ value }) => value && moment(value).format("LLL"),
+      type: 'string',
+      valueGetter: ({ value }) => value && moment(value).format('LLL'),
       sortable: true,
     },
     {
-      field: "actions",
-      type: "actions",
-      headerAlign: "center",
-      align: "center",
+      field: 'actions',
+      type: 'actions',
+      headerAlign: 'center',
+      align: 'center',
       getActions: (params: any) => [
         <GridActionsCellItem
           key={0}
-          icon={<Visibility sx={{ color: "dodgerblue" }} />}
+          icon={<Visibility sx={{ color: 'dodgerblue' }} />}
           onClick={() => options.onView(params.row)}
           label="View"
           showInMenu={false}
         />,
         <GridActionsCellItem
           key={0}
-          icon={<Delete sx={{ color: "orangered" }} />}
+          icon={<Delete sx={{ color: 'orangered' }} />}
           onClick={() => options.onDelete(params.row)}
           label="View"
           showInMenu={false}

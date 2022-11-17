@@ -1,4 +1,4 @@
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
 export interface ICreatePartnerModel {
   name: string;
@@ -49,197 +49,197 @@ export interface IGarageSettings {
 
 const fields = {
   name: {
-    name: "name",
-    label: "Company Full Name*",
+    name: 'name',
+    label: 'Company Full Name*',
     error: {
-      invalid: "Invalid Company Full Name.",
-      required: "Company Full Name is required",
+      invalid: 'Invalid Company Full Name.',
+      required: 'Company Full Name is required',
     },
   },
   phone: {
-    name: "phone",
-    label: "Contact Number*",
+    name: 'phone',
+    label: 'Contact Number*',
     error: {
       invalid: `Phone number is invalid`,
-      required: "Phone is required",
+      required: 'Phone is required',
     },
   },
   email: {
-    name: "email",
-    label: "Email*",
+    name: 'email',
+    label: 'Email*',
     error: {
       invalid: `Email is invalid`,
-      required: "Email is required",
+      required: 'Email is required',
     },
   },
   category: {
-    name: "category",
-    label: "Category*",
+    name: 'category',
+    label: 'Category*',
     error: {
       invalid: `Category is invalid`,
-      required: "Category is required",
+      required: 'Category is required',
     },
   },
   workshopAddress: {
-    name: "workshopAddress",
-    label: "Workshop Address",
+    name: 'workshopAddress',
+    label: 'Workshop Address',
     error: {
       invalid: `Workshop Address is invalid`,
-      required: "Workshop Address is required",
+      required: 'Workshop Address is required',
     },
   },
   district: {
-    name: "district",
-    label: "District*",
+    name: 'district',
+    label: 'District*',
     error: {
-      invalid: "District is invalid",
-      required: "Please choose district.",
+      invalid: 'District is invalid',
+      required: 'Please choose district.',
     },
   },
   state: {
-    name: "state",
-    label: "State*",
+    name: 'state',
+    label: 'State*',
     error: {
-      invalid: "State is invalid",
-      required: "Please choose state.",
+      invalid: 'State is invalid',
+      required: 'Please choose state.',
     },
   },
   yearOfIncorporation: {
-    name: "yearOfIncorporation",
-    label: "Year Of Incorporation*",
+    name: 'yearOfIncorporation',
+    label: 'Year Of Incorporation*',
     error: {
-      invalid: "Year Of Incorporation is invalid",
-      required: "Please provide Year Of Incorporation.",
+      invalid: 'Year Of Incorporation is invalid',
+      required: 'Please provide Year Of Incorporation.',
     },
   },
   cac: {
-    name: "cac",
-    label: "CAC*",
+    name: 'cac',
+    label: 'CAC*',
     error: {
-      invalid: "CAC is invalid",
-      required: "Please provide cac.",
+      invalid: 'CAC is invalid',
+      required: 'Please provide cac.',
     },
   },
   vatNumber: {
-    name: "vatNumber",
-    label: "VAT Number",
+    name: 'vatNumber',
+    label: 'VAT Number',
     error: {
-      invalid: "VAT Number is invalid",
-      required: "Please provide VAT Number.",
+      invalid: 'VAT Number is invalid',
+      required: 'Please provide VAT Number.',
     },
   },
   nameOfDirector: {
-    name: "nameOfDirector",
-    label: "Name of Director",
+    name: 'nameOfDirector',
+    label: 'Name of Director',
     error: {
-      invalid: "Name of Director is invalid",
-      required: "Please provide Name of Director.",
+      invalid: 'Name of Director is invalid',
+      required: 'Please provide Name of Director.',
     },
   },
   nameOfManager: {
-    name: "nameOfManager",
-    label: "Name of Manager",
+    name: 'nameOfManager',
+    label: 'Name of Manager',
     error: {
-      invalid: "Name of Manager is invalid",
-      required: "Please provide Name of Manager.",
+      invalid: 'Name of Manager is invalid',
+      required: 'Please provide Name of Manager.',
     },
   },
 
   totalStaff: {
-    name: "totalStaff",
-    label: "Total Staff",
+    name: 'totalStaff',
+    label: 'Total Staff',
     error: {
-      invalid: "Total Staff is invalid",
-      required: "Total Staff is required",
+      invalid: 'Total Staff is invalid',
+      required: 'Total Staff is required',
     },
   },
 
   totalTechnicians: {
-    name: "totalTechnicians",
-    label: "Total Technicians",
+    name: 'totalTechnicians',
+    label: 'Total Technicians',
     error: {
-      invalid: "Total Technicians is invalid",
-      required: "Total Technicians is required",
+      invalid: 'Total Technicians is invalid',
+      required: 'Total Technicians is required',
     },
   },
 
   logo: {
-    name: "logo",
-    label: "Company Logo",
+    name: 'logo',
+    label: 'Company Logo',
     error: {
-      invalid: "Company Logo is invalid",
-      required: "Company Logo is required",
+      invalid: 'Company Logo is invalid',
+      required: 'Company Logo is required',
     },
   },
   googleMap: {
-    name: "googleMap",
-    label: "Google map link",
+    name: 'googleMap',
+    label: 'Google map link',
     error: {
-      invalid: "Google map link is invalid",
-      required: "Google map link is required",
+      invalid: 'Google map link is invalid',
+      required: 'Google map link is required',
     },
   },
 
   brands: {
-    name: "brands",
-    label: "Brands",
+    name: 'brands',
+    label: 'Brands',
     error: {
-      invalid: "Brands is invalid",
-      required: "Brands is required",
+      invalid: 'Brands is invalid',
+      required: 'Brands is required',
     },
   },
   images: {
-    name: "images",
-    label: "Images",
+    name: 'images',
+    label: 'Images',
     error: {
-      invalid: "Images is invalid",
-      required: "Images is required",
+      invalid: 'Images is invalid',
+      required: 'Images is required',
     },
   },
   workingHours: {
-    name: "workingHours",
-    label: "Working Hours",
+    name: 'workingHours',
+    label: 'Working Hours',
     error: {
-      invalid: "Working Hours is invalid",
-      required: "Working Hours is required",
+      invalid: 'Working Hours is invalid',
+      required: 'Working Hours is required',
     },
   },
 
   bankName: {
-    name: "bankName",
-    label: "Bank Name",
+    name: 'bankName',
+    label: 'Bank Name',
     error: {
-      invalid: "Bank Name is invalid",
-      required: "Bank Name is required",
+      invalid: 'Bank Name is invalid',
+      required: 'Bank Name is required',
     },
   },
 
   accountName: {
-    name: "accountName",
-    label: "Account Name",
+    name: 'accountName',
+    label: 'Account Name',
     error: {
-      invalid: "Account Name is invalid",
-      required: "Account Name is required",
+      invalid: 'Account Name is invalid',
+      required: 'Account Name is required',
     },
   },
 
   accountNumber: {
-    name: "accountNumber",
-    label: "Account Number",
+    name: 'accountNumber',
+    label: 'Account Number',
     error: {
-      invalid: "Account Number is invalid",
-      required: "Account Number is required",
+      invalid: 'Account Number is invalid',
+      required: 'Account Number is required',
     },
   },
 };
 
 const initialValues: ICreatePartnerModel = {
-  name: "",
-  phone: "",
-  email: "",
-  category: "",
-  state: "",
-  logo: "",
+  name: '',
+  phone: '',
+  email: '',
+  category: '',
+  state: '',
+  logo: '',
 };
 
 const schema = Yup.object().shape({

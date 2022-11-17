@@ -1,6 +1,6 @@
-import ScheduleRepository from "../../repositories/ScheduleRepository";
-import Schedule from "../../models/Schedule";
-import { appModelTypes } from "../../@types/app-model";
+import ScheduleRepository from '../../repositories/ScheduleRepository';
+import Schedule from '../../models/Schedule';
+import { appModelTypes } from '../../@types/app-model';
 import {
   CreateOptions,
   CreationAttributes,
@@ -8,8 +8,8 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize/types";
-import { Attributes } from "sequelize";
+} from 'sequelize/types';
+import { Attributes } from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class ScheduleDAOService implements ICrudDAO<Schedule> {
@@ -26,7 +26,7 @@ export default class ScheduleDAOService implements ICrudDAO<Schedule> {
   update(
     schedule: Schedule,
     values: InferAttributes<Schedule>,
-    options: UpdateOptions<InferAttributes<Schedule>>
+    options: UpdateOptions<InferAttributes<Schedule>>,
   ): Promise<Schedule> {
     return this.scheduleRepository.updateOne(schedule, values, options);
   }

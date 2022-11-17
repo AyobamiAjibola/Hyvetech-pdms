@@ -1,11 +1,11 @@
-import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
-import Partner from "./Partner";
-import RideShareDriver from "./RideShareDriver";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
+import Partner from './Partner';
+import RideShareDriver from './RideShareDriver';
 
 @Table({
   timestamps: false,
-  tableName: "partner_ride_share_drivers",
+  tableName: 'partner_ride_share_drivers',
 })
 export default class PartnerRideShareDriver extends Model<
   InferAttributes<PartnerRideShareDriver>,

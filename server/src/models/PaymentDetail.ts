@@ -1,12 +1,12 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import Customer from "./Customer";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import RideShareDriver from "./RideShareDriver";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import Customer from './Customer';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import RideShareDriver from './RideShareDriver';
 
 @Table({
   timestamps: true,
 
-  tableName: "payment_details",
+  tableName: 'payment_details',
 })
 export default class PaymentDetail extends Model<
   InferAttributes<PaymentDetail>,
@@ -16,7 +16,7 @@ export default class PaymentDetail extends Model<
   @AutoIncrement
   @Column({
     type: DataType.INTEGER,
-    field: "payment_detail_id",
+    field: 'payment_detail_id',
     allowNull: false,
   })
   declare id: CreationOptional<number>;
@@ -57,14 +57,14 @@ export default class PaymentDetail extends Model<
   @Column(DataType.STRING)
   declare authorizationCode: string;
 
-  @BelongsTo(() => Customer, { onDelete: "cascade" })
+  @BelongsTo(() => Customer, { onDelete: 'cascade' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: number;
 
-  @BelongsTo(() => RideShareDriver, { onDelete: "cascade" })
+  @BelongsTo(() => RideShareDriver, { onDelete: 'cascade' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)

@@ -1,24 +1,24 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { FieldArray, Form, useFormikContext } from "formik";
-import { Divider, Grid, Typography } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
-import { Add, Remove, Save } from "@mui/icons-material";
-import estimateModel, { IEstimateValues, IPart } from "../models/estimateModel";
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
-import TextInputField from "../fields/TextInputField";
-import { formatNumberToIntl } from "../../../utils/generic";
-import SelectField from "../fields/SelectField";
-import WarrantyFields from "./WarrantyFields";
-import QuantityFields from "./QuantityFields";
-import VehicleInformationFields from "./VehicleInformationFields";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import { getVehicleVINAction } from "../../../store/actions/vehicleActions";
-import useAppSelector from "../../../hooks/useAppSelector";
-import { IVINDecoderSchema } from "@app-interfaces";
-import { CustomHookMessage } from "@app-types";
-import AppAlert from "../../alerts/AppAlert";
-import { clearGetVehicleVINStatus } from "../../../store/reducers/vehicleReducer";
+import React, { useCallback, useEffect, useState } from 'react';
+import { FieldArray, Form, useFormikContext } from 'formik';
+import { Divider, Grid, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Add, Remove, Save } from '@mui/icons-material';
+import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import TextInputField from '../fields/TextInputField';
+import { formatNumberToIntl } from '../../../utils/generic';
+import SelectField from '../fields/SelectField';
+import WarrantyFields from './WarrantyFields';
+import QuantityFields from './QuantityFields';
+import VehicleInformationFields from './VehicleInformationFields';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { getVehicleVINAction } from '../../../store/actions/vehicleActions';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { IVINDecoderSchema } from '@app-interfaces';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../../alerts/AppAlert';
+import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -45,7 +45,7 @@ function EstimateForm(props: IProps) {
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
-  const vehicleReducer = useAppSelector((state) => state.vehicleReducer);
+  const vehicleReducer = useAppSelector(state => state.vehicleReducer);
   const dispatch = useAppDispatch();
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
@@ -94,7 +94,7 @@ function EstimateForm(props: IProps) {
     const vat = 7.5 * 0.01;
     const tax = labourTotal * vat;
 
-    setFieldValue("tax", formatNumberToIntl(tax));
+    setFieldValue('tax', formatNumberToIntl(tax));
     setVat(tax);
   }, [labourTotal, setFieldValue]);
 
@@ -109,22 +109,22 @@ function EstimateForm(props: IProps) {
       setTimer(
         setTimeout(() => {
           dispatch(getVehicleVINAction(vin));
-        }, 2000)
+        }, 2000),
       );
 
-      setFieldValue("vin", vin);
+      setFieldValue('vin', vin);
     },
-    [dispatch, setFieldValue]
+    [dispatch, setFieldValue],
   );
 
   useEffect(() => {
-    if (vehicleReducer.getVehicleVINStatus === "completed") {
+    if (vehicleReducer.getVehicleVINStatus === 'completed') {
       const tempVehicleDetails = vehicleReducer.vehicleVINDetails;
 
       tempVehicleDetails.forEach((detail: IVINDecoderSchema) => {
         const newDetail: IVINDecoderSchema = { ...detail };
 
-        if (detail.label === "engineCylinders") newDetail.value = `${detail.value} cylinders`;
+        if (detail.label === 'engineCylinders') newDetail.value = `${detail.value} cylinders`;
 
         setFieldValue(newDetail.label, newDetail.value);
         setFieldTouched(newDetail.label, false);
@@ -133,7 +133,7 @@ function EstimateForm(props: IProps) {
   }, [vehicleReducer.getVehicleVINStatus, vehicleReducer.vehicleVINDetails, setFieldValue, setFieldTouched]);
 
   useEffect(() => {
-    if (vehicleReducer.getVehicleVINStatus === "failed") {
+    if (vehicleReducer.getVehicleVINStatus === 'failed') {
       if (vehicleReducer.getVehicleVINError) setError({ message: vehicleReducer.getVehicleVINError });
     }
   }, [vehicleReducer.getVehicleVINError, vehicleReducer.getVehicleVINStatus]);
@@ -184,8 +184,8 @@ function EstimateForm(props: IProps) {
             <Grid item xs={3}>
               <SelectField
                 data={[
-                  { label: "Home", value: "Home" },
-                  { label: "Office", value: "Office" },
+                  { label: 'Home', value: 'Home' },
+                  { label: 'Office', value: 'Office' },
                 ]}
                 onChange={handleChange}
                 value={values.addressType}
@@ -213,17 +213,17 @@ function EstimateForm(props: IProps) {
           <Grid item xs={12} container>
             <FieldArray
               name={fields.parts.name}
-              render={(partsProps) => {
+              render={partsProps => {
                 return (
                   <React.Fragment>
                     {values.parts.length > 0 &&
                       values.parts.map((part, index) => {
                         return (
                           <Grid container item spacing={2} xs={13} key={index} columns={14} mb={2}>
-                            {Object.keys(part).map((value) => {
+                            {Object.keys(part).map(value => {
                               return (
                                 <React.Fragment key={`${value}`}>
-                                  {value === "name" && (
+                                  {value === 'name' && (
                                     <Grid item xs={4}>
                                       <TextField
                                         fullWidth
@@ -236,7 +236,7 @@ function EstimateForm(props: IProps) {
                                       />
                                     </Grid>
                                   )}
-                                  {value === "warranty" && (
+                                  {value === 'warranty' && (
                                     <WarrantyFields
                                       {...part}
                                       handleChange={handleChange}
@@ -244,7 +244,7 @@ function EstimateForm(props: IProps) {
                                       values={values}
                                     />
                                   )}
-                                  {value === "quantity" && (
+                                  {value === 'quantity' && (
                                     <QuantityFields
                                       {...part}
                                       handleChange={handleChange}
@@ -252,7 +252,7 @@ function EstimateForm(props: IProps) {
                                       values={values}
                                     />
                                   )}
-                                  {value === "price" && (
+                                  {value === 'price' && (
                                     <Grid item xs={2}>
                                       <TextField
                                         fullWidth
@@ -264,7 +264,7 @@ function EstimateForm(props: IProps) {
                                         onChange={handleChange}
                                         type="number"
                                         inputProps={{
-                                          min: "0",
+                                          min: '0',
                                         }}
                                       />
                                     </Grid>
@@ -284,13 +284,12 @@ function EstimateForm(props: IProps) {
                       <IconButton
                         onClick={() =>
                           partsProps.push({
-                            name: "",
-                            warranty: { warranty: "", interval: "" },
-                            quantity: { quantity: "", unit: "" },
-                            price: "0",
+                            name: '',
+                            warranty: { warranty: '', interval: '' },
+                            quantity: { quantity: '', unit: '' },
+                            price: '0',
                           })
-                        }
-                      >
+                        }>
                         <Add />
                       </IconButton>
                     </Grid>
@@ -315,17 +314,17 @@ function EstimateForm(props: IProps) {
           <Grid item xs={12} container>
             <FieldArray
               name={fields.labours.name}
-              render={(laboursProps) => {
+              render={laboursProps => {
                 return (
                   <React.Fragment>
                     {values.labours.length > 0 &&
                       values.labours.map((labour, index) => {
                         return (
                           <Grid container item spacing={2} xs={12} key={index} columns={13} mb={2}>
-                            {Object.keys(labour).map((value) => {
+                            {Object.keys(labour).map(value => {
                               return (
                                 <React.Fragment key={`${value}`}>
-                                  {value === "title" && (
+                                  {value === 'title' && (
                                     <Grid item xs={8}>
                                       <TextField
                                         fullWidth
@@ -338,7 +337,7 @@ function EstimateForm(props: IProps) {
                                       />
                                     </Grid>
                                   )}
-                                  {value === "cost" && (
+                                  {value === 'cost' && (
                                     <Grid item xs={4}>
                                       <TextField
                                         fullWidth
@@ -350,7 +349,7 @@ function EstimateForm(props: IProps) {
                                         onChange={handleChange}
                                         type="number"
                                         inputProps={{
-                                          min: "0",
+                                          min: '0',
                                         }}
                                       />
                                     </Grid>
@@ -370,11 +369,10 @@ function EstimateForm(props: IProps) {
                       <IconButton
                         onClick={() =>
                           laboursProps.push({
-                            title: "",
-                            cost: "0",
+                            title: '',
+                            cost: '0',
                           })
-                        }
-                      >
+                        }>
                         <Add />
                       </IconButton>
                     </Grid>
@@ -415,7 +413,7 @@ function EstimateForm(props: IProps) {
               label={fields.depositAmount.label}
               type="number"
               inputProps={{
-                min: "0",
+                min: '0',
               }}
             />
           </Grid>
@@ -428,16 +426,16 @@ function EstimateForm(props: IProps) {
                 label={fields.jobDuration.label}
                 type="number"
                 inputProps={{
-                  min: "0",
+                  min: '0',
                 }}
               />
             </Grid>
             <Grid item xs>
               <SelectField
                 data={[
-                  { label: "week", value: "week" },
-                  { label: "month", value: "month" },
-                  { label: "year", value: "year" },
+                  { label: 'week', value: 'week' },
+                  { label: 'month', value: 'month' },
+                  { label: 'year', value: 'year' },
                 ]}
                 onChange={handleChange}
                 value={values.jobDuration.interval}
@@ -456,8 +454,7 @@ function EstimateForm(props: IProps) {
               variant="contained"
               color="secondary"
               endIcon={<Save />}
-              size="large"
-            >
+              size="large">
               Save
             </LoadingButton>
           </Grid>

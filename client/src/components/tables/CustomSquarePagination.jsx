@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { useGridApiContext } from "@mui/x-data-grid";
-import Pagination from "@mui/material/Pagination";
-import PaginationItem from "@mui/material/PaginationItem";
+import { useGridApiContext } from '@mui/x-data-grid';
+import Pagination from '@mui/material/Pagination';
+import PaginationItem from '@mui/material/PaginationItem';
 
 function CustomSquarePagination() {
   const apiRef = useGridApiContext();
@@ -15,7 +15,7 @@ function CustomSquarePagination() {
       shape="rounded"
       page={state.pagination.page + 1}
       count={state.pagination.pageCount}
-      renderItem={(props2) => <PaginationItem {...props2} disableRipple />}
+      renderItem={props2 => <PaginationItem {...props2} disableRipple />}
       onChange={(event, value) => apiRef.current.setPage(value - 1)}
     />
   );

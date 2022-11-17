@@ -1,6 +1,6 @@
-declare module "@app-interfaces" {
-  import React from "react";
-  import { GenericObjectType } from "@app-types";
+declare module '@app-interfaces' {
+  import React from 'react';
+  import { GenericObjectType } from '@app-types';
   import {
     ICheckList,
     ICustomer,
@@ -13,8 +13,8 @@ declare module "@app-interfaces" {
     IRideShareDriverSubscription,
     ITechnician,
     IVehicle,
-  } from "@app-models";
-  import { JwtPayload } from "jsonwebtoken";
+  } from '@app-models';
+  import { JwtPayload } from 'jsonwebtoken';
 
   interface IModule {
     customers: { name: string; data: GenericObjectType[] };

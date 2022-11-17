@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import useAppSelector from "../../hooks/useAppSelector";
-import useAppDispatch from "../../hooks/useAppDispatch";
-import { approveJobCheckListAction, getJobAction } from "../../store/actions/jobActions";
-import { IJob } from "@app-models";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useRef, useState } from 'react';
+import useAppSelector from '../../hooks/useAppSelector';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import { approveJobCheckListAction, getJobAction } from '../../store/actions/jobActions';
+import { IJob } from '@app-models';
+import { useLocation } from 'react-router-dom';
 import {
   Avatar,
   Box,
@@ -25,19 +25,19 @@ import {
   Stack,
   Switch,
   Typography,
-} from "@mui/material";
-import settings from "../../config/settings";
-import { CheckListAnswerType, CheckListQuestionType, CheckListSectionType, CustomHookMessage } from "@app-types";
-import checkListVectorImg from "../../assets/images/check-list-vector.png";
-import { AccessTime, LocationOn, Print, Today } from "@mui/icons-material";
-import moment from "moment";
-import { useReactToPrint } from "react-to-print";
-import useAdmin from "../../hooks/useAdmin";
-import AppLoader from "../../components/loader/AppLoader";
-import AppAlert from "../../components/alerts/AppAlert";
-import { clearApproveJobCheckListStatus } from "../../store/reducers/jobReducer";
-import AppModal from "../../components/modal/AppModal";
-import axiosClient from "../../config/axiosClient";
+} from '@mui/material';
+import settings from '../../config/settings';
+import { CheckListAnswerType, CheckListQuestionType, CheckListSectionType, CustomHookMessage } from '@app-types';
+import checkListVectorImg from '../../assets/images/check-list-vector.png';
+import { AccessTime, LocationOn, Print, Today } from '@mui/icons-material';
+import moment from 'moment';
+import { useReactToPrint } from 'react-to-print';
+import useAdmin from '../../hooks/useAdmin';
+import AppLoader from '../../components/loader/AppLoader';
+import AppAlert from '../../components/alerts/AppAlert';
+import { clearApproveJobCheckListStatus } from '../../store/reducers/jobReducer';
+import AppModal from '../../components/modal/AppModal';
+import axiosClient from '../../config/axiosClient';
 
 interface ILocationState {
   job: IJob;
@@ -64,7 +64,7 @@ const computeScore = (sections: CheckListSectionType[]) => {
 };
 
 const getQuestionAnswer = (question: CheckListQuestionType) => {
-  const answerTypes = question.answers.filter((value) => value.selected);
+  const answerTypes = question.answers.filter(value => value.selected);
 
   return { color: answerTypes[0].color, answer: answerTypes[0].answer };
 };
@@ -77,7 +77,7 @@ function JobCheckListReportPage() {
   const [error, setError] = useState<CustomHookMessage>();
   const [success, setSuccess] = useState<CustomHookMessage>();
 
-  const jobReducer = useAppSelector((state) => state.jobReducer);
+  const jobReducer = useAppSelector(state => state.jobReducer);
   const dispatch = useAppDispatch();
   const containerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
@@ -93,7 +93,7 @@ function JobCheckListReportPage() {
   }, [dispatch, location.state]);
 
   useEffect(() => {
-    if (jobReducer.getJobStatus === "completed") {
+    if (jobReducer.getJobStatus === 'completed') {
       const _job = jobReducer.job;
       if (_job) {
         setJob(_job);
@@ -108,13 +108,13 @@ function JobCheckListReportPage() {
   }, [dispatch, jobReducer.getJobStatus, jobReducer.job]);
 
   useEffect(() => {
-    if (jobReducer.approveJobCheckListStatus === "completed") {
+    if (jobReducer.approveJobCheckListStatus === 'completed') {
       setSuccess({ message: jobReducer.approveJobCheckListSuccess });
     }
   }, [jobReducer.approveJobCheckListStatus, jobReducer.approveJobCheckListSuccess]);
 
   useEffect(() => {
-    if (jobReducer.approveJobCheckListStatus === "failed") {
+    if (jobReducer.approveJobCheckListStatus === 'failed') {
       if (jobReducer.approveJobCheckListError) setError({ message: jobReducer.approveJobCheckListError });
     }
   }, [jobReducer.approveJobCheckListStatus, jobReducer.approveJobCheckListError]);
@@ -136,7 +136,7 @@ function JobCheckListReportPage() {
 
   const handleViewImage = async (imageUrl: string) => {
     const response = await axiosClient.get(imageUrl, {
-      responseType: "blob",
+      responseType: 'blob',
     });
 
     const reader = new FileReader();
@@ -160,8 +160,7 @@ function JobCheckListReportPage() {
             spacing={{ xs: 2, md: 3 }}
             columns={{ xs: 4, sm: 8, md: 12 }}
             justifyContent="space-between"
-            alignItems="center"
-          >
+            alignItems="center">
             <Grid item hidden={!isSuperAdmin}>
               <Button onClick={handlePrint} variant="outlined" color="error" endIcon={<Print />}>
                 Print
@@ -178,9 +177,9 @@ function JobCheckListReportPage() {
           </Grid>
           <Grid container spacing={{ xs: 0.5, md: 0.5 }} columns={{ xs: 4, sm: 8, md: 12 }} ref={containerRef}>
             <style type="text/css" media="print">
-              {"\
+              {'\
                @page { size: portrait; }\
-           "}
+           '}
             </style>
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 2 }} elevation={7}>
@@ -207,8 +206,7 @@ function JobCheckListReportPage() {
                   </Grid>
                   <Grid item xs>
                     <ButtonBase
-                      onClick={() => handleViewImage(`${settings.api.driverBaseURL}/${job.vehicle.imageUrl}`)}
-                    >
+                      onClick={() => handleViewImage(`${settings.api.driverBaseURL}/${job.vehicle.imageUrl}`)}>
                       <img
                         width="100%"
                         height="100%"
@@ -223,10 +221,9 @@ function JobCheckListReportPage() {
                   sx={{
                     mt: 4,
                     p: 2,
-                    bgcolor: "#FFEAAB",
-                    color: (theme) => (theme.palette.mode === "dark" ? "#263238" : "#000000"),
-                  }}
-                >
+                    bgcolor: '#FFEAAB',
+                    color: theme => (theme.palette.mode === 'dark' ? '#263238' : '#000000'),
+                  }}>
                   <Grid item container xs={12} spacing={1}>
                     <Grid item xs={2} alignSelf="center">
                       <Avatar sx={{ width: 24, height: 24 }} src={checkListVectorImg} />
@@ -260,7 +257,7 @@ function JobCheckListReportPage() {
                           <ListItemIcon>
                             <AccessTime />
                           </ListItemIcon>
-                          <ListItemText primary={moment(job.jobDate).format("LT")} />
+                          <ListItemText primary={moment(job.jobDate).format('LT')} />
                         </ListItemButton>
                       </ListItem>
                       <ListItem disablePadding>
@@ -268,7 +265,7 @@ function JobCheckListReportPage() {
                           <ListItemIcon>
                             <Today />
                           </ListItemIcon>
-                          <ListItemText primary={moment(job.jobDate).format("LL")} />
+                          <ListItemText primary={moment(job.jobDate).format('LL')} />
                         </ListItemButton>
                       </ListItem>
                       <ListItem disablePadding>
@@ -288,8 +285,7 @@ function JobCheckListReportPage() {
                   <Grid item xs={12} container spacing={1}>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`)}
-                      >
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`)}>
                         <img
                           alt="front"
                           src={`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`}
@@ -301,8 +297,7 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`)}
-                      >
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`)}>
                         <img
                           alt="rear"
                           src={`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`}
@@ -314,8 +309,7 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`)}
-                      >
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`)}>
                         <img
                           alt="right"
                           src={`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`}
@@ -327,8 +321,7 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`)}
-                      >
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`)}>
                         <img
                           alt="left"
                           src={`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`}
@@ -340,8 +333,7 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`)}
-                      >
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`)}>
                         <img
                           alt="engine bay"
                           src={`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`}
@@ -355,8 +347,7 @@ function JobCheckListReportPage() {
                       <ButtonBase
                         onClick={() =>
                           handleViewImage(`${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`)
-                        }
-                      >
+                        }>
                         <img
                           alt="instrument cluster"
                           src={`${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`}
@@ -374,7 +365,7 @@ function JobCheckListReportPage() {
               {job.checkList.sections.map((section, idx1) => {
                 return (
                   <Grid key={idx1} item xs={12} md={6}>
-                    <Card sx={{ height: "100%" }}>
+                    <Card sx={{ height: '100%' }}>
                       <CardHeader title={section.title} />
                       {section.questions.map((question, idx2) => {
                         const { color, answer } = getQuestionAnswer(question);
@@ -382,15 +373,14 @@ function JobCheckListReportPage() {
                           <React.Fragment key={idx2}>
                             <CardContent
                               sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                              }}>
                               <Stack>
                                 <Typography>{question.question}</Typography>
                                 {question.note && (
-                                  <Typography gutterBottom variant="caption" sx={{ color: "#F80000" }}>
+                                  <Typography gutterBottom variant="caption" sx={{ color: '#F80000' }}>
                                     {question.text}
                                   </Typography>
                                 )}
@@ -398,14 +388,13 @@ function JobCheckListReportPage() {
                                   {!question.images
                                     ? null
                                     : question.images
-                                        .filter((img) => img.questionId === question.id)
+                                        .filter(img => img.questionId === question.id)
                                         .map((image, index) => {
                                           return (
                                             <Box
-                                              sx={{ cursor: "pointer" }}
+                                              sx={{ cursor: 'pointer' }}
                                               key={index}
-                                              onClick={() => handleViewImage(`${settings.api.baseURL}/${image.url}`)}
-                                            >
+                                              onClick={() => handleViewImage(`${settings.api.baseURL}/${image.url}`)}>
                                               <img
                                                 alt={image.title}
                                                 src={`${settings.api.baseURL}/${image.url}`}
@@ -417,7 +406,7 @@ function JobCheckListReportPage() {
                                         })}
                                 </Stack>
                               </Stack>
-                              <Chip label={answer} sx={{ bgcolor: color, color: "white" }} />
+                              <Chip label={answer} sx={{ bgcolor: color, color: 'white' }} />
                             </CardContent>
                             <Divider flexItem orientation="horizontal" />
                           </React.Fragment>
@@ -451,7 +440,7 @@ function JobCheckListReportPage() {
         message={error?.message}
         onClose={() => setError(undefined)}
       />
-      <AppLoader show={jobReducer.approveJobCheckListStatus === "loading"} />
+      <AppLoader show={jobReducer.approveJobCheckListStatus === 'loading'} />
     </React.Fragment>
   );
 }

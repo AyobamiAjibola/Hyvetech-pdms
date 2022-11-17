@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import PublicLayout from "../../components/layouts/PublicLayout";
-import { Button, Grid, Typography } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
-import { IComponentErrorState } from "@app-interfaces";
+import React, { useEffect, useState } from 'react';
+import PublicLayout from '../../components/layouts/PublicLayout';
+import { Button, Grid, Typography } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { IComponentErrorState } from '@app-interfaces';
 
 export default function ErrorPage() {
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<string>('');
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,7 +23,7 @@ export default function ErrorPage() {
       </Typography>
       <Grid container spacing={1} justifyContent="center" alignItems="center">
         <Grid item>
-          <Button fullWidth onClick={() => navigate("/dashboard")} color="secondary" variant="contained">
+          <Button fullWidth onClick={() => navigate('/dashboard')} color="secondary" variant="contained">
             Home
           </Button>
         </Grid>

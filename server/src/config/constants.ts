@@ -1,109 +1,109 @@
-import Generic from "../utils/Generic";
-import { appCommonTypes } from "../@types/app-common";
-import { v4 } from "uuid";
+import Generic from '../utils/Generic';
+import { appCommonTypes } from '../@types/app-common';
+import { v4 } from 'uuid';
 import QueueEvents = appCommonTypes.QueueEvents;
 import CheckListSectionType = appCommonTypes.CheckListSectionType;
 
-export const PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$";
+export const PASSWORD_PATTERN = '^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$';
 
-export const UPLOAD_BASE_PATH = "uploads";
+export const UPLOAD_BASE_PATH = 'uploads';
 
 export const VIN_FILTER_CONSTRAINTS = [
-  "vin",
-  "model",
-  "make",
-  "modelYear",
-  "engineModel",
-  "engineCylinders",
-  "plantCountry",
-  "fuelTypePrimary",
-  "engineDisplacementCcm",
-  "displacementCc",
+  'vin',
+  'model',
+  'make',
+  'modelYear',
+  'engineModel',
+  'engineCylinders',
+  'plantCountry',
+  'fuelTypePrimary',
+  'engineDisplacementCcm',
+  'displacementCc',
 ];
 
 export const APPOINTMENT_STATUS = {
-  pending: "Pending",
-  complete: "Complete",
-  inProgress: "In-Progress",
-  reject: "Rejected",
-  cancel: "Cancelled",
+  pending: 'Pending',
+  complete: 'Complete',
+  inProgress: 'In-Progress',
+  reject: 'Rejected',
+  cancel: 'Cancelled',
 };
 
 export const LOG_LEVEL_COLORS = {
-  silly: "rainbow",
-  input: "grey",
-  verbose: "cyan",
-  prompt: "grey",
-  info: "green",
-  data: "grey",
-  help: "cyan",
-  warn: "yellow",
-  debug: "blue",
-  error: "red",
+  silly: 'rainbow',
+  input: 'grey',
+  verbose: 'cyan',
+  prompt: 'grey',
+  info: 'green',
+  data: 'grey',
+  help: 'cyan',
+  warn: 'yellow',
+  debug: 'blue',
+  error: 'red',
 };
 
-export const BOOKINGS = "cache:BOOKINGS";
-export const PAY_STACK_PLANS = "cache:PAY_STACK_PLANS";
-export const PAY_STACK_BANKS = "cache:PAY_STACK_BANKS";
+export const BOOKINGS = 'cache:BOOKINGS';
+export const PAY_STACK_PLANS = 'cache:PAY_STACK_PLANS';
+export const PAY_STACK_BANKS = 'cache:PAY_STACK_BANKS';
 export const TWENTY_FOUR_HOUR_EXPIRY = 24 * 60 * 60 * 1000;
 export const VIN_PATTERN = /^(?=.*[0-9])(?=.*[A-z])[0-9A-z-]{17}$/;
 
-export const ANNUAL_PAYMENT_PLAN = "One Time Payment";
-export const BI_PAYMENT_PLAN = "Biannual Payment Plans";
-export const QUARTER_PAYMENT_PLAN = "Quarterly Payment Plans";
+export const ANNUAL_PAYMENT_PLAN = 'One Time Payment';
+export const BI_PAYMENT_PLAN = 'Biannual Payment Plans';
+export const QUARTER_PAYMENT_PLAN = 'Quarterly Payment Plans';
 
-export const ONE_TIME_MOBILE_PLAN = Generic.generateSlug("one time mobile");
-export const ONE_TIME_DRIVE_IN_PLAN = Generic.generateSlug("one time drive-in");
+export const ONE_TIME_MOBILE_PLAN = Generic.generateSlug('one time mobile');
+export const ONE_TIME_DRIVE_IN_PLAN = Generic.generateSlug('one time drive-in');
 
-export const MOBILE_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug("mobile one time payment plan");
-export const DRIVE_IN_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug("drive-in one time payment plan");
+export const MOBILE_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug('mobile one time payment plan');
+export const DRIVE_IN_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug('drive-in one time payment plan');
 
-export const MOBILE_CATEGORY = "Mobile";
-export const DRIVE_IN_CATEGORY = "Drive-in";
-export const HYBRID_CATEGORY = "Hybrid";
-export const GARAGE_CATEGORY = "Garage";
-export const RIDE_SHARE_CATEGORY = "Ride-Share";
+export const MOBILE_CATEGORY = 'Mobile';
+export const DRIVE_IN_CATEGORY = 'Drive-in';
+export const HYBRID_CATEGORY = 'Hybrid';
+export const GARAGE_CATEGORY = 'Garage';
+export const RIDE_SHARE_CATEGORY = 'Ride-Share';
 
-export const HOUSE_HOLD_MOBILE_PLAN = Generic.generateSlug("house hold mobile");
-export const HOUSE_HOLD_DRIVE_IN_PLAN = Generic.generateSlug("house hold drive-in");
-export const HOUSE_HOLD_HYBRID_PLAN = Generic.generateSlug("house hold hybrid");
+export const HOUSE_HOLD_MOBILE_PLAN = Generic.generateSlug('house hold mobile');
+export const HOUSE_HOLD_DRIVE_IN_PLAN = Generic.generateSlug('house hold drive-in');
+export const HOUSE_HOLD_HYBRID_PLAN = Generic.generateSlug('house hold hybrid');
 
-export const FAF_MOBILE_PLAN = Generic.generateSlug("family & friends mobile");
-export const FAF_DRIVE_IN_PLAN = Generic.generateSlug("family & friends drive-in");
-export const FAF_HYBRID_PLAN = Generic.generateSlug("family & friends hybrid");
+export const FAF_MOBILE_PLAN = Generic.generateSlug('family & friends mobile');
+export const FAF_DRIVE_IN_PLAN = Generic.generateSlug('family & friends drive-in');
+export const FAF_HYBRID_PLAN = Generic.generateSlug('family & friends hybrid');
 
-export const MOBILE_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug("mobile house hold payment plan");
-export const DRIVE_IN_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug("drive-in house hold payment plan");
-export const HYBRID_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug("hybrid house hold payment plan");
-export const MOBILE_FAF_PAYMENT_PLAN = Generic.generateSlug("mobile family & friends payment plan");
-export const DRIVE_IN_FAF_PAYMENT_PLAN = Generic.generateSlug("drive-in family & friends payment plan");
-export const HYBRID_FAF_PAYMENT_PLAN = Generic.generateSlug("hybrid family & friends payment plan");
+export const MOBILE_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug('mobile house hold payment plan');
+export const DRIVE_IN_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug('drive-in house hold payment plan');
+export const HYBRID_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug('hybrid house hold payment plan');
+export const MOBILE_FAF_PAYMENT_PLAN = Generic.generateSlug('mobile family & friends payment plan');
+export const DRIVE_IN_FAF_PAYMENT_PLAN = Generic.generateSlug('drive-in family & friends payment plan');
+export const HYBRID_FAF_PAYMENT_PLAN = Generic.generateSlug('hybrid family & friends payment plan');
 
-export const INSPECTIONS_SERVICE = "Inspection";
-export const MAINTENANCE_SERVICE = "Maintenance";
+export const INSPECTIONS_SERVICE = 'Inspection';
+export const MAINTENANCE_SERVICE = 'Maintenance';
 
-export const ONE_TIME_SUBSCRIPTION = Generic.generateSlug("One Time");
-export const HOUSE_HOLD_SUBSCRIPTION = Generic.generateSlug("House Hold");
-export const FAF_SUBSCRIPTION = Generic.generateSlug("Family & Friends");
+export const ONE_TIME_SUBSCRIPTION = Generic.generateSlug('One Time');
+export const HOUSE_HOLD_SUBSCRIPTION = Generic.generateSlug('House Hold');
+export const FAF_SUBSCRIPTION = Generic.generateSlug('Family & Friends');
 
 export const SERVICES = [
   {
-    name: "Vehicle Inspection Program",
+    name: 'Vehicle Inspection Program',
     slug: INSPECTIONS_SERVICE,
     description: `This program is designed to take away your worries about identifying issues with your car (whenever they arise). You will be entitled to a number of inspections for a period of 12-months, anywhere in Nigeria. This comes with a complimentary road-side rescue. There’s been nothing better, since agege bread!`,
   },
   {
-    name: "Annual Vehicle Maintenance Program",
+    name: 'Annual Vehicle Maintenance Program',
     slug: MAINTENANCE_SERVICE,
     description:
-      "Over 80% of our vehicle’s health over time, and its longevity is determined by our maintenance habits. This program takes over and automates your vehicle maintenance activity, and ensures your never miss a service with our multi-modal service delivery anywhere in Nigeria. This is the best thing to happen to your vehicle!",
+      'Over 80% of our vehicle’s health over time, and its longevity is determined by our maintenance habits. This program takes over and automates your vehicle maintenance activity, and ensures your never miss a service with our multi-modal service delivery anywhere in Nigeria. This is the best thing to happen to your vehicle!',
   },
 ];
 
 export const SUBSCRIPTIONS = [
-  { name: "One Time", slug: ONE_TIME_SUBSCRIPTION },
-  { name: "House Hold", slug: HOUSE_HOLD_SUBSCRIPTION },
-  { name: "Family & Friends", slug: FAF_SUBSCRIPTION },
+  { name: 'One Time', slug: ONE_TIME_SUBSCRIPTION },
+  { name: 'House Hold', slug: HOUSE_HOLD_SUBSCRIPTION },
+  { name: 'Family & Friends', slug: FAF_SUBSCRIPTION },
 ];
 
 export const CATEGORIES = [
@@ -114,40 +114,40 @@ export const CATEGORIES = [
   { name: RIDE_SHARE_CATEGORY },
 ];
 
-const VEHICLE_RISK_TEXT = "Vehicle Health & Risk Report";
-const HOME_OFFICE_LOCATION_TEXT = "Home, office or any location within AMAC, Abuja";
-const CLOSEST_OFFICE_LOCATION_TEXT = "Any Jiffix Garage Closest to you";
-const ONE_THREE_VEHICLES = "1-3 vehicle";
-const FOUR_SIX_VEHICLES = "4-6 vehicle";
+const VEHICLE_RISK_TEXT = 'Vehicle Health & Risk Report';
+const HOME_OFFICE_LOCATION_TEXT = 'Home, office or any location within AMAC, Abuja';
+const CLOSEST_OFFICE_LOCATION_TEXT = 'Any Jiffix Garage Closest to you';
+const ONE_THREE_VEHICLES = '1-3 vehicle';
+const FOUR_SIX_VEHICLES = '4-6 vehicle';
 
 const PLAN_DESC_REPORT = JSON.stringify({
   name: VEHICLE_RISK_TEXT,
-  tag: "report",
+  tag: 'report',
 });
 
 const PLAN_DESC_HOME_OFFICE = JSON.stringify({
   name: HOME_OFFICE_LOCATION_TEXT,
-  tag: "address",
+  tag: 'address',
 });
 
 const PLAN_DESC_CLOSEST_OFFICE = JSON.stringify({
   name: CLOSEST_OFFICE_LOCATION_TEXT,
-  tag: "address",
+  tag: 'address',
 });
 
 const ONE_TIME_PLAN_DESC_VEHICLES = JSON.stringify({
-  name: "1 vehicle",
-  tag: "vehicles",
+  name: '1 vehicle',
+  tag: 'vehicles',
 });
 
 const HOUSE_HOLD_PLAN_DESC_VEHICLES = JSON.stringify({
   name: ONE_THREE_VEHICLES,
-  tag: "vehicles",
+  tag: 'vehicles',
 });
 
 const FAF_PLAN_DESC_VEHICLES = JSON.stringify({
   name: FOUR_SIX_VEHICLES,
-  tag: "vehicles",
+  tag: 'vehicles',
 });
 
 export const PAYMENT_PLANS = {
@@ -179,8 +179,8 @@ export const PAYMENT_PLANS = {
       descriptions: [
         HOUSE_HOLD_PLAN_DESC_VEHICLES,
         JSON.stringify({
-          name: "7 mobile inspections",
-          tag: "inspections",
+          name: '7 mobile inspections',
+          tag: 'inspections',
         }),
         PLAN_DESC_HOME_OFFICE,
         PLAN_DESC_REPORT,
@@ -195,8 +195,8 @@ export const PAYMENT_PLANS = {
       descriptions: [
         HOUSE_HOLD_PLAN_DESC_VEHICLES,
         JSON.stringify({
-          name: "7 in-garage inspections",
-          tag: "inspections",
+          name: '7 in-garage inspections',
+          tag: 'inspections',
         }),
         PLAN_DESC_CLOSEST_OFFICE,
         PLAN_DESC_REPORT,
@@ -211,8 +211,8 @@ export const PAYMENT_PLANS = {
       descriptions: [
         HOUSE_HOLD_PLAN_DESC_VEHICLES,
         JSON.stringify({
-          name: "7 inspections (5 Drive-in | 2 Mobile)",
-          tag: "inspections",
+          name: '7 inspections (5 Drive-in | 2 Mobile)',
+          tag: 'inspections',
         }),
         PLAN_DESC_HOME_OFFICE,
         PLAN_DESC_REPORT,
@@ -229,8 +229,8 @@ export const PAYMENT_PLANS = {
       descriptions: [
         FAF_PLAN_DESC_VEHICLES,
         JSON.stringify({
-          name: "13 mobile inspections",
-          tag: "inspections",
+          name: '13 mobile inspections',
+          tag: 'inspections',
         }),
         PLAN_DESC_HOME_OFFICE,
         PLAN_DESC_REPORT,
@@ -245,8 +245,8 @@ export const PAYMENT_PLANS = {
       descriptions: [
         FAF_PLAN_DESC_VEHICLES,
         JSON.stringify({
-          name: "13 in-garage inspections",
-          tag: "inspections",
+          name: '13 in-garage inspections',
+          tag: 'inspections',
         }),
         PLAN_DESC_CLOSEST_OFFICE,
         PLAN_DESC_REPORT,
@@ -261,8 +261,8 @@ export const PAYMENT_PLANS = {
       descriptions: [
         FAF_PLAN_DESC_VEHICLES,
         JSON.stringify({
-          name: "13 inspections (9 Drive-in | 4 Mobile)",
-          tag: "inspections",
+          name: '13 inspections (9 Drive-in | 4 Mobile)',
+          tag: 'inspections',
         }),
         PLAN_DESC_CLOSEST_OFFICE,
         PLAN_DESC_REPORT,
@@ -277,7 +277,7 @@ export const PLANS = [
       label: ONE_TIME_MOBILE_PLAN,
       minVehicles: 1,
       maxVehicles: 1,
-      validity: "12 months",
+      validity: '12 months',
       inspections: 1,
       mobile: 1,
       driveIn: 0,
@@ -286,7 +286,7 @@ export const PLANS = [
       label: ONE_TIME_DRIVE_IN_PLAN,
       minVehicles: 1,
       maxVehicles: 1,
-      validity: "12 months",
+      validity: '12 months',
       inspections: 1,
       mobile: 0,
       driveIn: 1,
@@ -297,7 +297,7 @@ export const PLANS = [
       label: HOUSE_HOLD_MOBILE_PLAN,
       minVehicles: 1,
       maxVehicles: 3,
-      validity: "12 months",
+      validity: '12 months',
       inspections: 7,
       mobile: 7,
       driveIn: 0,
@@ -306,7 +306,7 @@ export const PLANS = [
       label: HOUSE_HOLD_DRIVE_IN_PLAN,
       minVehicles: 1,
       maxVehicles: 3,
-      validity: "12 months",
+      validity: '12 months',
       inspections: 7,
       mobile: 0,
       driveIn: 7,
@@ -315,7 +315,7 @@ export const PLANS = [
       label: HOUSE_HOLD_HYBRID_PLAN,
       minVehicles: 1,
       maxVehicles: 3,
-      validity: "12 months",
+      validity: '12 months',
       inspections: 7,
       mobile: 2,
       driveIn: 5,
@@ -326,7 +326,7 @@ export const PLANS = [
       label: FAF_MOBILE_PLAN,
       minVehicles: 4,
       maxVehicles: 6,
-      validity: "12 months",
+      validity: '12 months',
       inspections: 13,
       mobile: 13,
       driveIn: 0,
@@ -335,7 +335,7 @@ export const PLANS = [
       label: FAF_DRIVE_IN_PLAN,
       minVehicles: 4,
       maxVehicles: 6,
-      validity: "12 months",
+      validity: '12 months',
       inspections: 13,
       mobile: 0,
       driveIn: 13,
@@ -344,7 +344,7 @@ export const PLANS = [
       label: FAF_HYBRID_PLAN,
       minVehicles: 4,
       maxVehicles: 6,
-      validity: "12 months",
+      validity: '12 months',
       inspections: 13,
       mobile: 4,
       driveIn: 9,
@@ -356,80 +356,84 @@ export const PAYMENT_TERMS = [
   {
     name: ANNUAL_PAYMENT_PLAN,
     split: 1,
-    quota: "/yr",
+    quota: '/yr',
     interest: 0,
   },
   {
     name: BI_PAYMENT_PLAN,
     split: 2,
-    quota: "/6mo",
+    quota: '/6mo',
     interest: 4,
   },
   {
     name: QUARTER_PAYMENT_PLAN,
     split: 4,
-    quota: "/qtr",
+    quota: '/qtr',
     interest: 5,
   },
 ];
 
 export const MESSAGES = {
   http: {
-    200: "Ok",
-    201: "Accepted",
-    202: "Created",
-    400: "Bad Request. Please Contact Support.",
-    401: "You Are Not Authenticated. Please Contact Support.",
-    403: "You Are Forbidden From Accessing This Resource.",
-    404: "Not Found. Please Contact Support.",
-    500: "Something Went Wrong. Please Contact Support.",
+    200: 'Ok',
+    201: 'Accepted',
+    202: 'Created',
+    400: 'Bad Request. Please Contact Support.',
+    401: 'You Are Not Authenticated. Please Contact Support.',
+    403: 'You Are Forbidden From Accessing This Resource.',
+    404: 'Not Found. Please Contact Support.',
+    500: 'Something Went Wrong. Please Contact Support.',
   },
 };
 
 export const QUEUE_EVENTS: QueueEvents = {
-  name: "DEFAULT",
+  name: 'DEFAULT',
 };
 
-export const MAIN_OFFICE = "No. 10, 45 Road, off 1st Avenue Gwarimpa";
+export const MAIN_OFFICE = 'No. 10, 45 Road, off 1st Avenue Gwarimpa';
 
 export const RESCHEDULE_CONSTRAINT = 3600000;
 export const MOBILE_INSPECTION_TIME = 3; //3hrs;
 
-export const BOOK_APPOINTMENT = "event:BOOK_APPOINTMENT";
-export const RESCHEDULE_APPOINTMENT = "event:RESCHEDULE_APPOINTMENT";
-export const ASSIGN_DRIVER_JOB = "event:ASSIGN_DRIVER_JOB";
-export const APPROVE_JOB = "event:APPROVE_JOB";
-export const CANCEL_APPOINTMENT = "event:CANCEL_APPOINTMENT";
-export const TXN_CANCELLED = "event:TXN_CANCELLED";
-export const TXN_REFERENCE = "event:TXN_REFERENCE";
-export const AGENDA_COLLECTION_NAME = "appointment_jobs";
+export const BOOK_APPOINTMENT = 'event:BOOK_APPOINTMENT';
+export const RESCHEDULE_APPOINTMENT = 'event:RESCHEDULE_APPOINTMENT';
+export const ASSIGN_DRIVER_JOB = 'event:ASSIGN_DRIVER_JOB';
+export const APPROVE_JOB = 'event:APPROVE_JOB';
+export const CANCEL_APPOINTMENT = 'event:CANCEL_APPOINTMENT';
+export const TXN_CANCELLED = 'event:TXN_CANCELLED';
+export const TXN_REFERENCE = 'event:TXN_REFERENCE';
+export const CREATED_ESTIMATE = 'event:CREATED_ESTIMATE';
+export const NOTIFICATION_SEEN = 'event:NOTIFICATION_SEEN';
+
+export const AGENDA_COLLECTION_NAME = 'appointment_jobs';
 
 export const JOB_STATUS = {
-  complete: "Complete",
-  pending: "Pending",
-  inProgress: "In-Progress",
-  canceled: "Canceled",
+  complete: 'Complete',
+  pending: 'Pending',
+  inProgress: 'In-Progress',
+  canceled: 'Canceled',
 };
 
 export const INITIAL_CHECK_LIST_VALUES: CheckListSectionType = {
   id: v4(),
-  title: "",
+  title: '',
   questions: [
     {
       id: v4(),
-      answers: [{ id: v4(), answer: "", weight: "", color: "" }],
+      answers: [{ id: v4(), answer: '', weight: '', color: '' }],
       media: false,
       note: false,
-      question: "",
+      question: '',
     },
   ],
 };
 
 export const INITIAL_PARTS_VALUE = {
-  name: "",
-  warranty: { warranty: "", interval: "" },
-  quantity: { quantity: "", unit: "" },
-  price: "0",
+  name: '',
+  warranty: { warranty: '', interval: '' },
+  quantity: { quantity: '', unit: '' },
+  price: '0',
 };
 
-export const INITIAL_LABOURS_VALUE = { title: "", cost: "0" };
+export const INITIAL_LABOURS_VALUE = { title: '', cost: '0' };
+export const ESTIMATE_EXPIRY_DAYS = 7;

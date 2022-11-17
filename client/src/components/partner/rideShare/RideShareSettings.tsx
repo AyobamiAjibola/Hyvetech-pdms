@@ -1,8 +1,8 @@
-import React from "react";
-import { Box } from "@mui/material";
-import { Formik } from "formik";
-import RideShareSettingsForm from "../../forms/partner/RideShareSettingsForm";
-import rideShareSettingsModel from "../../forms/models/rideShareSettingsModel";
+import React from 'react';
+import { Box } from '@mui/material';
+import { Formik } from 'formik';
+import RideShareSettingsForm from '../../forms/partner/RideShareSettingsForm';
+import rideShareSettingsModel from '../../forms/models/rideShareSettingsModel';
 
 function RideShareSettings() {
   const handleSubmit = () => {
@@ -14,8 +14,7 @@ function RideShareSettings() {
       <Formik
         validationSchema={rideShareSettingsModel.schema}
         initialValues={rideShareSettingsModel.initialValues}
-        onSubmit={handleSubmit}
-      >
+        onSubmit={handleSubmit}>
         <RideShareSettingsForm />
       </Formik>
     </Box>

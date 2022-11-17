@@ -1,10 +1,10 @@
-import "./publicLayout.css";
+import './publicLayout.css';
 
-import { Box, Paper, Theme } from "@mui/material";
-import React from "react";
+import { Box, Paper, Theme } from '@mui/material';
+import React from 'react';
 
-import cover from "../../assets/images/cover.png";
-import mechanic from "../../assets/images/mechanic.jpg";
+import cover from '../../assets/images/cover.png';
+import mechanic from '../../assets/images/mechanic.jpg';
 
 export default function PublicLayout({ children }: any) {
   return (
@@ -23,27 +23,27 @@ export default function PublicLayout({ children }: any) {
 }
 
 const mainContainerStyle = {
-  height: "100vh",
-  width: "100% !important",
+  height: '100vh',
+  width: '100% !important',
   backgroundImage: `url(${mechanic})`,
-  backgroundRepeat: "no-repeat",
-  backgroundSize: "100% 100%",
-  display: "flex",
-  justifyContent: " center",
-  alignItems: "center",
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: '100% 100%',
+  display: 'flex',
+  justifyContent: ' center',
+  alignItems: 'center',
 };
 
 const childrenWrapperStyle = {
-  width: "40%",
-  position: "relative",
-  right: "23%",
-  left: "0",
+  width: '40%',
+  position: 'relative',
+  right: '23%',
+  left: '0',
   zIndex: 1000,
-  pl: "60px",
-  pr: "60px",
-  pt: "20px",
-  pb: "50px",
-  background: (theme: Theme) => (theme.palette.mode === "dark" ? "paper.default" : "#FFFFFF"),
-  boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.5) !important",
-  borderRadius: "10px !important",
+  pl: '60px',
+  pr: '60px',
+  pt: '20px',
+  pb: '50px',
+  background: (theme: Theme) => (theme.palette.mode === 'dark' ? 'paper.default' : '#FFFFFF'),
+  boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.5) !important',
+  borderRadius: '10px !important',
 };

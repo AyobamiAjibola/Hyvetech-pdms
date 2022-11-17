@@ -7,25 +7,25 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
-import { InferAttributes } from "sequelize/types";
-import { CreationOptional, InferCreationAttributes, NonAttribute } from "sequelize";
-import Contact from "./Contact";
-import PaymentDetail from "./PaymentDetail";
-import Vehicle from "./Vehicle";
-import Transaction from "./Transaction";
-import Appointment from "./Appointment";
-import Role from "./Role";
-import RideShareDriverRole from "./RideShareDriverRole";
-import RideShareDriverSubscription from "./RideShareDriverSubscription";
-import RideShareDriverPlanSubscription from "./RideShareDriverPlanSubscription";
-import PartnerRideShareDriver from "./PartnerRideShareDriver";
-import Partner from "./Partner";
-import Estimate from "./Estimate";
+} from 'sequelize-typescript';
+import { InferAttributes } from 'sequelize/types';
+import { CreationOptional, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Contact from './Contact';
+import PaymentDetail from './PaymentDetail';
+import Vehicle from './Vehicle';
+import Transaction from './Transaction';
+import Appointment from './Appointment';
+import Role from './Role';
+import RideShareDriverRole from './RideShareDriverRole';
+import RideShareDriverSubscription from './RideShareDriverSubscription';
+import RideShareDriverPlanSubscription from './RideShareDriverPlanSubscription';
+import PartnerRideShareDriver from './PartnerRideShareDriver';
+import Partner from './Partner';
+import Estimate from './Estimate';
 
 @Table({
   timestamps: true,
-  tableName: "ride_share_drivers",
+  tableName: 'ride_share_drivers',
 })
 export default class RideShareDriver extends Model<
   InferAttributes<RideShareDriver>,
@@ -35,7 +35,7 @@ export default class RideShareDriver extends Model<
   @AutoIncrement
   @Column({
     type: DataType.INTEGER,
-    field: "ride_share_driver_id",
+    field: 'ride_share_driver_id',
     allowNull: false,
   })
   declare id: CreationOptional<number>;
@@ -103,22 +103,22 @@ export default class RideShareDriver extends Model<
   @Column(DataType.DATE)
   declare loginDate: Date;
 
-  @HasMany(() => Contact, { onDelete: "cascade" })
+  @HasMany(() => Contact, { onDelete: 'cascade' })
   declare contacts: NonAttribute<Contact[]>;
 
-  @HasMany(() => PaymentDetail, { onDelete: "cascade" })
+  @HasMany(() => PaymentDetail, { onDelete: 'cascade' })
   declare paymentDetails: NonAttribute<PaymentDetail[]>;
 
-  @HasMany(() => Vehicle, { onDelete: "cascade" })
+  @HasMany(() => Vehicle, { onDelete: 'cascade' })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasMany(() => Transaction, { onDelete: "cascade" })
+  @HasMany(() => Transaction, { onDelete: 'cascade' })
   declare transactions: NonAttribute<Transaction[]>;
 
-  @HasMany(() => Estimate, { onDelete: "cascade" })
+  @HasMany(() => Estimate, { onDelete: 'cascade' })
   declare estimates: NonAttribute<Estimate[]>;
 
-  @HasMany(() => Appointment, { onDelete: "cascade" })
+  @HasMany(() => Appointment, { onDelete: 'cascade' })
   declare appointments: NonAttribute<Appointment[]>;
 
   @BelongsToMany(() => RideShareDriverSubscription, () => RideShareDriverPlanSubscription)

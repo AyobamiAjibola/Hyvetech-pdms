@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import _ from "lodash";
-import { DriverVehiclesContextProps } from "@app-interfaces";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import _ from 'lodash';
+import { DriverVehiclesContextProps } from '@app-interfaces';
 import {
   Alert,
   Autocomplete,
@@ -14,24 +14,24 @@ import {
   TableRow,
   TextField,
   Typography,
-} from "@mui/material";
-import capitalize from "capitalize";
-import { ICheckList, IJob } from "@app-models";
-import { DriverVehiclesContext } from "./DriverVehicles";
-import useAppSelector from "../../../hooks/useAppSelector";
-import { formatNumberToIntl } from "../../../utils/generic";
-import useTechnician from "../../../hooks/useTechnician";
-import { ISelectData } from "../../forms/fields/SelectField";
-import { useNavigate, useParams } from "react-router-dom";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import { driverAssignJobAction, getJobsAction } from "../../../store/actions/jobActions";
-import { CustomHookMessage } from "@app-types";
-import AppAlert from "../../alerts/AppAlert";
-import { FileDownload } from "@mui/icons-material";
-import { getTechniciansAction } from "../../../store/actions/technicianActions";
-import { getDriverVehicleSubscriptionAction } from "../../../store/actions/vehicleActions";
-import useAdmin from "../../../hooks/useAdmin";
-import { JOB_STATUS } from "../../../config/constants";
+} from '@mui/material';
+import capitalize from 'capitalize';
+import { ICheckList, IJob } from '@app-models';
+import { DriverVehiclesContext } from './DriverVehicles';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { formatNumberToIntl } from '../../../utils/generic';
+import useTechnician from '../../../hooks/useTechnician';
+import { ISelectData } from '../../forms/fields/SelectField';
+import { useNavigate, useParams } from 'react-router-dom';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { driverAssignJobAction, getJobsAction } from '../../../store/actions/jobActions';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../../alerts/AppAlert';
+import { FileDownload } from '@mui/icons-material';
+import { getTechniciansAction } from '../../../store/actions/technicianActions';
+import { getDriverVehicleSubscriptionAction } from '../../../store/actions/vehicleActions';
+import useAdmin from '../../../hooks/useAdmin';
+import { JOB_STATUS } from '../../../config/constants';
 
 interface IAssignJob {
   partnerId?: number;
@@ -64,20 +64,18 @@ export default function CustomerSubscription() {
     }
   }, [admin.isTechAdmin, admin.user, params.id]);
 
-  const jobReducer = useAppSelector((state) => state.jobReducer);
-  const technicianReducer = useAppSelector((state) => state.technicianReducer);
-  const checkListReducer = useAppSelector((state) => state.checkListReducer);
+  const jobReducer = useAppSelector(state => state.jobReducer);
+  const technicianReducer = useAppSelector(state => state.technicianReducer);
+  const checkListReducer = useAppSelector(state => state.checkListReducer);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (checkListReducer.getCheckListsStatus === "completed") {
+    if (checkListReducer.getCheckListsStatus === 'completed') {
       if (partnerId) {
         let _checkLists = checkListReducer.checkLists;
 
-        _checkLists = _checkLists.filter((_checkList) =>
-          _checkList.partners.find((partner) => partner.id === partnerId)
-        );
+        _checkLists = _checkLists.filter(_checkList => _checkList.partners.find(partner => partner.id === partnerId));
 
         if (_checkLists.length) setCheckLists(_checkLists);
       }
@@ -85,20 +83,20 @@ export default function CustomerSubscription() {
   }, [checkListReducer.getCheckListsStatus, checkListReducer.checkLists, partnerId]);
 
   useEffect(() => {
-    if (technicianReducer.getTechniciansStatus === "completed") {
+    if (technicianReducer.getTechniciansStatus === 'completed') {
       _setTechnicians(
         technicianReducer.technicians
-          .filter((tech) => !tech.hasJob && tech.active)
-          .map((tech) => ({
+          .filter(tech => !tech.hasJob && tech.active)
+          .map(tech => ({
             label: `${tech.firstName} ${tech.lastName}`,
             value: `${tech.id}`,
-          }))
+          })),
       );
     }
   }, [technicianReducer.getTechniciansStatus, technicianReducer.technicians]);
 
   useEffect(() => {
-    if (jobReducer.driverAssignJobStatus === "completed" && vehicle) {
+    if (jobReducer.driverAssignJobStatus === 'completed' && vehicle) {
       setSuccess({ message: jobReducer.driverAssignJobSuccess });
       dispatch(getJobsAction(partnerId));
       dispatch(getTechniciansAction());
@@ -108,7 +106,7 @@ export default function CustomerSubscription() {
   }, [dispatch, jobReducer.driverAssignJobStatus, jobReducer.driverAssignJobSuccess, partnerId, setViewSub, vehicle]);
 
   useEffect(() => {
-    if (jobReducer.driverAssignJobStatus === "failed") {
+    if (jobReducer.driverAssignJobStatus === 'failed') {
       if (jobReducer.driverAssignJobError) {
         setError({ message: jobReducer.driverAssignJobError });
       }
@@ -133,7 +131,7 @@ export default function CustomerSubscription() {
 
   const vehicleIsBusy = useMemo(() => {
     if (customerSub) {
-      return customerSub.vehicles.every((vehicle) => vehicle.onInspection || vehicle.onMaintenance);
+      return customerSub.vehicles.every(vehicle => vehicle.onInspection || vehicle.onMaintenance);
     }
     return true;
   }, [customerSub]);
@@ -141,12 +139,12 @@ export default function CustomerSubscription() {
   const handleAssignJob = (value: string) => {
     if (!checkLists.length)
       return setError({
-        message: "You do not have a check list for inspection.",
+        message: 'You do not have a check list for inspection.',
       });
 
     if (undefined === checkList)
       return setError({
-        message: "You must select one check list for this inspection",
+        message: 'You must select one check list for this inspection',
       });
 
     const data: IAssignJob = {
@@ -161,12 +159,12 @@ export default function CustomerSubscription() {
 
   const handleViewReport = useCallback(
     (job: Partial<IJob>) => navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
-    [navigate]
+    [navigate],
   );
 
   return (
     <React.Fragment>
-      <TableContainer sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} component={Box}>
+      <TableContainer sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} component={Box}>
         {customerSub ? (
           <TableBody>
             <TableRow>
@@ -230,7 +228,7 @@ export default function CustomerSubscription() {
           <TableBody>
             <TableRow>
               <TableCell>
-                <Box sx={{ width: "100%" }}>
+                <Box sx={{ width: '100%' }}>
                   <LinearProgress />
                 </Box>
               </TableCell>
@@ -246,11 +244,11 @@ export default function CustomerSubscription() {
           <Autocomplete
             disabled={vehicleIsBusy}
             options={checkLists}
-            getOptionLabel={(option) => option.name}
+            getOptionLabel={option => option.name}
             onChange={(event, option) => {
               if (option) setCheckList(option.id);
             }}
-            renderInput={(params) => <TextField {...params} fullWidth label="Check List" />}
+            renderInput={params => <TextField {...params} fullWidth label="Check List" />}
           />
         </Grid>
         {jobs.map((job, index) => {
@@ -266,27 +264,25 @@ export default function CustomerSubscription() {
                         handleAssignJob(option.value);
                       }
                     }}
-                    renderInput={(params) => <TextField {...params} fullWidth label="Assign To" />}
+                    renderInput={params => <TextField {...params} fullWidth label="Assign To" />}
                   />
                 </Grid>
               )}
               {!_.isEmpty(job) && (
                 <Grid item>
                   <Alert
-                    severity={JOB_STATUS.complete === job.status ? "success" : "info"}
+                    severity={JOB_STATUS.complete === job.status ? 'success' : 'info'}
                     action={
                       JOB_STATUS.complete === job.status && (
                         <IconButton
                           aria-label="close"
                           color="inherit"
                           size="small"
-                          onClick={() => handleViewReport(job)}
-                        >
+                          onClick={() => handleViewReport(job)}>
                           <FileDownload fontSize="inherit" />
                         </IconButton>
                       )
-                    }
-                  >
+                    }>
                     <Typography gutterBottom variant="caption" component="div">
                       {job.name}
                     </Typography>

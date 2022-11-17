@@ -1,8 +1,8 @@
-import React from "react";
-import { Grid } from "@mui/material";
-import TextField from "@mui/material/TextField";
-import SelectField from "../fields/SelectField";
-import { PartArgs } from "./EstimateForm";
+import React from 'react';
+import { Grid } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import SelectField from '../fields/SelectField';
+import { PartArgs } from './EstimateForm';
 
 function WarrantyFields(props: PartArgs) {
   const index = props.index;
@@ -15,7 +15,7 @@ function WarrantyFields(props: PartArgs) {
       {Object.keys(warranty).map((value, idx) => {
         return (
           <Grid key={idx} item xs container>
-            {value === "warranty" && (
+            {value === 'warranty' && (
               <Grid item xs>
                 <TextField
                   fullWidth
@@ -23,7 +23,7 @@ function WarrantyFields(props: PartArgs) {
                   label={value}
                   type="number"
                   inputProps={{
-                    min: "0",
+                    min: '0',
                   }}
                   onChange={handleChange}
                   name={`parts.${index}.warranty.warranty`}
@@ -31,14 +31,14 @@ function WarrantyFields(props: PartArgs) {
                 />
               </Grid>
             )}
-            {value === "interval" && (
+            {value === 'interval' && (
               <Grid item xs>
                 <SelectField
                   data={[
-                    { label: "day", value: "day" },
-                    { label: "week", value: "week" },
-                    { label: "month", value: "month" },
-                    { label: "year", value: "year" },
+                    { label: 'day', value: 'day' },
+                    { label: 'week', value: 'week' },
+                    { label: 'month', value: 'month' },
+                    { label: 'year', value: 'year' },
                   ]}
                   fullWidth
                   label={value}

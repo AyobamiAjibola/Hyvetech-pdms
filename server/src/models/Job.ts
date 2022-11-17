@@ -1,17 +1,17 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize/types";
-import Vehicle from "./Vehicle";
-import { NonAttribute } from "sequelize";
-import Technician from "./Technician";
-import Partner from "./Partner";
-import RideShareDriverSubscription from "./RideShareDriverSubscription";
-import CustomerSubscription from "./CustomerSubscription";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize/types';
+import Vehicle from './Vehicle';
+import { NonAttribute } from 'sequelize';
+import Technician from './Technician';
+import Partner from './Partner';
+import RideShareDriverSubscription from './RideShareDriverSubscription';
+import CustomerSubscription from './CustomerSubscription';
 
-@Table({ tableName: "jobs", timestamps: true })
+@Table({ tableName: 'jobs', timestamps: true })
 export default class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job>> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "job_id", allowNull: false })
+  @Column({ type: DataType.INTEGER, field: 'job_id', allowNull: false })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)
@@ -35,35 +35,35 @@ export default class Job extends Model<InferAttributes<Job>, InferCreationAttrib
   @Column(DataType.STRING(50000))
   declare checkList: string;
 
-  @BelongsTo(() => Technician, { onDelete: "cascade" })
+  @BelongsTo(() => Technician, { onDelete: 'cascade' })
   declare technician: NonAttribute<Technician>;
 
   @ForeignKey(() => Technician)
   @Column(DataType.INTEGER)
   declare technicianId: NonAttribute<number>;
 
-  @BelongsTo(() => Partner, { onDelete: "cascade" })
+  @BelongsTo(() => Partner, { onDelete: 'cascade' })
   declare partner: NonAttribute<Partner>;
 
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriverSubscription, { onDelete: "cascade" })
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'cascade' })
   declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
 
   @ForeignKey(() => RideShareDriverSubscription)
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: NonAttribute<number>;
 
-  @BelongsTo(() => CustomerSubscription, { onDelete: "cascade" })
+  @BelongsTo(() => CustomerSubscription, { onDelete: 'cascade' })
   declare customerSubscription: NonAttribute<CustomerSubscription>;
 
   @ForeignKey(() => CustomerSubscription)
   @Column(DataType.INTEGER)
   declare customerSubscriptionId: NonAttribute<number>;
 
-  @BelongsTo(() => Vehicle, { onDelete: "cascade" })
+  @BelongsTo(() => Vehicle, { onDelete: 'cascade' })
   declare vehicle: NonAttribute<Vehicle>;
 
   @ForeignKey(() => Vehicle)

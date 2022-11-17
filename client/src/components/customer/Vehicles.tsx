@@ -1,23 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Box, Chip, Stack } from "@mui/material";
-import { CustomerPageContext } from "../../pages/customer/CustomerPage";
-import { CustomerPageContextProps } from "@app-interfaces";
-import useAppDispatch from "../../hooks/useAppDispatch";
-import useAppSelector from "../../hooks/useAppSelector";
-import { getCustomerVehiclesAction } from "../../store/actions/customerActions";
-import moment from "moment";
-import { IVehicle } from "@app-models";
-import AppDataGrid from "../tables/AppDataGrid";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Visibility } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from 'react';
+import { Box, Chip, Stack } from '@mui/material';
+import { CustomerPageContext } from '../../pages/customer/CustomerPage';
+import { CustomerPageContextProps } from '@app-interfaces';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import useAppSelector from '../../hooks/useAppSelector';
+import { getCustomerVehiclesAction } from '../../store/actions/customerActions';
+import moment from 'moment';
+import { IVehicle } from '@app-models';
+import AppDataGrid from '../tables/AppDataGrid';
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import { Visibility } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 function Vehicles() {
   const [_vehicles, _setVehicles] = useState<IVehicle[]>([]);
 
   const { customer } = useContext(CustomerPageContext) as CustomerPageContextProps;
 
-  const customerReducer = useAppSelector((state) => state.customerReducer);
+  const customerReducer = useAppSelector(state => state.customerReducer);
 
   const dispatch = useAppDispatch();
 
@@ -30,7 +30,7 @@ function Vehicles() {
   }, [customer, dispatch]);
 
   useEffect(() => {
-    if (customerReducer.getCustomerVehiclesStatus === "completed") {
+    if (customerReducer.getCustomerVehiclesStatus === 'completed') {
       _setVehicles(customerReducer.vehicles);
     }
   }, [customerReducer.getCustomerVehiclesStatus, customerReducer.vehicles]);
@@ -48,7 +48,7 @@ function Vehicles() {
           checkboxSelection
           disableSelectionOnClick
           showToolbar
-          loading={customerReducer.getCustomerVehiclesStatus === "loading"}
+          loading={customerReducer.getCustomerVehiclesStatus === 'loading'}
         />
       </Stack>
     </Box>
@@ -58,56 +58,56 @@ function Vehicles() {
 const columns = (options?: any) =>
   [
     {
-      field: "id",
-      headerName: "ID",
-      headerAlign: "center",
-      align: "center",
+      field: 'id',
+      headerName: 'ID',
+      headerAlign: 'center',
+      align: 'center',
       sortable: true,
-      type: "number",
+      type: 'number',
     },
     {
-      field: "plateNumber",
-      headerName: "Plate Number",
-      headerAlign: "center",
+      field: 'plateNumber',
+      headerName: 'Plate Number',
+      headerAlign: 'center',
       width: 160,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "make",
-      headerName: "Make",
-      headerAlign: "center",
+      field: 'make',
+      headerName: 'Make',
+      headerAlign: 'center',
       width: 160,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "model",
-      headerName: "Model",
-      headerAlign: "center",
+      field: 'model',
+      headerName: 'Model',
+      headerAlign: 'center',
       width: 160,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "modelYear",
-      headerName: "Year",
-      headerAlign: "center",
-      align: "center",
-      type: "string",
+      field: 'modelYear',
+      headerName: 'Year',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "isBooked",
-      headerName: "Booked",
-      headerAlign: "center",
-      align: "center",
-      type: "string",
+      field: 'isBooked',
+      headerName: 'Booked',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'string',
       sortable: true,
-      renderCell: (params) => {
+      renderCell: params => {
         const status = params.row.isBooked;
 
         return status ? (
@@ -119,38 +119,38 @@ const columns = (options?: any) =>
     },
 
     {
-      field: "createdAt",
-      headerName: "Created At",
-      headerAlign: "center",
-      align: "center",
-      type: "dateTime",
+      field: 'createdAt',
+      headerName: 'Created At',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'dateTime',
       sortable: true,
       width: 160,
-      valueFormatter: (params) => {
-        return moment(params.value).utc(true).format("LLL");
+      valueFormatter: params => {
+        return moment(params.value).utc(true).format('LLL');
       },
     },
     {
-      field: "updatedAt",
-      headerName: "Modified At",
-      headerAlign: "center",
-      align: "center",
-      type: "dateTime",
+      field: 'updatedAt',
+      headerName: 'Modified At',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'dateTime',
       sortable: true,
       width: 160,
-      valueFormatter: (params) => {
-        return moment(params.value).utc(true).format("LLL");
+      valueFormatter: params => {
+        return moment(params.value).utc(true).format('LLL');
       },
     },
     {
-      field: "actions",
-      type: "actions",
-      align: "center",
-      headerAlign: "center",
+      field: 'actions',
+      type: 'actions',
+      align: 'center',
+      headerAlign: 'center',
       getActions: (params: any) => [
         <GridActionsCellItem
           key={0}
-          icon={<Visibility sx={{ color: "dodgerblue" }} />}
+          icon={<Visibility sx={{ color: 'dodgerblue' }} />}
           onClick={() => options.onView(params.row)}
           label="View"
           showInMenu={false}

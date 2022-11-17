@@ -65,7 +65,7 @@
 
 .time-btn .time-slot-btn-title {
   font-size: 0.65rem !important;
-  font-family: "Montserrat", sans-serif !important;
+  font-family: 'Montserrat', sans-serif !important;
   font-weight: bolder !important;
 }
 
@@ -78,18 +78,18 @@
   width: 100% !important;
 }
 
-input[type="radio"]:checked + .time-btn {
+input[type='radio']:checked + .time-btn {
   background-color: #2196f3 !important;
   color: #000;
 }
 
-input[type="radio"] {
+input[type='radio'] {
   display: none;
 }
 
 .submit-book-btn {
   background: #fba91a !important;
-  font-family: "Montserrat", sans-serif !important;
+  font-family: 'Montserrat', sans-serif !important;
   transition: 0.3s ease-in-out;
   text-transform: capitalize;
   font-size: 10px !important;
@@ -108,7 +108,7 @@ input[type="radio"] {
 }
 
 .time-header {
-  font-family: "Montserrat" !important;
+  font-family: 'Montserrat' !important;
   font-weight: bold !important;
   color: #000 !important;
   margin-bottom: 15px !important;
@@ -198,22 +198,22 @@ input[type="radio"] {
     display: block !important;
     flex-direction: column;
     /* align-items: center !important;
-                                                        justify-content: center !important; */
+                                                            justify-content: center !important; */
   }
 
   .radio-container {
     /* display: flex;
-                                                        flex-direction: row;
-                                                        flex-wrap: wrap;
-                                                        width: 100%;
-                                                        height: auto; */
+                                                            flex-direction: row;
+                                                            flex-wrap: wrap;
+                                                            width: 100%;
+                                                            height: auto; */
     display: block !important;
   }
 
   .radio-btn {
     /* width: auto;
-                                                        flex: 0.5 ;
-                                                        margin: 2px; */
+                                                            flex: 0.5 ;
+                                                            margin: 2px; */
     display: inline-block;
     width: 47%;
     margin: 4px;

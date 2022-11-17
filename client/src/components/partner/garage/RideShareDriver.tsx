@@ -1,9 +1,9 @@
-import React, { createContext, useEffect, useMemo, useState } from "react";
-import useAppSelector from "../../../hooks/useAppSelector";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import { getDriversFilterDataAction } from "../../../store/actions/partnerActions";
-import { useParams } from "react-router-dom";
-import { clearGetDriversFilterDataStatus } from "../../../store/reducers/partnerReducer";
+import React, { createContext, useEffect, useMemo, useState } from 'react';
+import useAppSelector from '../../../hooks/useAppSelector';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { getDriversFilterDataAction } from '../../../store/actions/partnerActions';
+import { useParams } from 'react-router-dom';
+import { clearGetDriversFilterDataStatus } from '../../../store/reducers/partnerReducer';
 import {
   Autocomplete,
   Box,
@@ -14,17 +14,17 @@ import {
   Paper,
   Stack,
   TextField,
-} from "@mui/material";
-import { IDriversFilterData, RideShareDriverPageContextProps } from "@app-interfaces";
-import { getDriverAction } from "../../../store/actions/rideShareActions";
-import { IRideShareDriver } from "@app-models";
-import AppLoader from "../../loader/AppLoader";
-import AppTab from "../../tabs/AppTab";
-import { driverSearchResultTabs } from "../../../navigation/menus";
-import useAdmin from "../../../hooks/useAdmin";
+} from '@mui/material';
+import { IDriversFilterData, RideShareDriverPageContextProps } from '@app-interfaces';
+import { getDriverAction } from '../../../store/actions/rideShareActions';
+import { IRideShareDriver } from '@app-models';
+import AppLoader from '../../loader/AppLoader';
+import AppTab from '../../tabs/AppTab';
+import { driverSearchResultTabs } from '../../../navigation/menus';
+import useAdmin from '../../../hooks/useAdmin';
 
 const filterOptions = createFilterOptions({
-  matchFrom: "any",
+  matchFrom: 'any',
   stringify: (option: IDriversFilterData) => `${option.query}`,
 });
 
@@ -32,12 +32,12 @@ export const RideShareDriverPageContext = createContext<RideShareDriverPageConte
 
 function RideShareDriver() {
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
-  const [inputValue, setInputValue] = React.useState("");
+  const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
   const [driver, setDriver] = useState<IRideShareDriver | null>(null);
 
-  const partnerReducer = useAppSelector((state) => state.partnerReducer);
-  const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
+  const rideShareReducer = useAppSelector(state => state.rideShareReducer);
   const dispatch = useAppDispatch();
 
   const params = useParams();
@@ -54,19 +54,19 @@ function RideShareDriver() {
   }, [admin.isTechAdmin, admin.user, params.id]);
 
   useEffect(() => {
-    if (partnerReducer.getDriversFilterDataStatus === "idle") {
+    if (partnerReducer.getDriversFilterDataStatus === 'idle') {
       if (partnerId) dispatch(getDriversFilterDataAction(+partnerId));
     }
   }, [dispatch, partnerId, partnerReducer.getDriversFilterDataStatus]);
 
   useEffect(() => {
-    if (partnerReducer.getDriversFilterDataStatus === "completed") {
+    if (partnerReducer.getDriversFilterDataStatus === 'completed') {
       setOptions(partnerReducer.driversFilterData);
     }
   }, [partnerReducer.driversFilterData, partnerReducer.getDriversFilterDataStatus]);
 
   useEffect(() => {
-    if (rideShareReducer.getDriverStatus === "completed") {
+    if (rideShareReducer.getDriverStatus === 'completed') {
       setDriver(rideShareReducer.driver);
     }
   }, [rideShareReducer.driver, rideShareReducer.getDriverStatus]);
@@ -93,8 +93,8 @@ function RideShareDriver() {
               filterOptions={filterOptions}
               inputValue={inputValue}
               value={value}
-              loading={partnerReducer.getDriversFilterDataStatus === "loading"}
-              getOptionLabel={(option) => option.fullName}
+              loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
+              getOptionLabel={option => option.fullName}
               isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
               onChange={(event: any, newValue: IDriversFilterData | null) => {
                 setValue(newValue);
@@ -102,9 +102,9 @@ function RideShareDriver() {
               }}
               onInputChange={(event, newInputValue, reason) => {
                 setInputValue(newInputValue);
-                if (reason === "clear") setDriver(null);
+                if (reason === 'clear') setDriver(null);
               }}
-              renderInput={(props) => (
+              renderInput={props => (
                 <TextField
                   {...props}
                   label="Search driver by First name, last name, car plate number."
@@ -112,7 +112,7 @@ function RideShareDriver() {
                     ...props.InputProps,
                     endAdornment: (
                       <React.Fragment>
-                        {partnerReducer.getDriversFilterDataStatus === "loading" ? (
+                        {partnerReducer.getDriversFilterDataStatus === 'loading' ? (
                           <CircularProgress color="inherit" size={20} />
                         ) : null}
                         {props.InputProps.endAdornment}
@@ -132,7 +132,7 @@ function RideShareDriver() {
           </Paper>
         </Box>
       </Stack>
-      <AppLoader show={rideShareReducer.getDriverStatus === "loading"} />
+      <AppLoader show={rideShareReducer.getDriverStatus === 'loading'} />
     </RideShareDriverPageContext.Provider>
   );
 }

@@ -1,29 +1,29 @@
-import Joi from "joi";
+import Joi from 'joi';
 
-import { appCommonTypes } from "../@types/app-common";
-import HttpStatus from "../helpers/HttpStatus";
-import RideShareDriver from "../models/RideShareDriver";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import dataSources from "../services/dao";
-import Vehicle from "../models/Vehicle";
-import Appointment from "../models/Appointment";
-import Transaction from "../models/Transaction";
-import VehicleFault from "../models/VehicleFault";
-import { Request } from "express";
-import RideShareDriverSubscription from "../models/RideShareDriverSubscription";
-import Job from "../models/Job";
-import Contact from "../models/Contact";
-import { TryCatch } from "../decorators";
+import { appCommonTypes } from '../@types/app-common';
+import HttpStatus from '../helpers/HttpStatus';
+import RideShareDriver from '../models/RideShareDriver';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import dataSources from '../services/dao';
+import Vehicle from '../models/Vehicle';
+import Appointment from '../models/Appointment';
+import Transaction from '../models/Transaction';
+import VehicleFault from '../models/VehicleFault';
+import { Request } from 'express';
+import RideShareDriverSubscription from '../models/RideShareDriverSubscription';
+import Job from '../models/Job';
+import Contact from '../models/Contact';
+import { TryCatch } from '../decorators';
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
 
-const DRIVER_ID = "Driver Id";
+const DRIVER_ID = 'Driver Id';
 
 export default class RideShareDriverController {
   @TryCatch
   public static async allRideShareDrivers() {
     const drivers = await dataSources.rideShareDriverDAOService.findAll({
-      attributes: { exclude: ["password", "rawPassword", "loginToken"] },
+      attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
     });
 
     const response: HttpResponse<RideShareDriver> = {
@@ -43,7 +43,7 @@ export default class RideShareDriverController {
     };
 
     const driver = await dataSources.rideShareDriverDAOService.findById(driverId, {
-      attributes: { exclude: ["password", "loginToken"] },
+      attributes: { exclude: ['password', 'loginToken'] },
       include: [Vehicle, { model: RideShareDriverSubscription, include: [Job] }, Contact, Transaction],
     });
 
@@ -74,7 +74,7 @@ export default class RideShareDriverController {
       return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
     }
 
-    const vehicles = await driver.$get("vehicles");
+    const vehicles = await driver.$get('vehicles');
 
     const response: HttpResponse<Vehicle> = {
       code: HttpStatus.OK.code,
@@ -103,13 +103,13 @@ export default class RideShareDriverController {
       return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
     }
 
-    const appointments = await driver.$get("appointments", {
+    const appointments = await driver.$get('appointments', {
       include: [
         { model: Vehicle },
         { model: VehicleFault },
         {
           model: RideShareDriver,
-          attributes: { exclude: ["password", "rawPassword", "loginToken"] },
+          attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
         },
       ],
     });
@@ -141,7 +141,7 @@ export default class RideShareDriverController {
       return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
     }
 
-    const transactions = await driver.$get("transactions");
+    const transactions = await driver.$get('transactions');
 
     const response: HttpResponse<Transaction> = {
       code: HttpStatus.OK.code,
@@ -160,14 +160,14 @@ export default class RideShareDriverController {
 
     if (!driver)
       return Promise.reject(
-        CustomAPIError.response(`Driver with Id ${driverId} does not exist.`, HttpStatus.NOT_FOUND.code)
+        CustomAPIError.response(`Driver with Id ${driverId} does not exist.`, HttpStatus.NOT_FOUND.code),
       );
 
     await driver.destroy();
 
     return Promise.resolve({
       code: HttpStatus.OK.code,
-      message: "Driver deleted successfully.",
+      message: 'Driver deleted successfully.',
     } as HttpResponse<void>);
   }
 }

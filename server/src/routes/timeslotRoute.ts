@@ -1,6 +1,6 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import { Request, Response } from "express";
-import TimeSlotController from "../controllers/TimeSlotController";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import { Request, Response } from 'express';
+import TimeSlotController from '../controllers/TimeSlotController';
 
 export const handleInitTimeslots = authenticateRouteWrapper(async (req: Request, res: Response) => {
   const result = await TimeSlotController.initTimeSlot(req);

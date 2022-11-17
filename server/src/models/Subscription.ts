@@ -7,23 +7,23 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
+} from 'sequelize-typescript';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
 
-import Plan from "./Plan";
-import ServiceSubscription from "./ServiceSubscription";
-import Service from "./Service";
-import Joi from "joi";
+import Plan from './Plan';
+import ServiceSubscription from './ServiceSubscription';
+import Service from './Service';
+import Joi from 'joi';
 
 export const $subscriptionSchema = {
-  name: Joi.string().required().label("Name"),
-  planCategory: Joi.string().required().label("Plans Category"),
-  paymentPlan: Joi.string().required().label("Payment Plans"),
-  price: Joi.string().required().label("Subscription Price"),
+  name: Joi.string().required().label('Name'),
+  planCategory: Joi.string().required().label('Plans Category'),
+  paymentPlan: Joi.string().required().label('Payment Plans'),
+  price: Joi.string().required().label('Subscription Price'),
 };
 
 @Table({
-  tableName: "subscriptions",
+  tableName: 'subscriptions',
   timestamps: true,
 })
 export default class Subscription extends Model<InferAttributes<Subscription>, InferCreationAttributes<Subscription>> {
@@ -31,7 +31,7 @@ export default class Subscription extends Model<InferAttributes<Subscription>, I
   @AutoIncrement
   @Column({
     type: DataType.INTEGER,
-    field: "subscription_id",
+    field: 'subscription_id',
   })
   declare id: CreationOptional<number>;
 
@@ -47,6 +47,6 @@ export default class Subscription extends Model<InferAttributes<Subscription>, I
   @BelongsToMany(() => Service, () => ServiceSubscription)
   declare services: NonAttribute<Array<Service & { ServiceSubscription: ServiceSubscription }>>;
 
-  @HasMany(() => Plan, { onDelete: "cascade" })
+  @HasMany(() => Plan, { onDelete: 'cascade' })
   declare plans: NonAttribute<Plan[]>;
 }

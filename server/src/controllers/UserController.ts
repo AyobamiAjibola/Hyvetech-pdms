@@ -1,12 +1,12 @@
-import { Request } from "express";
+import { Request } from 'express';
 
-import dataSources from "../services/dao";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import Partner from "../models/Partner";
-import { appCommonTypes } from "../@types/app-common";
+import dataSources from '../services/dao';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import Partner from '../models/Partner';
+import { appCommonTypes } from '../@types/app-common';
 
-import User from "../models/User";
+import User from '../models/User';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class UserController {
@@ -19,7 +19,7 @@ export default class UserController {
 
       if (!user)
         return Promise.reject(
-          CustomAPIError.response(`User with Id: ${userId} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`User with Id: ${userId} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
       const response: HttpResponse<User> = {

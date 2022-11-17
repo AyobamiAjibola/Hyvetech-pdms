@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import PermissionRepository from "../../repositories/PermissionRepository";
-import Permission from "../../models/Permission";
-import { appModelTypes } from "../../@types/app-model";
+import PermissionRepository from '../../repositories/PermissionRepository';
+import Permission from '../../models/Permission';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class PermissionDAOService implements ICrudDAO<Permission> {
@@ -43,7 +43,7 @@ export default class PermissionDAOService implements ICrudDAO<Permission> {
   update(
     permission: Permission,
     values: InferAttributes<Permission>,
-    options: UpdateOptions<Attributes<Permission>>
+    options: UpdateOptions<Attributes<Permission>>,
   ): Promise<Permission> {
     return this.permissionRepository.updateOne(permission, values, options);
   }

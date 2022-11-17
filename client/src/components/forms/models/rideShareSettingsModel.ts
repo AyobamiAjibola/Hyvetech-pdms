@@ -1,4 +1,4 @@
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
 export interface IBrands {
   name: string;
@@ -27,70 +27,70 @@ export interface IRideShareSettings {
 
 const fields = {
   cac: {
-    name: "cac",
-    label: "CAC",
+    name: 'cac',
+    label: 'CAC',
     error: {
-      invalid: "CAC is invalid",
-      required: "CAC is required",
+      invalid: 'CAC is invalid',
+      required: 'CAC is required',
     },
   },
   phone: {
-    name: "phone",
-    label: "Phone Number",
+    name: 'phone',
+    label: 'Phone Number',
     error: {
-      invalid: "Phone Number is invalid",
-      required: "Phone Number is required",
+      invalid: 'Phone Number is invalid',
+      required: 'Phone Number is required',
     },
   },
   totalStaff: {
-    name: "totalStaff",
-    label: "Total Staff",
+    name: 'totalStaff',
+    label: 'Total Staff',
     error: {
-      invalid: "Total Staff is invalid",
-      required: "Total Staff is required",
+      invalid: 'Total Staff is invalid',
+      required: 'Total Staff is required',
     },
   },
   yearOfIncorporation: {
-    name: "yearOfIncorporation",
-    label: "Year of Incorporation",
+    name: 'yearOfIncorporation',
+    label: 'Year of Incorporation',
     error: {
-      invalid: "Year of Incorporation is invalid",
-      required: "Year of Incorporation is required",
+      invalid: 'Year of Incorporation is invalid',
+      required: 'Year of Incorporation is required',
     },
   },
   brands: {
-    name: "brands",
-    label: "Brands",
+    name: 'brands',
+    label: 'Brands',
     error: {
-      invalid: "Brands is invalid",
-      required: "Brands is required",
+      invalid: 'Brands is invalid',
+      required: 'Brands is required',
     },
   },
   images: {
-    name: "images",
-    label: "Images",
+    name: 'images',
+    label: 'Images',
     error: {
-      invalid: "Images is invalid",
-      required: "Images is required",
+      invalid: 'Images is invalid',
+      required: 'Images is required',
     },
   },
   workingHours: {
-    name: "workingHours",
-    label: "Working Hours",
+    name: 'workingHours',
+    label: 'Working Hours',
     error: {
-      invalid: "Working Hours is invalid",
-      required: "Working Hours is required",
+      invalid: 'Working Hours is invalid',
+      required: 'Working Hours is required',
     },
   },
 };
 
 const initialValues: IRideShareSettings = {
-  cac: "",
-  phone: "",
-  totalStaff: "",
+  cac: '',
+  phone: '',
+  totalStaff: '',
   yearOfIncorporation: new Date(),
-  brands: [{ name: "", description: "", image: "" }],
-  images: [{ value: "" }],
+  brands: [{ name: '', description: '', image: '' }],
+  images: [{ value: '' }],
   workingHours: [{ from: new Date(), to: new Date() }],
 };
 

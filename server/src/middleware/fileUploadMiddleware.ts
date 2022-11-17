@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import formidable from "formidable";
+import { NextFunction, Request, Response } from 'express';
+import formidable from 'formidable';
 
 export default function fileUploadMiddleware(options?: formidable.Options) {
   const form = formidable(options);

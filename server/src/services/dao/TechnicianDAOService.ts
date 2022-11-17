@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import TechnicianRepository from "../../repositories/TechnicianRepository";
-import Technician from "../../models/Technician";
-import { appModelTypes } from "../../@types/app-model";
+import TechnicianRepository from '../../repositories/TechnicianRepository';
+import Technician from '../../models/Technician';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class TechnicianDAOService implements ICrudDAO<Technician> {
@@ -43,7 +43,7 @@ export default class TechnicianDAOService implements ICrudDAO<Technician> {
   update(
     technician: Technician,
     values: InferAttributes<Technician>,
-    options: UpdateOptions<Attributes<Technician>>
+    options: UpdateOptions<Attributes<Technician>>,
   ): Promise<Technician> {
     return this.technicianRepository.updateOne(technician, values, options);
   }

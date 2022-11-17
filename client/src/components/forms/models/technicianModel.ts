@@ -1,5 +1,5 @@
-import * as Yup from "yup";
-import { PASSWORD_PATTERN } from "../../../config/constants";
+import * as Yup from 'yup';
+import { PASSWORD_PATTERN } from '../../../config/constants';
 
 export interface ITechnicianValues {
   confirmPassword: string;
@@ -13,73 +13,73 @@ export interface ITechnicianValues {
 
 const fields = {
   firstName: {
-    name: "firstName",
-    label: "First Name*",
+    name: 'firstName',
+    label: 'First Name*',
     error: {
-      invalid: "Invalid First Name.",
-      required: "First Name is required",
+      invalid: 'Invalid First Name.',
+      required: 'First Name is required',
     },
   },
   lastName: {
-    name: "lastName",
-    label: "Last Name*",
+    name: 'lastName',
+    label: 'Last Name*',
     error: {
       invalid: `Invalid Last Name`,
-      required: "Last Name is required",
+      required: 'Last Name is required',
     },
   },
   email: {
-    name: "email",
-    label: "Email*",
+    name: 'email',
+    label: 'Email*',
     error: {
-      invalid: "Invalid email.",
-      required: "Email is required",
+      invalid: 'Invalid email.',
+      required: 'Email is required',
     },
   },
   phone: {
-    name: "phone",
-    label: "Phone",
+    name: 'phone',
+    label: 'Phone',
     error: {
       invalid: `Invalid Phone Number`,
-      required: "Phone Number is required",
+      required: 'Phone Number is required',
     },
   },
   password: {
-    name: "password",
-    label: "Password*",
+    name: 'password',
+    label: 'Password*',
     error: {
       invalid: `Password must contain 8 to 20 characters,
          and at least One, uppercase letter, lowercase letter, 
          special case character e.g @!&, and number`,
-      required: "Password is required",
+      required: 'Password is required',
     },
   },
   confirmPassword: {
-    name: "confirmPassword",
-    label: "Confirm Password*",
+    name: 'confirmPassword',
+    label: 'Confirm Password*',
     error: {
       invalid: `Passwords do not match`,
-      required: "Confirm Password is required",
+      required: 'Confirm Password is required',
     },
   },
 
   active: {
-    name: "active",
-    label: "Active*",
+    name: 'active',
+    label: 'Active*',
     error: {
       invalid: `Active is invalid`,
-      required: "Active is required",
+      required: 'Active is required',
     },
   },
 };
 
 const initialValues: ITechnicianValues = {
-  confirmPassword: "",
-  email: "",
-  firstName: "",
-  lastName: "",
-  password: "",
-  phone: "",
+  confirmPassword: '',
+  email: '',
+  firstName: '',
+  lastName: '',
+  password: '',
+  phone: '',
   active: false,
 };
 

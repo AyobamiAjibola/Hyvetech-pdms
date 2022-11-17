@@ -1,12 +1,12 @@
-import path from "path";
+import path from 'path';
 
-import { Sequelize } from "sequelize-typescript";
-import { Dialect } from "sequelize";
-import { createNamespace } from "cls-hooked";
+import { Sequelize } from 'sequelize-typescript';
+import { Dialect } from 'sequelize';
+import { createNamespace } from 'cls-hooked';
 
-import settings from "./settings";
-import { appCommonTypes } from "../@types/app-common";
-import mongoose from "mongoose";
+import settings from './settings';
+import { appCommonTypes } from '../@types/app-common';
+import mongoose from 'mongoose';
 import DatabaseEnv = appCommonTypes.DatabaseEnv;
 
 const env = process.env.NODE_ENV as DatabaseEnv;
@@ -14,7 +14,7 @@ const env = process.env.NODE_ENV as DatabaseEnv;
 const postgresConfig = settings.postgres[env];
 export const mongoUrl = <string>settings.mongo[env].host;
 
-const models = path.resolve(__dirname, "../models");
+const models = path.resolve(__dirname, '../models');
 
 if (postgresConfig.database) {
   const namespace = createNamespace(postgresConfig.database);

@@ -1,30 +1,30 @@
-import * as Yup from "yup";
-import { CheckListType } from "@app-types";
-import { v4 } from "uuid";
+import * as Yup from 'yup';
+import { CheckListType } from '@app-types';
+import { v4 } from 'uuid';
 
 const fields = {
   sections: {
-    name: "sections",
-    label: "Section Title*",
+    name: 'sections',
+    label: 'Section Title*',
     error: {
-      invalid: "Section Title is invalid",
-      require: "Section Title is required",
+      invalid: 'Section Title is invalid',
+      require: 'Section Title is required',
     },
   },
   questions: {
-    name: "questions",
-    label: "Question*",
+    name: 'questions',
+    label: 'Question*',
     error: {
-      invalid: "Question is invalid",
-      require: "Question is required",
+      invalid: 'Question is invalid',
+      require: 'Question is required',
     },
   },
   answers: {
-    name: "answers",
-    label: "Answer*",
+    name: 'answers',
+    label: 'Answer*',
     error: {
-      invalid: "Answer is invalid",
-      require: "Answer is required",
+      invalid: 'Answer is invalid',
+      require: 'Answer is required',
     },
   },
 };
@@ -33,14 +33,14 @@ const initialValues: CheckListType = {
   sections: [
     {
       id: v4(),
-      title: "",
+      title: '',
       questions: [
         {
           id: v4(),
-          answers: [{ id: v4(), answer: "", weight: "", color: "" }],
+          answers: [{ id: v4(), answer: '', weight: '', color: '' }],
           media: false,
           note: false,
-          question: "",
+          question: '',
         },
       ],
     },
@@ -48,8 +48,8 @@ const initialValues: CheckListType = {
 };
 
 const schema = Yup.object().shape({
-  checkList: Yup.string().required().label("Check List name"),
-  partner: Yup.string().required().label("Partner"),
+  checkList: Yup.string().required().label('Check List name'),
+  partner: Yup.string().required().label('Partner'),
 });
 
 const checkListSectionModel = {

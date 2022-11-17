@@ -5,45 +5,45 @@ import {
   getAppointmentsHandler,
   rescheduleAppointmentHandler,
   updateAppointmentHandler,
-} from "../../routes/appointmentRoute";
-import { appCommonTypes } from "../../@types/app-common";
+} from '../../routes/appointmentRoute';
+import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 
 const appointmentEndpoints: RouteEndpoints = [
   {
-    name: "appointments",
-    method: "get",
-    path: "/appointments",
+    name: 'appointments',
+    method: 'get',
+    path: '/appointments',
     handler: getAppointmentsHandler,
   },
   {
-    name: "appointments",
-    method: "get",
-    path: "/appointments/:appointmentId",
+    name: 'appointments',
+    method: 'get',
+    path: '/appointments/:appointmentId',
     handler: getAppointmentHandler,
   },
   {
-    name: "appointments",
-    method: "post",
-    path: "/appointments",
+    name: 'appointments',
+    method: 'post',
+    path: '/appointments',
     handler: createAppointmentHandler,
   },
   {
-    name: "appointments",
-    method: "patch",
-    path: "/appointments/:appointmentId",
+    name: 'appointments',
+    method: 'patch',
+    path: '/appointments/:appointmentId',
     handler: updateAppointmentHandler,
   },
   {
-    name: "appointments",
-    method: "patch",
-    path: "/appointments/:appointmentId/cancel",
+    name: 'appointments',
+    method: 'patch',
+    path: '/appointments/:appointmentId/cancel',
     handler: cancelAppointmentHandler,
   },
   {
-    name: "appointments",
-    method: "patch",
-    path: "/appointments/:appointmentId/reschedule",
+    name: 'appointments',
+    method: 'patch',
+    path: '/appointments/:appointmentId/reschedule',
     handler: rescheduleAppointmentHandler,
   },
 ];

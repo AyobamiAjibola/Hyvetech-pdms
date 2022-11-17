@@ -1,6 +1,6 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import TechnicianController from "../controllers/TechnicianController";
-import PasswordEncoder from "../utils/PasswordEncoder";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import TechnicianController from '../controllers/TechnicianController';
+import PasswordEncoder from '../utils/PasswordEncoder';
 
 const passwordEncoder = new PasswordEncoder();
 const technicianController = new TechnicianController(passwordEncoder);

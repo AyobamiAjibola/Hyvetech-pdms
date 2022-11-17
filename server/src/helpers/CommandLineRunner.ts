@@ -1,23 +1,23 @@
 /**
  * This helper Class, executes commands in form of methods,we want to run at runtime.
  */
-import { Op } from "sequelize";
+import { Op } from 'sequelize';
 
-import RoleRepository from "../repositories/RoleRepository";
-import PermissionRepository from "../repositories/PermissionRepository";
-import SubscriptionRepository from "../repositories/SubscriptionRepository";
-import PlanRepository from "../repositories/PlanRepository";
-import settings from "../config/settings";
-import PaymentGatewayRepository from "../repositories/PaymentGatewayRepository";
-import DistrictRepository from "../repositories/DistrictRepository";
-import ScheduleRepository from "../repositories/ScheduleRepository";
-import TimeSlotRepository from "../repositories/TimeSlotRepository";
-import VINDecoderProviderRepository from "../repositories/VINDecoderProviderRepository";
-import { appModelTypes } from "../@types/app-model";
-import ServiceRepository from "../repositories/ServiceRepository";
-import PaymentPlanRepository from "../repositories/PaymentPlanRepository";
-import CategoryRepository from "../repositories/CategoryRepository";
-import PaymentTermRepository from "../repositories/PaymentTermRepository";
+import RoleRepository from '../repositories/RoleRepository';
+import PermissionRepository from '../repositories/PermissionRepository';
+import SubscriptionRepository from '../repositories/SubscriptionRepository';
+import PlanRepository from '../repositories/PlanRepository';
+import settings from '../config/settings';
+import PaymentGatewayRepository from '../repositories/PaymentGatewayRepository';
+import DistrictRepository from '../repositories/DistrictRepository';
+import ScheduleRepository from '../repositories/ScheduleRepository';
+import TimeSlotRepository from '../repositories/TimeSlotRepository';
+import VINDecoderProviderRepository from '../repositories/VINDecoderProviderRepository';
+import { appModelTypes } from '../@types/app-model';
+import ServiceRepository from '../repositories/ServiceRepository';
+import PaymentPlanRepository from '../repositories/PaymentPlanRepository';
+import CategoryRepository from '../repositories/CategoryRepository';
+import PaymentTermRepository from '../repositories/PaymentTermRepository';
 import {
   CATEGORIES,
   DRIVE_IN_CATEGORY,
@@ -51,26 +51,26 @@ import {
   SUBSCRIPTIONS,
   TWENTY_FOUR_HOUR_EXPIRY,
   UPLOAD_BASE_PATH,
-} from "../config/constants";
-import Category from "../models/Category";
-import PaymentPlan from "../models/PaymentPlan";
-import Plan from "../models/Plan";
-import EmailConfigRepository from "../repositories/EmailConfigRepository";
-import DiscountRepository from "../repositories/DiscountRepository";
-import StateRepository from "../repositories/StateRepository";
-import TagRepository from "../repositories/TagRepository";
+} from '../config/constants';
+import Category from '../models/Category';
+import PaymentPlan from '../models/PaymentPlan';
+import Plan from '../models/Plan';
+import EmailConfigRepository from '../repositories/EmailConfigRepository';
+import DiscountRepository from '../repositories/DiscountRepository';
+import StateRepository from '../repositories/StateRepository';
+import TagRepository from '../repositories/TagRepository';
 
-import statesAndDistrictsJson from "../resources/data/states_and_districts.json";
-import adminJson from "../resources/data/admin.json";
-import UserRepository from "../repositories/UserRepository";
-import PasswordEncoder from "../utils/PasswordEncoder";
-import PaymentGateway from "../models/PaymentGateway";
-import axiosClient from "../services/api/axiosClient";
-import dataStore from "../config/dataStore";
-import Role from "../models/Role";
-import Permission from "../models/Permission";
-import Generic from "../utils/Generic";
-import fs from "fs/promises";
+import statesAndDistrictsJson from '../resources/data/states_and_districts.json';
+import adminJson from '../resources/data/admin.json';
+import UserRepository from '../repositories/UserRepository';
+import PasswordEncoder from '../utils/PasswordEncoder';
+import PaymentGateway from '../models/PaymentGateway';
+import axiosClient from '../services/api/axiosClient';
+import dataStore from '../config/dataStore';
+import Role from '../models/Role';
+import Permission from '../models/Permission';
+import Generic from '../utils/Generic';
+import fs from 'fs/promises';
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 
 export default class CommandLineRunner {
@@ -142,9 +142,9 @@ export default class CommandLineRunner {
     })) as PaymentGateway;
 
     axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
-    axiosClient.defaults.headers.common["Authorization"] = `Bearer ${paymentGateway.secretKey}`;
+    axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
 
-    const response = await axiosClient.get("/plan");
+    const response = await axiosClient.get('/plan');
 
     await dataStore.setEx(PAY_STACK_PLANS, JSON.stringify(response.data.data), {
       PX: TWENTY_FOUR_HOUR_EXPIRY,
@@ -157,9 +157,9 @@ export default class CommandLineRunner {
     })) as PaymentGateway;
 
     axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
-    axiosClient.defaults.headers.common["Authorization"] = `Bearer ${paymentGateway.secretKey}`;
+    axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
 
-    const response = await axiosClient.get("/bank");
+    const response = await axiosClient.get('/bank');
 
     await dataStore.setEx(PAY_STACK_BANKS, JSON.stringify(response.data.data), {
       PX: TWENTY_FOUR_HOUR_EXPIRY,
@@ -169,7 +169,7 @@ export default class CommandLineRunner {
   async loadDefaultAdmin() {
     const exist = await this.userRepository.findOne({
       where: {
-        username: "admin",
+        username: 'admin',
       },
     });
 
@@ -188,7 +188,7 @@ export default class CommandLineRunner {
     });
 
     if (role) {
-      await user.$add("roles", [role]);
+      await user.$add('roles', [role]);
     }
   }
 
@@ -221,7 +221,7 @@ export default class CommandLineRunner {
         });
 
         //associate state with its district
-        await state.$add("districts", [district]);
+        await state.$add('districts', [district]);
       }
     }
   }
@@ -262,8 +262,8 @@ export default class CommandLineRunner {
     for (const permissionName of settings.permissions) {
       await this.permissionRepository.save({
         name: permissionName,
-        action: permissionName.split("_")[0],
-        subject: permissionName.split("_")[1],
+        action: permissionName.split('_')[0],
+        subject: permissionName.split('_')[1],
         inverted: true,
       });
     }
@@ -272,7 +272,7 @@ export default class CommandLineRunner {
     for (const roleName of settings.roles) {
       await this.roleRepository.save({
         slug: roleName,
-        name: roleName.replaceAll("_", " "),
+        name: roleName.replaceAll('_', ' '),
       });
     }
 
@@ -326,7 +326,7 @@ export default class CommandLineRunner {
 
     //user permissions
     const permissions = settings.permissions.filter(
-      (permission) => permission !== "manage_all" && !permission.startsWith("delete")
+      permission => permission !== 'manage_all' && !permission.startsWith('delete'),
     );
 
     const userPermissions = [];
@@ -337,7 +337,7 @@ export default class CommandLineRunner {
           where: {
             [Op.or]: [{ name: permissions[i] }],
           },
-        }))
+        })),
       );
     }
 
@@ -387,14 +387,14 @@ export default class CommandLineRunner {
     });
 
     //associate roles to their respective permissions
-    await guestRole?.$add("permissions", guestPermissions);
-    await userRole?.$add("permissions", userPermissions);
-    await customerRole?.$add("permissions", customerPermissions);
-    await adminRole?.$add("permissions", adminPermissions);
-    await garageAdminRole?.$add("permissions", garageAdminPermissions);
-    await garageTechnicianRole?.$add("permissions", garageTechnicianPermissions);
-    await rideShareAdminRole?.$add("permissions", rideShareAdminPermissions);
-    await rideShareDriverRole?.$add("permissions", rideShareDriverPermissions);
+    await guestRole?.$add('permissions', guestPermissions);
+    await userRole?.$add('permissions', userPermissions);
+    await customerRole?.$add('permissions', customerPermissions);
+    await adminRole?.$add('permissions', adminPermissions);
+    await garageAdminRole?.$add('permissions', garageAdminPermissions);
+    await garageTechnicianRole?.$add('permissions', garageTechnicianPermissions);
+    await rideShareAdminRole?.$add('permissions', rideShareAdminPermissions);
+    await rideShareDriverRole?.$add('permissions', rideShareDriverPermissions);
   }
 
   async loadDefaultPaymentGateway() {
@@ -421,7 +421,7 @@ export default class CommandLineRunner {
 
     const timeSlots = await this.timeSlotRepository.bulkCreate(settings.schedule.timeSlots);
 
-    await schedule.$add("timeSlots", timeSlots);
+    await schedule.$add('timeSlots', timeSlots);
   }
 
   async loadDefaultVINProvider() {
@@ -465,7 +465,7 @@ export default class CommandLineRunner {
     //create subscriptions
     const subscriptions = await this.subscriptionRepository.bulkCreate(SUBSCRIPTIONS);
 
-    await inspectionService?.$add("subscriptions", subscriptions);
+    await inspectionService?.$add('subscriptions', subscriptions);
 
     //create plans
     for (const plan of PLANS) {
@@ -502,22 +502,22 @@ export default class CommandLineRunner {
     });
 
     //link payment plan categories
-    await mobilePaymentPlan?.$add("categories", [<Category>mobileCategory]);
-    await driveInPaymentPlan?.$add("categories", [<Category>driveInCategory]);
+    await mobilePaymentPlan?.$add('categories', [<Category>mobileCategory]);
+    await driveInPaymentPlan?.$add('categories', [<Category>driveInCategory]);
 
     //link plan payment plans
-    mobilePlan?.$add("paymentPlans", [<PaymentPlan>mobilePaymentPlan]);
-    driveInPlan?.$add("paymentPlans", [<PaymentPlan>driveInPaymentPlan]);
+    mobilePlan?.$add('paymentPlans', [<PaymentPlan>mobilePaymentPlan]);
+    driveInPlan?.$add('paymentPlans', [<PaymentPlan>driveInPaymentPlan]);
 
     //link plan categories
-    mobilePlan?.$add("categories", [<Category>mobileCategory]);
-    driveInPlan?.$add("categories", [<Category>driveInCategory]);
+    mobilePlan?.$add('categories', [<Category>mobileCategory]);
+    driveInPlan?.$add('categories', [<Category>driveInCategory]);
 
     const subscription = await this.subscriptionRepository.findOne({
       where: { slug: ONE_TIME_SUBSCRIPTION },
     });
 
-    await subscription?.$add("plans", [<Plan>mobilePlan, <Plan>driveInPlan]);
+    await subscription?.$add('plans', [<Plan>mobilePlan, <Plan>driveInPlan]);
   }
 
   private async createHouseHoldSubscription() {
@@ -544,25 +544,25 @@ export default class CommandLineRunner {
     const { mobileCategory, driveInCategory, hybridCategory } = await this.getCategories();
 
     //link payment plan categories
-    await mobilePaymentPlan?.$add("categories", [<Category>mobileCategory]);
-    await driveInPaymentPlan?.$add("categories", [<Category>driveInCategory]);
-    await hybridPaymentPlan?.$add("categories", [<Category>hybridCategory]);
+    await mobilePaymentPlan?.$add('categories', [<Category>mobileCategory]);
+    await driveInPaymentPlan?.$add('categories', [<Category>driveInCategory]);
+    await hybridPaymentPlan?.$add('categories', [<Category>hybridCategory]);
 
     //link plan payment plans
-    mobilePlan?.$add("paymentPlans", [<PaymentPlan>mobilePaymentPlan]);
-    driveInPlan?.$add("paymentPlans", [<PaymentPlan>driveInPaymentPlan]);
-    hybridPlan?.$add("paymentPlans", [<PaymentPlan>hybridPaymentPlan]);
+    mobilePlan?.$add('paymentPlans', [<PaymentPlan>mobilePaymentPlan]);
+    driveInPlan?.$add('paymentPlans', [<PaymentPlan>driveInPaymentPlan]);
+    hybridPlan?.$add('paymentPlans', [<PaymentPlan>hybridPaymentPlan]);
 
     //link plan categories
-    mobilePlan?.$add("categories", [<Category>mobileCategory]);
-    driveInPlan?.$add("categories", [<Category>driveInCategory]);
-    hybridPlan?.$add("categories", [<Category>hybridCategory]);
+    mobilePlan?.$add('categories', [<Category>mobileCategory]);
+    driveInPlan?.$add('categories', [<Category>driveInCategory]);
+    hybridPlan?.$add('categories', [<Category>hybridCategory]);
 
     const subscription = await this.subscriptionRepository.findOne({
       where: { slug: HOUSE_HOLD_SUBSCRIPTION },
     });
 
-    await subscription?.$add("plans", [<Plan>mobilePlan, <Plan>driveInPlan, <Plan>hybridPlan]);
+    await subscription?.$add('plans', [<Plan>mobilePlan, <Plan>driveInPlan, <Plan>hybridPlan]);
   }
 
   private async createFAFSubscription() {
@@ -588,25 +588,25 @@ export default class CommandLineRunner {
     const { mobileCategory, driveInCategory, hybridCategory } = await this.getCategories();
 
     //link payment plan categories
-    await mobilePaymentPlan?.$add("categories", [<Category>mobileCategory]);
-    await driveInPaymentPlan?.$add("categories", [<Category>driveInCategory]);
-    await hybridPaymentPlan?.$add("categories", [<Category>hybridCategory]);
+    await mobilePaymentPlan?.$add('categories', [<Category>mobileCategory]);
+    await driveInPaymentPlan?.$add('categories', [<Category>driveInCategory]);
+    await hybridPaymentPlan?.$add('categories', [<Category>hybridCategory]);
 
     //link plan payment plans
-    mobilePlan?.$add("paymentPlans", [<PaymentPlan>mobilePaymentPlan]);
-    driveInPlan?.$add("paymentPlans", [<PaymentPlan>driveInPaymentPlan]);
-    hybridPlan?.$add("paymentPlans", [<PaymentPlan>hybridPaymentPlan]);
+    mobilePlan?.$add('paymentPlans', [<PaymentPlan>mobilePaymentPlan]);
+    driveInPlan?.$add('paymentPlans', [<PaymentPlan>driveInPaymentPlan]);
+    hybridPlan?.$add('paymentPlans', [<PaymentPlan>hybridPaymentPlan]);
 
     //link plan categories
-    mobilePlan?.$add("categories", [<Category>mobileCategory]);
-    driveInPlan?.$add("categories", [<Category>driveInCategory]);
-    hybridPlan?.$add("categories", [<Category>hybridCategory]);
+    mobilePlan?.$add('categories', [<Category>mobileCategory]);
+    driveInPlan?.$add('categories', [<Category>driveInCategory]);
+    hybridPlan?.$add('categories', [<Category>hybridCategory]);
 
     const subscription = await this.subscriptionRepository.findOne({
       where: { slug: FAF_SUBSCRIPTION },
     });
 
-    await subscription?.$add("plans", [<Plan>mobilePlan, <Plan>driveInPlan, <Plan>hybridPlan]);
+    await subscription?.$add('plans', [<Plan>mobilePlan, <Plan>driveInPlan, <Plan>hybridPlan]);
   }
 
   private async getCategories() {

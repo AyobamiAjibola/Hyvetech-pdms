@@ -1,4 +1,4 @@
-import React, { ChangeEvent, createContext, FormEvent, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { ChangeEvent, createContext, FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   Box,
@@ -20,22 +20,22 @@ import {
   Stepper,
   TextField,
   useTheme,
-} from "@mui/material";
+} from '@mui/material';
 
-import { CheckListQuestionType, CheckListSectionType, CheckListType, CustomHookMessage } from "@app-types";
-import { IImageButtonData, IJobCheckListPageContextProps } from "@app-interfaces";
-import AppAlert from "../components/alerts/AppAlert";
-import { getJobAction } from "../store/actions/jobActions";
-import useAppDispatch from "../hooks/useAppDispatch";
-import useAppSelector from "../hooks/useAppSelector";
-import TabPanel from "../components/tabs/TabPanel";
-import { CssVarsProvider, Radio, RadioGroup, Sheet } from "@mui/joy";
-import CustomRadioIconField from "../components/forms/fields/CustomRadioIconField";
-import { CameraAlt, CheckCircleRounded, Close } from "@mui/icons-material";
-import { v4 } from "uuid";
-import { createJobCheckListAction } from "../store/actions/checkListActions";
+import { CheckListQuestionType, CheckListSectionType, CheckListType, CustomHookMessage } from '@app-types';
+import { IImageButtonData, IJobCheckListPageContextProps } from '@app-interfaces';
+import AppAlert from '../components/alerts/AppAlert';
+import { getJobAction } from '../store/actions/jobActions';
+import useAppDispatch from '../hooks/useAppDispatch';
+import useAppSelector from '../hooks/useAppSelector';
+import TabPanel from '../components/tabs/TabPanel';
+import { CssVarsProvider, Radio, RadioGroup, Sheet } from '@mui/joy';
+import CustomRadioIconField from '../components/forms/fields/CustomRadioIconField';
+import { CameraAlt, CheckCircleRounded, Close } from '@mui/icons-material';
+import { v4 } from 'uuid';
+import { createJobCheckListAction } from '../store/actions/checkListActions';
 
-const COLORS = ["#E14B5A", "#F2994A", "#009A49", "#E6E6E6"];
+const COLORS = ['#E14B5A', '#F2994A', '#009A49', '#E6E6E6'];
 
 const JobCheckListPageContext = createContext<IJobCheckListPageContextProps | null>(null);
 
@@ -66,7 +66,7 @@ function NoteAnswerForm(props: FormProps) {
   }, [openNote]);
 
   const handleToggle = () => {
-    setOpenNote((prevOpen) => !prevOpen);
+    setOpenNote(prevOpen => !prevOpen);
   };
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
@@ -76,7 +76,7 @@ function NoteAnswerForm(props: FormProps) {
   };
 
   return (
-    <Card sx={{ width: "100%" }} variant="outlined">
+    <Card sx={{ width: '100%' }} variant="outlined">
       <CardHeader title={question.question} />
       <CardContent>
         <CssVarsProvider>
@@ -86,7 +86,7 @@ function NoteAnswerForm(props: FormProps) {
               const bgColor = answer.color ? answer.color : COLORS[weight];
 
               return (
-                <Sheet key={idx2} sx={{ p: 2, borderRadius: "md" }}>
+                <Sheet key={idx2} sx={{ p: 2, borderRadius: 'md' }}>
                   <Radio
                     label={answer.answer}
                     overlay
@@ -98,16 +98,16 @@ function NoteAnswerForm(props: FormProps) {
                     componentsProps={{
                       label: ({ checked }) => ({
                         sx: {
-                          fontWeight: "lg",
-                          fontSize: "md",
-                          color: checked ? "text.primary" : "text.secondary",
+                          fontWeight: 'lg',
+                          fontSize: 'md',
+                          color: checked ? 'text.primary' : 'text.secondary',
                         },
                       }),
                       action: ({ checked }) => ({
                         sx: () => ({
                           ...(checked && {
-                            "--variant-borderWidth": "1px",
-                            "&&": {
+                            '--variant-borderWidth': '1px',
+                            '&&': {
                               // && to increase the specificity to win the base :hover styles
                               // borderColor: theme.vars.palette.primary[500],
                               backgroundColor: bgColor,
@@ -124,28 +124,26 @@ function NoteAnswerForm(props: FormProps) {
         </CssVarsProvider>
       </CardContent>
       {question.images ? (
-        <CardContent sx={{ overflowX: "scroll" }}>
+        <CardContent sx={{ overflowX: 'scroll' }}>
           <CustomRadioIconField questionId={question.id} options={question.images} onDelete={props.onRemoveImage} />
         </CardContent>
       ) : null}
       <CardActions
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
         {question.note && (
           <React.Fragment>
             <Button
               ref={anchorRef}
               id="composition-button"
-              aria-controls={openNote ? "composition-menu" : undefined}
-              aria-expanded={openNote ? "true" : undefined}
+              aria-controls={openNote ? 'composition-menu' : undefined}
+              aria-expanded={openNote ? 'true' : undefined}
               aria-haspopup="true"
               onClick={handleToggle}
-              sx={{ textTransform: "capitalize" }}
-            >
+              sx={{ textTransform: 'capitalize' }}>
               add note..
             </Button>
             <Popper
@@ -155,25 +153,22 @@ function NoteAnswerForm(props: FormProps) {
               placement="bottom-start"
               transition
               disablePortal
-              sx={{ width: "100%", maxWidth: 440, zIndex: 999 }}
-            >
+              sx={{ width: '100%', maxWidth: 440, zIndex: 999 }}>
               {({ TransitionProps, placement }) => (
                 <Grow
                   {...TransitionProps}
                   style={{
-                    transformOrigin: placement === "bottom-start" ? "left top" : "left bottom",
-                  }}
-                >
+                    transformOrigin: placement === 'bottom-start' ? 'left top' : 'left bottom',
+                  }}>
                   <Paper>
                     <ClickAwayListener onClickAway={handleClose}>
                       <Card>
                         <CardActions
                           sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                          }}
-                        >
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}>
                           <IconButton onClick={handleClose}>
                             <Close />
                           </IconButton>
@@ -203,10 +198,10 @@ function NoteAnswerForm(props: FormProps) {
           </React.Fragment>
         )}
         {question.media && (
-          <Button component="label" sx={{ textTransform: "capitalize" }} startIcon={<CameraAlt />}>
+          <Button component="label" sx={{ textTransform: 'capitalize' }} startIcon={<CameraAlt />}>
             media
             <input
-              onChange={(e) => props.onChangeImage(e, question.id)}
+              onChange={e => props.onChangeImage(e, question.id)}
               hidden
               ref={imageRef}
               id={question.id}
@@ -235,17 +230,17 @@ export default function JobCheckListTest() {
 
   const isLastStep = useMemo(() => activeStep === lastStep, [activeStep, lastStep]);
 
-  const jobReducer = useAppSelector((state) => state.jobReducer);
+  const jobReducer = useAppSelector(state => state.jobReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (jobReducer.getJobStatus === "idle") {
+    if (jobReducer.getJobStatus === 'idle') {
       dispatch(getJobAction(1));
     }
   }, [dispatch, jobReducer.getJobStatus]);
 
   useEffect(() => {
-    if (jobReducer.getJobStatus === "completed") {
+    if (jobReducer.getJobStatus === 'completed') {
       if (jobReducer.job) {
         const sections = jobReducer.job.checkList.sections;
         setCheckList(jobReducer.job.checkList);
@@ -279,10 +274,10 @@ export default function JobCheckListTest() {
       const questions = tempSections[i].questions;
 
       for (let j = 0; j < questions.length; j++) {
-        const answer = questions[j].answers.find((answer) => answer.id == id);
+        const answer = questions[j].answers.find(answer => answer.id == id);
 
         if (answer) {
-          const isChecked = questions[j].answers.find((value) => value.selected);
+          const isChecked = questions[j].answers.find(value => value.selected);
 
           if (isChecked) isChecked.selected = false;
 
@@ -301,7 +296,7 @@ export default function JobCheckListTest() {
     const id = e.target.id;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find((question) => question.id === id);
+      const question = tempSections[i].questions.find(question => question.id === id);
 
       if (question) {
         question.text = e.target.value;
@@ -318,7 +313,7 @@ export default function JobCheckListTest() {
     const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find((question) => question.id === questionId);
+      const question = tempSections[i].questions.find(question => question.id === questionId);
 
       if (question && files) {
         const file = files[0];
@@ -332,7 +327,7 @@ export default function JobCheckListTest() {
               questionId,
               url: URL.createObjectURL(file),
               title: file.name,
-              width: "",
+              width: '',
             },
           ];
         } else
@@ -342,7 +337,7 @@ export default function JobCheckListTest() {
               questionId,
               url: URL.createObjectURL(file),
               title: file.name,
-              width: "",
+              width: '',
             },
           ];
         break;
@@ -356,12 +351,12 @@ export default function JobCheckListTest() {
     const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find((question) => question.id === questionId);
+      const question = tempSections[i].questions.find(question => question.id === questionId);
 
       if (question && question.images) {
         const tempImages = [...question.images];
 
-        const image = tempImages.find((image) => image.id === id);
+        const image = tempImages.find(image => image.id === id);
 
         if (image) {
           const index = tempImages.indexOf(image);
@@ -415,12 +410,12 @@ export default function JobCheckListTest() {
             </Slide>
           );
         })}
-        <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
           <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
             Back
           </Button>
-          <Box sx={{ flex: "1 1 auto" }} />
-          <Button type="submit">{isLastStep ? "Submit" : "Next"}</Button>
+          <Box sx={{ flex: '1 1 auto' }} />
+          <Button type="submit">{isLastStep ? 'Submit' : 'Next'}</Button>
         </Box>
       </form>
       <AppAlert

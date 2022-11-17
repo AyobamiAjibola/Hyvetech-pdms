@@ -1,6 +1,6 @@
-import { Card, CardActionArea, CardActions, CardContent, CardMedia, IconButton, Typography } from "@mui/material";
-import React from "react";
-import { Delete, Edit } from "@mui/icons-material";
+import { Card, CardActionArea, CardActions, CardContent, CardMedia, IconButton, Typography } from '@mui/material';
+import React from 'react';
+import { Delete, Edit } from '@mui/icons-material';
 
 interface IProps {
   imgUrl?: string;
@@ -15,9 +15,9 @@ interface IProps {
 
 function CheckListCard(props: IProps) {
   return (
-    <Card sx={{ width: "100%" }}>
+    <Card sx={{ width: '100%' }}>
       <CardActionArea onClick={props.onNavigate}>
-        <CardMedia component="img" sx={{ width: "30%" }} image={props.imgUrl} alt={`check-list-${props.index}`} />
+        <CardMedia component="img" sx={{ width: '30%' }} image={props.imgUrl} alt={`check-list-${props.index}`} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {props.title}

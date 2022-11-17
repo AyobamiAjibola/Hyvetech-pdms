@@ -1,17 +1,17 @@
-import React, { ChangeEvent, MouseEvent, useState } from "react";
-import Box from "@mui/material/Box";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
-import CustomToolbar from "./CustomToolbar";
-import CustomTableHead, { HeadCell, Order } from "./CustomTableHead";
+import React, { ChangeEvent, MouseEvent, useState } from 'react';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import CustomToolbar from './CustomToolbar';
+import CustomTableHead, { HeadCell, Order } from './CustomTableHead';
 
 export interface Data {
   [p: string]: any;
@@ -29,9 +29,9 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 function getComparator<Key extends keyof any>(
   order: Order,
-  orderBy: Key
+  orderBy: Key,
 ): (a: { [key in Key]: any }, b: { [key in Key]: any }) => number {
-  return order === "desc"
+  return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -47,7 +47,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     }
     return a[1] - b[1];
   });
-  return stabilizedThis.map((el) => el[0]);
+  return stabilizedThis.map(el => el[0]);
 }
 
 interface IAppTableProps {
@@ -56,7 +56,7 @@ interface IAppTableProps {
 }
 
 export default function AppTable(props: IAppTableProps) {
-  const [order, setOrder] = useState<Order>("asc");
+  const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Data>();
   const [selected, setSelected] = useState<readonly string[]>([]);
   const [page, setPage] = useState(0);
@@ -64,14 +64,14 @@ export default function AppTable(props: IAppTableProps) {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleRequestSort = (event: MouseEvent<unknown>, property: keyof Data) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
   const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = props.rows.map((n) => n.name);
+      const newSelected = props.rows.map(n => n.name);
       setSelected(newSelected);
       return;
     }
@@ -114,11 +114,11 @@ export default function AppTable(props: IAppTableProps) {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.rows.length) : 0;
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', mb: 2 }}>
         <CustomToolbar numSelected={selected.length} />
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? "small" : "medium"}>
+          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
             <CustomTableHead
               numSelected={selected.length}
               order={order}
@@ -140,19 +140,18 @@ export default function AppTable(props: IAppTableProps) {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={event => handleClick(event, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={index}
-                      selected={isItemSelected}
-                    >
+                      selected={isItemSelected}>
                       <TableCell padding="checkbox">
                         <Checkbox
                           color="primary"
                           checked={isItemSelected}
                           inputProps={{
-                            "aria-labelledby": labelId,
+                            'aria-labelledby': labelId,
                           }}
                         />
                       </TableCell>
@@ -166,8 +165,7 @@ export default function AppTable(props: IAppTableProps) {
                 <TableRow
                   style={{
                     height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
+                  }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}

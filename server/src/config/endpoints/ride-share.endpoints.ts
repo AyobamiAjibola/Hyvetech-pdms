@@ -1,4 +1,4 @@
-import { appCommonTypes } from "../../@types/app-common";
+import { appCommonTypes } from '../../@types/app-common';
 import {
   deleteRideShareDriverHandler,
   getDriverHandler,
@@ -7,51 +7,51 @@ import {
   getRideShareDriversHandler,
   getRideShareDriverTransactionsHandler,
   getRideShareDriverVehiclesHandler,
-} from "../../routes/rideShareRoute";
+} from '../../routes/rideShareRoute';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 
 const rideShareEndpoints: RouteEndpoints = [
   {
-    name: "ride share driver",
-    method: "get",
-    path: "/ride-share/:driverId/driver",
+    name: 'ride share driver',
+    method: 'get',
+    path: '/ride-share/:driverId/driver',
     handler: getDriverHandler,
   },
 
   {
-    name: "ride share drivers",
-    method: "get",
-    path: "/ride-share",
+    name: 'ride share drivers',
+    method: 'get',
+    path: '/ride-share',
     handler: getRideShareDriversHandler,
   },
   {
-    name: "ride share driver by id",
-    method: "get",
-    path: "/ride-share/:driverId",
+    name: 'ride share driver by id',
+    method: 'get',
+    path: '/ride-share/:driverId',
     handler: getRideShareDriverHandler,
   },
   {
-    name: "ride share driver vehicles",
-    method: "get",
-    path: "/ride-share/:driverId/vehicles",
+    name: 'ride share driver vehicles',
+    method: 'get',
+    path: '/ride-share/:driverId/vehicles',
     handler: getRideShareDriverVehiclesHandler,
   },
   {
-    name: "ride share driver appointments",
-    method: "get",
-    path: "/ride-share/:driverId/appointments",
+    name: 'ride share driver appointments',
+    method: 'get',
+    path: '/ride-share/:driverId/appointments',
     handler: getRideShareDriverAppointmentsHandler,
   },
   {
-    name: "ride share driver transactions",
-    method: "get",
-    path: "/ride-share/:driverId/transactions",
+    name: 'ride share driver transactions',
+    method: 'get',
+    path: '/ride-share/:driverId/transactions',
     handler: getRideShareDriverTransactionsHandler,
   },
   {
-    name: "delete ride share driver",
-    method: "delete",
-    path: "/ride-share/:driverId",
+    name: 'delete ride share driver',
+    method: 'delete',
+    path: '/ride-share/:driverId',
     handler: deleteRideShareDriverHandler,
   },
 ];

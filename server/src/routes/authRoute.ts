@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import AuthenticationController from "../controllers/AuthenticationController";
-import PasswordEncoder from "../utils/PasswordEncoder";
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
+import { Request, Response } from 'express';
+import AuthenticationController from '../controllers/AuthenticationController';
+import PasswordEncoder from '../utils/PasswordEncoder';
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
 
 const passwordEncoder = new PasswordEncoder();
 const authenticationController = new AuthenticationController(passwordEncoder);

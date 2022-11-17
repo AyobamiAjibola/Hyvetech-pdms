@@ -7,35 +7,35 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
+} from 'sequelize-typescript';
 
-import Joi from "joi";
+import Joi from 'joi';
 
-import Role from "./Role";
-import Contact from "./Contact";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import Job from "./Job";
-import TechnicianRole from "./TechnicianRole";
-import PartnerTechnician from "./PartnerTechnician";
-import Partner from "./Partner";
+import Role from './Role';
+import Contact from './Contact';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Job from './Job';
+import TechnicianRole from './TechnicianRole';
+import PartnerTechnician from './PartnerTechnician';
+import Partner from './Partner';
 
 export const $technicianSchema = {
-  firstName: Joi.string().required().label("First Name"),
-  lastName: Joi.string().required().label("Last Name"),
-  email: Joi.string().email().required().label("Email"),
-  phone: Joi.string().max(11).required().label("Phone Number"),
-  state: Joi.string().required().label("State"),
-  district: Joi.string().required().label("District"),
+  firstName: Joi.string().required().label('First Name'),
+  lastName: Joi.string().required().label('Last Name'),
+  email: Joi.string().email().required().label('Email'),
+  phone: Joi.string().max(11).required().label('Phone Number'),
+  state: Joi.string().required().label('State'),
+  district: Joi.string().required().label('District'),
 };
 
 @Table({
   timestamps: true,
-  tableName: "technicians",
+  tableName: 'technicians',
 })
 export default class Technician extends Model<InferAttributes<Technician>, InferCreationAttributes<Technician>> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "technician_id" })
+  @Column({ type: DataType.INTEGER, field: 'technician_id' })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)
@@ -95,10 +95,10 @@ export default class Technician extends Model<InferAttributes<Technician>, Infer
   @Column(DataType.DATE)
   declare loginDate: Date;
 
-  @HasMany(() => Contact, { onDelete: "cascade" })
+  @HasMany(() => Contact, { onDelete: 'cascade' })
   declare contacts: NonAttribute<Contact[]>;
 
-  @HasMany(() => Job, { onDelete: "cascade" })
+  @HasMany(() => Job, { onDelete: 'cascade' })
   declare jobs: NonAttribute<Job[]>;
 
   @BelongsToMany(() => Role, () => TechnicianRole)

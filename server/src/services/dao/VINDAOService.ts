@@ -1,6 +1,6 @@
-import VINRepository from "../../repositories/VINRepository";
-import VIN from "../../models/VIN";
-import { appModelTypes } from "../../@types/app-model";
+import VINRepository from '../../repositories/VINRepository';
+import VIN from '../../models/VIN';
+import { appModelTypes } from '../../@types/app-model';
 import {
   Attributes,
   CreateOptions,
@@ -9,7 +9,7 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class VINDAOService implements ICrudDAO<VIN> {

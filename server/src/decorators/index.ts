@@ -1,9 +1,9 @@
-import { Request } from "express";
+import { Request } from 'express';
 
-import "reflect-metadata";
+import 'reflect-metadata';
 
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
 
 const errorResponse = CustomAPIError.response(HttpStatus.FORBIDDEN.value, HttpStatus.FORBIDDEN.code);
 
@@ -20,7 +20,7 @@ export function HasRole(role: string) {
     descriptor.value = function (request: Request) {
       const roles = request.user.roles;
 
-      const findRole = roles.find((item) => item.name === role);
+      const findRole = roles.find(item => item.name === role);
 
       if (!findRole) return errorResponse;
       return method.apply(this, arguments);
@@ -41,14 +41,14 @@ export function HasAnyRole(roles: string[]) {
     const method = descriptor.value;
 
     descriptor.value = function (request: Request) {
-      if (roles[0] === "*") return method.apply(this, arguments);
+      if (roles[0] === '*') return method.apply(this, arguments);
 
       const _roles = request.user.roles;
 
       if (_roles.length === 0) return errorResponse;
 
       for (const _role of _roles) {
-        const match = roles.some((role) => role === _role.name);
+        const match = roles.some(role => role === _role.name);
         if (!match) return errorResponse;
       }
 
@@ -69,7 +69,7 @@ export function HasAuthority(authority: string) {
     descriptor.value = function (request: Request) {
       const permissions = request.permissions;
 
-      const findRole = permissions.find((item) => item.name === authority);
+      const findRole = permissions.find(item => item.name === authority);
 
       if (!findRole) return errorResponse;
       return method.apply(this, arguments);
@@ -89,14 +89,14 @@ export function HasAnyAuthority(authorities: string[]) {
     const method = descriptor.value;
 
     descriptor.value = function (request: Request) {
-      if (authorities[0] === "*") return method.apply(this, arguments);
+      if (authorities[0] === '*') return method.apply(this, arguments);
 
       const _permissions = request.permissions;
 
       if (_permissions.length === 0) return errorResponse;
 
       for (const authority of authorities) {
-        const match = _permissions.some((permission) => permission.name === authority);
+        const match = _permissions.some(permission => permission.name === authority);
         if (!match) return errorResponse;
       }
 

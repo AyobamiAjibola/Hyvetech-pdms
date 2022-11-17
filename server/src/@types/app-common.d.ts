@@ -1,17 +1,17 @@
-import { JwtPayload } from "jsonwebtoken";
-import { NextFunction, Request, Response } from "express";
-import { appModelTypes } from "./app-model";
-import Permission from "../models/Permission";
-import { Fields, Files } from "formidable";
-import { Attributes } from "sequelize";
-import IncomingForm from "formidable/Formidable";
-import User from "../models/User";
+import { JwtPayload } from 'jsonwebtoken';
+import { NextFunction, Request, Response } from 'express';
+import { appModelTypes } from './app-model';
+import Permission from '../models/Permission';
+import { Fields, Files } from 'formidable';
+import { Attributes } from 'sequelize';
+import IncomingForm from 'formidable/Formidable';
+import User from '../models/User';
 
-import CheckList from "../models/CheckList";
+import CheckList from '../models/CheckList';
 
 export declare namespace appCommonTypes {
-  import IPermission = appModelTypes.IPermission;
-  type DatabaseEnv = "development" | "production" | "test";
+    import IPermission = appModelTypes.IPermission;
+    type DatabaseEnv = 'development' | 'production' | 'test';
   type CheckListAnswerType = {
     id: string;
     answer: string;
@@ -33,51 +33,51 @@ export declare namespace appCommonTypes {
     title: string;
     questions: Array<CheckListQuestionType>;
   };
-  type CheckListType = Partial<Omit<CheckList, "sections">> & {
+  type CheckListType = Partial<Omit<CheckList, 'sections'>> & {
     sections: Array<CheckListSectionType>;
   };
   type Roles =
-    | "ADMIN_ROLE"
-    | "GUEST_ROLE"
-    | "USER_ROLE"
-    | "CUSTOMER_ROLE"
-    | "GARAGE_ADMIN_ROLE"
-    | "GARAGE_TECHNICIAN_ROLE"
-    | "RIDE_SHARE_ADMIN_ROLE"
-    | "RIDE_SHARE_DRIVER_ROLE";
+    | 'ADMIN_ROLE'
+    | 'GUEST_ROLE'
+    | 'USER_ROLE'
+    | 'CUSTOMER_ROLE'
+    | 'GARAGE_ADMIN_ROLE'
+    | 'GARAGE_TECHNICIAN_ROLE'
+    | 'RIDE_SHARE_ADMIN_ROLE'
+    | 'RIDE_SHARE_DRIVER_ROLE';
   type Permissions =
-    | "manage_all"
-    | "create_booking"
-    | "read_booking"
-    | "update_booking"
-    | "delete_booking"
-    | "create_user"
-    | "read_user"
-    | "update_user"
-    | "delete_user"
-    | "create_customer"
-    | "read_customer"
-    | "update_customer"
-    | "delete_customer"
-    | "create_role"
-    | "read_role"
-    | "update_role"
-    | "delete_role"
-    | "create_plan"
-    | "read_plan"
-    | "update_plan"
-    | "delete_plan"
-    | "create_technician"
-    | "read_technician"
-    | "update_technician"
-    | "delete_technician"
-    | "manage_technician"
-    | "create_driver"
-    | "read_driver"
-    | "update_driver"
-    | "delete_driver"
-    | "manage_driver"
-    | "read_guest";
+    | 'manage_all'
+    | 'create_booking'
+    | 'read_booking'
+    | 'update_booking'
+    | 'delete_booking'
+    | 'create_user'
+    | 'read_user'
+    | 'update_user'
+    | 'delete_user'
+    | 'create_customer'
+    | 'read_customer'
+    | 'update_customer'
+    | 'delete_customer'
+    | 'create_role'
+    | 'read_role'
+    | 'update_role'
+    | 'delete_role'
+    | 'create_plan'
+    | 'read_plan'
+    | 'update_plan'
+    | 'delete_plan'
+    | 'create_technician'
+    | 'read_technician'
+    | 'update_technician'
+    | 'delete_technician'
+    | 'manage_technician'
+    | 'create_driver'
+    | 'read_driver'
+    | 'update_driver'
+    | 'delete_driver'
+    | 'manage_driver'
+    | 'read_guest';
   type VINProvider = {
     name: string;
     apiSecret: string;
@@ -102,7 +102,7 @@ export declare namespace appCommonTypes {
     driverId: string;
   };
 
-  type QueueMailTypes = "DEFAULT" | "WEBSITE" | "BOOKING" | "CUSTOMER";
+  type QueueMailTypes = 'DEFAULT' | 'WEBSITE' | 'BOOKING' | 'CUSTOMER';
 
   export type IPartWarranty = { warranty: string; interval: string };
   export type IPartQuantity = { quantity: string; unit: string };

@@ -1,7 +1,7 @@
-declare module "@app-types" {
-  import { IImageButtonData } from "@app-interfaces";
-  import { ICheckList } from "@app-models";
-  type IThunkAPIStatus = "idle" | "loading" | "completed" | "failed";
+declare module '@app-types' {
+  import { IImageButtonData } from '@app-interfaces';
+  import { ICheckList } from '@app-models';
+  type IThunkAPIStatus = 'idle' | 'loading' | 'completed' | 'failed';
   type CallableFunction = () => void;
   type CustomHookMessage = { message: string };
   type GenericObjectType = { [t: string]: any };
@@ -26,7 +26,7 @@ declare module "@app-types" {
     title: string;
     questions: Array<CheckListQuestionType>;
   };
-  type CheckListType = Partial<Omit<ICheckList, "sections">> & {
+  type CheckListType = Partial<Omit<ICheckList, 'sections'>> & {
     sections: Array<CheckListSectionType>;
   };
 }

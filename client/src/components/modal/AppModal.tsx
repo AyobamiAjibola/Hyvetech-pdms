@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
-import { AppBar, Dialog, DialogContent, DialogTitle, IconButton, Toolbar } from "@mui/material";
-import TransitionUp from "../transitions/TransitionUp";
-import CloseIcon from "@mui/icons-material/Close";
+import React, { ReactNode } from 'react';
+import { AppBar, Dialog, DialogContent, DialogTitle, IconButton, Toolbar } from '@mui/material';
+import TransitionUp from '../transitions/TransitionUp';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface IProps {
   show: boolean;
@@ -9,7 +9,7 @@ interface IProps {
   Content: ReactNode;
   ActionComponent?: ReactNode;
   onClose: () => void;
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   fullWidth?: boolean;
   fullScreen?: boolean;
 }
@@ -25,9 +25,8 @@ function AppModal(props: IProps) {
         aria-describedby="app-modal"
         maxWidth={props.size}
         fullWidth={props.fullWidth}
-        fullScreen={props.fullScreen}
-      >
-        <AppBar sx={{ position: "relative" }}>
+        fullScreen={props.fullScreen}>
+        <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
             <IconButton edge="start" color="inherit" onClick={props.onClose} aria-label="close">
               <CloseIcon />

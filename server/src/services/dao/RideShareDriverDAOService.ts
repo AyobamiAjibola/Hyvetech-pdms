@@ -1,6 +1,6 @@
-import RideShareDriverRepository from "../../repositories/RideShareDriverRepository";
-import RideShareDriver from "../../models/RideShareDriver";
-import { appModelTypes } from "../../@types/app-model";
+import RideShareDriverRepository from '../../repositories/RideShareDriverRepository';
+import RideShareDriver from '../../models/RideShareDriver';
+import { appModelTypes } from '../../@types/app-model';
 import {
   CreateOptions,
   CreationAttributes,
@@ -8,8 +8,8 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize/types";
-import { Attributes } from "sequelize";
+} from 'sequelize/types';
+import { Attributes } from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class RideShareDriverDAOService implements ICrudDAO<RideShareDriver> {
@@ -21,7 +21,7 @@ export default class RideShareDriverDAOService implements ICrudDAO<RideShareDriv
 
   create(
     values: CreationAttributes<RideShareDriver>,
-    options?: CreateOptions<Attributes<RideShareDriver>>
+    options?: CreateOptions<Attributes<RideShareDriver>>,
   ): Promise<RideShareDriver> {
     return this.rideShareDriverRepository.save(values, options);
   }
@@ -29,7 +29,7 @@ export default class RideShareDriverDAOService implements ICrudDAO<RideShareDriv
   update(
     district: RideShareDriver,
     values: InferAttributes<RideShareDriver>,
-    options: UpdateOptions<InferAttributes<RideShareDriver>>
+    options: UpdateOptions<InferAttributes<RideShareDriver>>,
   ): Promise<RideShareDriver> {
     return this.rideShareDriverRepository.updateOne(district, values, options);
   }

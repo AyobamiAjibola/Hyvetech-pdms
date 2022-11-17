@@ -1,5 +1,5 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import UserController from "../controllers/UserController";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import UserController from '../controllers/UserController';
 
 export const getUserHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await UserController.user(req);

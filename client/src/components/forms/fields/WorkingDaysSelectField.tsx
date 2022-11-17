@@ -1,15 +1,15 @@
-import * as React from "react";
-import { ChangeEvent, FocusEvent } from "react";
-import { Theme, useTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Chip from "@mui/material/Chip";
-import ErrorField from "./ErrorField";
-import { useFormikContext } from "formik";
+import * as React from 'react';
+import { ChangeEvent, FocusEvent } from 'react';
+import { Theme, useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
+import ErrorField from './ErrorField';
+import { useFormikContext } from 'formik';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -35,7 +35,7 @@ interface IProps {
   textInputStyle?: { [p: string]: string };
   helperStyle?: { [p: string]: string };
   fullWidth?: boolean;
-  size?: "small" | "medium";
+  size?: 'small' | 'medium';
   onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   value: string[];
@@ -54,7 +54,7 @@ export default function WorkingDaysSelectField(props: IProps) {
     const {
       target: { value },
     } = event;
-    setFieldValue(props.name, typeof value === "string" ? value.split(",") : value);
+    setFieldValue(props.name, typeof value === 'string' ? value.split(',') : value);
   };
 
   return (
@@ -62,8 +62,7 @@ export default function WorkingDaysSelectField(props: IProps) {
       <FormControl
         // @ts-ignore
         error={errors[props.name] && touched[props.name]}
-        fullWidth={props.fullWidth}
-      >
+        fullWidth={props.fullWidth}>
         <InputLabel id="demo-multiple-chip-label">Chip</InputLabel>
         <Select
           {...props}
@@ -73,16 +72,15 @@ export default function WorkingDaysSelectField(props: IProps) {
           value={props.value}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label={props.label} />}
-          renderValue={(selected) => (
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-              {selected.map((value) => (
+          renderValue={selected => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map(value => (
                 <Chip key={value} label={value} />
               ))}
             </Box>
           )}
-          MenuProps={MenuProps}
-        >
-          {props.options.map((name) => (
+          MenuProps={MenuProps}>
+          {props.options.map(name => (
             <MenuItem key={name} value={name} style={getStyles(name, props.value, theme)}>
               {name}
             </MenuItem>

@@ -1,8 +1,8 @@
-import { Request } from "express";
-import { appEventEmitter } from "../services/AppEventEmitter";
-import { TXN_CANCELLED, TXN_REFERENCE } from "../config/constants";
-import { appCommonTypes } from "../@types/app-common";
-import HttpStatus from "../helpers/HttpStatus";
+import { Request } from 'express';
+import { appEventEmitter } from '../services/AppEventEmitter';
+import { TXN_CANCELLED, TXN_REFERENCE } from '../config/constants';
+import { appCommonTypes } from '../@types/app-common';
+import HttpStatus from '../helpers/HttpStatus';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class TransactionController {
@@ -10,7 +10,7 @@ export default class TransactionController {
     try {
       const query = req.query;
 
-      if (query.status && query.status === "cancelled") {
+      if (query.status && query.status === 'cancelled') {
         appEventEmitter.emit(TXN_CANCELLED, { cancelled: true });
       }
 

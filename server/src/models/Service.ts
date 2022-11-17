@@ -1,16 +1,16 @@
-import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
-import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
-import Subscription from "./Subscription";
-import ServiceSubscription from "./ServiceSubscription";
+import { BelongsToMany, Column, DataType, Model, Table } from 'sequelize-typescript';
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
+import Subscription from './Subscription';
+import ServiceSubscription from './ServiceSubscription';
 
 @Table({
-  tableName: "services",
+  tableName: 'services',
   timestamps: true,
 })
 export default class Service extends Model<InferAttributes<Service>, InferCreationAttributes<Service>> {
   @Column({
     type: DataType.INTEGER,
-    field: "service_id",
+    field: 'service_id',
     primaryKey: true,
     autoIncrement: true,
   })

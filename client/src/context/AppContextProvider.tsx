@@ -1,9 +1,9 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState } from 'react';
 
-import { AppContextProps } from "@app-interfaces";
-import AbilityContext, { ability } from "./AbilityContext";
-import { ICustomer, IRideShareDriver, IVehicle } from "@app-models";
-import PrivateLayout from "../components/layouts/PrivateLayout";
+import { AppContextProps } from '@app-interfaces';
+import AbilityContext, { ability } from './AbilityContext';
+import { ICustomer, IRideShareDriver, IVehicle } from '@app-models';
+import PrivateLayout from '../components/layouts/PrivateLayout';
 
 export const AppContext = createContext<AppContextProps | null>(null);
 
@@ -52,8 +52,7 @@ export default function AppContextProvider() {
           setShowVehicles,
           driver,
           setDriver,
-        }}
-      >
+        }}>
         <PrivateLayout />
       </AppContext.Provider>
     </AbilityContext.Provider>

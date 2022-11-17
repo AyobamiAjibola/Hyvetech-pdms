@@ -1,12 +1,12 @@
-import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
-import Role from "./Role";
-import Permission from "./Permission";
-import { InferAttributes, InferCreationAttributes } from "sequelize";
+import Role from './Role';
+import Permission from './Permission';
+import { InferAttributes, InferCreationAttributes } from 'sequelize';
 
 @Table({
   timestamps: false,
-  tableName: "role_permissions",
+  tableName: 'role_permissions',
 })
 export default class RolePermission extends Model<
   InferAttributes<RolePermission>,
@@ -18,10 +18,10 @@ export default class RolePermission extends Model<
   declare id: number;
 
   @ForeignKey(() => Role)
-  @Column({ type: DataType.INTEGER, field: "role_id" })
+  @Column({ type: DataType.INTEGER, field: 'role_id' })
   declare roleId: number;
 
   @ForeignKey(() => Permission)
-  @Column({ type: DataType.INTEGER, field: "permission_id" })
+  @Column({ type: DataType.INTEGER, field: 'permission_id' })
   declare permissionId: number;
 }

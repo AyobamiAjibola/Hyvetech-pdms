@@ -1,5 +1,5 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import AppointmentController from "../controllers/AppointmentController";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import AppointmentController from '../controllers/AppointmentController';
 
 export const getAppointmentsHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await AppointmentController.allAppointments();

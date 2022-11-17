@@ -6,13 +6,13 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import AppointmentRepository from "../../repositories/AppointmentRepository";
-import Appointment from "../../models/Appointment";
-import { appModelTypes } from "../../@types/app-model";
-import moment from "moment/moment";
-import Generic from "../../utils/Generic";
+import AppointmentRepository from '../../repositories/AppointmentRepository';
+import Appointment from '../../models/Appointment';
+import { appModelTypes } from '../../@types/app-model';
+import moment from 'moment/moment';
+import Generic from '../../utils/Generic';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class AppointmentDAOService implements ICrudDAO<Appointment> {
@@ -31,7 +31,7 @@ export default class AppointmentDAOService implements ICrudDAO<Appointment> {
 
   create(
     values: CreationAttributes<Appointment>,
-    options?: CreateOptions<Attributes<Appointment>>
+    options?: CreateOptions<Attributes<Appointment>>,
   ): Promise<Appointment> {
     return this.appointmentRepository.save(values, options);
   }
@@ -55,7 +55,7 @@ export default class AppointmentDAOService implements ICrudDAO<Appointment> {
   update(
     appointment: Appointment,
     values: InferAttributes<Appointment>,
-    options: UpdateOptions<Attributes<Appointment>>
+    options: UpdateOptions<Attributes<Appointment>>,
   ): Promise<Appointment> {
     return this.appointmentRepository.updateOne(appointment, values, options);
   }

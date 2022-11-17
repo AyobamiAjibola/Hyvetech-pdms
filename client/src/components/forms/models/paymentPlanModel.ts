@@ -1,4 +1,4 @@
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
 export interface IPaymentPlanModelDescription {
   value: string;
@@ -26,80 +26,80 @@ export interface IPaymentPlanModel {
 }
 
 const initialValues: IPaymentPlanModel = {
-  name: "",
-  discount: "",
-  plan: "",
-  coverage: "",
-  description: [{ value: "" }],
-  parameter: [{ name: "", unit: "", value: "" }],
-  pricing: [{ interval: "", amount: "" }],
+  name: '',
+  discount: '',
+  plan: '',
+  coverage: '',
+  description: [{ value: '' }],
+  parameter: [{ name: '', unit: '', value: '' }],
+  pricing: [{ interval: '', amount: '' }],
 };
 
 const schema = Yup.object().shape({
-  name: Yup.string().required().label("Payment Plans Name"),
-  discount: Yup.string().nullable().label("Discount"),
-  plan: Yup.string().required().label("Plans Name"),
-  coverage: Yup.string().required().label("Coverage"),
-  description: Yup.array().of(Yup.object()).nullable().label("Payment Plans Description"),
-  parameter: Yup.array().of(Yup.object()).nullable().label("Payment Plans Coverage"),
-  pricing: Yup.array().of(Yup.object()).required().label("Payment Plans Pricing"),
+  name: Yup.string().required().label('Payment Plans Name'),
+  discount: Yup.string().nullable().label('Discount'),
+  plan: Yup.string().required().label('Plans Name'),
+  coverage: Yup.string().required().label('Coverage'),
+  description: Yup.array().of(Yup.object()).nullable().label('Payment Plans Description'),
+  parameter: Yup.array().of(Yup.object()).nullable().label('Payment Plans Coverage'),
+  pricing: Yup.array().of(Yup.object()).required().label('Payment Plans Pricing'),
 });
 
 const fields = {
   name: {
-    name: "name",
-    label: "Payment Plans Name*",
+    name: 'name',
+    label: 'Payment Plans Name*',
     error: {
-      invalid: "Invalid Payment Plans.",
-      required: "Payment Plans name is required",
+      invalid: 'Invalid Payment Plans.',
+      required: 'Payment Plans name is required',
     },
   },
   discount: {
-    name: "discount",
-    label: "Discount (%)",
+    name: 'discount',
+    label: 'Discount (%)',
     error: {
       invalid: `Discount is invalid`,
-      required: "Phone is required",
+      required: 'Phone is required',
     },
   },
   plan: {
-    name: "plan",
-    label: "Select Plans*",
+    name: 'plan',
+    label: 'Select Plans*',
     error: {
       invalid: `Plan is invalid`,
-      required: "Plans is required",
+      required: 'Plans is required',
     },
   },
   coverage: {
-    name: "coverage",
-    label: "Coverage",
+    name: 'coverage',
+    label: 'Coverage',
     error: {
-      invalid: "Coverage is invalid",
-      required: "Coverage is required",
+      invalid: 'Coverage is invalid',
+      required: 'Coverage is required',
     },
   },
   description: {
-    name: "description",
-    label: "Description",
+    name: 'description',
+    label: 'Description',
     error: {
-      invalid: "Description is invalid",
-      required: "Description is required.",
+      invalid: 'Description is invalid',
+      required: 'Description is required.',
     },
   },
   parameter: {
-    name: "parameter",
-    label: "Parameters",
+    name: 'parameter',
+    label: 'Parameters',
     error: {
-      invalid: "Parameters is invalid",
-      required: "Parameters is required",
+      invalid: 'Parameters is invalid',
+      required: 'Parameters is required',
     },
   },
   pricing: {
-    name: "pricing",
-    label: "Pricing*",
+    name: 'pricing',
+    label: 'Pricing*',
     error: {
-      invalid: "Pricing is invalid",
-      required: "Pricing is required",
+      invalid: 'Pricing is invalid',
+      required: 'Pricing is required',
     },
   },
 };

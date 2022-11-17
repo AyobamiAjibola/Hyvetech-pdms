@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import { Form, useFormikContext } from "formik";
-import { Grid, InputAdornment, Typography } from "@mui/material";
-import TextInputField from "../fields/TextInputField";
-import { VerifiedUser, Visibility, VisibilityOff } from "@mui/icons-material";
+import React, { useState } from 'react';
+import { Form, useFormikContext } from 'formik';
+import { Grid, InputAdornment, Typography } from '@mui/material';
+import TextInputField from '../fields/TextInputField';
+import { VerifiedUser, Visibility, VisibilityOff } from '@mui/icons-material';
 
-import { ISignInModel } from "@app-interfaces";
-import signInModel from "../models/signInModel";
-import { LoadingButton } from "@mui/lab";
-import useAppSelector from "../../../hooks/useAppSelector";
-import "./signInForms.css";
+import { ISignInModel } from '@app-interfaces';
+import signInModel from '../models/signInModel';
+import { LoadingButton } from '@mui/lab';
+import useAppSelector from '../../../hooks/useAppSelector';
+import './signInForms.css';
 
 function SignInForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [fieldType, setFieldType] = useState<string>("password");
+  const [fieldType, setFieldType] = useState<string>('password');
 
   const { handleChange, handleBlur, values } = useFormikContext<ISignInModel>();
 
-  const authReducer = useAppSelector((state) => state.authenticationReducer);
+  const authReducer = useAppSelector(state => state.authenticationReducer);
 
   const togglePasswordVisibility = () => {
-    setFieldType(fieldType === "text" ? "password" : "text");
+    setFieldType(fieldType === 'text' ? 'password' : 'text');
     setShowPassword(!showPassword);
   };
 
@@ -59,7 +59,7 @@ function SignInForm() {
                 </InputAdornment>
               ),
               endAdornment: (
-                <InputAdornment onClick={togglePasswordVisibility} position="start" sx={{ cursor: "pointer" }}>
+                <InputAdornment onClick={togglePasswordVisibility} position="start" sx={{ cursor: 'pointer' }}>
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </InputAdornment>
               ),
@@ -72,13 +72,12 @@ function SignInForm() {
         </Grid>
         <Grid item xs={12} md={6} sx={{ mt: 2 }}>
           <LoadingButton
-            loading={authReducer.signingInStatus === "loading"}
+            loading={authReducer.signingInStatus === 'loading'}
             type="submit"
             size="large"
             fullWidth
             variant="contained"
-            color="primary"
-          >
+            color="primary">
             Login
           </LoadingButton>
         </Grid>

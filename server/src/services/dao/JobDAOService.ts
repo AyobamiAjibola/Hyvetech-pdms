@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import JobRepository from "../../repositories/JobRepository";
-import Job from "../../models/Job";
-import { appModelTypes } from "../../@types/app-model";
+import JobRepository from '../../repositories/JobRepository';
+import Job from '../../models/Job';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class JobDAOService implements ICrudDAO<Job> {

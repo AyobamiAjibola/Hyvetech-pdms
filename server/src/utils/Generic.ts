@@ -1,17 +1,17 @@
-import path from "node:path";
-import fs from "fs/promises";
+import path from 'node:path';
+import fs from 'fs/promises';
 
-import { v4 } from "uuid";
-import { Op } from "sequelize";
-import moment, { Moment } from "moment";
-import camelcase from "camelcase";
-import { sign } from "jsonwebtoken";
+import { v4 } from 'uuid';
+import { Op } from 'sequelize';
+import moment, { Moment } from 'moment';
+import camelcase from 'camelcase';
+import { sign } from 'jsonwebtoken';
 
-import settings from "../config/settings";
-import { appCommonTypes } from "../@types/app-common";
-import { appModelTypes } from "../@types/app-model";
-import Appointment from "../models/Appointment";
-import dataStore from "../config/dataStore";
+import settings from '../config/settings';
+import { appCommonTypes } from '../@types/app-common';
+import { appModelTypes } from '../@types/app-model';
+import Appointment from '../models/Appointment';
+import dataStore from '../config/dataStore';
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 
@@ -64,12 +64,12 @@ export default class Generic {
    */
   public static generateJwt(payload: CustomJwtPayload) {
     const key = <string>settings.jwt.key;
-    return sign(payload, key, { expiresIn: "24h" });
+    return sign(payload, key);
   }
 
   public static generateRandomString(limit: number) {
-    const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz@#!$%^&+=";
-    let randomString = "";
+    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz@#!$%^&+=';
+    let randomString = '';
     for (let i = 0; i < limit; i++) {
       const randomNum = Math.floor(Math.random() * letters.length);
       randomString += letters.substring(randomNum, randomNum + 1);
@@ -85,13 +85,13 @@ export default class Generic {
    * @param options
    */
   public static randomize(options?: IRandomize) {
-    const numbers = "01234567890123456789012345678901234567890123456789";
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-    const specialChars = "@#!$%^&+=*()<>_-?|.";
+    const numbers = '01234567890123456789012345678901234567890123456789';
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+    const specialChars = '@#!$%^&+=*()<>_-?|.';
 
     let text = numbers;
     let count = 10;
-    let result = "";
+    let result = '';
 
     if (options?.count) count = options.count;
     if (options?.number) text = numbers;
@@ -108,12 +108,12 @@ export default class Generic {
   }
 
   public static convertTextToCamelcase(text: string) {
-    text = text.replace(/[^a-zA-Z0-9 ]/g, "");
+    text = text.replace(/[^a-zA-Z0-9 ]/g, '');
     return camelcase(text);
   }
 
   public static formatNumberToIntl(number: number) {
-    return new Intl.NumberFormat("en-GB", {
+    return new Intl.NumberFormat('en-GB', {
       minimumFractionDigits: 2,
     }).format(number);
   }
@@ -122,7 +122,7 @@ export default class Generic {
     text = text.trim();
 
     if (text.search(/\s/g) !== -1) {
-      return text.toUpperCase().replace(/\s/g, "_");
+      return text.toUpperCase().replace(/\s/g, '_');
     }
     return text.toUpperCase();
   }
@@ -133,18 +133,18 @@ export default class Generic {
 
   public static getMonths() {
     return [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
   }
 
@@ -159,8 +159,8 @@ export default class Generic {
     for (let i = 0; i < months.length; i++) {
       const datetime = moment({ year: year, month: i, date: 1 });
 
-      const firstDay = moment(datetime).startOf("month").toDate();
-      const lastDay = moment(datetime).endOf("month").toDate();
+      const firstDay = moment(datetime).startOf('month').toDate();
+      const lastDay = moment(datetime).endOf('month').toDate();
 
       const customers = await repository.findAll({
         where: {
@@ -225,7 +225,7 @@ export default class Generic {
   }
 
   public static async enableTimeSlot(appointmentDate: Moment, appointment: Appointment) {
-    const date = appointmentDate.format("YYYY-MM-DD");
+    const date = appointmentDate.format('YYYY-MM-DD');
     const time = appointment.timeSlot;
 
     const getSlots = await dataStore.get(date);
@@ -236,7 +236,7 @@ export default class Generic {
       if (slotsJSON !== null) {
         const tempSlots = [...slotsJSON];
 
-        const slot = tempSlots.find((slot) => slot.time === time);
+        const slot = tempSlots.find(slot => slot.time === time);
 
         const index = tempSlots.indexOf(slot);
 

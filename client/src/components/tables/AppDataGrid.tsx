@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
-import { Box, LinearProgress } from "@mui/material";
-import { DataGrid, GridColumns, GridOverlay, GridSortModel, GridToolbar } from "@mui/x-data-grid";
-import CustomSquarePagination from "./CustomSquarePagination";
+import { Box, LinearProgress } from '@mui/material';
+import { DataGrid, GridColumns, GridOverlay, GridSortModel, GridToolbar } from '@mui/x-data-grid';
+import CustomSquarePagination from './CustomSquarePagination';
 
 interface IProps {
   rows: readonly any[];
@@ -17,7 +17,7 @@ interface IProps {
 
 function AppDataGrid(props: IProps) {
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: '100%' }}>
       <DataGrid
         {...props}
         loading={props.loading}
@@ -33,7 +33,7 @@ function AppDataGrid(props: IProps) {
         rows={props.rows}
         columns={props.columns}
         sortModel={props.sortModel}
-        onSortModelChange={(model) => {
+        onSortModelChange={model => {
           if (props.sortModel && props.onSortModel) props.onSortModel(model);
         }}
         disableSelectionOnClick
@@ -53,7 +53,7 @@ function AppDataGrid(props: IProps) {
 function CustomLoadingOverlay() {
   return (
     <GridOverlay>
-      <div style={{ position: "absolute", top: 0, width: "100%" }}>
+      <div style={{ position: 'absolute', top: 0, width: '100%' }}>
         <LinearProgress />
       </div>
     </GridOverlay>

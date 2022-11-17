@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response } from "express";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import settings from "../config/settings";
-import { verify } from "jsonwebtoken";
-import authorizeRoute from "./authorizeRoute";
-import { appCommonTypes } from "../@types/app-common";
-import AppLogger from "../utils/AppLogger";
-import UserRepository from "../repositories/UserRepository";
-import CustomerRepository from "../repositories/CustomerRepository";
+import { NextFunction, Request, Response } from 'express';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import settings from '../config/settings';
+import { verify } from 'jsonwebtoken';
+import authorizeRoute from './authorizeRoute';
+import { appCommonTypes } from '../@types/app-common';
+import AppLogger from '../utils/AppLogger';
+import UserRepository from '../repositories/UserRepository';
+import CustomerRepository from '../repositories/CustomerRepository';
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 
 const logger = AppLogger.init(authenticateRoute.name).logger;
@@ -18,12 +18,12 @@ export default async function authenticateRoute(req: Request, res: Response, nex
   const headers = req.headers;
   const cookie = headers.cookie;
   const authorization = headers.authorization;
-  let jwt = "";
+  let jwt = '';
 
   if (cookie) {
-    const [name, token] = cookie.split("=");
+    const [name, token] = cookie.split('=');
 
-    if (!name.startsWith("_admin_auth")) {
+    if (!name.startsWith('_admin_auth')) {
       logger.error("malformed authorization: '_admin_auth' missing");
 
       return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
@@ -31,17 +31,17 @@ export default async function authenticateRoute(req: Request, res: Response, nex
 
     jwt = token.trim();
   } else if (authorization) {
-    const [name, token] = authorization.split(" ");
+    const [name, token] = authorization.split(' ');
 
-    if (!name.startsWith("Bearer")) {
-      logger.error("malformed token: no Bearer in header");
+    if (!name.startsWith('Bearer')) {
+      logger.error('malformed token: no Bearer in header');
 
       return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
     }
 
     jwt = token.trim();
   } else {
-    logger.error("Cookie or Authorization not in header");
+    logger.error('Cookie or Authorization not in header');
 
     return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
   }

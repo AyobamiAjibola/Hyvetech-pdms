@@ -1,22 +1,22 @@
-import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
-import moment from "moment";
-import { Form, Formik, FormikHelpers } from "formik";
+import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from 'react';
+import moment from 'moment';
+import { Form, Formik, FormikHelpers } from 'formik';
 
-import ServiceLocationAndCalendar from "../../../containers/booking/ServiceLocationAndCalendar";
-import VehicleFaultAndTimeSlot from "../../../containers/booking/VehicleFaultAndTimeSlot";
-import SkipAndSubmitButtons from "../../../containers/booking/SkipAndSubmitButtons";
-import "./bookingForm.css";
-import { Paper, Stack } from "@mui/material";
-import bookingModel from "../../../components/forms/models/bookingModel";
-import settings from "../../../config/settings";
-import { DRIVE_IN_PLAN, HYBRID_PLAN, LOCAL_STORAGE, MAIN_OFFICE, MOBILE_PLAN } from "../../../config/constants";
-import { AppContext } from "../../../context/AppContextProvider";
-import { IAppointment } from "@app-models";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import useAppSelector from "../../../hooks/useAppSelector";
-import { AppContextProps } from "@app-interfaces";
-import useUploadFile from "../../../hooks/useUploadFile";
-import { rescheduleInspectionAction } from "../../../store/actions/appointmentActions";
+import ServiceLocationAndCalendar from '../../../containers/booking/ServiceLocationAndCalendar';
+import VehicleFaultAndTimeSlot from '../../../containers/booking/VehicleFaultAndTimeSlot';
+import SkipAndSubmitButtons from '../../../containers/booking/SkipAndSubmitButtons';
+import './bookingForm.css';
+import { Paper, Stack } from '@mui/material';
+import bookingModel from '../../../components/forms/models/bookingModel';
+import settings from '../../../config/settings';
+import { DRIVE_IN_PLAN, HYBRID_PLAN, LOCAL_STORAGE, MAIN_OFFICE, MOBILE_PLAN } from '../../../config/constants';
+import { AppContext } from '../../../context/AppContextProvider';
+import { IAppointment } from '@app-models';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { AppContextProps } from '@app-interfaces';
+import useUploadFile from '../../../hooks/useUploadFile';
+import { rescheduleInspectionAction } from '../../../store/actions/appointmentActions';
 
 interface IBookingProps {
   appointment?: IAppointment | null;
@@ -32,17 +32,17 @@ export interface IBookingFormValues {
 }
 
 const bookingFormValues: IBookingFormValues = {
-  location: "",
-  vehicleFault: "",
+  location: '',
+  vehicleFault: '',
 };
 
 export default function BookingForm(props: IBookingProps) {
   const [date, setDate] = useState<Date>(new Date());
-  const [slot, setSlot] = useState<string>("");
+  const [slot, setSlot] = useState<string>('');
   const [planCategory, setPlanCategory] = useState<string>(DRIVE_IN_PLAN);
   const [bookingData, setBookingData] = useState<IAppointment>();
   const [_bookingFormValues, _setBookingFormValues] = useState<IBookingFormValues>(bookingFormValues);
-  const [mobileLocation, setMobileLocation] = useState<string>("");
+  const [mobileLocation, setMobileLocation] = useState<string>('');
 
   const {
     setShowBookingBtn,
@@ -59,13 +59,13 @@ export default function BookingForm(props: IBookingProps) {
   const { image, height, width } = useUploadFile();
 
   const dispatch = useAppDispatch();
-  const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
+  const timeSlotReducer = useAppSelector(state => state.timeSlotReducer);
 
   useEffect(() => {
     if (props.appointment) {
       const appointment = props.appointment;
 
-      let location = "";
+      let location = '';
 
       if (appointment.planCategory === HYBRID_PLAN) {
         //Mobile mode
@@ -93,20 +93,20 @@ export default function BookingForm(props: IBookingProps) {
 
       _setBookingFormValues({
         location,
-        vehicleFault: appointment.vehicleFault.description ? appointment.vehicleFault.description : "",
+        vehicleFault: appointment.vehicleFault.description ? appointment.vehicleFault.description : '',
       });
     }
   }, [props.appointment]);
 
   useEffect(() => {
     if (planCategory === HYBRID_PLAN && planTab === 1) {
-      _setBookingFormValues((prevState) => ({
+      _setBookingFormValues(prevState => ({
         ...prevState,
         location: MAIN_OFFICE,
       }));
     }
     if (planCategory === HYBRID_PLAN && planTab === 0) {
-      _setBookingFormValues((prevState) => ({
+      _setBookingFormValues(prevState => ({
         ...prevState,
         location: mobileLocation,
       }));
@@ -131,7 +131,7 @@ export default function BookingForm(props: IBookingProps) {
       setCheckedSlot(e.target.checked);
       setSlot(e.target.value);
     },
-    [setCheckedSlot, setShowBookingBtn, showBookingBtn]
+    [setCheckedSlot, setShowBookingBtn, showBookingBtn],
   );
 
   const handleBookAppointment = (values: IBookingFormValues, formikHelpers: FormikHelpers<IBookingFormValues>) => {
@@ -139,7 +139,7 @@ export default function BookingForm(props: IBookingProps) {
     if (planCategory === MOBILE_PLAN && !values.location.length) {
       return formikHelpers.setFieldError(
         bookingModel.fields.location.name,
-        bookingModel.fields.location.error.required
+        bookingModel.fields.location.error.required,
       );
     }
 
@@ -147,7 +147,7 @@ export default function BookingForm(props: IBookingProps) {
     if (planCategory === HYBRID_PLAN && planTab === 0 && !values.location.length) {
       return formikHelpers.setFieldError(
         bookingModel.fields.location.name,
-        bookingModel.fields.location.error.required
+        bookingModel.fields.location.error.required,
       );
     }
 
@@ -162,7 +162,7 @@ export default function BookingForm(props: IBookingProps) {
 
     // If plan is mobile, or hybrid mobile set time slot to normal date time
     if (planCategory === MOBILE_PLAN || (planCategory === HYBRID_PLAN && planTab === 0)) {
-      timeSlot = moment(date.toISOString()).format("LT");
+      timeSlot = moment(date.toISOString()).format('LT');
     }
 
     // If plan is drive-in or hybrid drive-in, set local storage data
@@ -201,18 +201,16 @@ export default function BookingForm(props: IBookingProps) {
   return (
     <Paper
       sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
-      className="bookingFormContainer"
-    >
+      className="bookingFormContainer">
       <Formik
         initialValues={_bookingFormValues}
         validationSchema={bookingModel.schema[0]}
         onSubmit={handleBookAppointment}
-        enableReinitialize
-      >
+        enableReinitialize>
         <Form>
           <Stack sx={{ my: 2 }}>
             <h5 className="time-header-schedule">Schedule An Inspection</h5>

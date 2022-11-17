@@ -1,6 +1,6 @@
-import TagRepository from "../../repositories/TagRepository";
-import Tag from "../../models/Tag";
-import { appModelTypes } from "../../@types/app-model";
+import TagRepository from '../../repositories/TagRepository';
+import Tag from '../../models/Tag';
+import { appModelTypes } from '../../@types/app-model';
 import {
   Attributes,
   CreateOptions,
@@ -9,7 +9,7 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class TagDAOService implements ICrudDAO<Tag> {

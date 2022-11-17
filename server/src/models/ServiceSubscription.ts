@@ -1,10 +1,10 @@
-import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { InferAttributes, InferCreationAttributes } from "sequelize";
-import Service from "./Service";
-import Subscription from "./Subscription";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { InferAttributes, InferCreationAttributes } from 'sequelize';
+import Service from './Service';
+import Subscription from './Subscription';
 
 @Table({
-  tableName: "service_subscriptions",
+  tableName: 'service_subscriptions',
   timestamps: false,
 })
 export default class ServiceSubscription extends Model<

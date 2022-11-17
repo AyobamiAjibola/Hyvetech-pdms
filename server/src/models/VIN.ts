@@ -1,8 +1,8 @@
-import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
-import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
 
-@Table({ tableName: "vins", timestamps: true })
+@Table({ tableName: 'vins', timestamps: true })
 export default class VIN extends Model<InferAttributes<VIN>, InferCreationAttributes<VIN>> {
   @PrimaryKey
   @AutoIncrement

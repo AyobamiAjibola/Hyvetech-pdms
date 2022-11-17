@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import RoleRepository from "../../repositories/RoleRepository";
-import Role from "../../models/Role";
-import { appModelTypes } from "../../@types/app-model";
+import RoleRepository from '../../repositories/RoleRepository';
+import Role from '../../models/Role';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class RoleDAOService implements ICrudDAO<Role> {

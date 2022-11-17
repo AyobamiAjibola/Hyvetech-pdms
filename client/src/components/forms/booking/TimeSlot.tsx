@@ -1,11 +1,11 @@
-import React, { memo, useContext } from "react";
-import { Button } from "@mui/material";
+import React, { memo, useContext } from 'react';
+import { Button } from '@mui/material';
 
-import morning from "../../../assets/images/morning.png";
-import sun from "../../../assets/images/sun.png";
-import { AppContext } from "../../../context/AppContextProvider";
-import useAppSelector from "../../../hooks/useAppSelector";
-import { AppContextProps } from "@app-interfaces";
+import morning from '../../../assets/images/morning.png';
+import sun from '../../../assets/images/sun.png';
+import { AppContext } from '../../../context/AppContextProvider';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { AppContextProps } from '@app-interfaces';
 
 interface Props {
   handleChange: any;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 function TimeSlot({ handleChange, slot }: Props) {
-  const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
+  const timeSlotReducer = useAppSelector(state => state.timeSlotReducer);
 
   const { checkedSlot } = useContext(AppContext) as AppContextProps;
 
@@ -32,12 +32,12 @@ function TimeSlot({ handleChange, slot }: Props) {
               checked={checkedSlot && value.time === slot}
             />
 
-            <Button disabled={!value.available} className={!value.available ? "disabled time-btn" : "time-btn"}>
+            <Button disabled={!value.available} className={!value.available ? 'disabled time-btn' : 'time-btn'}>
               <label htmlFor={value.time}>
-                {value.label === "Morning" && <img src={morning} alt="slot" className="slot-img" />}
-                {value.label === "Late Morning" && <img src={morning} alt="slot" className="slot-img" />}
-                {value.label === "Afternoon" && <img src={sun} alt="slot" className="slot-img" />}
-                {value.label === "Late Afternoon" && <img src={sun} alt="slot" className="slot-img" />}
+                {value.label === 'Morning' && <img src={morning} alt="slot" className="slot-img" />}
+                {value.label === 'Late Morning' && <img src={morning} alt="slot" className="slot-img" />}
+                {value.label === 'Afternoon' && <img src={sun} alt="slot" className="slot-img" />}
+                {value.label === 'Late Afternoon' && <img src={sun} alt="slot" className="slot-img" />}
                 <div>
                   <span className="time-slot-btn-title">{value.time}</span>
                 </div>

@@ -1,29 +1,29 @@
-import { AutoIncrement, BelongsToMany, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AutoIncrement, BelongsToMany, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
-import Permission from "./Permission";
-import RolePermission from "./RolePermission";
-import Joi from "joi";
-import Customer from "./Customer";
-import CustomerRole from "./CustomerRole";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import UserRole from "./UserRole";
-import User from "./User";
-import RideShareDriverRole from "./RideShareDriverRole";
-import RideShareDriver from "./RideShareDriver";
+import Permission from './Permission';
+import RolePermission from './RolePermission';
+import Joi from 'joi';
+import Customer from './Customer';
+import CustomerRole from './CustomerRole';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import UserRole from './UserRole';
+import User from './User';
+import RideShareDriverRole from './RideShareDriverRole';
+import RideShareDriver from './RideShareDriver';
 
 export const $roleSchema = {
-  name: Joi.string().required().label("Role Name"),
+  name: Joi.string().required().label('Role Name'),
 };
 
 @Table({
   timestamps: true,
 
-  tableName: "roles",
+  tableName: 'roles',
 })
 export default class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "role_id", allowNull: false })
+  @Column({ type: DataType.INTEGER, field: 'role_id', allowNull: false })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)

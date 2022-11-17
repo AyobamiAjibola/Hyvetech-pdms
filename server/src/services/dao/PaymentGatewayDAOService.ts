@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import PaymentGatewayRepository from "../../repositories/PaymentGatewayRepository";
-import PaymentGateway from "../../models/PaymentGateway";
-import { appModelTypes } from "../../@types/app-model";
+import PaymentGatewayRepository from '../../repositories/PaymentGatewayRepository';
+import PaymentGateway from '../../models/PaymentGateway';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class PaymentGatewayDAOService implements ICrudDAO<PaymentGateway> {
@@ -22,7 +22,7 @@ export default class PaymentGatewayDAOService implements ICrudDAO<PaymentGateway
 
   create(
     values: CreationAttributes<PaymentGateway>,
-    options?: CreateOptions<Attributes<PaymentGateway>>
+    options?: CreateOptions<Attributes<PaymentGateway>>,
   ): Promise<PaymentGateway> {
     return this.paymentGateway.save(values, options);
   }
@@ -46,7 +46,7 @@ export default class PaymentGatewayDAOService implements ICrudDAO<PaymentGateway
   update(
     paymentGateway: PaymentGateway,
     values: InferAttributes<PaymentGateway>,
-    options: UpdateOptions<Attributes<PaymentGateway>>
+    options: UpdateOptions<Attributes<PaymentGateway>>,
   ): Promise<PaymentGateway> {
     return this.paymentGateway.updateOne(paymentGateway, values, options);
   }

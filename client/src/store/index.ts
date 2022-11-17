@@ -1,11 +1,11 @@
-import { configureStore } from "@reduxjs/toolkit";
-import rootReducer from "./reducers/rootReducer";
-import settings from "../config/settings";
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from './reducers/rootReducer';
+import settings from '../config/settings';
 
 const store = configureStore({
   reducer: rootReducer,
-  devTools: settings.env === "development",
-  middleware: (getDefaultMiddleware) =>
+  devTools: settings.env === 'development',
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),

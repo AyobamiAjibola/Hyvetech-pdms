@@ -1,14 +1,14 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import settings from "../../config/settings";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import settings from '../../config/settings';
 
-import getIndexDB from "../../db";
-import axiosClient from "../../config/axiosClient";
-import asyncThunkErrorWrapper from "../../helpers/asyncThunkErrorWrapper";
+import getIndexDB from '../../db';
+import axiosClient from '../../config/axiosClient';
+import asyncThunkErrorWrapper from '../../helpers/asyncThunkErrorWrapper';
 
-const GET_TIME_SLOTS = "timeslot:GET_TIME_SLOTS";
-const INIT_TIME_SLOT = "timeslot:INIT_TIME_SLOT";
-const DISABLE_TIME_SLOTS = "timeslot:DISABLE_TIME_SLOTS";
-const GET_CURRENT_DATE = "timeslot:GET_CURRENT_DATE";
+const GET_TIME_SLOTS = 'timeslot:GET_TIME_SLOTS';
+const INIT_TIME_SLOT = 'timeslot:INIT_TIME_SLOT';
+const DISABLE_TIME_SLOTS = 'timeslot:DISABLE_TIME_SLOTS';
+const GET_CURRENT_DATE = 'timeslot:GET_CURRENT_DATE';
 const API_ROOT = settings.api.rest;
 
 const db = getIndexDB();
@@ -18,7 +18,7 @@ export const getTimeslotsAction = createAsyncThunk<any, void>(
   asyncThunkErrorWrapper(async () => {
     const response = await axiosClient.get(`${API_ROOT}/timeslots`);
     return response.data;
-  })
+  }),
 );
 
 export const initCurrentTimeSlotsAction = createAsyncThunk(
@@ -32,7 +32,7 @@ export const initCurrentTimeSlotsAction = createAsyncThunk(
       return { timeSlot, slots: timeSlot.slots };
     }
     return { date: args.date, timeSlot, slots: timeSlot.slots };
-  })
+  }),
 );
 
 export const disableTimeSlotAction = createAsyncThunk(
@@ -44,7 +44,7 @@ export const disableTimeSlotAction = createAsyncThunk(
       return { timeSlot: response.data.disableTimeSlot };
     }
     return { date: args.date, timeSlot: response.data.disableTimeSlot };
-  })
+  }),
 );
 
 export const getCurrentDateAction = createAsyncThunk(
@@ -54,15 +54,15 @@ export const getCurrentDateAction = createAsyncThunk(
 
     if (currentDate.length) return currentDate[0];
 
-    await db.table("timeSlots").add({
+    await db.table('timeSlots').add({
       shortDate: args.shortDate,
       fullDate: args.fullDate,
     });
 
     return _getCurrentDateFromDB(args.shortDate);
-  })
+  }),
 );
 
 const _getCurrentDateFromDB = async (shortDate: string) => {
-  return db.table("timeSlots").where("shortDate").equalsIgnoreCase(shortDate).toArray();
+  return db.table('timeSlots').where('shortDate').equalsIgnoreCase(shortDate).toArray();
 };

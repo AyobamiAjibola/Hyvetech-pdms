@@ -1,9 +1,9 @@
-import React, { createContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { createContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
-import moment from "moment";
-import { FileOpen } from "@mui/icons-material";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack5";
+import moment from 'moment';
+import { FileOpen } from '@mui/icons-material';
+import { Document, Page } from 'react-pdf/dist/esm/entry.webpack5';
 import {
   Avatar,
   Box,
@@ -16,16 +16,16 @@ import {
   Grid,
   Stack,
   Typography,
-} from "@mui/material";
+} from '@mui/material';
 
-import { IVehicle } from "@app-models";
-import carImg from "../../assets/images/vehicle/car1.jpg";
-import useAppDispatch from "../../hooks/useAppDispatch";
-import settings from "../../config/settings";
-import axiosClient from "../../config/axiosClient";
-import AppModal from "../../components/modal/AppModal";
-import generatePageNumbers from "../../utils/generic";
-import { DriverVehiclesContextProps } from "@app-interfaces";
+import { IVehicle } from '@app-models';
+import carImg from '../../assets/images/vehicle/car1.jpg';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import settings from '../../config/settings';
+import axiosClient from '../../config/axiosClient';
+import AppModal from '../../components/modal/AppModal';
+import generatePageNumbers from '../../utils/generic';
+import { DriverVehiclesContextProps } from '@app-interfaces';
 
 interface ILocationState {
   vehicle?: IVehicle;
@@ -62,7 +62,7 @@ function VehiclePage(props: ILocationState) {
     file = `${settings.api.driverBaseURL}/${file}`;
 
     const response = await axiosClient.get(file, {
-      responseType: "blob",
+      responseType: 'blob',
     });
 
     const reader = new FileReader();
@@ -113,11 +113,11 @@ function VehiclePage(props: ILocationState) {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Vehicle Ownership</Typography>
-                    <Typography variant="caption">{vehicle.isOwner ? "Owner" : "-"}</Typography>
+                    <Typography variant="caption">{vehicle.isOwner ? 'Owner' : '-'}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Date Added</Typography>
-                    <Typography variant="caption">{moment(vehicle.createdAt).format("LL")}</Typography>
+                    <Typography variant="caption">{moment(vehicle.createdAt).format('LL')}</Typography>
                   </Box>
                 </Stack>
                 <Divider sx={{ my: 2 }} />
@@ -150,12 +150,11 @@ function VehiclePage(props: ILocationState) {
                     <Typography variant="caption">Vehicle Inspection</Typography>
                     {vehicle.vehicleInspectionFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.vehicleInspectionFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.vehicleInspectionFileUrl}
-                      >
+                        src={vehicle.vehicleInspectionFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -164,12 +163,11 @@ function VehiclePage(props: ILocationState) {
                     <Typography variant="caption">Motor Receipt</Typography>
                     {vehicle.motorReceiptFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.motorReceiptFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.motorReceiptFileUrl}
-                      >
+                        src={vehicle.motorReceiptFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -178,12 +176,11 @@ function VehiclePage(props: ILocationState) {
                     <Typography variant="caption">Proof Of Ownership</Typography>
                     {vehicle.proofOfOwnershipFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.proofOfOwnershipFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.proofOfOwnershipFileUrl}
-                      >
+                        src={vehicle.proofOfOwnershipFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -192,12 +189,11 @@ function VehiclePage(props: ILocationState) {
                     <Typography variant="caption">Road Worthiness</Typography>
                     {vehicle.roadWorthinessFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.roadWorthinessFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.roadWorthinessFileUrl}
-                      >
+                        src={vehicle.roadWorthinessFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -206,12 +202,11 @@ function VehiclePage(props: ILocationState) {
                     <Typography variant="caption">Registration Number</Typography>
                     {vehicle.registrationNumberFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.registrationNumberFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.registrationNumberFileUrl}
-                      >
+                        src={vehicle.registrationNumberFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}
@@ -220,12 +215,11 @@ function VehiclePage(props: ILocationState) {
                     <Typography variant="caption">Third Party Insurance</Typography>
                     {vehicle.thirdPartyInsuranceFileUrl && (
                       <Avatar
-                        style={{ minWidth: "100%" }}
+                        style={{ minWidth: '100%' }}
                         onClick={() => handleViewImage(vehicle.thirdPartyInsuranceFileUrl)}
-                        sx={{ cursor: "pointer" }}
+                        sx={{ cursor: 'pointer' }}
                         variant="square"
-                        src={vehicle.thirdPartyInsuranceFileUrl}
-                      >
+                        src={vehicle.thirdPartyInsuranceFileUrl}>
                         <FileOpen />
                       </Avatar>
                     )}

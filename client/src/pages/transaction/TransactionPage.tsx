@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { ITransaction } from "@app-models";
-import { useLocation } from "react-router-dom";
-import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
-import styles from "../appointment/appointmentPage.module.css";
-import moment from "moment";
-import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProps } from "@app-interfaces";
-import BookingModal from "../../components/modal/BookingModal";
-import useTimeslot from "../../hooks/useTimeslot";
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { ITransaction } from '@app-models';
+import { useLocation } from 'react-router-dom';
+import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
+import styles from '../appointment/appointmentPage.module.css';
+import moment from 'moment';
+import { AppContext } from '../../context/AppContextProvider';
+import { AppContextProps } from '@app-interfaces';
+import BookingModal from '../../components/modal/BookingModal';
+import useTimeslot from '../../hooks/useTimeslot';
 import {
   DRIVE_IN_PLAN,
   FAF_SUB,
@@ -16,13 +16,13 @@ import {
   MOBILE_PLAN,
   ONE_TIME_SUB,
   PICK_ME_UP_SUB,
-} from "../../config/constants";
-import { getCustomerTransactionsAction, getCustomerVehiclesAction } from "../../store/actions/customerActions";
-import useAppDispatch from "../../hooks/useAppDispatch";
-import useAppSelector from "../../hooks/useAppSelector";
-import BookForCustomerForm from "../../components/forms/booking/BookForCustomerForm";
-import { CustomHookMessage } from "@app-types";
-import AppAlert from "../../components/alerts/AppAlert";
+} from '../../config/constants';
+import { getCustomerTransactionsAction, getCustomerVehiclesAction } from '../../store/actions/customerActions';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import useAppSelector from '../../hooks/useAppSelector';
+import BookForCustomerForm from '../../components/forms/booking/BookForCustomerForm';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../../components/alerts/AppAlert';
 
 interface ILocationState {
   transaction: ITransaction;
@@ -33,11 +33,11 @@ function TransactionPage() {
   const [success, setSuccess] = useState<CustomHookMessage>();
 
   const { showBooking, setShowBooking, customer, setVehicles, setShowVehicles } = useContext(
-    AppContext
+    AppContext,
   ) as AppContextProps;
 
-  const customerReducer = useAppSelector((state) => state.customerReducer);
-  const appointmentReducer = useAppSelector((state) => state.appointmentReducer);
+  const customerReducer = useAppSelector(state => state.customerReducer);
+  const appointmentReducer = useAppSelector(state => state.appointmentReducer);
   const dispatch = useAppDispatch();
 
   useTimeslot();
@@ -50,15 +50,15 @@ function TransactionPage() {
   }, [location.state]);
 
   useEffect(() => {
-    if (appointmentReducer.createAppointmentStatus === "completed" && customer) {
-      setSuccess({ message: "Successfully scheduled appointment" });
+    if (appointmentReducer.createAppointmentStatus === 'completed' && customer) {
+      setSuccess({ message: 'Successfully scheduled appointment' });
       dispatch(getCustomerTransactionsAction(customer.id));
     }
   }, [dispatch, customer, appointmentReducer.createAppointmentStatus]);
 
   useEffect(() => {
-    if (customerReducer.getCustomerTransactionsStatus === "completed") {
-      const _transaction = customerReducer.transactions.find((value) => value.id === transaction?.id);
+    if (customerReducer.getCustomerTransactionsStatus === 'completed') {
+      const _transaction = customerReducer.transactions.find(value => value.id === transaction?.id);
 
       if (_transaction) setTransaction(_transaction);
     }
@@ -71,7 +71,7 @@ function TransactionPage() {
   }, [customer, dispatch]);
 
   useEffect(() => {
-    if (customerReducer.getCustomerVehiclesStatus === "completed") {
+    if (customerReducer.getCustomerVehiclesStatus === 'completed') {
       setVehicles(customerReducer.vehicles);
     }
   }, [customerReducer.getCustomerVehiclesStatus, customerReducer.vehicles, setVehicles]);
@@ -151,11 +151,11 @@ function TransactionPage() {
   const isProcessed = useMemo(() => {
     let result = true;
 
-    if (transaction?.status === "success" && transaction?.serviceStatus === "unprocessed") {
+    if (transaction?.status === 'success' && transaction?.serviceStatus === 'unprocessed') {
       result = false;
     }
 
-    if (transaction?.status !== "success" && transaction?.serviceStatus === "unprocessed") {
+    if (transaction?.status !== 'success' && transaction?.serviceStatus === 'unprocessed') {
       result = false;
     }
 
@@ -168,12 +168,12 @@ function TransactionPage() {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item xs={12} md={9}>
             <Box mb={2}>
-              <span className={styles.title}>Transaction</span> -{" "}
+              <span className={styles.title}>Transaction</span> -{' '}
               <span className={styles.subtitle}>
                 {transaction?.serviceStatus}
-                {" on "}
-                {moment(transaction?.createdAt).format("LLL")}
-                {", for "}
+                {' on '}
+                {moment(transaction?.createdAt).format('LLL')}
+                {', for '}
                 {transaction?.purpose}
               </span>
             </Box>
@@ -186,8 +186,7 @@ function TransactionPage() {
                 fullWidth
                 variant="outlined"
                 color="primary"
-                sx={{ textTransform: "capitalize" }}
-              >
+                sx={{ textTransform: 'capitalize' }}>
                 Schedule {transaction?.purpose}
               </Button>
             </Grid>

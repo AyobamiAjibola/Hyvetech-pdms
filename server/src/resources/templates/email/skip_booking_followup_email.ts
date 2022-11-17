@@ -1,4 +1,4 @@
-import { appCommonTypes } from "../../../@types/app-common";
+import { appCommonTypes } from '../../../@types/app-common';
 import MailTextConfig = appCommonTypes.MailTextConfig;
 
 export default function skip_booking_followup_email(config: MailTextConfig) {

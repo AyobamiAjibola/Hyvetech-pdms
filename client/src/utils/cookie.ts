@@ -1,7 +1,7 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
-import _ from "lodash";
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import _ from 'lodash';
 
-import moment from "moment";
+import moment from 'moment';
 
 export type CustomJWTPayload = JwtPayload & { exp: number };
 
@@ -26,7 +26,7 @@ const cookie = {
 
     const decode = <CustomJWTPayload>jwt.decode(cookie);
 
-    if (!decode) throw new Error("Could not decode JWT");
+    if (!decode) throw new Error('Could not decode JWT');
 
     const cookieExpiry = decode.exp;
 
@@ -42,7 +42,7 @@ const cookie = {
   set(name: string, value: string) {
     const decode = <CustomJWTPayload>jwt.decode(value);
 
-    if (!decode) throw new Error("Could not decode JWT");
+    if (!decode) throw new Error('Could not decode JWT');
 
     const exp = decode.exp;
 
@@ -52,13 +52,13 @@ const cookie = {
   },
 
   get(name: string) {
-    name = name + "=";
+    name = name + '=';
 
-    const ca = document.cookie.split(";");
+    const ca = document.cookie.split(';');
 
     for (let i = 0; i < ca.length; i++) {
       let c = ca[i];
-      while (c.charAt(0) === " ") {
+      while (c.charAt(0) === ' ') {
         c = c.substring(1);
       }
 
@@ -67,7 +67,7 @@ const cookie = {
       }
     }
 
-    return "";
+    return '';
   },
 
   remove(name: string) {

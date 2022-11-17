@@ -1,11 +1,11 @@
-import { Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
-import { InferAttributes } from "sequelize/types";
-import { InferCreationAttributes } from "sequelize";
-import Partner from "./Partner";
-import CheckList from "./CheckList";
+import { Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { InferAttributes } from 'sequelize/types';
+import { InferCreationAttributes } from 'sequelize';
+import Partner from './Partner';
+import CheckList from './CheckList';
 
 @Table({
-  tableName: "partner_check_lists",
+  tableName: 'partner_check_lists',
   timestamps: false,
 })
 export default class PartnerCheckList extends Model<

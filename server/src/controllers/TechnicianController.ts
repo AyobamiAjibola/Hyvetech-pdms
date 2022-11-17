@@ -1,19 +1,19 @@
-import { Request } from "express";
-import Joi from "joi";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import Technician from "../models/Technician";
-import { appCommonTypes } from "../@types/app-common";
-import { QueueManager } from "rabbitmq-email-manager";
-import { QUEUE_EVENTS } from "../config/constants";
-import email_content from "../resources/templates/email/email_content";
-import dataSources from "../services/dao";
-import { Op } from "sequelize";
-import Generic from "../utils/Generic";
-import { $loginSchema } from "../models/User";
-import Job from "../models/Job";
-import Vehicle from "../models/Vehicle";
-import create_technician_success_email from "../resources/templates/email/create_technician_success_email";
+import { Request } from 'express';
+import Joi from 'joi';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import Technician from '../models/Technician';
+import { appCommonTypes } from '../@types/app-common';
+import { QueueManager } from 'rabbitmq-email-manager';
+import { QUEUE_EVENTS } from '../config/constants';
+import email_content from '../resources/templates/email/email_content';
+import dataSources from '../services/dao';
+import { Op } from 'sequelize';
+import Generic from '../utils/Generic';
+import { $loginSchema } from '../models/User';
+import Job from '../models/Job';
+import Vehicle from '../models/Vehicle';
+import create_technician_success_email from '../resources/templates/email/create_technician_success_email';
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -27,15 +27,15 @@ export default class TechnicianController {
   public async create(req: Request) {
     try {
       const { value, error } = Joi.object({
-        confirmPassword: Joi.ref("password"),
-        email: Joi.string().email().required().label("Email Address"),
-        firstName: Joi.string().required().label("First Name"),
-        lastName: Joi.string().required().label("Last Name"),
-        password: Joi.string().required().label("Password"),
-        phone: Joi.string().required().label("Phone Number"),
-        partnerId: Joi.string().required().label("Partner Id"),
-        role: Joi.string().required().label("Role"),
-        active: Joi.boolean().truthy().required().label("Active"),
+        confirmPassword: Joi.ref('password'),
+        email: Joi.string().email().required().label('Email Address'),
+        firstName: Joi.string().required().label('First Name'),
+        lastName: Joi.string().required().label('Last Name'),
+        password: Joi.string().required().label('Password'),
+        phone: Joi.string().required().label('Phone Number'),
+        partnerId: Joi.string().required().label('Partner Id'),
+        role: Joi.string().required().label('Role'),
+        active: Joi.boolean().truthy().required().label('Active'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -46,7 +46,7 @@ export default class TechnicianController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(`Partner with Id ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Partner with Id ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
       const userExist = await dataSources.technicianDAOService.findByAny({
@@ -57,7 +57,7 @@ export default class TechnicianController {
 
       if (userExist)
         return Promise.reject(
-          CustomAPIError.response(`User with email or phone number already exist`, HttpStatus.BAD_REQUEST.code)
+          CustomAPIError.response(`User with email or phone number already exist`, HttpStatus.BAD_REQUEST.code),
         );
 
       //find role by name
@@ -76,10 +76,10 @@ export default class TechnicianController {
       const user = await dataSources.technicianDAOService.create(value);
 
       //associate user with role
-      await user.$add("roles", [role]);
+      await user.$add('roles', [role]);
 
       //associate partner with technician
-      await partner.$add("technicians", [user]);
+      await partner.$add('technicians', [user]);
 
       const mailText = create_technician_success_email({
         username: user.email,
@@ -110,7 +110,7 @@ export default class TechnicianController {
       });
 
       const technicians = await dataSources.technicianDAOService.findAll({
-        attributes: { exclude: ["password", "rawPassword"] },
+        attributes: { exclude: ['password', 'rawPassword'] },
       });
 
       const response: HttpResponse<Technician> = {
@@ -130,20 +130,20 @@ export default class TechnicianController {
 
     const response: HttpResponse<Technician> = {
       code: HttpStatus.OK.code,
-      message: "Updated Successfully",
+      message: 'Updated Successfully',
     };
 
     try {
       const { error, value } = Joi.object({
-        confirmPassword: Joi.ref("password"),
-        id: Joi.string().allow().label("Technician Id"),
-        email: Joi.string().email().required().label("Email Address"),
-        firstName: Joi.string().required().label("First Name"),
-        lastName: Joi.string().required().label("Last Name"),
-        password: Joi.string().allow("").label("Password"),
-        phone: Joi.string().required().label("Phone Number"),
-        active: Joi.boolean().truthy().required().label("Active"),
-        partnerId: Joi.string().allow("").label("Partner Id"),
+        confirmPassword: Joi.ref('password'),
+        id: Joi.string().allow().label('Technician Id'),
+        email: Joi.string().email().required().label('Email Address'),
+        firstName: Joi.string().required().label('First Name'),
+        lastName: Joi.string().required().label('Last Name'),
+        password: Joi.string().allow('').label('Password'),
+        phone: Joi.string().required().label('Phone Number'),
+        active: Joi.boolean().truthy().required().label('Active'),
+        partnerId: Joi.string().allow('').label('Partner Id'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -185,7 +185,7 @@ export default class TechnicianController {
       const result = await technician.update(value);
 
       if (!result)
-        return Promise.reject(CustomAPIError.response("ErrorPage Updating Information", HttpStatus.BAD_REQUEST.code));
+        return Promise.reject(CustomAPIError.response('ErrorPage Updating Information', HttpStatus.BAD_REQUEST.code));
 
       response.result = result;
       return Promise.resolve(response);
@@ -202,7 +202,7 @@ export default class TechnicianController {
 
       if (!technician)
         return Promise.reject(
-          CustomAPIError.response(`Technician with Id ${techId} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Technician with Id ${techId} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
       await technician.update({
@@ -225,12 +225,12 @@ export default class TechnicianController {
 
     try {
       const technician = await dataSources.technicianDAOService.findById(+techId, {
-        attributes: { exclude: ["password", "loginToken", "rawPassword"] },
+        attributes: { exclude: ['password', 'loginToken', 'rawPassword'] },
       });
 
       if (!technician)
         return Promise.reject(
-          CustomAPIError.response(`Technician with Id ${techId} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Technician with Id ${techId} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
       const response: HttpResponse<Technician> = {
@@ -251,13 +251,13 @@ export default class TechnicianController {
 
     try {
       if (partner) {
-        technicians = await partner.$get("technicians", {
-          attributes: { exclude: ["password", "loginToken", "rawPassword"] },
+        technicians = await partner.$get('technicians', {
+          attributes: { exclude: ['password', 'loginToken', 'rawPassword'] },
           include: [{ model: Job, include: [Vehicle] }],
         });
       } else {
         technicians = await dataSources.technicianDAOService.findAll({
-          attributes: { exclude: ["password", "loginToken", "rawPassword"] },
+          attributes: { exclude: ['password', 'loginToken', 'rawPassword'] },
           include: [{ model: Job, include: [Vehicle] }],
         });
       }
@@ -282,8 +282,8 @@ export default class TechnicianController {
 
       if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist`, HttpStatus.NOT_FOUND.code));
 
-      const technicians = await partner.$get("technicians", {
-        attributes: { exclude: ["password", "loginToken", "rawPassword"] },
+      const technicians = await partner.$get('technicians', {
+        attributes: { exclude: ['password', 'loginToken', 'rawPassword'] },
         include: [{ model: Job, include: [Vehicle] }],
       });
       const response: HttpResponse<Technician> = {
@@ -320,13 +320,13 @@ export default class TechnicianController {
       if (!isMatch)
         return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
 
-      const roles = await user.$get("roles");
+      const roles = await user.$get('roles');
 
       const permissions = [];
 
       for (const role of roles) {
-        const _permissions = await role.$get("permissions", {
-          attributes: ["action", "subject"],
+        const _permissions = await role.$get('permissions', {
+          attributes: ['action', 'subject'],
         });
 
         for (const _permission of _permissions) {
@@ -350,7 +350,7 @@ export default class TechnicianController {
 
       const response: HttpResponse<string> = {
         code: HttpStatus.OK.code,
-        message: "Login successful",
+        message: 'Login successful',
         result: jwt,
       };
 

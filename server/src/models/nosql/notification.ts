@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface INotificationModel {
   to: any;
@@ -18,7 +18,7 @@ const Schema = new mongoose.Schema<INotificationModel>(
     from: mongoose.SchemaTypes.String,
     seen: mongoose.SchemaTypes.Boolean,
   },
-  { collection: "notifications", timestamps: true }
+  { collection: 'notifications', timestamps: true },
 );
 
-export const NotificationModel = mongoose.model("Notification", Schema);
+export const NotificationModel = mongoose.model('Notification', Schema);

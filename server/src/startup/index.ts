@@ -1,17 +1,17 @@
-import { Server as HttpServer } from "http";
-import { Server as SocketServer } from "socket.io";
-import { QueueManager } from "rabbitmq-email-manager";
-import { AppAgenda } from "agenda-schedule-wrapper";
+import { Server as HttpServer } from 'http';
+import { Server as SocketServer } from 'socket.io';
+import { QueueManager } from 'rabbitmq-email-manager';
+import { AppAgenda } from 'agenda-schedule-wrapper';
 
-import AppLogger from "../utils/AppLogger";
-import database from "../config/database";
-import dataStore from "../config/dataStore";
-import CommandLineRunner from "../helpers/CommandLineRunner";
-import { AGENDA_COLLECTION_NAME, QUEUE_EVENTS } from "../config/constants";
-import queue from "../config/queue";
-import agendaManager from "../services/agendaManager";
-import { appEventEmitter } from "../services/AppEventEmitter";
-import socketManager from "../services/socketManager";
+import AppLogger from '../utils/AppLogger';
+import database from '../config/database';
+import dataStore from '../config/dataStore';
+import CommandLineRunner from '../helpers/CommandLineRunner';
+import { AGENDA_COLLECTION_NAME, QUEUE_EVENTS } from '../config/constants';
+import queue from '../config/queue';
+import agendaManager from '../services/agendaManager';
+import { appEventEmitter } from '../services/AppEventEmitter';
+import socketManager from '../services/socketManager';
 
 const logger = AppLogger.init(startup.name).logger;
 

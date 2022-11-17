@@ -1,38 +1,39 @@
-import React, { createContext, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button, DialogActions, DialogContentText, Divider, Grid, Paper, Stack } from "@mui/material";
-import useAppSelector from "../../hooks/useAppSelector";
-import useAppDispatch from "../../hooks/useAppDispatch";
+import React, { createContext, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button, DialogActions, DialogContentText, Divider, Grid, Paper, Stack } from '@mui/material';
+import useAppSelector from '../../hooks/useAppSelector';
+import useAppDispatch from '../../hooks/useAppDispatch';
 import {
   deletePartnerAction,
   getPartnerAction,
   getPaymentPlansAction,
   getPlansAction,
-} from "../../store/actions/partnerActions";
-import { IPartner } from "@app-models";
-import { ITab, PartnerPageContextProps } from "@app-interfaces";
-import PartnerTab from "../../components/tabs/PartnerTab";
-import { partnerDetailTabs } from "../../navigation/menus";
+} from '../../store/actions/partnerActions';
+import { IPartner } from '@app-models';
+import { ITab, PartnerPageContextProps } from '@app-interfaces';
+import PartnerTab from '../../components/tabs/PartnerTab';
+import { partnerDetailTabs } from '../../navigation/menus';
 import {
   clearDeletePartnerStatus,
   clearGetPartnerStatus,
   clearGetPaymentPlansStatus,
   clearGetPlansStatus,
-} from "../../store/reducers/partnerReducer";
-import { GARAGE_CATEGORY, MESSAGES, RIDE_SHARE_CATEGORY } from "../../config/constants";
-import useAdmin from "../../hooks/useAdmin";
-import { LoadingButton } from "@mui/lab";
-import { Delete } from "@mui/icons-material";
-import AppModal from "../../components/modal/AppModal";
-import { CustomHookMessage } from "@app-types";
-import AppAlert from "../../components/alerts/AppAlert";
-import { clearCreateEstimateStatus } from "../../store/reducers/estimateReducer";
+} from '../../store/reducers/partnerReducer';
+import { GARAGE_CATEGORY, MESSAGES, RIDE_SHARE_CATEGORY } from '../../config/constants';
+import useAdmin from '../../hooks/useAdmin';
+import { LoadingButton } from '@mui/lab';
+import { Delete } from '@mui/icons-material';
+import AppModal from '../../components/modal/AppModal';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../../components/alerts/AppAlert';
+import { clearCreateEstimateStatus } from '../../store/reducers/estimateReducer';
+import { AppCan } from '../../context/AbilityContext';
 
 export const PartnerPageContext = createContext<PartnerPageContextProps | null>(null);
 
 function PartnerPage() {
-  const [programme, setProgramme] = useState<string>("");
-  const [modeOfService, setModeOfService] = useState<string>("");
+  const [programme, setProgramme] = useState<string>('');
+  const [modeOfService, setModeOfService] = useState<string>('');
   const [partner, setPartner] = useState<IPartner | null>(null);
   const [tabs, setTabs] = useState<ITab[]>([]);
   const [showDelete, setShowDelete] = useState<boolean>(false);
@@ -55,26 +56,26 @@ function PartnerPage() {
     }
   }, [admin.isTechAdmin, admin.user, params.id]);
 
-  const partnerReducer = useAppSelector((state) => state.partnerReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (partnerReducer.getPartnerStatus === "idle") {
+    if (partnerReducer.getPartnerStatus === 'idle') {
       if (partnerId) dispatch(getPartnerAction(partnerId));
     }
   }, [dispatch, partnerId, partnerReducer.getPartnerStatus]);
 
   useEffect(() => {
-    if (partnerReducer.getPartnerStatus === "completed") {
+    if (partnerReducer.getPartnerStatus === 'completed') {
       if (partnerReducer.partner) {
         const _partner = partnerReducer.partner;
 
-        _partner.categories.forEach((category) => {
+        _partner.categories.forEach(category => {
           if (category.name === RIDE_SHARE_CATEGORY) {
-            setTabs(partnerDetailTabs.filter((tab) => tab.tag === RIDE_SHARE_CATEGORY));
+            setTabs(partnerDetailTabs.filter(tab => tab.tag === RIDE_SHARE_CATEGORY));
           }
           if (category.name === GARAGE_CATEGORY) {
-            setTabs(partnerDetailTabs.filter((tab) => tab.tag === GARAGE_CATEGORY));
+            setTabs(partnerDetailTabs.filter(tab => tab.tag === GARAGE_CATEGORY));
           }
         });
 
@@ -84,19 +85,19 @@ function PartnerPage() {
   }, [partnerReducer.getPartnerStatus, partnerReducer.partner]);
 
   useEffect(() => {
-    if (partnerReducer.getPlansStatus === "idle") {
+    if (partnerReducer.getPlansStatus === 'idle') {
       if (partnerId) dispatch(getPlansAction(partnerId));
     }
   }, [dispatch, partnerId, partnerReducer.getPlansStatus]);
 
   useEffect(() => {
-    if (partnerReducer.getPaymentPlansStatus === "idle") {
+    if (partnerReducer.getPaymentPlansStatus === 'idle') {
       if (partnerId) dispatch(getPaymentPlansAction(partnerId));
     }
   }, [dispatch, partnerId, partnerReducer.getPaymentPlansStatus]);
 
   useEffect(() => {
-    if (partnerReducer.deletePartnerStatus === "completed") {
+    if (partnerReducer.deletePartnerStatus === 'completed') {
       setSuccess({ message: partnerReducer.deletePartnerSuccess });
 
       _setTimeout(setTimeout(() => navigate(-1), 1000));
@@ -104,7 +105,7 @@ function PartnerPage() {
   }, [navigate, partnerReducer.deletePartnerStatus, partnerReducer.deletePartnerSuccess]);
 
   useEffect(() => {
-    if (partnerReducer.deletePartnerStatus === "failed") {
+    if (partnerReducer.deletePartnerStatus === 'failed') {
       if (partnerReducer.deletePartnerError) setError({ message: partnerReducer.deletePartnerError });
     }
   }, [partnerReducer.deletePartnerStatus, partnerReducer.deletePartnerError]);
@@ -137,15 +138,16 @@ function PartnerPage() {
           <h1>{partner?.name}</h1>
         </Grid>
         <Grid item>
-          <LoadingButton
-            onClick={() => onDelete(partnerId)}
-            endIcon={<Delete />}
-            variant="outlined"
-            color="error"
-            size="small"
-          >
-            Delete
-          </LoadingButton>
+          <AppCan I="manage" a="all">
+            <LoadingButton
+              onClick={() => onDelete(partnerId)}
+              endIcon={<Delete />}
+              variant="outlined"
+              color="error"
+              size="small">
+              Delete
+            </LoadingButton>
+          </AppCan>
         </Grid>
       </Grid>
       <PartnerPageContext.Provider
@@ -158,8 +160,7 @@ function PartnerPage() {
           setPartner,
           showDelete,
           setShowDelete,
-        }}
-      >
+        }}>
         <Stack direction="column" spacing={5} divider={<Divider orientation="horizontal" flexItem />}>
           <Paper sx={{ p: 3 }}>
             <PartnerTab tabMenus={tabs} />

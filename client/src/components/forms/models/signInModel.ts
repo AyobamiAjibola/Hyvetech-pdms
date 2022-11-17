@@ -1,30 +1,30 @@
-import * as Yup from "yup";
-import { PASSWORD_PATTERN } from "../../../config/constants";
+import * as Yup from 'yup';
+import { PASSWORD_PATTERN } from '../../../config/constants';
 
 const fields = {
   username: {
-    name: "username",
-    label: "Username*",
+    name: 'username',
+    label: 'Username*',
     error: {
-      invalid: "Invalid username.",
-      required: "Username is required",
+      invalid: 'Invalid username.',
+      required: 'Username is required',
     },
   },
   password: {
-    name: "password",
-    label: "Password*",
+    name: 'password',
+    label: 'Password*',
     error: {
       invalid: `Password must contain 8 to 20 characters,
          and at least One, uppercase letter, lowercase letter, 
          special case character e.g @!&, and number`,
-      required: "Password is required",
+      required: 'Password is required',
     },
   },
 };
 
 const initialValues = {
-  username: "",
-  password: "",
+  username: '',
+  password: '',
 };
 
 const schema = Yup.object().shape({

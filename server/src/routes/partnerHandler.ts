@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
-import PartnerController, { ICreatePaymentPlanBody, ICreatePlanBody } from "../controllers/PartnerController";
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import PasswordEncoder from "../utils/PasswordEncoder";
+import PartnerController, { ICreatePaymentPlanBody, ICreatePlanBody } from '../controllers/PartnerController';
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import PasswordEncoder from '../utils/PasswordEncoder';
 
 const passwordEncoder = new PasswordEncoder();
 

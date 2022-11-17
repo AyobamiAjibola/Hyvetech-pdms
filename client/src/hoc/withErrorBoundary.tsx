@@ -1,6 +1,6 @@
-import React, { ErrorInfo, ReactNode } from "react";
-import { Navigate } from "react-router-dom";
-import { IComponentErrorState } from "@app-interfaces";
+import React, { ErrorInfo, ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
+import { IComponentErrorState } from '@app-interfaces';
 
 interface Props {
   children?: ReactNode;
@@ -10,7 +10,7 @@ export default function withErrorBoundary(Component: () => JSX.Element) {
   return class WithErrorBoundary extends React.Component<Props, IComponentErrorState> {
     public state: IComponentErrorState = {
       hasError: false,
-      errorMessage: "",
+      errorMessage: '',
     };
 
     public static getDerivedStateFromError(error: Error): IComponentErrorState {
@@ -19,7 +19,7 @@ export default function withErrorBoundary(Component: () => JSX.Element) {
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-      console.error("Uncaught error:", error, errorInfo.componentStack);
+      console.error('Uncaught error:', error, errorInfo.componentStack);
       this.setState({ hasError: true, errorMessage: error.message });
     }
 

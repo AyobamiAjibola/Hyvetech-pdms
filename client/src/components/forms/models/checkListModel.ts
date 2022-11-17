@@ -1,4 +1,4 @@
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
 export interface ICheckListValues {
   checkList: string;
@@ -8,65 +8,65 @@ export interface ICheckListValues {
 
 const fields = {
   checkList: {
-    name: "checkList",
-    label: "Check List*",
+    name: 'checkList',
+    label: 'Check List*',
     error: {
-      invalid: "Check List name is invalid",
-      require: "Check List name is required",
+      invalid: 'Check List name is invalid',
+      require: 'Check List name is required',
     },
   },
   partners: {
-    name: "partners",
-    label: "Partner*",
+    name: 'partners',
+    label: 'Partner*',
     error: {
-      invalid: "Partner is invalid",
-      require: "Partner is required",
+      invalid: 'Partner is invalid',
+      require: 'Partner is required',
     },
   },
   description: {
-    name: "description",
-    label: "Description*",
+    name: 'description',
+    label: 'Description*',
     error: {
-      invalid: "Description is invalid",
-      require: "Description is required",
+      invalid: 'Description is invalid',
+      require: 'Description is required',
     },
   },
   sections: {
-    name: "sections",
-    label: "Section Title*",
+    name: 'sections',
+    label: 'Section Title*',
     error: {
-      invalid: "Section Title is invalid",
-      require: "Section Title is required",
+      invalid: 'Section Title is invalid',
+      require: 'Section Title is required',
     },
   },
   questions: {
-    name: "questions",
-    label: "Question*",
+    name: 'questions',
+    label: 'Question*',
     error: {
-      invalid: "Question is invalid",
-      require: "Question is required",
+      invalid: 'Question is invalid',
+      require: 'Question is required',
     },
   },
   answers: {
-    name: "answers",
-    label: "Answer*",
+    name: 'answers',
+    label: 'Answer*',
     error: {
-      invalid: "Answer is invalid",
-      require: "Answer is required",
+      invalid: 'Answer is invalid',
+      require: 'Answer is required',
     },
   },
 };
 
 const initialValues: ICheckListValues = {
-  checkList: "",
+  checkList: '',
   partners: [],
-  description: "",
+  description: '',
 };
 
 const schema = Yup.object().shape({
-  checkList: Yup.string().required().label("Check List name"),
-  description: Yup.string().required().label("Check List Description"),
-  partners: Yup.array(Yup.string()).required().label("Partners"),
+  checkList: Yup.string().required().label('Check List name'),
+  description: Yup.string().required().label('Check List Description'),
+  partners: Yup.array(Yup.string()).required().label('Partners'),
 });
 
 const checkListModel = {

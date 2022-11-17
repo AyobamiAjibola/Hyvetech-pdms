@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Delete, Visibility } from "@mui/icons-material";
-import { IPaymentPlan } from "@app-models";
-import AppDataGrid from "../../tables/AppDataGrid";
-import useAppSelector from "../../../hooks/useAppSelector";
-import { Button, DialogActions, DialogContentText, Grid, TableBody, TableCell, TableRow } from "@mui/material";
-import { CustomHookMessage } from "@app-types";
-import { useParams } from "react-router-dom";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import AppModal from "../../modal/AppModal";
-import { Formik, FormikHelpers } from "formik";
-import paymentPlanModel, { IPaymentPlanModel } from "../../forms/models/paymentPlanModel";
-import AddPaymentPlanForm from "../../forms/partner/AddPaymentPlanForm";
-import { addPaymentPlanAction, deletePaymentPlanAction } from "../../../store/actions/partnerActions";
-import AppAlert from "../../alerts/AppAlert";
-import moment from "moment";
-import capitalize from "capitalize";
-import { MESSAGES } from "../../../config/constants";
-import { clearDeletePaymentPlanStatus } from "../../../store/reducers/partnerReducer";
+import React, { useEffect, useState } from 'react';
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import { Delete, Visibility } from '@mui/icons-material';
+import { IPaymentPlan } from '@app-models';
+import AppDataGrid from '../../tables/AppDataGrid';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { Button, DialogActions, DialogContentText, Grid, TableBody, TableCell, TableRow } from '@mui/material';
+import { CustomHookMessage } from '@app-types';
+import { useParams } from 'react-router-dom';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import AppModal from '../../modal/AppModal';
+import { Formik, FormikHelpers } from 'formik';
+import paymentPlanModel, { IPaymentPlanModel } from '../../forms/models/paymentPlanModel';
+import AddPaymentPlanForm from '../../forms/partner/AddPaymentPlanForm';
+import { addPaymentPlanAction, deletePaymentPlanAction } from '../../../store/actions/partnerActions';
+import AppAlert from '../../alerts/AppAlert';
+import moment from 'moment';
+import capitalize from 'capitalize';
+import { MESSAGES } from '../../../config/constants';
+import { clearDeletePaymentPlanStatus } from '../../../store/reducers/partnerReducer';
 
 function PaymentPlans() {
   const [openAddPaymentPlan, setOpenAddPaymentPlan] = useState<boolean>(false);
@@ -29,23 +29,23 @@ function PaymentPlans() {
 
   const params = useParams();
 
-  const partnerReducer = useAppSelector((state) => state.partnerReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (partnerReducer.addPaymentPlanStatus === "completed") {
+    if (partnerReducer.addPaymentPlanStatus === 'completed') {
       setOpenAddPaymentPlan(false);
     }
   }, [partnerReducer.addPaymentPlanStatus]);
 
   useEffect(() => {
-    if (partnerReducer.deletePaymentPlanStatus === "completed") {
+    if (partnerReducer.deletePaymentPlanStatus === 'completed') {
       setSuccess({ message: partnerReducer.deletePaymentPlanSuccess });
     }
   }, [partnerReducer.deletePaymentPlanStatus, partnerReducer.deletePaymentPlanSuccess]);
 
   useEffect(() => {
-    if (partnerReducer.deletePaymentPlanStatus === "failed") {
+    if (partnerReducer.deletePaymentPlanStatus === 'failed') {
       if (partnerReducer.deletePaymentPlanError) setError({ message: partnerReducer.deletePaymentPlanError });
     }
   }, [partnerReducer.deletePaymentPlanStatus, partnerReducer.deletePaymentPlanError]);
@@ -75,13 +75,13 @@ function PaymentPlans() {
       pricing: values.pricing,
     };
 
-    values.pricing.forEach((value) => {
+    values.pricing.forEach(value => {
       if (!value.interval.length || !value.amount.length) {
-        return setError({ message: "Pricing is required." });
+        return setError({ message: 'Pricing is required.' });
       }
     });
 
-    if (undefined === params.id) throw Error("Partner ID is required");
+    if (undefined === params.id) throw Error('Partner ID is required');
 
     dispatch(addPaymentPlanAction({ paymentPlan: data, partnerId: params.id }));
 
@@ -117,7 +117,7 @@ function PaymentPlans() {
           </Grid>
         </Grid>
         <AppDataGrid
-          loading={partnerReducer.getPaymentPlansStatus === "loading"}
+          loading={partnerReducer.getPaymentPlansStatus === 'loading'}
           showToolbar
           rows={partnerReducer.paymentPlans}
           columns={columns({ onView: handleView, onDelete: handleDelete })}
@@ -131,8 +131,7 @@ function PaymentPlans() {
           <Formik
             initialValues={paymentPlanModel.initialValues}
             validationSchema={paymentPlanModel.schema}
-            onSubmit={handleAddPaymentPlan}
-          >
+            onSubmit={handleAddPaymentPlan}>
             <AddPaymentPlanForm />
           </Formik>
         }
@@ -154,7 +153,7 @@ function PaymentPlans() {
                   Payment Plan Name
                 </TableCell>
                 <TableCell colSpan={4} align="right">
-                  {capitalize.words(paymentPlan.name).replaceAll("_", " ")}
+                  {capitalize.words(paymentPlan.name).replaceAll('_', ' ')}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -178,7 +177,7 @@ function PaymentPlans() {
                   On Promo
                 </TableCell>
                 <TableCell colSpan={4} align="right">
-                  {paymentPlan.hasPromo ? "Yes" : "No"}
+                  {paymentPlan.hasPromo ? 'Yes' : 'No'}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -186,7 +185,7 @@ function PaymentPlans() {
                   Date Added
                 </TableCell>
                 <TableCell colSpan={4} align="right">
-                  {moment(paymentPlan.createdAt).format("LLL")}
+                  {moment(paymentPlan.createdAt).format('LLL')}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -194,7 +193,7 @@ function PaymentPlans() {
                   Date Modified
                 </TableCell>
                 <TableCell colSpan={4} align="right">
-                  {moment(paymentPlan.updatedAt).format("LLL")}
+                  {moment(paymentPlan.updatedAt).format('LLL')}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -233,94 +232,94 @@ function PaymentPlans() {
 const columns = (options?: any) =>
   [
     {
-      field: "id",
-      headerName: "ID",
-      headerAlign: "center",
-      align: "center",
+      field: 'id',
+      headerName: 'ID',
+      headerAlign: 'center',
+      align: 'center',
       sortable: true,
-      type: "number",
+      type: 'number',
     },
     {
-      field: "name",
-      headerName: "Name",
-      headerAlign: "left",
+      field: 'name',
+      headerName: 'Name',
+      headerAlign: 'left',
       width: 220,
-      align: "left",
-      type: "string",
+      align: 'left',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "plan",
-      headerName: "Plan",
-      headerAlign: "center",
+      field: 'plan',
+      headerName: 'Plan',
+      headerAlign: 'center',
       width: 300,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
-      valueGetter: (params) => {
+      valueGetter: params => {
         const plan = params.row.plan;
 
-        return plan ? plan.label.replaceAll("_", " ") : "";
+        return plan ? plan.label.replaceAll('_', ' ') : '';
       },
     },
     {
-      field: "coverage",
-      headerName: "Coverage",
-      headerAlign: "center",
+      field: 'coverage',
+      headerName: 'Coverage',
+      headerAlign: 'center',
       width: 180,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
-      valueGetter: (params) => {
+      valueGetter: params => {
         const coverage = params.row.coverage;
 
-        return coverage ? coverage.replaceAll("_", " ") : "";
+        return coverage ? coverage.replaceAll('_', ' ') : '';
       },
     },
     {
-      field: "createdAt",
-      headerName: "Created At",
-      headerAlign: "center",
+      field: 'createdAt',
+      headerName: 'Created At',
+      headerAlign: 'center',
       width: 180,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
-      valueFormatter: (params) => {
+      valueFormatter: params => {
         const date = params.value;
 
-        return date ? moment(date).utc(true).format("LL") : "";
+        return date ? moment(date).utc(true).format('LL') : '';
       },
     },
     {
-      field: "updatedAt",
-      headerName: "Modified At",
-      headerAlign: "center",
+      field: 'updatedAt',
+      headerName: 'Modified At',
+      headerAlign: 'center',
       width: 180,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
-      valueFormatter: (params) => {
+      valueFormatter: params => {
         const date = params.value;
 
-        return date ? moment(date).utc(true).format("LL") : "";
+        return date ? moment(date).utc(true).format('LL') : '';
       },
     },
     {
-      field: "actions",
-      type: "actions",
-      align: "center",
-      headerAlign: "center",
+      field: 'actions',
+      type: 'actions',
+      align: 'center',
+      headerAlign: 'center',
       getActions: (params: any) => [
         <GridActionsCellItem
           key={0}
-          icon={<Visibility sx={{ color: "dodgerblue" }} />}
+          icon={<Visibility sx={{ color: 'dodgerblue' }} />}
           onClick={() => options.onView(params.row)}
           label="View"
           showInMenu={false}
         />,
         <GridActionsCellItem
           key={1}
-          icon={<Delete sx={{ color: "red" }} />}
+          icon={<Delete sx={{ color: 'red' }} />}
           onClick={() => options.onDelete(params.row)}
           label="Delete"
           showInMenu={false}

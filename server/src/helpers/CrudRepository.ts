@@ -1,4 +1,4 @@
-import { Model, Repository, Sequelize } from "sequelize-typescript";
+import { Model, Repository, Sequelize } from 'sequelize-typescript';
 import {
   Attributes,
   BulkCreateOptions,
@@ -8,10 +8,10 @@ import {
   FindOptions,
   SyncOptions,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import { appModelTypes } from "../@types/app-model";
-import database from "../config/database";
+import { appModelTypes } from '../@types/app-model';
+import database from '../config/database';
 import DomainClass = appModelTypes.DomainClass;
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 

@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import PlanRepository from "../../repositories/PlanRepository";
-import Plan from "../../models/Plan";
-import { appModelTypes } from "../../@types/app-model";
+import PlanRepository from '../../repositories/PlanRepository';
+import Plan from '../../models/Plan';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class PlanDAOService implements ICrudDAO<Plan> {

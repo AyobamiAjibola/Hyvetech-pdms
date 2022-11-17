@@ -1,13 +1,13 @@
-import React, { useMemo } from "react";
-import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from "formik";
+import React, { useMemo } from 'react';
+import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formik';
 
-import { Button, ButtonGroup, Divider, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
-import { Add, Delete, Save } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { CheckListType } from "@app-types";
-import checkListSectionModel from "../models/checkListSectionModel";
-import { v4 } from "uuid";
-import { MuiColorInput } from "mui-color-input";
+import { Button, ButtonGroup, Divider, FormControlLabel, Grid, Switch, TextField } from '@mui/material';
+import { Add, Delete, Save } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
+import { CheckListType } from '@app-types';
+import checkListSectionModel from '../models/checkListSectionModel';
+import { v4 } from 'uuid';
+import { MuiColorInput } from 'mui-color-input';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -31,10 +31,10 @@ export default function SectionForm(props: IProps) {
 
     questions.push({
       id: v4(),
-      answers: [{ id: v4(), answer: "", weight: "", color: "" }],
+      answers: [{ id: v4(), answer: '', weight: '', color: '' }],
       media: false,
       note: false,
-      question: "",
+      question: '',
     });
 
     setFieldValue(fields.sections.name, tempSections);
@@ -53,9 +53,9 @@ export default function SectionForm(props: IProps) {
 
     tempSections[sectionIndex].questions[questionIndex].answers.push({
       id: v4(),
-      answer: "",
-      weight: "",
-      color: "",
+      answer: '',
+      weight: '',
+      color: '',
     });
 
     setFieldValue(fields.sections.name, tempSections);
@@ -74,7 +74,7 @@ export default function SectionForm(props: IProps) {
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 3 }}>
         <FieldArray
           name="sections"
-          render={(sectionProps) =>
+          render={sectionProps =>
             values.sections &&
             values.sections.map((section, idx1) => {
               return (
@@ -96,8 +96,7 @@ export default function SectionForm(props: IProps) {
                         variant="contained"
                         color="error"
                         sx={{ fontSize: 11 }}
-                        endIcon={<Delete />}
-                      >
+                        endIcon={<Delete />}>
                         Remove Section
                       </Button>
                       <Button
@@ -105,8 +104,7 @@ export default function SectionForm(props: IProps) {
                         variant="contained"
                         color="success"
                         sx={{ fontSize: 11 }}
-                        endIcon={<Add />}
-                      >
+                        endIcon={<Add />}>
                         Add Section
                       </Button>
                     </ButtonGroup>
@@ -157,8 +155,7 @@ export default function SectionForm(props: IProps) {
                                 variant="contained"
                                 color="error"
                                 sx={{ fontSize: 11 }}
-                                endIcon={<Delete />}
-                              >
+                                endIcon={<Delete />}>
                                 Remove Question
                               </Button>
                               <Button
@@ -166,8 +163,7 @@ export default function SectionForm(props: IProps) {
                                 variant="contained"
                                 color="success"
                                 sx={{ fontSize: 11 }}
-                                endIcon={<Add />}
-                              >
+                                endIcon={<Add />}>
                                 Add Question
                               </Button>
                             </ButtonGroup>
@@ -205,10 +201,10 @@ export default function SectionForm(props: IProps) {
                                       format="hex"
                                       name={`sections.${idx1}.questions.${idx2}.answers.${idx3}.color`}
                                       value={values.sections[idx1].questions[idx2].answers[idx3].color}
-                                      onChange={(value) => {
+                                      onChange={value => {
                                         setFieldValue(
                                           `sections.${idx1}.questions.${idx2}.answers.${idx3}.color`,
-                                          value
+                                          value,
                                         );
                                       }}
                                     />
@@ -220,8 +216,7 @@ export default function SectionForm(props: IProps) {
                                         variant="contained"
                                         color="error"
                                         sx={{ fontSize: 11 }}
-                                        endIcon={<Delete />}
-                                      >
+                                        endIcon={<Delete />}>
                                         Remove Answer
                                       </Button>
                                       <Button
@@ -229,8 +224,7 @@ export default function SectionForm(props: IProps) {
                                         variant="contained"
                                         color="success"
                                         sx={{ fontSize: 11 }}
-                                        endIcon={<Add />}
-                                      >
+                                        endIcon={<Add />}>
                                         Add Answer
                                       </Button>
                                     </ButtonGroup>
@@ -257,8 +251,7 @@ export default function SectionForm(props: IProps) {
               variant="outlined"
               color="success"
               size="small"
-              endIcon={<Add />}
-            >
+              endIcon={<Add />}>
               Add Section
             </Button>
           ) : (
@@ -268,8 +261,7 @@ export default function SectionForm(props: IProps) {
               variant="contained"
               color="secondary"
               size="small"
-              endIcon={<Save />}
-            >
+              endIcon={<Save />}>
               Save
             </LoadingButton>
           )}

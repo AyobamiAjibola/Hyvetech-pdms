@@ -1,10 +1,10 @@
-import React, { SyntheticEvent, useContext } from "react";
-import { Autocomplete, AutocompleteChangeReason, TextField } from "@mui/material";
-import { AppContext } from "../../../context/AppContextProvider";
-import { AppContextProps } from "@app-interfaces";
-import { useFormikContext } from "formik";
-import bookingModel from "../models/bookingModel";
-import { filterOptions, IOptionType } from "./Location";
+import React, { SyntheticEvent, useContext } from 'react';
+import { Autocomplete, AutocompleteChangeReason, TextField } from '@mui/material';
+import { AppContext } from '../../../context/AppContextProvider';
+import { AppContextProps } from '@app-interfaces';
+import { useFormikContext } from 'formik';
+import bookingModel from '../models/bookingModel';
+import { filterOptions, IOptionType } from './Location';
 
 function Vehicle() {
   const { values, setFieldValue, handleBlur, errors, touched } = useFormikContext<any>();
@@ -12,8 +12,8 @@ function Vehicle() {
   const { vehicles } = useContext(AppContext) as AppContextProps;
 
   const _handleChange = (event: SyntheticEvent, value: any, reason: AutocompleteChangeReason) => {
-    if (reason === "clear") return setFieldValue(bookingModel.fields.vehicle.name, "");
-    if (typeof value === "string") return setFieldValue(bookingModel.fields.vehicle.name, value);
+    if (reason === 'clear') return setFieldValue(bookingModel.fields.vehicle.name, '');
+    if (typeof value === 'string') return setFieldValue(bookingModel.fields.vehicle.name, value);
 
     if (value.inputValue) return setFieldValue(bookingModel.fields.vehicle.name, value.inputValue);
   };
@@ -29,7 +29,7 @@ function Vehicle() {
         freeSolo
         getOptionLabel={(option: IOptionType | any) => {
           // Value selected with enter, right from the input
-          if (typeof option === "string") {
+          if (typeof option === 'string') {
             return option;
           }
           // Add "xxx" option created dynamically
@@ -45,7 +45,7 @@ function Vehicle() {
           const { inputValue } = params;
           // Suggest the creation of a new value
           const isExisting = options.some((option: { title: string }) => inputValue === option.title);
-          if (inputValue !== "" && !isExisting) {
+          if (inputValue !== '' && !isExisting) {
             filtered.push({
               inputValue,
               title: `Add "${inputValue}"`,
@@ -54,7 +54,7 @@ function Vehicle() {
 
           return filtered;
         }}
-        renderInput={(params) => (
+        renderInput={params => (
           <TextField
             {...params}
             name={bookingModel.fields.vehicle.name}
@@ -66,8 +66,8 @@ function Vehicle() {
           />
         )}
         options={vehicles
-          .filter((value) => !value.isBooked)
-          .map((vehicle) => `(${vehicle.modelYear}) ${vehicle.make} ${vehicle.model}`)}
+          .filter(value => !value.isBooked)
+          .map(vehicle => `(${vehicle.modelYear}) ${vehicle.make} ${vehicle.model}`)}
         isOptionEqualToValue={(option: any, value) => option.label === value.label}
       />
     );

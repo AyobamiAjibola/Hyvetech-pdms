@@ -1,8 +1,8 @@
-import React from "react";
-import Lottie from "lottie-react";
+import React from 'react';
+import Lottie from 'lottie-react';
 
-import Loader from "../../assets/plugins/lottie/loader3.json";
-import { Backdrop } from "@mui/material";
+import Loader from '../../assets/plugins/lottie/loader3.json';
+import { Backdrop } from '@mui/material';
 
 type IAppProps = {
   height?: number;
@@ -18,12 +18,12 @@ function AppLoader({ height = 80, width = 80, show = false }: IAppProps) {
     width: width,
     height: height,
     rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
+      preserveAspectRatio: 'xMidYMid slice',
     },
   };
 
   return !show ? null : (
-    <Backdrop sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} open={show}>
+    <Backdrop sx={{ zIndex: theme => theme.zIndex.drawer + 1 }} open={show}>
       <Lottie {...defaultOptions} />
     </Backdrop>
   );

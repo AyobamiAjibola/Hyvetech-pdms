@@ -1,34 +1,34 @@
-import React, { createContext, useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import { Button, DialogActions, DialogContentText, Grid } from "@mui/material";
-import { Formik } from "formik";
-import { useNavigate } from "react-router-dom";
+import React, { createContext, useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import { Button, DialogActions, DialogContentText, Grid } from '@mui/material';
+import { Formik } from 'formik';
+import { useNavigate } from 'react-router-dom';
 
-import { CheckListsPageContextProps, IImageButtonData } from "@app-interfaces";
-import AppModal from "../../components/modal/AppModal";
-import checkListModel, { ICheckListValues } from "../../components/forms/models/checkListModel";
-import { IPartner } from "@app-models";
-import useAppDispatch from "../../hooks/useAppDispatch";
-import useAppSelector from "../../hooks/useAppSelector";
-import { getPartnersAction } from "../../store/actions/partnerActions";
-import CheckListForm from "../../components/forms/checkList/CheckListForm";
-import checkListImg from "../../assets/images/check-list2.png";
+import { CheckListsPageContextProps, IImageButtonData } from '@app-interfaces';
+import AppModal from '../../components/modal/AppModal';
+import checkListModel, { ICheckListValues } from '../../components/forms/models/checkListModel';
+import { IPartner } from '@app-models';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import useAppSelector from '../../hooks/useAppSelector';
+import { getPartnersAction } from '../../store/actions/partnerActions';
+import CheckListForm from '../../components/forms/checkList/CheckListForm';
+import checkListImg from '../../assets/images/check-list2.png';
 import {
   createCheckListAction,
   deleteCheckListAction,
   getCheckListsAction,
   updateCheckListAction,
-} from "../../store/actions/checkListActions";
-import { CustomHookMessage } from "@app-types";
-import AppAlert from "../../components/alerts/AppAlert";
-import CheckListCard from "../../components/checkList/CheckListCard";
+} from '../../store/actions/checkListActions';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../../components/alerts/AppAlert';
+import CheckListCard from '../../components/checkList/CheckListCard';
 import {
   clearCreateCheckListStatus,
   clearGetCheckListsStatus,
   clearUpdateCheckListStatus,
-} from "../../store/reducers/checkListReducer";
-import AppLoader from "../../components/loader/AppLoader";
-import { MESSAGES } from "../../config/constants";
+} from '../../store/reducers/checkListReducer';
+import AppLoader from '../../components/loader/AppLoader';
+import { MESSAGES } from '../../config/constants';
 
 export const CheckListsPageContext = createContext<CheckListsPageContextProps | null>(null);
 
@@ -45,54 +45,54 @@ function CheckListsPage() {
   const [initialValues, setInitialValues] = useState<ICheckListValues>(checkListModel.initialValues);
 
   const dispatch = useAppDispatch();
-  const partnerReducer = useAppSelector((state) => state.partnerReducer);
-  const checkListReducer = useAppSelector((state) => state.checkListReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
+  const checkListReducer = useAppSelector(state => state.checkListReducer);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (partnerReducer.getPartnersStatus === "idle") {
+    if (partnerReducer.getPartnersStatus === 'idle') {
       dispatch(getPartnersAction());
     }
   }, [dispatch, partnerReducer.getPartnersStatus]);
 
   useEffect(() => {
-    if (checkListReducer.getCheckListsStatus === "idle") {
+    if (checkListReducer.getCheckListsStatus === 'idle') {
       dispatch(getCheckListsAction());
     }
   }, [dispatch, checkListReducer.getCheckListsStatus]);
 
   useEffect(() => {
-    if (partnerReducer.getPartnersStatus === "completed") {
+    if (partnerReducer.getPartnersStatus === 'completed') {
       setPartners(partnerReducer.partners);
     }
   }, [partnerReducer.getPartnersStatus, partnerReducer.partners]);
 
   useEffect(() => {
-    if (checkListReducer.getCheckListsStatus === "completed") {
+    if (checkListReducer.getCheckListsStatus === 'completed') {
       setCheckLists(
-        checkListReducer.checkLists.map((checkList) => ({
+        checkListReducer.checkLists.map(checkList => ({
           id: checkList.id,
           url: checkListImg,
           title: checkList.name,
-          width: "33.33%",
-        }))
+          width: '33.33%',
+        })),
       );
     }
   }, [checkListReducer.getCheckListsStatus, checkListReducer.checkLists]);
 
   useEffect(() => {
-    if (checkListReducer.createCheckListStatus === "completed") {
+    if (checkListReducer.createCheckListStatus === 'completed') {
       const checkLists = checkListReducer.checkLists;
 
       if (checkLists.length) {
         setCheckLists(
-          checkLists.map((checkList) => ({
+          checkLists.map(checkList => ({
             id: checkList.id,
             url: checkListImg,
             title: checkList.name,
-            width: "33.33%",
-          }))
+            width: '33.33%',
+          })),
         );
       }
       setShowCreate(false);
@@ -108,17 +108,17 @@ function CheckListsPage() {
   ]);
 
   useEffect(() => {
-    if (checkListReducer.updateCheckListStatus === "completed") {
+    if (checkListReducer.updateCheckListStatus === 'completed') {
       const checkLists = checkListReducer.checkLists;
 
       if (checkLists.length) {
         setCheckLists(
-          checkLists.map((checkList) => ({
+          checkLists.map(checkList => ({
             id: checkList.id,
             url: checkListImg,
             title: checkList.name,
-            width: "33.33%",
-          }))
+            width: '33.33%',
+          })),
         );
       }
       setShowEdit(false);
@@ -134,7 +134,7 @@ function CheckListsPage() {
   ]);
 
   useEffect(() => {
-    if (checkListReducer.createCheckListStatus === "failed") {
+    if (checkListReducer.createCheckListStatus === 'failed') {
       setShowCreate(false);
       if (checkListReducer.createCheckListError) {
         setError({ message: checkListReducer.createCheckListError });
@@ -145,7 +145,7 @@ function CheckListsPage() {
   }, [checkListReducer.createCheckListStatus, checkListReducer.createCheckListError, dispatch]);
 
   useEffect(() => {
-    if (checkListReducer.updateCheckListStatus === "failed") {
+    if (checkListReducer.updateCheckListStatus === 'failed') {
       setShowEdit(false);
       if (checkListReducer.updateCheckListError) {
         setError({ message: checkListReducer.updateCheckListError });
@@ -156,7 +156,7 @@ function CheckListsPage() {
   }, [checkListReducer.updateCheckListStatus, checkListReducer.updateCheckListError, dispatch]);
 
   useEffect(() => {
-    if (checkListReducer.deleteCheckListStatus === "failed") {
+    if (checkListReducer.deleteCheckListStatus === 'failed') {
       setShowEdit(false);
       if (checkListReducer.deleteCheckListError) {
         setError({ message: checkListReducer.deleteCheckListError });
@@ -178,16 +178,16 @@ function CheckListsPage() {
   };
 
   const onEdit = (checkListId: number) => {
-    const checkList = checkListReducer.checkLists.find((value) => value.id === checkListId);
+    const checkList = checkListReducer.checkLists.find(value => value.id === checkListId);
 
     if (checkList) {
-      const partners = checkList.partners.map((value) => `${value.id}`);
+      const partners = checkList.partners.map(value => `${value.id}`);
 
       setId(checkListId);
-      setInitialValues((prevState) => ({
+      setInitialValues(prevState => ({
         ...prevState,
-        checkList: checkList.name ? checkList.name : "",
-        description: checkList.description ? checkList.description : "",
+        checkList: checkList.name ? checkList.name : '',
+        description: checkList.description ? checkList.description : '',
         partners,
       }));
       setShowEdit(true);
@@ -221,15 +221,14 @@ function CheckListsPage() {
         setShowView,
         partners,
         setPartners,
-      }}
-    >
+      }}>
       <Box mb={3}>
         <Button onClick={() => setShowCreate(true)} variant="outlined" color="secondary">
           Create CheckList
         </Button>
       </Box>
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {_checkLists.map((checkList) => {
+        {_checkLists.map(checkList => {
           return (
             <Grid item xs={12} md={3} key={checkList.id}>
               <CheckListCard
@@ -260,9 +259,8 @@ function CheckListsPage() {
           <Formik
             initialValues={initialValues}
             onSubmit={handleCreateCheckList}
-            validationSchema={checkListModel.schema}
-          >
-            <CheckListForm isSubmitting={checkListReducer.createCheckListStatus === "loading"} />
+            validationSchema={checkListModel.schema}>
+            <CheckListForm isSubmitting={checkListReducer.createCheckListStatus === 'loading'} />
           </Formik>
         }
         onClose={() => setShowCreate(false)}
@@ -276,9 +274,8 @@ function CheckListsPage() {
             initialValues={initialValues}
             onSubmit={handleUpdateCheckList}
             validationSchema={checkListModel.schema}
-            enableReinitialize
-          >
-            <CheckListForm isSubmitting={checkListReducer.updateCheckListStatus === "loading"} />
+            enableReinitialize>
+            <CheckListForm isSubmitting={checkListReducer.updateCheckListStatus === 'loading'} />
           </Formik>
         }
         onClose={() => setShowEdit(false)}
@@ -307,8 +304,8 @@ function CheckListsPage() {
         }
         onClose={() => setShowDelete(false)}
       />
-      <AppLoader show={checkListReducer.getCheckListsStatus === "loading"} />
-      <AppLoader show={checkListReducer.deleteCheckListStatus === "loading"} />
+      <AppLoader show={checkListReducer.getCheckListsStatus === 'loading'} />
+      <AppLoader show={checkListReducer.deleteCheckListStatus === 'loading'} />
     </CheckListsPageContext.Provider>
   );
 }

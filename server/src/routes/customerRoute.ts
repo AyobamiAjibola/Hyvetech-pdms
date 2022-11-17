@@ -1,5 +1,5 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import CustomerController from "../controllers/CustomerController";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import CustomerController from '../controllers/CustomerController';
 
 export const getCustomersHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await CustomerController.allCustomers();

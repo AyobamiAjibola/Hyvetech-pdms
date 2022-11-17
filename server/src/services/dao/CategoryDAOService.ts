@@ -6,12 +6,12 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import CategoryRepository from "../../repositories/CategoryRepository";
-import Category from "../../models/Category";
-import { appModelTypes } from "../../@types/app-model";
-import moment from "moment/moment";
+import CategoryRepository from '../../repositories/CategoryRepository';
+import Category from '../../models/Category';
+import { appModelTypes } from '../../@types/app-model';
+import moment from 'moment/moment';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class CategoryDAOService implements ICrudDAO<Category> {
@@ -51,7 +51,7 @@ export default class CategoryDAOService implements ICrudDAO<Category> {
   update(
     category: Category,
     values: InferAttributes<Category>,
-    options: UpdateOptions<Attributes<Category>>
+    options: UpdateOptions<Attributes<Category>>,
   ): Promise<Category> {
     return this.categoryRepository.updateOne(category, values, options);
   }

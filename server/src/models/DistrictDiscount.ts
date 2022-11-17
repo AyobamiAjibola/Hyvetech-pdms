@@ -1,11 +1,11 @@
-import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { InferAttributes, InferCreationAttributes } from "sequelize";
-import District from "./District";
-import Discount from "./Discount";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { InferAttributes, InferCreationAttributes } from 'sequelize';
+import District from './District';
+import Discount from './Discount';
 
 @Table({
   timestamps: false,
-  tableName: "district_discounts",
+  tableName: 'district_discounts',
 })
 export default class DistrictDiscount extends Model<
   InferAttributes<DistrictDiscount>,

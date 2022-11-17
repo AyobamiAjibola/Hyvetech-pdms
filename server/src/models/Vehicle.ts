@@ -9,28 +9,28 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
+} from 'sequelize-typescript';
 
-import Customer from "./Customer";
-import Joi from "joi";
-import { VIN_PATTERN } from "../config/constants";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import Appointment from "./Appointment";
-import VehicleTag from "./VehicleTag";
-import Tag from "./Tag";
-import CustomerSubscription from "./CustomerSubscription";
-import RideShareDriver from "./RideShareDriver";
-import RideShareDriverSubscription from "./RideShareDriverSubscription";
-import Job from "./Job";
-import Estimate from "./Estimate";
+import Customer from './Customer';
+import Joi from 'joi';
+import { VIN_PATTERN } from '../config/constants';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Appointment from './Appointment';
+import VehicleTag from './VehicleTag';
+import Tag from './Tag';
+import CustomerSubscription from './CustomerSubscription';
+import RideShareDriver from './RideShareDriver';
+import RideShareDriverSubscription from './RideShareDriverSubscription';
+import Job from './Job';
+import Estimate from './Estimate';
 
 export const $vehicleSchema = {
-  model: Joi.string().required().label("Car Model"),
-  make: Joi.string().required().label("Car Make"),
-  vin: Joi.string().pattern(VIN_PATTERN).allow("").label("Vehicle Identification Number"),
-  engineCylinders: Joi.string().allow("").label("Engine Type"),
-  engineModel: Joi.string().allow("").label("Engine Model"),
-  modelYear: Joi.string().allow("").label("Car Model Year"),
+  model: Joi.string().required().label('Car Model'),
+  make: Joi.string().required().label('Car Make'),
+  vin: Joi.string().pattern(VIN_PATTERN).allow('').label('Vehicle Identification Number'),
+  engineCylinders: Joi.string().allow('').label('Engine Type'),
+  engineModel: Joi.string().allow('').label('Engine Model'),
+  modelYear: Joi.string().allow('').label('Car Model Year'),
 };
 
 export const $vinSchema: Joi.SchemaMap<Vehicle> = {
@@ -38,20 +38,20 @@ export const $vinSchema: Joi.SchemaMap<Vehicle> = {
     .pattern(VIN_PATTERN)
     .required()
     .messages({
-      "string.pattern.base": "Invalid VIN. Please provide valid VIN like: KL1JH526XXX11864",
+      'string.pattern.base': 'Invalid VIN. Please provide valid VIN like: KL1JH526XXX11864',
     })
-    .label("Vehicle Identification Number"),
+    .label('Vehicle Identification Number'),
 };
 
 @Table({
   timestamps: true,
 
-  tableName: "vehicles",
+  tableName: 'vehicles',
 })
 export default class Vehicle extends Model<InferAttributes<Vehicle>, InferCreationAttributes<Vehicle>> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "vehicle_id" })
+  @Column({ type: DataType.INTEGER, field: 'vehicle_id' })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)
@@ -144,45 +144,45 @@ export default class Vehicle extends Model<InferAttributes<Vehicle>, InferCreati
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare onMaintenance: boolean;
 
-  @BelongsTo(() => Customer, { onDelete: "cascade" })
+  @BelongsTo(() => Customer, { onDelete: 'cascade' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: number;
 
-  @BelongsTo(() => Appointment, { onDelete: "cascade" })
+  @BelongsTo(() => Appointment, { onDelete: 'cascade' })
   declare appointment: NonAttribute<Appointment>;
 
   @ForeignKey(() => Appointment)
   @Column(DataType.INTEGER)
   declare appointmentId: number;
 
-  @BelongsTo(() => CustomerSubscription, { onDelete: "cascade" })
+  @BelongsTo(() => CustomerSubscription, { onDelete: 'cascade' })
   declare subscription: NonAttribute<CustomerSubscription>;
 
   @ForeignKey(() => CustomerSubscription)
   @Column(DataType.INTEGER)
   declare customerSubscriptionId: number;
 
-  @BelongsTo(() => RideShareDriver, { onDelete: "cascade" })
+  @BelongsTo(() => RideShareDriver, { onDelete: 'cascade' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriverSubscription, { onDelete: "cascade" })
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'cascade' })
   declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
 
   @ForeignKey(() => RideShareDriverSubscription)
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: number;
 
-  @HasMany(() => Job, { onDelete: "cascade" })
+  @HasMany(() => Job, { onDelete: 'cascade' })
   declare jobs: NonAttribute<Array<Job>>;
 
-  @HasMany(() => Estimate, { onDelete: "cascade" })
+  @HasMany(() => Estimate, { onDelete: 'cascade' })
   declare estimates: NonAttribute<Array<Estimate>>;
 
   @BelongsToMany(() => Tag, () => VehicleTag)

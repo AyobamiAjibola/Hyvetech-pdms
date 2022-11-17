@@ -1,35 +1,35 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Divider, Grid, Paper } from "@mui/material";
-import AnalyticsCard from "../data/AnalyticsCard";
-import { blue, blueGrey, brown, cyan, deepOrange, green, indigo, teal } from "@mui/material/colors";
-import AppPieChart from "../charts/AppPieChart";
-import moment from "moment";
-import AppStackedColumnChart from "../charts/AppStackedColumnChart";
-import { MONTHS } from "../../config/constants";
-import useAppSelector from "../../hooks/useAppSelector";
-import useAppDispatch from "../../hooks/useAppDispatch";
-import { getAnalyticsAction } from "../../store/actions/dashboardActions";
-import { getCustomersAction } from "../../store/actions/customerActions";
-import { computeMonthlyColumnChartData } from "../../utils/generic";
-import { getDriversAction } from "../../store/actions/rideShareActions";
-import AppLoader from "../loader/AppLoader";
+import React, { useEffect, useMemo, useState } from 'react';
+import { Divider, Grid, Paper } from '@mui/material';
+import AnalyticsCard from '../data/AnalyticsCard';
+import { blue, blueGrey, brown, cyan, deepOrange, green, indigo, teal } from '@mui/material/colors';
+import AppPieChart from '../charts/AppPieChart';
+import moment from 'moment';
+import AppStackedColumnChart from '../charts/AppStackedColumnChart';
+import { MONTHS } from '../../config/constants';
+import useAppSelector from '../../hooks/useAppSelector';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import { getAnalyticsAction } from '../../store/actions/dashboardActions';
+import { getCustomersAction } from '../../store/actions/customerActions';
+import { computeMonthlyColumnChartData } from '../../utils/generic';
+import { getDriversAction } from '../../store/actions/rideShareActions';
+import AppLoader from '../loader/AppLoader';
 
-import { getTechniciansAction } from "../../store/actions/technicianActions";
-import DataCard from "../data/DataCard";
-import { getPartnersAction } from "../../store/actions/partnerActions";
+import { getTechniciansAction } from '../../store/actions/technicianActions';
+import DataCard from '../data/DataCard';
+import { getPartnersAction } from '../../store/actions/partnerActions';
 
 function AdminDashboard() {
   const [barChartSeries, setBarChartSeries] = useState<any[]>();
 
-  const dashboardReducer = useAppSelector((state) => state.dashboardReducer);
-  const customerReducer = useAppSelector((state) => state.customerReducer);
-  const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
-  const technicianReducer = useAppSelector((state) => state.technicianReducer);
-  const partnerReducer = useAppSelector((state) => state.partnerReducer);
+  const dashboardReducer = useAppSelector(state => state.dashboardReducer);
+  const customerReducer = useAppSelector(state => state.customerReducer);
+  const rideShareReducer = useAppSelector(state => state.rideShareReducer);
+  const technicianReducer = useAppSelector(state => state.technicianReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (dashboardReducer.getAnalyticsStatus === "idle") {
+    if (dashboardReducer.getAnalyticsStatus === 'idle') {
       dispatch(getAnalyticsAction());
     }
   }, [dashboardReducer.getAnalyticsStatus, dispatch]);
@@ -42,7 +42,7 @@ function AdminDashboard() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (dashboardReducer.getAnalyticsStatus === "completed") {
+    if (dashboardReducer.getAnalyticsStatus === 'completed') {
       if (dashboardReducer.analytics) {
         setBarChartSeries(computeMonthlyColumnChartData(dashboardReducer.analytics));
       }
@@ -65,8 +65,7 @@ function AdminDashboard() {
         columns={{ xs: 4, sm: 8, md: 12 }}
         justifyContent="center"
         alignItems="center"
-        sx={{ p: 1 }}
-      >
+        sx={{ p: 1 }}>
         <Grid item xs={12} container direction="column">
           <Grid item container xs spacing={2}>
             <Grid item xs={12} md={3}>
@@ -113,7 +112,7 @@ function AdminDashboard() {
             <Grid item xs={12} md={3}>
               <Paper>
                 <AppPieChart
-                  title={`Customers, ${moment().format("MMM YYYY")}.`}
+                  title={`Customers, ${moment().format('MMM YYYY')}.`}
                   series={dashboardReducer.analytics?.monthlyData.customers}
                 />
               </Paper>
@@ -121,7 +120,7 @@ function AdminDashboard() {
             <Grid item xs={12} md={3}>
               <Paper>
                 <AppPieChart
-                  title={`Appointments, ${moment().format("MMM YYYY")}.`}
+                  title={`Appointments, ${moment().format('MMM YYYY')}.`}
                   series={dashboardReducer.analytics?.monthlyData.appointments}
                 />
               </Paper>
@@ -129,7 +128,7 @@ function AdminDashboard() {
             <Grid item xs={12} md={3}>
               <Paper>
                 <AppPieChart
-                  title={`Vehicles, ${moment().format("MMM YYYY")}.`}
+                  title={`Vehicles, ${moment().format('MMM YYYY')}.`}
                   series={dashboardReducer.analytics?.monthlyData.vehicles}
                 />
               </Paper>
@@ -137,7 +136,7 @@ function AdminDashboard() {
             <Grid item xs={12} md={3}>
               <Paper>
                 <AppPieChart
-                  title={`Transactions, ${moment().format("MMM YYYY")}.`}
+                  title={`Transactions, ${moment().format('MMM YYYY')}.`}
                   series={dashboardReducer.analytics?.monthlyData.transactions}
                 />
               </Paper>
@@ -158,10 +157,10 @@ function AdminDashboard() {
           />
         </Grid>
       </Grid>
-      <AppLoader show={dashboardReducer.getAnalyticsStatus === "loading"} />
-      <AppLoader show={customerReducer.getCustomersStatus === "loading"} />
-      <AppLoader show={rideShareReducer.getDriversStatus === "loading"} />
-      <AppLoader show={technicianReducer.getTechniciansStatus === "loading"} />
+      <AppLoader show={dashboardReducer.getAnalyticsStatus === 'loading'} />
+      <AppLoader show={customerReducer.getCustomersStatus === 'loading'} />
+      <AppLoader show={rideShareReducer.getDriversStatus === 'loading'} />
+      <AppLoader show={technicianReducer.getTechniciansStatus === 'loading'} />
     </React.Fragment>
   );
 }

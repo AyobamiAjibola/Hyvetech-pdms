@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import { Grid, Typography } from "@mui/material";
+import React, { useContext } from 'react';
+import { Grid, Typography } from '@mui/material';
 
-import TimeSlot from "../../components/forms/booking/TimeSlot";
-import { AppContext } from "../../context/AppContextProvider";
-import { DRIVE_IN_PLAN } from "../../config/constants";
-import { AppContextProps } from "@app-interfaces";
+import TimeSlot from '../../components/forms/booking/TimeSlot';
+import { AppContext } from '../../context/AppContextProvider';
+import { DRIVE_IN_PLAN } from '../../config/constants';
+import { AppContextProps } from '@app-interfaces';
 
 interface Props {
   slot: string;
@@ -25,10 +25,9 @@ function VehicleFaultAndTimeSlot({ slot, handleSelectSlot, planCategory }: Props
             // className="time-header"
             gutterBottom
             sx={{
-              fontSize: (theme) => theme.spacing(1.5),
-              color: (theme) => (theme.palette.mode === "dark" ? "#FFFFFF" : "#383838"),
-            }}
-          >
+              fontSize: theme => theme.spacing(1.5),
+              color: theme => (theme.palette.mode === 'dark' ? '#FFFFFF' : '#383838'),
+            }}>
             Select available slot
           </Typography>
           <TimeSlot slot={slot} handleChange={handleSelectSlot} />

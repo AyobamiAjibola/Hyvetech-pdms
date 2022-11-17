@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import CustomerSubscriptionRepository from "../../repositories/CustomerSubscriptionRepository";
-import CustomerSubscription from "../../models/CustomerSubscription";
-import { appModelTypes } from "../../@types/app-model";
+import CustomerSubscriptionRepository from '../../repositories/CustomerSubscriptionRepository';
+import CustomerSubscription from '../../models/CustomerSubscription';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class CustomerSubscriptionDAOService implements ICrudDAO<CustomerSubscription> {
@@ -22,7 +22,7 @@ export default class CustomerSubscriptionDAOService implements ICrudDAO<Customer
 
   create(
     values: CreationAttributes<CustomerSubscription>,
-    options?: CreateOptions<Attributes<CustomerSubscription>>
+    options?: CreateOptions<Attributes<CustomerSubscription>>,
   ): Promise<CustomerSubscription> {
     return this.customerSubscriptionRepository.save(values, options);
   }
@@ -46,7 +46,7 @@ export default class CustomerSubscriptionDAOService implements ICrudDAO<Customer
   update(
     customerSubscription: CustomerSubscription,
     values: InferAttributes<CustomerSubscription>,
-    options: UpdateOptions<Attributes<CustomerSubscription>>
+    options: UpdateOptions<Attributes<CustomerSubscription>>,
   ): Promise<CustomerSubscription> {
     return this.customerSubscriptionRepository.updateOne(customerSubscription, values, options);
   }

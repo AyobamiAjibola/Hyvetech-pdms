@@ -8,17 +8,17 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
-import { InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import Vehicle from "./Vehicle";
-import RideShareDriver from "./RideShareDriver";
-import RideShareDriverPlanSubscription from "./RideShareDriverPlanSubscription";
-import Job from "./Job";
-import Transaction from "./Transaction";
+} from 'sequelize-typescript';
+import { InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Vehicle from './Vehicle';
+import RideShareDriver from './RideShareDriver';
+import RideShareDriverPlanSubscription from './RideShareDriverPlanSubscription';
+import Job from './Job';
+import Transaction from './Transaction';
 
 @Table({
   timestamps: true,
-  tableName: "ride_share_driver_subscriptions",
+  tableName: 'ride_share_driver_subscriptions',
 })
 export default class RideShareDriverSubscription extends Model<
   InferAttributes<RideShareDriverSubscription>,
@@ -29,7 +29,7 @@ export default class RideShareDriverSubscription extends Model<
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
-    field: "ride_share_driver_subscription_id",
+    field: 'ride_share_driver_subscription_id',
   })
   declare id: number;
 
@@ -105,9 +105,9 @@ export default class RideShareDriverSubscription extends Model<
   @HasMany(() => Job)
   declare jobs: NonAttribute<Array<Job>>;
 
-  @HasMany(() => Vehicle, { onDelete: "cascade" })
+  @HasMany(() => Vehicle, { onDelete: 'cascade' })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasOne(() => Transaction, { onDelete: "cascade" })
+  @HasOne(() => Transaction, { onDelete: 'cascade' })
   declare transaction: NonAttribute<Transaction>;
 }

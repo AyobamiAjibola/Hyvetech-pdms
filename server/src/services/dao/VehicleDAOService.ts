@@ -1,9 +1,9 @@
-import VehicleRepository from "../../repositories/VehicleRepository";
-import Vehicle from "../../models/Vehicle";
-import { appModelTypes } from "../../@types/app-model";
-import { Attributes, CreateOptions, CreationAttributes, DestroyOptions, FindOptions, UpdateOptions } from "sequelize";
-import moment from "moment/moment";
-import Generic from "../../utils/Generic";
+import VehicleRepository from '../../repositories/VehicleRepository';
+import Vehicle from '../../models/Vehicle';
+import { appModelTypes } from '../../@types/app-model';
+import { Attributes, CreateOptions, CreationAttributes, DestroyOptions, FindOptions, UpdateOptions } from 'sequelize';
+import moment from 'moment/moment';
+import Generic from '../../utils/Generic';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class VehicleDAOService implements ICrudDAO<Vehicle> {
@@ -42,7 +42,7 @@ export default class VehicleDAOService implements ICrudDAO<Vehicle> {
   update(
     vehicle: Vehicle,
     values: CreationAttributes<Vehicle>,
-    options: UpdateOptions<Attributes<Vehicle>>
+    options: UpdateOptions<Attributes<Vehicle>>,
   ): Promise<Vehicle> {
     return this.vehicleRepository.updateOne(vehicle, values, options);
   }

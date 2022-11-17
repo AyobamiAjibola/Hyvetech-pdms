@@ -1,6 +1,6 @@
-import { compare, genSalt, hash } from "bcryptjs";
+import { compare, genSalt, hash } from 'bcryptjs';
 
-import { appCommonTypes } from "../@types/app-common";
+import { appCommonTypes } from '../@types/app-common';
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
 export default class PasswordEncoder implements BcryptPasswordEncoder {

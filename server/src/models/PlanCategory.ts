@@ -1,10 +1,10 @@
-import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { InferAttributes, InferCreationAttributes } from "sequelize";
-import Category from "./Category";
-import Plan from "./Plan";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { InferAttributes, InferCreationAttributes } from 'sequelize';
+import Category from './Category';
+import Plan from './Plan';
 
 @Table({
-  tableName: "plan_categories",
+  tableName: 'plan_categories',
   timestamps: false,
 })
 export default class PlanCategory extends Model<InferAttributes<PlanCategory>, InferCreationAttributes<PlanCategory>> {

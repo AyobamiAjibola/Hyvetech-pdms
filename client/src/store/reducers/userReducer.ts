@@ -1,7 +1,7 @@
-import { IThunkAPIStatus } from "@app-types";
-import { IUser } from "@app-models";
-import { createSlice } from "@reduxjs/toolkit";
-import { getUserAction, getUsersAction } from "../actions/userActions";
+import { IThunkAPIStatus } from '@app-types';
+import { IUser } from '@app-models';
+import { createSlice } from '@reduxjs/toolkit';
+import { getUserAction, getUsersAction } from '../actions/userActions';
 
 interface IUserState {
   getUserStatus: IThunkAPIStatus;
@@ -17,43 +17,43 @@ interface IUserState {
 }
 
 const initialState: IUserState = {
-  getUserError: "",
-  getUserStatus: "idle",
-  getUserSuccess: "",
-  getUsersError: "",
-  getUsersStatus: "idle",
-  getUsersSuccess: "",
+  getUserError: '',
+  getUserStatus: 'idle',
+  getUserSuccess: '',
+  getUsersError: '',
+  getUsersStatus: 'idle',
+  getUsersSuccess: '',
   user: null,
   users: [],
 };
 
 const userSlice = createSlice({
-  name: "users",
+  name: 'users',
   initialState,
   reducers: {
     clearGetUsersStatus(state: IUserState) {
-      state.getUsersStatus = "idle";
-      state.getUsersSuccess = "";
-      state.getUsersError = "";
+      state.getUsersStatus = 'idle';
+      state.getUsersSuccess = '';
+      state.getUsersError = '';
     },
     clearGetUserStatus(state: IUserState) {
-      state.getUserStatus = "idle";
-      state.getUserSuccess = "";
-      state.getUserError = "";
+      state.getUserStatus = 'idle';
+      state.getUserSuccess = '';
+      state.getUserError = '';
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(getUsersAction.pending, (state) => {
-        state.getUsersStatus = "loading";
+      .addCase(getUsersAction.pending, state => {
+        state.getUsersStatus = 'loading';
       })
       .addCase(getUsersAction.fulfilled, (state, action) => {
-        state.getUsersStatus = "completed";
+        state.getUsersStatus = 'completed';
         state.getUsersSuccess = action.payload.message;
         state.users = action.payload.results as IUser[];
       })
       .addCase(getUsersAction.rejected, (state, action) => {
-        state.getUsersStatus = "failed";
+        state.getUsersStatus = 'failed';
 
         if (action.payload) {
           state.getUsersError = action.payload.message;
@@ -61,16 +61,16 @@ const userSlice = createSlice({
       });
 
     builder
-      .addCase(getUserAction.pending, (state) => {
-        state.getUserStatus = "loading";
+      .addCase(getUserAction.pending, state => {
+        state.getUserStatus = 'loading';
       })
       .addCase(getUserAction.fulfilled, (state, action) => {
-        state.getUserStatus = "completed";
+        state.getUserStatus = 'completed';
         state.getUserSuccess = action.payload.message;
         state.user = action.payload.result as IUser;
       })
       .addCase(getUserAction.rejected, (state, action) => {
-        state.getUserStatus = "failed";
+        state.getUserStatus = 'failed';
 
         if (action.payload) {
           state.getUserError = action.payload.message;

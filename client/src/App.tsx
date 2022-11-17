@@ -1,14 +1,14 @@
-import { ThemeProvider } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
-import React from "react";
+import { ThemeProvider } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import React from 'react';
 
-import MainLayout from "./components/layouts/MainLayout";
-import useAppTheme from "./hooks/useAppTheme";
-import useAppSelector from "./hooks/useAppSelector";
-import AppLoader from "./components/loader/AppLoader";
+import MainLayout from './components/layouts/MainLayout';
+import useAppTheme from './hooks/useAppTheme';
+import useAppSelector from './hooks/useAppSelector';
+import AppLoader from './components/loader/AppLoader';
 
 function App() {
-  const authReducer = useAppSelector((state) => state.authenticationReducer);
+  const authReducer = useAppSelector(state => state.authenticationReducer);
 
   const { theme } = useAppTheme();
 
@@ -16,7 +16,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <MainLayout />
-      <AppLoader show={authReducer.signOutStatus === "loading"} />
+      <AppLoader show={authReducer.signOutStatus === 'loading'} />
     </ThemeProvider>
   );
 }

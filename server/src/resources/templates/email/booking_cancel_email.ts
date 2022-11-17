@@ -1,11 +1,11 @@
-import { MAIN_OFFICE } from "../../../config/constants";
-import { appCommonTypes } from "../../../@types/app-common";
+import { MAIN_OFFICE } from '../../../config/constants';
+import { appCommonTypes } from '../../../@types/app-common';
 import MailTextConfig = appCommonTypes.MailTextConfig;
 
 export default function booking_cancel_email(config: MailTextConfig) {
   const getServiceMode = () => {
-    let mode = "Mobile";
-    if (config.location === MAIN_OFFICE) mode = "Drive-in";
+    let mode = 'Mobile';
+    if (config.location === MAIN_OFFICE) mode = 'Drive-in';
     return mode;
   };
 

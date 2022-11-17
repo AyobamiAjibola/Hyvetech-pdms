@@ -1,11 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef } from 'react';
 
-import { Box } from "@mui/material";
-import * as Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import { Box } from '@mui/material';
+import * as Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
-import highchartsAccessibility from "highcharts/modules/accessibility";
-import highChartsNoDataToDisplay from "highcharts/modules/no-data-to-display";
+import highchartsAccessibility from 'highcharts/modules/accessibility';
+import highChartsNoDataToDisplay from 'highcharts/modules/no-data-to-display';
 
 highchartsAccessibility(Highcharts);
 highChartsNoDataToDisplay(Highcharts);
@@ -25,7 +25,7 @@ export default function AppStackedColumnChart(props: IProps) {
 
   const options: Highcharts.Options = {
     chart: {
-      type: "column",
+      type: 'column',
       width: 1660,
     },
     title: {
@@ -46,32 +46,32 @@ export default function AppStackedColumnChart(props: IProps) {
       stackLabels: {
         enabled: true,
         style: {
-          fontWeight: "bold",
+          fontWeight: 'bold',
           color:
             // theme
-            (Highcharts.defaultOptions.title?.style && Highcharts.defaultOptions.title?.style.color) || "gray",
-          textOutline: "none",
+            (Highcharts.defaultOptions.title?.style && Highcharts.defaultOptions.title?.style.color) || 'gray',
+          textOutline: 'none',
         },
       },
     },
     legend: {
-      align: "right",
+      align: 'right',
       x: -30,
-      verticalAlign: "top",
+      verticalAlign: 'top',
       y: 25,
       floating: true,
-      backgroundColor: Highcharts.defaultOptions.legend?.backgroundColor || "white",
-      borderColor: "#CCC",
+      backgroundColor: Highcharts.defaultOptions.legend?.backgroundColor || 'white',
+      borderColor: '#CCC',
       borderWidth: 1,
       shadow: false,
     },
     tooltip: {
-      headerFormat: "<b>{point.x}</b><br/>",
-      pointFormat: "{series.name}: {point.y}<br/>Total: {point.stackTotal}",
+      headerFormat: '<b>{point.x}</b><br/>',
+      pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}',
     },
     plotOptions: {
       column: {
-        stacking: "normal",
+        stacking: 'normal',
       },
     },
     series: props.series,
@@ -83,10 +83,9 @@ export default function AppStackedColumnChart(props: IProps) {
       component="div"
       sx={{
         boxShadow: 5,
-        width: "100%",
+        width: '100%',
         minWidth: 1660,
-      }}
-    >
+      }}>
       <HighchartsReact highcharts={Highcharts} options={options} ref={chartComponentRef} {...props} />
     </Box>
   );

@@ -1,5 +1,5 @@
-import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import VehicleController from "../controllers/VehicleController";
+import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import VehicleController from '../controllers/VehicleController';
 
 export const getVehicleSubscriptions = authenticateRouteWrapper(async (req, res) => {
   const response = await VehicleController.vehicleSubscriptions(req);

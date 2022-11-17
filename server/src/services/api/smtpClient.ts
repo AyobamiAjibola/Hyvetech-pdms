@@ -1,6 +1,6 @@
-import EmailConfigRepository from "../../repositories/EmailConfigRepository";
-import { createTransport } from "nodemailer";
-import { MailOptions } from "nodemailer/lib/smtp-transport";
+import EmailConfigRepository from '../../repositories/EmailConfigRepository';
+import { createTransport } from 'nodemailer';
+import { MailOptions } from 'nodemailer/lib/smtp-transport';
 
 const emailConfigRepository = new EmailConfigRepository();
 
@@ -23,8 +23,8 @@ const smtpClient = {
       pool: true,
       maxConnections: 100,
       maxMessages: Infinity,
-      logger: process.env.NODE_ENV === "development",
-      debug: process.env.NODE_ENV === "development",
+      logger: process.env.NODE_ENV === 'development',
+      debug: process.env.NODE_ENV === 'development',
     });
   },
   async sendEmail(mail: MailOptions) {

@@ -1,7 +1,7 @@
-import Redis from "ioredis";
+import Redis from 'ioredis';
 
-import settings from "./settings";
-import { appCommonTypes } from "../@types/app-common";
+import settings from './settings';
+import { appCommonTypes } from '../@types/app-common';
 import RedisDataStoreOptions = appCommonTypes.RedisDataStoreOptions;
 
 //@ts-ignore

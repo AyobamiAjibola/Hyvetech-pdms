@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios from 'axios';
 
-const CONTENT_TYPE = "Content-Type";
-const ACCEPT = "Accept";
-const APPLICATION_JSON = "application/json";
+const CONTENT_TYPE = 'Content-Type';
+const ACCEPT = 'Accept';
+const APPLICATION_JSON = 'application/json';
 
 axios.defaults.headers.get[ACCEPT] = APPLICATION_JSON;
 axios.defaults.headers.delete[ACCEPT] = APPLICATION_JSON;

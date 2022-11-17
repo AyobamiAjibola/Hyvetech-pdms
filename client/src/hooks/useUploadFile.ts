@@ -1,12 +1,12 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { LOCAL_STORAGE } from "../config/constants";
-import settings from "../config/settings";
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { LOCAL_STORAGE } from '../config/constants';
+import settings from '../config/settings';
 
 export default function useUploadFile() {
   const [image, setImage] = useState<string | undefined>();
   const [video, setVideo] = useState<string | undefined>();
-  const [imageSrc, setImageSrc] = useState<Blob | File | string>("");
-  const [videoSrc, setVideoSrc] = useState<Blob | File | string>("");
+  const [imageSrc, setImageSrc] = useState<Blob | File | string>('');
+  const [videoSrc, setVideoSrc] = useState<Blob | File | string>('');
 
   const videoRef = useRef<HTMLInputElement>();
   const imageRef = useRef<HTMLInputElement>();
@@ -23,16 +23,16 @@ export default function useUploadFile() {
 
   const resetVideo = () => {
     if (undefined !== videoRef.current) {
-      videoRef.current.value = "";
+      videoRef.current.value = '';
     }
-    setVideo("");
+    setVideo('');
   };
 
   const resetImage = () => {
     if (undefined !== imageRef.current) {
-      imageRef.current.value = "";
+      imageRef.current.value = '';
     }
-    setImage("");
+    setImage('');
   };
 
   const handleUploadVideo = (evt: ChangeEvent<HTMLInputElement>) => {

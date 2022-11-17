@@ -6,13 +6,13 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import UserRepository from "../../repositories/UserRepository";
-import User from "../../models/User";
-import { appModelTypes } from "../../@types/app-model";
-import { appCommonTypes } from "../../@types/app-common";
-import PasswordEncoder from "../../utils/PasswordEncoder";
+import UserRepository from '../../repositories/UserRepository';
+import User from '../../models/User';
+import { appModelTypes } from '../../@types/app-model';
+import { appCommonTypes } from '../../@types/app-common';
+import PasswordEncoder from '../../utils/PasswordEncoder';
 import ICrudDAO = appModelTypes.ICrudDAO;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 

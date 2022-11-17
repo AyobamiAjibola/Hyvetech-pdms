@@ -6,13 +6,13 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import PartnerRepository from "../../repositories/PartnerRepository";
-import Partner from "../../models/Partner";
-import { appModelTypes } from "../../@types/app-model";
-import moment from "moment/moment";
-import Generic from "../../utils/Generic";
+import PartnerRepository from '../../repositories/PartnerRepository';
+import Partner from '../../models/Partner';
+import { appModelTypes } from '../../@types/app-model';
+import moment from 'moment/moment';
+import Generic from '../../utils/Generic';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class PartnerDAOService implements ICrudDAO<Partner> {
@@ -48,7 +48,7 @@ export default class PartnerDAOService implements ICrudDAO<Partner> {
   update(
     partner: Partner,
     values: InferAttributes<Partner>,
-    options: UpdateOptions<Attributes<Partner>>
+    options: UpdateOptions<Attributes<Partner>>,
   ): Promise<Partner> {
     return this.partnerRepository.updateOne(partner, values, options);
   }

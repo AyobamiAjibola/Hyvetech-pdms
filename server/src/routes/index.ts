@@ -1,13 +1,13 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import endpoints from "../config/endpoints";
-import asyncErrorWrapper from "../middleware/asyncErrorWrapper";
+import endpoints from '../config/endpoints';
+import asyncErrorWrapper from '../middleware/asyncErrorWrapper';
 
-type RouteMethods = "get" | "post" | "put" | "delete" | "patch";
+type RouteMethods = 'get' | 'post' | 'put' | 'delete' | 'patch';
 
 const router = Router();
 
-endpoints.forEach((value) => {
+endpoints.forEach(value => {
   const method = value.method as RouteMethods;
 
   router[method](value.path, asyncErrorWrapper(value.handler));

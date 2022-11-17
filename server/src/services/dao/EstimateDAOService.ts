@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import EstimateRepository from "../../repositories/EstimateRepository";
-import Estimate from "../../models/Estimate";
-import { appModelTypes } from "../../@types/app-model";
+import EstimateRepository from '../../repositories/EstimateRepository';
+import Estimate from '../../models/Estimate';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class EstimateDAOService implements ICrudDAO<Estimate> {
@@ -43,7 +43,7 @@ export default class EstimateDAOService implements ICrudDAO<Estimate> {
   update(
     estimate: Estimate,
     values: InferAttributes<Estimate>,
-    options: UpdateOptions<Attributes<Estimate>>
+    options: UpdateOptions<Attributes<Estimate>>,
   ): Promise<Estimate> {
     return this.estimateRepository.updateOne(estimate, values, options);
   }

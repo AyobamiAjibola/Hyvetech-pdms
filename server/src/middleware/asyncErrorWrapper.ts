@@ -1,5 +1,5 @@
-import { appCommonTypes } from "../@types/app-common";
-import { NextFunction, Request, Response } from "express";
+import { appCommonTypes } from '../@types/app-common';
+import { NextFunction, Request, Response } from 'express';
 import AsyncWrapper = appCommonTypes.AsyncWrapper;
 
 export default function asyncErrorWrapper(handler: AsyncWrapper) {

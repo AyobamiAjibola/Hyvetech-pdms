@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import CheckListRepository from "../../repositories/CheckListRepository";
-import CheckList from "../../models/CheckList";
-import { appModelTypes } from "../../@types/app-model";
+import CheckListRepository from '../../repositories/CheckListRepository';
+import CheckList from '../../models/CheckList';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class CheckListDAOService implements ICrudDAO<CheckList> {
@@ -43,7 +43,7 @@ export default class CheckListDAOService implements ICrudDAO<CheckList> {
   update(
     checklist: CheckList,
     values: InferAttributes<CheckList>,
-    options: UpdateOptions<Attributes<CheckList>>
+    options: UpdateOptions<Attributes<CheckList>>,
   ): Promise<CheckList> {
     return this.checklistRepository.updateOne(checklist, values, options);
   }

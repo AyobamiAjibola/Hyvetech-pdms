@@ -1,20 +1,20 @@
-import * as http from "http";
+import * as http from 'http';
 
-import "dotenv/config";
+import 'dotenv/config';
 
-import app, { corsOptions } from "./app";
-import startup from "./startup";
-import AppLogger from "./utils/AppLogger";
-import { Server as SocketServer } from "socket.io";
+import app, { corsOptions } from './app';
+import startup from './startup';
+import AppLogger from './utils/AppLogger';
+import { Server as SocketServer } from 'socket.io';
 
-const logger = AppLogger.init("server").logger;
+const logger = AppLogger.init('server').logger;
 const server = http.createServer(app);
 
 const io = new SocketServer(server, {
   cors: corsOptions,
 });
 
-io.on("connection", (socket) => {
+io.on('connection', socket => {
   logger.info(socket.id);
 });
 

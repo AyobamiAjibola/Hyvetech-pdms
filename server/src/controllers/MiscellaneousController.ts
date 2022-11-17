@@ -1,8 +1,8 @@
-import dataSources from "../services/dao";
-import District from "../models/District";
-import HttpStatus from "../helpers/HttpStatus";
-import { appCommonTypes } from "../@types/app-common";
-import State from "../models/State";
+import dataSources from '../services/dao';
+import District from '../models/District';
+import HttpStatus from '../helpers/HttpStatus';
+import { appCommonTypes } from '../@types/app-common';
+import State from '../models/State';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class MiscellaneousController {

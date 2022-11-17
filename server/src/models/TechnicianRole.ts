@@ -1,12 +1,12 @@
-import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
-import Role from "./Role";
-import { InferAttributes, InferCreationAttributes } from "sequelize";
-import Technician from "./Technician";
+import Role from './Role';
+import { InferAttributes, InferCreationAttributes } from 'sequelize';
+import Technician from './Technician';
 
 @Table({
   timestamps: false,
-  tableName: "technician_roles",
+  tableName: 'technician_roles',
 })
 export default class TechnicianRole extends Model<
   InferAttributes<TechnicianRole>,
@@ -18,10 +18,10 @@ export default class TechnicianRole extends Model<
   declare id: number;
 
   @ForeignKey(() => Technician)
-  @Column({ type: DataType.INTEGER, field: "technician_id" })
+  @Column({ type: DataType.INTEGER, field: 'technician_id' })
   declare technicianId: number;
 
   @ForeignKey(() => Role)
-  @Column({ type: DataType.INTEGER, field: "role_id" })
+  @Column({ type: DataType.INTEGER, field: 'role_id' })
   declare roleId: number;
 }

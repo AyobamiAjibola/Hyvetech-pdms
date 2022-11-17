@@ -1,36 +1,36 @@
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
 const fields = {
   vehicleFault: {
-    name: "vehicleFault",
-    label: "Describe Vehicle Fault",
+    name: 'vehicleFault',
+    label: 'Describe Vehicle Fault',
     error: {
-      invalid: "Vehicle fault is invalid",
-      required: "Please enter your vehicle fault",
+      invalid: 'Vehicle fault is invalid',
+      required: 'Please enter your vehicle fault',
     },
   },
   location: {
-    name: "location",
-    label: "Enter your location",
+    name: 'location',
+    label: 'Enter your location',
     error: {
-      invalid: "Service location is invalid",
-      required: "Please enter your service location.",
+      invalid: 'Service location is invalid',
+      required: 'Please enter your service location.',
     },
   },
   vehicle: {
-    name: "vehicle",
-    label: "Select Vehicle",
+    name: 'vehicle',
+    label: 'Select Vehicle',
     error: {
-      invalid: "Vehicle is invalid",
-      required: "Vehicle is required",
+      invalid: 'Vehicle is invalid',
+      required: 'Vehicle is required',
     },
   },
 };
 
 const initialValues = {
-  [fields.vehicleFault.name]: "",
-  [fields.location.name]: "",
-  [fields.vehicle.name]: "",
+  [fields.vehicleFault.name]: '',
+  [fields.location.name]: '',
+  [fields.vehicle.name]: '',
 };
 
 const schema = [

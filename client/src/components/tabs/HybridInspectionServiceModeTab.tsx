@@ -1,18 +1,18 @@
-import * as React from "react";
-import { useContext } from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
-import a11yProps from "./a11yProps";
-import { Avatar, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import { blue } from "@mui/material/colors";
+import * as React from 'react';
+import { useContext } from 'react';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
+import a11yProps from './a11yProps';
+import { Avatar, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { blue } from '@mui/material/colors';
 
-import settings from "../../config/settings";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import Location from "../forms/booking/Location";
-import { AppContext } from "../../context/AppContextProvider";
-import { AppContextProps } from "@app-interfaces";
-import TabPanel from "./TabPanel";
+import settings from '../../config/settings';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Location from '../forms/booking/Location';
+import { AppContext } from '../../context/AppContextProvider';
+import { AppContextProps } from '@app-interfaces';
+import TabPanel from './TabPanel';
 
 export default function HybridInspectionServiceModeTab() {
   const {
@@ -37,7 +37,7 @@ export default function HybridInspectionServiceModeTab() {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: '100%' }}>
       <Tabs value={planTab} onChange={_handleChange}>
         <Tab label="Mobile" {...a11yProps(planTab)} />
         <Tab label="Drive-in" {...a11yProps(planTab)} />

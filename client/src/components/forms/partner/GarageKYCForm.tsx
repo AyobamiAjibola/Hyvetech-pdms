@@ -1,10 +1,10 @@
-import React from "react";
-import { Form, useFormikContext } from "formik";
-import { Grid } from "@mui/material";
-import partnerModel, { IKycValues } from "../models/partnerModel";
-import TextInputField from "../fields/TextInputField";
-import { LoadingButton } from "@mui/lab";
-import { Save } from "@mui/icons-material";
+import React from 'react';
+import { Form, useFormikContext } from 'formik';
+import { Grid } from '@mui/material';
+import partnerModel, { IKycValues } from '../models/partnerModel';
+import TextInputField from '../fields/TextInputField';
+import { LoadingButton } from '@mui/lab';
+import { Save } from '@mui/icons-material';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -68,8 +68,7 @@ function GarageKycForm(props: IProps) {
             variant="contained"
             color="secondary"
             size="large"
-            endIcon={<Save />}
-          >
+            endIcon={<Save />}>
             Save
           </LoadingButton>
         </Grid>

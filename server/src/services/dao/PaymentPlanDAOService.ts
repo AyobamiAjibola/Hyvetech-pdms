@@ -7,11 +7,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import PaymentPlanRepository from "../../repositories/PaymentPlanRepository";
-import PaymentPlan from "../../models/PaymentPlan";
-import { appModelTypes } from "../../@types/app-model";
+import PaymentPlanRepository from '../../repositories/PaymentPlanRepository';
+import PaymentPlan from '../../models/PaymentPlan';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class PaymentPlanDAOService implements ICrudDAO<PaymentPlan> {
@@ -23,14 +23,14 @@ export default class PaymentPlanDAOService implements ICrudDAO<PaymentPlan> {
 
   bulkCreate(
     records: ReadonlyArray<CreationAttributes<PaymentPlan>>,
-    options?: BulkCreateOptions<Attributes<PaymentPlan>>
+    options?: BulkCreateOptions<Attributes<PaymentPlan>>,
   ): Promise<PaymentPlan[]> {
     return this.paymentPlanRepository.bulkCreate(records, options);
   }
 
   create(
     values: CreationAttributes<PaymentPlan>,
-    options?: CreateOptions<Attributes<PaymentPlan>>
+    options?: CreateOptions<Attributes<PaymentPlan>>,
   ): Promise<PaymentPlan> {
     return this.paymentPlanRepository.save(values, options);
   }
@@ -54,7 +54,7 @@ export default class PaymentPlanDAOService implements ICrudDAO<PaymentPlan> {
   update(
     appointment: PaymentPlan,
     values: InferAttributes<PaymentPlan>,
-    options: UpdateOptions<Attributes<PaymentPlan>>
+    options: UpdateOptions<Attributes<PaymentPlan>>,
   ): Promise<PaymentPlan> {
     return this.paymentPlanRepository.updateOne(appointment, values, options);
   }

@@ -1,17 +1,17 @@
-import React, { ChangeEvent, createContext, FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import useAppSelector from "../../hooks/useAppSelector";
-import useAppDispatch from "../../hooks/useAppDispatch";
-import { getJobAction } from "../../store/actions/jobActions";
-import { Box, Button, Grid, Slide, Step, StepButton, Stepper, useTheme } from "@mui/material";
-import TabPanel from "../../components/tabs/TabPanel";
-import { CheckListSectionType, CheckListType, CustomHookMessage } from "@app-types";
-import { IImageButtonData, IJobCheckListPageContextProps } from "@app-interfaces";
-import AppAlert from "../../components/alerts/AppAlert";
-import NoteAnswerForm from "../../components/forms/checkList/NoteAnswerForm";
-import { IJob } from "@app-models";
-import { useLocation } from "react-router-dom";
-import { v4 } from "uuid";
-import { createJobCheckListAction } from "../../store/actions/checkListActions";
+import React, { ChangeEvent, createContext, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import useAppSelector from '../../hooks/useAppSelector';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import { getJobAction } from '../../store/actions/jobActions';
+import { Box, Button, Grid, Slide, Step, StepButton, Stepper, useTheme } from '@mui/material';
+import TabPanel from '../../components/tabs/TabPanel';
+import { CheckListSectionType, CheckListType, CustomHookMessage } from '@app-types';
+import { IImageButtonData, IJobCheckListPageContextProps } from '@app-interfaces';
+import AppAlert from '../../components/alerts/AppAlert';
+import NoteAnswerForm from '../../components/forms/checkList/NoteAnswerForm';
+import { IJob } from '@app-models';
+import { useLocation } from 'react-router-dom';
+import { v4 } from 'uuid';
+import { createJobCheckListAction } from '../../store/actions/checkListActions';
 
 interface ILocationState {
   job: IJob;
@@ -35,11 +35,11 @@ function JobCheckListPage() {
 
   const isLastStep = useMemo(() => activeStep === lastStep, [activeStep, lastStep]);
 
-  const jobReducer = useAppSelector((state) => state.jobReducer);
+  const jobReducer = useAppSelector(state => state.jobReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (jobReducer.getJobStatus === "idle") {
+    if (jobReducer.getJobStatus === 'idle') {
       if (location.state) {
         const state = location.state as ILocationState;
 
@@ -50,7 +50,7 @@ function JobCheckListPage() {
   }, [dispatch, jobReducer.getJobStatus, location.state]);
 
   useEffect(() => {
-    if (jobReducer.getJobStatus === "completed") {
+    if (jobReducer.getJobStatus === 'completed') {
       if (jobReducer.job) {
         const sections = jobReducer.job.checkList.sections;
         setCheckList(jobReducer.job.checkList);
@@ -63,26 +63,26 @@ function JobCheckListPage() {
     e.preventDefault();
 
     if (isLastStep && checkList) {
-      const errors = sections.map((section) => {
+      const errors = sections.map(section => {
         const questions = section.questions;
-        let errorMessage = "";
+        let errorMessage = '';
 
-        questions.forEach((question) => {
+        questions.forEach(question => {
           const answers = question.answers;
 
-          const someSelected = answers.some((answer) => answer.selected);
+          const someSelected = answers.some(answer => answer.selected);
 
-          if (!someSelected) errorMessage = "You must select one answer from the options in the check list";
+          if (!someSelected) errorMessage = 'You must select one answer from the options in the check list';
           if (question.note && !question.text)
-            errorMessage = "It appears one of the questions, requires you to add a note. Please check.";
+            errorMessage = 'It appears one of the questions, requires you to add a note. Please check.';
           if (question.media && !question.images)
-            errorMessage = "It appears one of the questions, requires you to upload an image. Please check.";
+            errorMessage = 'It appears one of the questions, requires you to upload an image. Please check.';
         });
 
         return errorMessage;
       });
 
-      if (errors.some((value) => value.length !== 0)) return setError({ message: errors[0] });
+      if (errors.some(value => value.length !== 0)) return setError({ message: errors[0] });
 
       const _checkList = {
         ...checkList,
@@ -109,10 +109,10 @@ function JobCheckListPage() {
       const questions = tempSections[i].questions;
 
       for (let j = 0; j < questions.length; j++) {
-        const answer = questions[j].answers.find((answer) => answer.id == id);
+        const answer = questions[j].answers.find(answer => answer.id == id);
 
         if (answer) {
-          const isChecked = questions[j].answers.find((value) => value.selected);
+          const isChecked = questions[j].answers.find(value => value.selected);
 
           if (isChecked) isChecked.selected = false;
 
@@ -131,7 +131,7 @@ function JobCheckListPage() {
     const id = e.target.id;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find((question) => question.id === id);
+      const question = tempSections[i].questions.find(question => question.id === id);
 
       if (question) {
         question.text = e.target.value;
@@ -148,7 +148,7 @@ function JobCheckListPage() {
     const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find((question) => question.id === questionId);
+      const question = tempSections[i].questions.find(question => question.id === questionId);
 
       if (question && files) {
         const file = files[0];
@@ -162,7 +162,7 @@ function JobCheckListPage() {
               questionId,
               url: URL.createObjectURL(file),
               title: file.name,
-              width: "",
+              width: '',
             },
           ];
         } else
@@ -172,7 +172,7 @@ function JobCheckListPage() {
               questionId,
               url: URL.createObjectURL(file),
               title: file.name,
-              width: "",
+              width: '',
             },
           ];
         break;
@@ -186,12 +186,12 @@ function JobCheckListPage() {
     const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find((question) => question.id === questionId);
+      const question = tempSections[i].questions.find(question => question.id === questionId);
 
       if (question && question.images) {
         const tempImages = [...question.images];
 
-        const image = tempImages.find((image) => image.id === id);
+        const image = tempImages.find(image => image.id === id);
 
         if (image) {
           const index = tempImages.indexOf(image);
@@ -245,12 +245,12 @@ function JobCheckListPage() {
             </Slide>
           );
         })}
-        <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
           <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
             Back
           </Button>
-          <Box sx={{ flex: "1 1 auto" }} />
-          <Button type="submit">{isLastStep ? "Submit" : "Next"}</Button>
+          <Box sx={{ flex: '1 1 auto' }} />
+          <Button type="submit">{isLastStep ? 'Submit' : 'Next'}</Button>
         </Box>
       </form>
       <AppAlert

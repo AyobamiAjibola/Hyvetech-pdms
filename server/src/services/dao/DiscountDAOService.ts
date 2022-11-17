@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import DiscountRepository from "../../repositories/DiscountRepository";
-import Discount from "../../models/Discount";
-import { appModelTypes } from "../../@types/app-model";
+import DiscountRepository from '../../repositories/DiscountRepository';
+import Discount from '../../models/Discount';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class DiscountDAOService implements ICrudDAO<Discount> {
@@ -43,7 +43,7 @@ export default class DiscountDAOService implements ICrudDAO<Discount> {
   update(
     discount: Discount,
     values: InferAttributes<Discount>,
-    options: UpdateOptions<Attributes<Discount>>
+    options: UpdateOptions<Attributes<Discount>>,
   ): Promise<Discount> {
     return this.discountRepository.updateOne(discount, values, options);
   }

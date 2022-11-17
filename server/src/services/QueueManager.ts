@@ -1,7 +1,7 @@
-import queue from "../config/queue";
-import smtpClient from "./api/smtpClient";
-import { Logger } from "winston";
-import AppLogger from "../utils/AppLogger";
+import queue from '../config/queue';
+import smtpClient from './api/smtpClient';
+import { Logger } from 'winston';
+import AppLogger from '../utils/AppLogger';
 
 export default class QueueManager {
   private declare static queue: string;
@@ -41,12 +41,12 @@ export default class QueueManager {
 
     await channel.consume(
       this.queue,
-      (msg) => {
+      msg => {
         const data = JSON.parse(msg?.content.toString() as string);
 
         smtpClient.sendEmail(data).catch(this.LOG.error);
       },
-      { noAck: true }
+      { noAck: true },
     );
 
     await this.closeChannel();

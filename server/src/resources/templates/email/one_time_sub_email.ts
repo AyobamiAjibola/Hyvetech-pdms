@@ -1,14 +1,14 @@
-import { appCommonTypes } from "../../../@types/app-common";
+import { appCommonTypes } from '../../../@types/app-common';
 import MailTextConfig = appCommonTypes.MailTextConfig;
 
 export default function one_time_sub_email(config: MailTextConfig) {
   const getLocationText = () => {
-    let text = "";
+    let text = '';
 
-    if (config.planCategory === "Mobile")
-      text = "your location (no need to stress, tell us where and when, and we will come to you).";
+    if (config.planCategory === 'Mobile')
+      text = 'your location (no need to stress, tell us where and when, and we will come to you).';
 
-    if (config.planCategory === "Drive-in") text = "any of our partner garages.";
+    if (config.planCategory === 'Drive-in') text = 'any of our partner garages.';
 
     return text;
   };

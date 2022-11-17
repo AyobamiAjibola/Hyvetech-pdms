@@ -1,5 +1,5 @@
-import email_header from "./email_header";
-import email_footer from "./email_footer";
+import email_header from './email_header';
+import email_footer from './email_footer';
 
 export default function email_layout(content: any) {
   return `

@@ -1,10 +1,10 @@
-import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
 
 @Table({
   timestamps: true,
 
-  tableName: "vin_decoder_providers",
+  tableName: 'vin_decoder_providers',
 })
 export default class VINDecoderProvider extends Model<
   InferAttributes<VINDecoderProvider>,

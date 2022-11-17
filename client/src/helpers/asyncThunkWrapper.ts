@@ -1,9 +1,9 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ApiResponseError } from "@app-interfaces";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { ApiResponseError } from '@app-interfaces';
 
 export default function asyncThunkWrapper<Returned, Args>(
   prefix: string,
-  handler: (args: Args, thunkAPI?: any) => Promise<any>
+  handler: (args: Args, thunkAPI?: any) => Promise<any>,
 ) {
   return createAsyncThunk<Returned, Args, { rejectValue: ApiResponseError }>(prefix, async (args, thunkAPI) => {
     try {

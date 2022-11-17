@@ -1,25 +1,25 @@
-import Joi from "joi";
+import Joi from 'joi';
 
-import { appCommonTypes } from "../@types/app-common";
-import HttpStatus from "../helpers/HttpStatus";
-import Customer from "../models/Customer";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import dataSources from "../services/dao";
-import Vehicle from "../models/Vehicle";
-import Appointment from "../models/Appointment";
-import Transaction from "../models/Transaction";
-import VehicleFault from "../models/VehicleFault";
-import { Request } from "express";
+import { appCommonTypes } from '../@types/app-common';
+import HttpStatus from '../helpers/HttpStatus';
+import Customer from '../models/Customer';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import dataSources from '../services/dao';
+import Vehicle from '../models/Vehicle';
+import Appointment from '../models/Appointment';
+import Transaction from '../models/Transaction';
+import VehicleFault from '../models/VehicleFault';
+import { Request } from 'express';
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
 
-const CUSTOMER_ID = "Customer Id";
+const CUSTOMER_ID = 'Customer Id';
 
 export default class CustomerController {
   public static async allCustomers() {
     try {
       const customers = await dataSources.customerDAOService.findAll({
-        attributes: { exclude: ["password", "rawPassword", "loginToken"] },
+        attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
       });
 
       const response: HttpResponse<Customer> = {
@@ -42,7 +42,7 @@ export default class CustomerController {
 
     try {
       const customer = await dataSources.customerDAOService.findById(customerId, {
-        attributes: { exclude: ["password", "rawPassword", "loginToken"] },
+        attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
         include: [{ all: true }],
       });
 
@@ -76,7 +76,7 @@ export default class CustomerController {
         return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
       }
 
-      const vehicles = await customer.$get("vehicles");
+      const vehicles = await customer.$get('vehicles');
 
       const response: HttpResponse<Vehicle> = {
         code: HttpStatus.OK.code,
@@ -108,13 +108,13 @@ export default class CustomerController {
         return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
       }
 
-      const appointments = await customer.$get("appointments", {
+      const appointments = await customer.$get('appointments', {
         include: [
           { model: Vehicle },
           { model: VehicleFault },
           {
             model: Customer,
-            attributes: { exclude: ["password", "rawPassword", "loginToken"] },
+            attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
           },
         ],
       });
@@ -149,7 +149,7 @@ export default class CustomerController {
         return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
       }
 
-      const transactions = await customer.$get("transactions");
+      const transactions = await customer.$get('transactions');
 
       const response: HttpResponse<Transaction> = {
         code: HttpStatus.OK.code,

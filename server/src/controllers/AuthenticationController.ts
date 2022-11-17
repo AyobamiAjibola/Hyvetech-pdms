@@ -1,22 +1,22 @@
-import { Request } from "express";
+import { Request } from 'express';
 
-import Joi from "joi";
+import Joi from 'joi';
 
-import { appCommonTypes } from "../@types/app-common";
-import User, { $loginSchema, $userSchema } from "../models/User";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import Generic from "../utils/Generic";
-import { InferAttributes } from "sequelize/types";
-import QueueManager from "../services/QueueManager";
-import email_content from "../resources/templates/email/email_content";
-import create_customer_success_email from "../resources/templates/email/create_customer_success_email";
-import { QUEUE_EVENTS } from "../config/constants";
-import dataSources from "../services/dao";
-import settings from "../config/settings";
-import { Op } from "sequelize";
-import Permission from "../models/Permission";
-import Partner from "../models/Partner";
+import { appCommonTypes } from '../@types/app-common';
+import User, { $loginSchema, $userSchema } from '../models/User';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import Generic from '../utils/Generic';
+import { InferAttributes } from 'sequelize/types';
+import QueueManager from '../services/QueueManager';
+import email_content from '../resources/templates/email/email_content';
+import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
+import { QUEUE_EVENTS } from '../config/constants';
+import dataSources from '../services/dao';
+import settings from '../config/settings';
+import { Op } from 'sequelize';
+import Permission from '../models/Permission';
+import Partner from '../models/Partner';
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -58,9 +58,9 @@ export default class AuthenticationController {
       const user = await dataSources.userDAOService.create(value);
 
       //associate user with role
-      await user.$set("roles", [role]);
+      await user.$set('roles', [role]);
 
-      const platforms = value.companyName.split(",");
+      const platforms = value.companyName.split(',');
 
       for (const platform of platforms) {
         const partner = await dataSources.partnerDAOService.findByAny({
@@ -70,7 +70,7 @@ export default class AuthenticationController {
         if (!partner)
           return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
 
-        await partner.$add("users", [user]);
+        await partner.$add('users', [user]);
       }
 
       const mailText = create_customer_success_email({
@@ -138,11 +138,11 @@ export default class AuthenticationController {
       if (!isMatch)
         return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
 
-      const roles = await user.$get("roles", {
+      const roles = await user.$get('roles', {
         include: [
           {
             model: Permission,
-            attributes: ["action", "subject"],
+            attributes: ['action', 'subject'],
             through: { attributes: [] },
           },
         ],
@@ -176,7 +176,7 @@ export default class AuthenticationController {
 
       const response: HttpResponse<string> = {
         code: HttpStatus.OK.code,
-        message: "Login successful",
+        message: 'Login successful',
         result: jwt,
       };
 
@@ -195,18 +195,18 @@ export default class AuthenticationController {
     try {
       const user = await dataSources.userDAOService.findByAny({
         where: {
-          username: "guest",
+          username: 'guest',
         },
       });
 
       if (user) {
-        const roles = await user.$get("roles");
+        const roles = await user.$get('roles');
 
         const permissions = [];
 
         for (const role of roles) {
-          const _permissions = await role.$get("permissions", {
-            attributes: ["action", "subject"],
+          const _permissions = await role.$get('permissions', {
+            attributes: ['action', 'subject'],
           });
 
           for (const _permission of _permissions) {
@@ -249,22 +249,22 @@ export default class AuthenticationController {
       const hash = await this.passwordEncoder.encode(rawPassword);
 
       const guestUser: any = {
-        firstName: "Anonymous",
-        lastName: "Anonymous",
-        username: "guest",
+        firstName: 'Anonymous',
+        lastName: 'Anonymous',
+        username: 'guest',
         password: hash,
       };
 
       const created = await dataSources.userDAOService.create(guestUser);
-      await created.$add("roles", [role]);
+      await created.$add('roles', [role]);
 
-      const roles = await created.$get("roles");
+      const roles = await created.$get('roles');
 
       const permissions = [];
 
       for (const role of roles) {
-        const _permissions = await role.$get("permissions", {
-          attributes: ["action", "subject"],
+        const _permissions = await role.$get('permissions', {
+          attributes: ['action', 'subject'],
         });
 
         for (const _permission of _permissions) {
@@ -302,7 +302,7 @@ export default class AuthenticationController {
 
   public async signOut(req: Request) {
     try {
-      await req.user.update({ loginToken: "" });
+      await req.user.update({ loginToken: '' });
 
       const response: HttpResponse<null> = {
         code: HttpStatus.OK.code,

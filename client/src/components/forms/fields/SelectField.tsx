@@ -1,7 +1,7 @@
-import React, { FocusEvent } from "react";
-import { useFormikContext } from "formik";
-import { FormControl, FormGroup, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import ErrorField from "./ErrorField";
+import React, { FocusEvent } from 'react';
+import { useFormikContext } from 'formik';
+import { FormControl, FormGroup, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import ErrorField from './ErrorField';
 
 export interface ISelectData {
   label: string;
@@ -13,7 +13,7 @@ interface ISelectFieldProps {
   textInputStyle?: { [p: string]: string };
   helperStyle?: { [p: string]: string };
   fullWidth?: boolean;
-  size?: "small" | "medium";
+  size?: 'small' | 'medium';
   multiple?: boolean;
   onChange: (event: SelectChangeEvent<any>) => void;
   onBlur?: (event: FocusEvent<any>) => void;
@@ -45,8 +45,7 @@ export default function SelectField(props: ISelectFieldProps) {
       <FormControl
         fullWidth={props.fullWidth}
         // @ts-ignore
-        error={errors[props.name] && touched[props.name]}
-      >
+        error={errors[props.name] && touched[props.name]}>
         <InputLabel id={props.name}>{props.label}</InputLabel>
         <Select
           sx={props.textInputStyle}
@@ -58,8 +57,7 @@ export default function SelectField(props: ISelectFieldProps) {
           name={props.name}
           label={props.label}
           onChange={props.onChange}
-          MenuProps={MenuProps}
-        >
+          MenuProps={MenuProps}>
           <MenuItem value="">...</MenuItem>
           {props.data.map((item, index) => {
             return (
@@ -68,8 +66,7 @@ export default function SelectField(props: ISelectFieldProps) {
                   if (props.onClick) props.onClick(item);
                 }}
                 key={index}
-                value={item.value}
-              >
+                value={item.value}>
                 {item.label}
               </MenuItem>
             );

@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { IThunkAPIStatus } from "@app-types";
+import { createSlice } from '@reduxjs/toolkit';
+import { IThunkAPIStatus } from '@app-types';
 import {
   createTechnicianAction,
   deleteTechnicianAction,
@@ -7,8 +7,8 @@ import {
   getTechnicianAction,
   getTechniciansAction,
   updateTechnicianAction,
-} from "../actions/technicianActions";
-import { ITechnician } from "@app-models";
+} from '../actions/technicianActions';
+import { ITechnician } from '@app-models';
 
 interface ITechnicianState {
   createTechnicianStatus: IThunkAPIStatus;
@@ -38,69 +38,69 @@ interface ITechnicianState {
 const initialState: ITechnicianState = {
   technician: null,
   technicians: [],
-  createTechnicianError: "",
-  createTechnicianStatus: "idle",
-  createTechnicianSuccess: "",
-  deleteTechnicianError: "",
-  deleteTechnicianStatus: "idle",
-  deleteTechnicianSuccess: "",
-  getTechnicianError: "",
-  getTechnicianStatus: "idle",
-  getTechnicianSuccess: "",
-  getTechniciansError: "",
-  getTechniciansStatus: "idle",
-  getTechniciansSuccess: "",
-  updateTechnicianError: "",
-  updateTechnicianStatus: "idle",
-  updateTechnicianSuccess: "",
+  createTechnicianError: '',
+  createTechnicianStatus: 'idle',
+  createTechnicianSuccess: '',
+  deleteTechnicianError: '',
+  deleteTechnicianStatus: 'idle',
+  deleteTechnicianSuccess: '',
+  getTechnicianError: '',
+  getTechnicianStatus: 'idle',
+  getTechnicianSuccess: '',
+  getTechniciansError: '',
+  getTechniciansStatus: 'idle',
+  getTechniciansSuccess: '',
+  updateTechnicianError: '',
+  updateTechnicianStatus: 'idle',
+  updateTechnicianSuccess: '',
 };
 
 const technicianSlice = createSlice({
-  name: "technicians",
+  name: 'technicians',
   initialState,
   reducers: {
     clearCreateTechnicianStatus(state: ITechnicianState) {
-      state.createTechnicianError = "";
-      state.createTechnicianStatus = "idle";
-      state.createTechnicianSuccess = "";
+      state.createTechnicianError = '';
+      state.createTechnicianStatus = 'idle';
+      state.createTechnicianSuccess = '';
     },
 
     clearUpdateTechnicianStatus(state: ITechnicianState) {
-      state.updateTechnicianError = "";
-      state.updateTechnicianStatus = "idle";
-      state.updateTechnicianSuccess = "";
+      state.updateTechnicianError = '';
+      state.updateTechnicianStatus = 'idle';
+      state.updateTechnicianSuccess = '';
     },
 
     clearDeleteTechnicianStatus(state: ITechnicianState) {
-      state.deleteTechnicianError = "";
-      state.deleteTechnicianStatus = "idle";
-      state.deleteTechnicianSuccess = "";
+      state.deleteTechnicianError = '';
+      state.deleteTechnicianStatus = 'idle';
+      state.deleteTechnicianSuccess = '';
     },
 
     clearGetTechnicianStatus(state: ITechnicianState) {
-      state.getTechnicianError = "";
-      state.getTechnicianStatus = "idle";
-      state.getTechnicianSuccess = "";
+      state.getTechnicianError = '';
+      state.getTechnicianStatus = 'idle';
+      state.getTechnicianSuccess = '';
     },
 
     clearGetTechniciansStatus(state: ITechnicianState) {
-      state.getTechniciansError = "";
-      state.getTechniciansStatus = "idle";
-      state.getTechniciansSuccess = "";
+      state.getTechniciansError = '';
+      state.getTechniciansStatus = 'idle';
+      state.getTechniciansSuccess = '';
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(createTechnicianAction.pending, (state) => {
-        state.createTechnicianStatus = "loading";
+      .addCase(createTechnicianAction.pending, state => {
+        state.createTechnicianStatus = 'loading';
       })
       .addCase(createTechnicianAction.fulfilled, (state, action) => {
-        state.createTechnicianStatus = "completed";
+        state.createTechnicianStatus = 'completed';
         state.createTechnicianSuccess = action.payload.message;
         state.technicians = action.payload.results as ITechnician[];
       })
       .addCase(createTechnicianAction.rejected, (state, action) => {
-        state.createTechnicianStatus = "failed";
+        state.createTechnicianStatus = 'failed';
 
         if (action.payload) {
           state.createTechnicianError = action.payload.message;
@@ -108,16 +108,16 @@ const technicianSlice = createSlice({
       });
 
     builder
-      .addCase(updateTechnicianAction.pending, (state) => {
-        state.updateTechnicianStatus = "loading";
+      .addCase(updateTechnicianAction.pending, state => {
+        state.updateTechnicianStatus = 'loading';
       })
       .addCase(updateTechnicianAction.fulfilled, (state, action) => {
-        state.updateTechnicianStatus = "completed";
+        state.updateTechnicianStatus = 'completed';
         state.updateTechnicianSuccess = action.payload.message;
         state.technician = action.payload.result as ITechnician;
       })
       .addCase(updateTechnicianAction.rejected, (state, action) => {
-        state.updateTechnicianStatus = "failed";
+        state.updateTechnicianStatus = 'failed';
 
         if (action.payload) {
           state.updateTechnicianError = action.payload.message;
@@ -125,15 +125,15 @@ const technicianSlice = createSlice({
       });
 
     builder
-      .addCase(deleteTechnicianAction.pending, (state) => {
-        state.deleteTechnicianStatus = "loading";
+      .addCase(deleteTechnicianAction.pending, state => {
+        state.deleteTechnicianStatus = 'loading';
       })
       .addCase(deleteTechnicianAction.fulfilled, (state, action) => {
-        state.deleteTechnicianStatus = "completed";
+        state.deleteTechnicianStatus = 'completed';
         state.deleteTechnicianSuccess = action.payload.message;
       })
       .addCase(deleteTechnicianAction.rejected, (state, action) => {
-        state.deleteTechnicianStatus = "failed";
+        state.deleteTechnicianStatus = 'failed';
 
         if (action.payload) {
           state.deleteTechnicianError = action.payload.message;
@@ -141,16 +141,16 @@ const technicianSlice = createSlice({
       });
 
     builder
-      .addCase(getTechnicianAction.pending, (state) => {
-        state.getTechnicianStatus = "loading";
+      .addCase(getTechnicianAction.pending, state => {
+        state.getTechnicianStatus = 'loading';
       })
       .addCase(getTechnicianAction.fulfilled, (state, action) => {
-        state.getTechnicianStatus = "completed";
+        state.getTechnicianStatus = 'completed';
         state.getTechnicianSuccess = action.payload.message;
         state.technician = action.payload.result as ITechnician;
       })
       .addCase(getTechnicianAction.rejected, (state, action) => {
-        state.getTechnicianStatus = "failed";
+        state.getTechnicianStatus = 'failed';
 
         if (action.payload) {
           state.getTechnicianError = action.payload.message;
@@ -158,16 +158,16 @@ const technicianSlice = createSlice({
       });
 
     builder
-      .addCase(getTechniciansAction.pending, (state) => {
-        state.getTechniciansStatus = "loading";
+      .addCase(getTechniciansAction.pending, state => {
+        state.getTechniciansStatus = 'loading';
       })
       .addCase(getTechniciansAction.fulfilled, (state, action) => {
-        state.getTechniciansStatus = "completed";
+        state.getTechniciansStatus = 'completed';
         state.getTechniciansSuccess = action.payload.message;
         state.technicians = action.payload.results as ITechnician[];
       })
       .addCase(getTechniciansAction.rejected, (state, action) => {
-        state.getTechniciansStatus = "failed";
+        state.getTechniciansStatus = 'failed';
 
         if (action.payload) {
           state.getTechniciansError = action.payload.message;
@@ -175,16 +175,16 @@ const technicianSlice = createSlice({
       });
 
     builder
-      .addCase(getPartnerTechniciansAction.pending, (state) => {
-        state.getTechniciansStatus = "loading";
+      .addCase(getPartnerTechniciansAction.pending, state => {
+        state.getTechniciansStatus = 'loading';
       })
       .addCase(getPartnerTechniciansAction.fulfilled, (state, action) => {
-        state.getTechniciansStatus = "completed";
+        state.getTechniciansStatus = 'completed';
         state.getTechniciansSuccess = action.payload.message;
         state.technicians = action.payload.results as ITechnician[];
       })
       .addCase(getPartnerTechniciansAction.rejected, (state, action) => {
-        state.getTechniciansStatus = "failed";
+        state.getTechniciansStatus = 'failed';
 
         if (action.payload) {
           state.getTechniciansError = action.payload.message;

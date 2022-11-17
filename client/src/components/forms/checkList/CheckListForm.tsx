@@ -1,14 +1,14 @@
-import checkListModel, { ICheckListValues } from "../models/checkListModel";
-import React, { useContext, useEffect, useState } from "react";
-import SelectField, { ISelectData } from "../fields/SelectField";
-import { Form, useFormikContext } from "formik";
-import { CheckListsPageContextProps } from "@app-interfaces";
-import { Grid } from "@mui/material";
-import TextInputField from "../fields/TextInputField";
-import { LoadingButton } from "@mui/lab";
-import { Send } from "@mui/icons-material";
-import { CheckListsPageContext } from "../../../pages/checkList/CheckListsPage";
-import { GARAGE_CATEGORY } from "../../../config/constants";
+import checkListModel, { ICheckListValues } from '../models/checkListModel';
+import React, { useContext, useEffect, useState } from 'react';
+import SelectField, { ISelectData } from '../fields/SelectField';
+import { Form, useFormikContext } from 'formik';
+import { CheckListsPageContextProps } from '@app-interfaces';
+import { Grid } from '@mui/material';
+import TextInputField from '../fields/TextInputField';
+import { LoadingButton } from '@mui/lab';
+import { Send } from '@mui/icons-material';
+import { CheckListsPageContext } from '../../../pages/checkList/CheckListsPage';
+import { GARAGE_CATEGORY } from '../../../config/constants';
 
 const { fields } = checkListModel;
 
@@ -28,15 +28,15 @@ export default function CheckListForm(props: ICheckListFormProps) {
 
   useEffect(() => {
     if (partners.length) {
-      const garages = partners.filter((value) => {
-        return value.categories.some((cat) => cat.name === GARAGE_CATEGORY);
+      const garages = partners.filter(value => {
+        return value.categories.some(cat => cat.name === GARAGE_CATEGORY);
       });
 
       setOptions(
-        garages.map((garage) => ({
+        garages.map(garage => ({
           label: garage.name,
           value: `${garage.id}`,
-        }))
+        })),
       );
     }
   }, [partners]);
@@ -82,8 +82,7 @@ export default function CheckListForm(props: ICheckListFormProps) {
             endIcon={<Send />}
             variant="contained"
             color="secondary"
-            size="large"
-          >
+            size="large">
             Submit
           </LoadingButton>
         </Grid>

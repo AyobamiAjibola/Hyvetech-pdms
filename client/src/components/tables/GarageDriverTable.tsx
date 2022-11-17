@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   Box,
@@ -12,10 +12,10 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { IRideShareDriver } from "@app-models";
+} from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { IRideShareDriver } from '@app-models';
 
 interface IProps {
   rows: IRideShareDriver[];
@@ -46,7 +46,7 @@ export default function GarageDriverTable(props: IProps) {
           {rows.map((row, index) => {
             return (
               <React.Fragment key={index}>
-                <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+                <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                   <TableCell>
                     <IconButton aria-label="expand row" size="small" onClick={() => handleToggle(index)}>
                       {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -77,7 +77,7 @@ export default function GarageDriverTable(props: IProps) {
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {row.vehicles.map((vehicle) => (
+                            {row.vehicles.map(vehicle => (
                               <TableRow key={vehicle.id}>
                                 <TableCell component="th" scope="row">
                                   {vehicle.make}
@@ -104,7 +104,7 @@ export default function GarageDriverTable(props: IProps) {
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {row.subscriptions.map((subscription) => (
+                            {row.subscriptions.map(subscription => (
                               <TableRow key={subscription.id}>
                                 <TableCell component="th" scope="row">
                                   {subscription.status}

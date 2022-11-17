@@ -1,5 +1,5 @@
-import email_layout from "./email_layout";
-import { appCommonTypes } from "../../../@types/app-common";
+import email_layout from './email_layout';
+import { appCommonTypes } from '../../../@types/app-common';
 import MailBody = appCommonTypes.MailBody;
 
 const logo = `${process.env.WEBSITE_HOST_WWW}/api/v1/static/images/logo/Blue.png`;
@@ -581,6 +581,6 @@ export default function email_content(mailBody: MailBody) {
   </tbody>
 </table>
 
-      `
+      `,
   );
 }

@@ -1,7 +1,7 @@
-import { IThunkAPIStatus } from "@app-types";
-import { IJob } from "@app-models";
-import { createSlice } from "@reduxjs/toolkit";
-import { approveJobCheckListAction, driverAssignJobAction, getJobAction, getJobsAction } from "../actions/jobActions";
+import { IThunkAPIStatus } from '@app-types';
+import { IJob } from '@app-models';
+import { createSlice } from '@reduxjs/toolkit';
+import { approveJobCheckListAction, driverAssignJobAction, getJobAction, getJobsAction } from '../actions/jobActions';
 
 interface IJobState {
   getJobsStatus: IThunkAPIStatus;
@@ -25,59 +25,59 @@ interface IJobState {
 }
 
 const initialState: IJobState = {
-  driverAssignJobError: "",
-  driverAssignJobStatus: "idle",
-  driverAssignJobSuccess: "",
-  getJobsError: "",
-  getJobsStatus: "idle",
-  getJobsSuccess: "",
-  getJobError: "",
-  getJobStatus: "idle",
-  getJobSuccess: "",
-  approveJobCheckListStatus: "idle",
-  approveJobCheckListSuccess: "",
-  approveJobCheckListError: "",
+  driverAssignJobError: '',
+  driverAssignJobStatus: 'idle',
+  driverAssignJobSuccess: '',
+  getJobsError: '',
+  getJobsStatus: 'idle',
+  getJobsSuccess: '',
+  getJobError: '',
+  getJobStatus: 'idle',
+  getJobSuccess: '',
+  approveJobCheckListStatus: 'idle',
+  approveJobCheckListSuccess: '',
+  approveJobCheckListError: '',
   job: null,
   jobs: [],
 };
 
 const jobSlice = createSlice({
-  name: "jobs",
+  name: 'jobs',
   initialState,
   reducers: {
     clearGetJobsStatus(state: IJobState) {
-      state.getJobsStatus = "idle";
-      state.getJobsSuccess = "";
-      state.getJobsError = "";
+      state.getJobsStatus = 'idle';
+      state.getJobsSuccess = '';
+      state.getJobsError = '';
     },
     clearGetJobStatus(state: IJobState) {
-      state.getJobStatus = "idle";
-      state.getJobSuccess = "";
-      state.getJobError = "";
+      state.getJobStatus = 'idle';
+      state.getJobSuccess = '';
+      state.getJobError = '';
     },
     clearDriverAssignJobStatus(state: IJobState) {
-      state.driverAssignJobStatus = "idle";
-      state.driverAssignJobSuccess = "";
-      state.driverAssignJobError = "";
+      state.driverAssignJobStatus = 'idle';
+      state.driverAssignJobSuccess = '';
+      state.driverAssignJobError = '';
     },
     clearApproveJobCheckListStatus(state: IJobState) {
-      state.approveJobCheckListStatus = "idle";
-      state.approveJobCheckListSuccess = "";
-      state.approveJobCheckListError = "";
+      state.approveJobCheckListStatus = 'idle';
+      state.approveJobCheckListSuccess = '';
+      state.approveJobCheckListError = '';
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(getJobsAction.pending, (state) => {
-        state.getJobsStatus = "loading";
+      .addCase(getJobsAction.pending, state => {
+        state.getJobsStatus = 'loading';
       })
       .addCase(getJobsAction.fulfilled, (state, action) => {
-        state.getJobsStatus = "completed";
+        state.getJobsStatus = 'completed';
         state.getJobsSuccess = action.payload.message;
         state.jobs = action.payload.results as IJob[];
       })
       .addCase(getJobsAction.rejected, (state, action) => {
-        state.getJobsStatus = "failed";
+        state.getJobsStatus = 'failed';
 
         if (action.payload) {
           state.getJobsError = action.payload.message;
@@ -85,16 +85,16 @@ const jobSlice = createSlice({
       });
 
     builder
-      .addCase(getJobAction.pending, (state) => {
-        state.getJobStatus = "loading";
+      .addCase(getJobAction.pending, state => {
+        state.getJobStatus = 'loading';
       })
       .addCase(getJobAction.fulfilled, (state, action) => {
-        state.getJobStatus = "completed";
+        state.getJobStatus = 'completed';
         state.getJobSuccess = action.payload.message;
         state.job = action.payload.result as IJob;
       })
       .addCase(getJobAction.rejected, (state, action) => {
-        state.getJobStatus = "failed";
+        state.getJobStatus = 'failed';
 
         if (action.payload) {
           state.getJobError = action.payload.message;
@@ -102,16 +102,16 @@ const jobSlice = createSlice({
       });
 
     builder
-      .addCase(driverAssignJobAction.pending, (state) => {
-        state.driverAssignJobStatus = "loading";
+      .addCase(driverAssignJobAction.pending, state => {
+        state.driverAssignJobStatus = 'loading';
       })
       .addCase(driverAssignJobAction.fulfilled, (state, action) => {
-        state.driverAssignJobStatus = "completed";
+        state.driverAssignJobStatus = 'completed';
         state.driverAssignJobSuccess = action.payload.message;
         state.jobs = action.payload.results as IJob[];
       })
       .addCase(driverAssignJobAction.rejected, (state, action) => {
-        state.driverAssignJobStatus = "failed";
+        state.driverAssignJobStatus = 'failed';
 
         if (action.payload) {
           state.driverAssignJobError = action.payload.message;
@@ -119,16 +119,16 @@ const jobSlice = createSlice({
       });
 
     builder
-      .addCase(approveJobCheckListAction.pending, (state) => {
-        state.approveJobCheckListStatus = "loading";
+      .addCase(approveJobCheckListAction.pending, state => {
+        state.approveJobCheckListStatus = 'loading';
       })
       .addCase(approveJobCheckListAction.fulfilled, (state, action) => {
-        state.approveJobCheckListStatus = "completed";
+        state.approveJobCheckListStatus = 'completed';
         state.approveJobCheckListSuccess = action.payload.message;
         state.job = action.payload.result as IJob;
       })
       .addCase(approveJobCheckListAction.rejected, (state, action) => {
-        state.approveJobCheckListStatus = "failed";
+        state.approveJobCheckListStatus = 'failed';
 
         if (action.payload) {
           state.approveJobCheckListError = action.payload.message;

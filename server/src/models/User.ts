@@ -9,40 +9,40 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from "sequelize-typescript";
+} from 'sequelize-typescript';
 
-import Joi from "joi";
+import Joi from 'joi';
 
-import Role from "./Role";
-import UserRole from "./UserRole";
-import Contact from "./Contact";
+import Role from './Role';
+import UserRole from './UserRole';
+import Contact from './Contact';
 
-import { PASSWORD_PATTERN } from "../config/constants";
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import Partner from "./Partner";
+import { PASSWORD_PATTERN } from '../config/constants';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Partner from './Partner';
 
 export const $userSchema = {
-  companyName: Joi.string().required().label("Company Name"),
-  firstName: Joi.string().required().label("First Name"),
-  lastName: Joi.string().required().label("Last Name"),
-  email: Joi.string().email().required().label("Email"),
-  role: Joi.string().required().label("User Role"),
-  phone: Joi.string().max(11).allow("").label("Phone Number"),
+  companyName: Joi.string().required().label('Company Name'),
+  firstName: Joi.string().required().label('First Name'),
+  lastName: Joi.string().required().label('Last Name'),
+  email: Joi.string().email().required().label('Email'),
+  role: Joi.string().required().label('User Role'),
+  phone: Joi.string().max(11).allow('').label('Phone Number'),
 };
 
 export const $loginSchema = {
-  username: Joi.string().required().label("Username"),
-  password: Joi.string().pattern(new RegExp(PASSWORD_PATTERN)).required().label("Password"),
+  username: Joi.string().required().label('Username'),
+  password: Joi.string().pattern(new RegExp(PASSWORD_PATTERN)).required().label('Password'),
 };
 
 @Table({
   timestamps: true,
-  tableName: "users",
+  tableName: 'users',
 })
 export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: "user_id" })
+  @Column({ type: DataType.INTEGER, field: 'user_id' })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)
@@ -90,7 +90,7 @@ export default class User extends Model<InferAttributes<User>, InferCreationAttr
   @Column(DataType.DATE)
   declare loginDate: Date | null;
 
-  @HasMany(() => Contact, { onDelete: "cascade" })
+  @HasMany(() => Contact, { onDelete: 'cascade' })
   declare contacts: NonAttribute<Contact[]>;
 
   @BelongsToMany(() => Role, () => UserRole)

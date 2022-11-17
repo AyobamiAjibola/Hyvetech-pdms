@@ -1,11 +1,11 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
-import { Ability, AbilityBuilder } from "@casl/ability";
+import { Ability, AbilityBuilder } from '@casl/ability';
 
-import store from "../store";
-import { IPermission } from "@app-models";
-import { LOCAL_STORAGE } from "../config/constants";
-import { createContextualCan } from "@casl/react";
+import store from '../store';
+import { IPermission } from '@app-models';
+import { LOCAL_STORAGE } from '../config/constants';
+import { createContextualCan } from '@casl/react';
 
 const ability = new Ability();
 

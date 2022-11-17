@@ -1,6 +1,6 @@
-import VehicleFaultRepository from "../../repositories/VehicleFaultRepository";
-import VehicleFault from "../../models/VehicleFault";
-import { appModelTypes } from "../../@types/app-model";
+import VehicleFaultRepository from '../../repositories/VehicleFaultRepository';
+import VehicleFault from '../../models/VehicleFault';
+import { appModelTypes } from '../../@types/app-model';
 import {
   CreateOptions,
   CreationAttributes,
@@ -8,8 +8,8 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize/types";
-import { Attributes } from "sequelize";
+} from 'sequelize/types';
+import { Attributes } from 'sequelize';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class VehicleFaultDAOService implements ICrudDAO<VehicleFault> {
@@ -21,7 +21,7 @@ export default class VehicleFaultDAOService implements ICrudDAO<VehicleFault> {
 
   create(
     values: CreationAttributes<VehicleFault>,
-    options?: CreateOptions<Attributes<VehicleFault>>
+    options?: CreateOptions<Attributes<VehicleFault>>,
   ): Promise<VehicleFault> {
     return this.carFaultRepository.save(values, options);
   }
@@ -29,7 +29,7 @@ export default class VehicleFaultDAOService implements ICrudDAO<VehicleFault> {
   update(
     vehicleFault: VehicleFault,
     values: InferAttributes<VehicleFault>,
-    options: UpdateOptions<InferAttributes<VehicleFault>>
+    options: UpdateOptions<InferAttributes<VehicleFault>>,
   ): Promise<VehicleFault> {
     return this.carFaultRepository.updateOne(vehicleFault, values, options);
   }

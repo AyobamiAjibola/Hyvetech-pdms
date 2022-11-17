@@ -1,15 +1,15 @@
-import { appCommonTypes } from "../../../@types/app-common";
-import { DRIVE_IN_CATEGORY, HYBRID_CATEGORY, MOBILE_CATEGORY } from "../../../config/constants";
+import { appCommonTypes } from '../../../@types/app-common';
+import { DRIVE_IN_CATEGORY, HYBRID_CATEGORY, MOBILE_CATEGORY } from '../../../config/constants';
 import MailTextConfig = appCommonTypes.MailTextConfig;
 
 export default function faf_sub_email(config: MailTextConfig) {
   const getLocationText = () => {
-    let text = "";
+    let text = '';
 
     if (config.planCategory === MOBILE_CATEGORY)
-      text = "your location (no need to stress, tell us where and when, and we will come to you).";
+      text = 'your location (no need to stress, tell us where and when, and we will come to you).';
 
-    if (config.planCategory === DRIVE_IN_CATEGORY) text = "any of our partner garages.";
+    if (config.planCategory === DRIVE_IN_CATEGORY) text = 'any of our partner garages.';
 
     return text;
   };

@@ -1,4 +1,4 @@
-import { appCommonTypes } from "../../../@types/app-common";
+import { appCommonTypes } from '../../../@types/app-common';
 import MailTextConfig = appCommonTypes.MailTextConfig;
 
 export default function create_customer_success_email(config: MailTextConfig) {

@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request } from 'express';
 
 export default async function authorizeRoute(req: Request) {
   // const ability = new Ability();

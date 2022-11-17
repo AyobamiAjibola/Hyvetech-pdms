@@ -1,11 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef } from 'react';
 
-import { Box } from "@mui/material";
-import * as Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import { Box } from '@mui/material';
+import * as Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
-import highchartsAccessibility from "highcharts/modules/accessibility";
-import highChartsNoDataToDisplay from "highcharts/modules/no-data-to-display";
+import highchartsAccessibility from 'highcharts/modules/accessibility';
+import highChartsNoDataToDisplay from 'highcharts/modules/no-data-to-display';
 
 highchartsAccessibility(Highcharts);
 highChartsNoDataToDisplay(Highcharts);
@@ -26,7 +26,7 @@ export default function AppPieChart(props: IProps) {
       plotBackgroundColor: undefined,
       plotBorderWidth: undefined,
       plotShadow: false,
-      type: "pie",
+      type: 'pie',
       width: 400,
     },
     title: {
@@ -36,17 +36,17 @@ export default function AppPieChart(props: IProps) {
       text: props.caption,
     },
     tooltip: {
-      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>',
     },
     accessibility: {
       point: {
-        valueSuffix: "%",
+        valueSuffix: '%',
       },
     },
     plotOptions: {
       pie: {
         allowPointSelect: true,
-        cursor: "pointer",
+        cursor: 'pointer',
         dataLabels: {
           enabled: false,
         },
@@ -58,7 +58,7 @@ export default function AppPieChart(props: IProps) {
   };
 
   return (
-    <Box component="div" sx={{ width: "100%", minWidth: 400 }}>
+    <Box component="div" sx={{ width: '100%', minWidth: 400 }}>
       <HighchartsReact highcharts={Highcharts} options={options} ref={chartComponentRef} {...props} />
     </Box>
   );

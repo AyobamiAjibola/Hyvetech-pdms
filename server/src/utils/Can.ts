@@ -1,5 +1,5 @@
-import { Ability, AbilityBuilder } from "@casl/ability";
-import { Request } from "express";
+import { Ability, AbilityBuilder } from '@casl/ability';
+import { Request } from 'express';
 
 export default class Can {
   public static defineRulesFor = (req: Request) => {
@@ -7,7 +7,7 @@ export default class Can {
     const { can, rules } = new AbilityBuilder(Ability);
 
     //Loop through permissions and define Casl rules for handling permissions
-    permissions.forEach((value) => {
+    permissions.forEach(value => {
       can(value.action, value.subject); //set actions and subject for Casl permission
     });
 

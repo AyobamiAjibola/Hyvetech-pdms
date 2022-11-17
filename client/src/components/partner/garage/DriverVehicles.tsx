@@ -1,14 +1,14 @@
-import React, { createContext, useEffect, useState } from "react";
-import useAppSelector from "../../../hooks/useAppSelector";
-import { ICustomerSubscription, IRideShareDriverSubscription, IVehicle } from "@app-models";
-import { Avatar, Box, IconButton, LinearProgress, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
-import { FaCarAlt, FaExpandAlt } from "react-icons/fa";
-import AppModal from "../../modal/AppModal";
-import DriverVehicle from "./DriverVehicle";
-import { DriverVehiclesContextProps } from "@app-interfaces";
-import { clearDriverAssignJobStatus, clearGetJobsStatus } from "../../../store/reducers/jobReducer";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import { getCheckListsAction } from "../../../store/actions/checkListActions";
+import React, { createContext, useEffect, useState } from 'react';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { ICustomerSubscription, IRideShareDriverSubscription, IVehicle } from '@app-models';
+import { Avatar, Box, IconButton, LinearProgress, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+import { FaCarAlt, FaExpandAlt } from 'react-icons/fa';
+import AppModal from '../../modal/AppModal';
+import DriverVehicle from './DriverVehicle';
+import { DriverVehiclesContextProps } from '@app-interfaces';
+import { clearDriverAssignJobStatus, clearGetJobsStatus } from '../../../store/reducers/jobReducer';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { getCheckListsAction } from '../../../store/actions/checkListActions';
 
 export const DriverVehiclesContext = createContext<DriverVehiclesContextProps | null>(null);
 
@@ -20,12 +20,12 @@ export default function DriverVehicles() {
   const [customerSub, setCustomerSub] = useState<ICustomerSubscription | null>(null);
   const [vehicles, setVehicles] = useState<IVehicle[]>([]);
 
-  const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
-  const checkListReducer = useAppSelector((state) => state.checkListReducer);
+  const rideShareReducer = useAppSelector(state => state.rideShareReducer);
+  const checkListReducer = useAppSelector(state => state.checkListReducer);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (checkListReducer.getCheckListsStatus === "idle") {
+    if (checkListReducer.getCheckListsStatus === 'idle') {
       dispatch(getCheckListsAction());
     }
   }, [dispatch, checkListReducer.getCheckListsStatus]);
@@ -61,15 +61,13 @@ export default function DriverVehicles() {
         setCustomerSub,
         vehicle,
         setVehicle,
-      }}
-    >
+      }}>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
         <Box sx={{ width: 500 }}>
           <List dense={true}>
             {vehicles.length ? (
@@ -81,8 +79,7 @@ export default function DriverVehicles() {
                       <IconButton onClick={() => handleViewVehicle(vehicle)} edge="end" aria-label="delete">
                         <FaExpandAlt />
                       </IconButton>
-                    }
-                  >
+                    }>
                     <ListItemAvatar>
                       <Avatar>
                         <FaCarAlt />

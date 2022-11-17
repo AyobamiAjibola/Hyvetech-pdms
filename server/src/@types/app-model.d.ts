@@ -1,4 +1,4 @@
-import { Model } from "sequelize-typescript";
+import { Model } from 'sequelize-typescript';
 import {
   Attributes,
   CreateOptions,
@@ -8,8 +8,8 @@ import {
   FindOptions,
   SyncOptions,
   UpdateOptions,
-} from "sequelize";
-import { BulkCreateOptions } from "sequelize/types/model";
+} from 'sequelize';
+import { BulkCreateOptions } from 'sequelize/types/model';
 
 export declare namespace appModelTypes {
   interface IUser {

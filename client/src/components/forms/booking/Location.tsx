@@ -1,10 +1,10 @@
-import React, { SyntheticEvent } from "react";
+import React, { SyntheticEvent } from 'react';
 
-import { Autocomplete, AutocompleteChangeReason, createFilterOptions, TextField } from "@mui/material";
-import bookingModel from "../../../components/forms/models/bookingModel";
-import { useFormikContext } from "formik";
-import { IBookingFormValues } from "./BookingForm";
-import useAppSelector from "../../../hooks/useAppSelector";
+import { Autocomplete, AutocompleteChangeReason, createFilterOptions, TextField } from '@mui/material';
+import bookingModel from '../../../components/forms/models/bookingModel';
+import { useFormikContext } from 'formik';
+import { IBookingFormValues } from './BookingForm';
+import useAppSelector from '../../../hooks/useAppSelector';
 
 export interface IOptionType {
   inputValue?: string;
@@ -16,11 +16,11 @@ export const filterOptions = createFilterOptions<IOptionType>();
 function Location() {
   const { values, setFieldValue, handleBlur, errors, touched } = useFormikContext<IBookingFormValues>();
 
-  const customerReducer = useAppSelector((state) => state.customerReducer);
+  const customerReducer = useAppSelector(state => state.customerReducer);
 
   const _handleChange = (event: SyntheticEvent, value: any, reason: AutocompleteChangeReason) => {
-    if (reason === "clear") return setFieldValue(bookingModel.fields.location.name, "");
-    if (typeof value === "string") return setFieldValue(bookingModel.fields.location.name, value);
+    if (reason === 'clear') return setFieldValue(bookingModel.fields.location.name, '');
+    if (typeof value === 'string') return setFieldValue(bookingModel.fields.location.name, value);
 
     if (value.inputValue) return setFieldValue(bookingModel.fields.location.name, value.inputValue);
   };
@@ -35,7 +35,7 @@ function Location() {
       freeSolo
       getOptionLabel={(option: IOptionType | any) => {
         // Value selected with enter, right from the input
-        if (typeof option === "string") {
+        if (typeof option === 'string') {
           return option;
         }
         // Add "xxx" option created dynamically
@@ -51,7 +51,7 @@ function Location() {
         const { inputValue } = params;
         // Suggest the creation of a new value
         const isExisting = options.some((option: { title: string }) => inputValue === option.title);
-        if (inputValue !== "" && !isExisting) {
+        if (inputValue !== '' && !isExisting) {
           filtered.push({
             inputValue,
             title: `Add "${inputValue}"`,
@@ -60,7 +60,7 @@ function Location() {
 
         return filtered;
       }}
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           name={bookingModel.fields.location.name}
@@ -70,7 +70,7 @@ function Location() {
           helperText={errors.location && touched.location && errors.location}
         />
       )}
-      options={customerReducer.contacts.filter((value) => value.address).map((value) => value.label)}
+      options={customerReducer.contacts.filter(value => value.address).map(value => value.label)}
       isOptionEqualToValue={(option: any, value) => option.label === value.label}
     />
   );

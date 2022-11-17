@@ -1,11 +1,11 @@
-import { Avatar, Box, LinearProgress, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import useAppSelector from "../../../hooks/useAppSelector";
-import settings from "../../../config/settings";
-import AppModal from "../../modal/AppModal";
-import { FileOpen } from "@mui/icons-material";
-import { ICustomer, IRideShareDriver } from "@app-models";
-import axiosClient from "../../../config/axiosClient";
+import { Avatar, Box, LinearProgress, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import useAppSelector from '../../../hooks/useAppSelector';
+import settings from '../../../config/settings';
+import AppModal from '../../modal/AppModal';
+import { FileOpen } from '@mui/icons-material';
+import { ICustomer, IRideShareDriver } from '@app-models';
+import axiosClient from '../../../config/axiosClient';
 
 function DriverProfile() {
   const [viewImage, setViewImage] = useState<boolean>(false);
@@ -13,8 +13,8 @@ function DriverProfile() {
   const [driver, setDriver] = useState<IRideShareDriver | null>(null);
   const [customer, setCustomer] = useState<ICustomer | null>(null);
 
-  const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
-  const customerReducer = useAppSelector((state) => state.customerReducer);
+  const rideShareReducer = useAppSelector(state => state.rideShareReducer);
+  const customerReducer = useAppSelector(state => state.customerReducer);
 
   useEffect(() => {
     setDriver(rideShareReducer.driver);
@@ -25,7 +25,7 @@ function DriverProfile() {
     imageUrl = `${settings.api.driverBaseURL}/${imageUrl}`;
 
     const response = await axiosClient.get(imageUrl, {
-      responseType: "blob",
+      responseType: 'blob',
     });
 
     const reader = new FileReader();
@@ -41,7 +41,7 @@ function DriverProfile() {
 
   return (
     <React.Fragment>
-      <TableContainer sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} component={Box}>
+      <TableContainer sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} component={Box}>
         <Table sx={{ maxWidth: 500 }} aria-label="simple table">
           {driver ? (
             <TableBody>
@@ -77,10 +77,9 @@ function DriverProfile() {
                   {driver.frontLicenseImageUrl && (
                     <Avatar
                       onClick={() => handleViewImage(driver.frontLicenseImageUrl)}
-                      sx={{ cursor: "pointer" }}
+                      sx={{ cursor: 'pointer' }}
                       variant="square"
-                      src={driver.frontLicenseImageUrl}
-                    >
+                      src={driver.frontLicenseImageUrl}>
                       <FileOpen />
                     </Avatar>
                   )}
@@ -94,10 +93,9 @@ function DriverProfile() {
                   {driver.rearLicenseImageUrl && (
                     <Avatar
                       onClick={() => handleViewImage(driver.rearLicenseImageUrl)}
-                      sx={{ cursor: "pointer" }}
+                      sx={{ cursor: 'pointer' }}
                       variant="square"
-                      src={driver.rearLicenseImageUrl}
-                    >
+                      src={driver.rearLicenseImageUrl}>
                       <FileOpen />
                     </Avatar>
                   )}
@@ -138,10 +136,9 @@ function DriverProfile() {
                   {customer.frontLicenseImageUrl && (
                     <Avatar
                       onClick={() => handleViewImage(customer.frontLicenseImageUrl)}
-                      sx={{ cursor: "pointer" }}
+                      sx={{ cursor: 'pointer' }}
                       variant="square"
-                      src={customer.frontLicenseImageUrl}
-                    >
+                      src={customer.frontLicenseImageUrl}>
                       <FileOpen />
                     </Avatar>
                   )}
@@ -155,10 +152,9 @@ function DriverProfile() {
                   {customer.rearLicenseImageUrl && (
                     <Avatar
                       onClick={() => handleViewImage(customer.rearLicenseImageUrl)}
-                      sx={{ cursor: "pointer" }}
+                      sx={{ cursor: 'pointer' }}
                       variant="square"
-                      src={customer.rearLicenseImageUrl}
-                    >
+                      src={customer.rearLicenseImageUrl}>
                       <FileOpen />
                     </Avatar>
                   )}
@@ -169,7 +165,7 @@ function DriverProfile() {
             <TableBody>
               <TableRow>
                 <TableCell>
-                  <Box sx={{ width: "100%" }}>
+                  <Box sx={{ width: '100%' }}>
                     <LinearProgress />
                   </Box>
                 </TableCell>

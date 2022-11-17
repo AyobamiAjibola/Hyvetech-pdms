@@ -1,5 +1,5 @@
-import CrudRepository from "../helpers/CrudRepository";
-import Schedule from "../models/Schedule";
+import CrudRepository from '../helpers/CrudRepository';
+import Schedule from '../models/Schedule';
 
 export default class ScheduleRepository extends CrudRepository<Schedule, number> {
   constructor() {

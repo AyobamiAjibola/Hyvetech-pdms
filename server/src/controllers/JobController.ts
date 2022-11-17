@@ -1,16 +1,16 @@
-import { Request } from "express";
-import Joi from "joi";
+import { Request } from 'express';
+import Joi from 'joi';
 
-import dataSources from "../services/dao";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import RideShareDriverSubscription from "../models/RideShareDriverSubscription";
-import CustomerSubscription from "../models/CustomerSubscription";
-import Technician from "../models/Technician";
-import { appCommonTypes } from "../@types/app-common";
-import Job from "../models/Job";
-import RideShareDriver from "../models/RideShareDriver";
-import Customer from "../models/Customer";
+import dataSources from '../services/dao';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import RideShareDriverSubscription from '../models/RideShareDriverSubscription';
+import CustomerSubscription from '../models/CustomerSubscription';
+import Technician from '../models/Technician';
+import { appCommonTypes } from '../@types/app-common';
+import Job from '../models/Job';
+import RideShareDriver from '../models/RideShareDriver';
+import Customer from '../models/Customer';
 import {
   APPROVE_JOB,
   ASSIGN_DRIVER_JOB,
@@ -20,15 +20,15 @@ import {
   JOB_STATUS,
   MOBILE_CATEGORY,
   UPLOAD_BASE_PATH,
-} from "../config/constants";
-import Plan from "../models/Plan";
-import Generic from "../utils/Generic";
-import Vehicle from "../models/Vehicle";
-import Partner from "../models/Partner";
-import Contact from "../models/Contact";
-import formidable, { File } from "formidable";
-import { appEventEmitter } from "../services/AppEventEmitter";
-import { AssignJobProps } from "../services/socketManager";
+} from '../config/constants';
+import Plan from '../models/Plan';
+import Generic from '../utils/Generic';
+import Vehicle from '../models/Vehicle';
+import Partner from '../models/Partner';
+import Contact from '../models/Contact';
+import formidable, { File } from 'formidable';
+import { appEventEmitter } from '../services/AppEventEmitter';
+import { AssignJobProps } from '../services/socketManager';
 import HttpResponse = appCommonTypes.HttpResponse;
 import CheckListType = appCommonTypes.CheckListType;
 
@@ -44,10 +44,10 @@ export default class JobController {
 
         if (!partner)
           return Promise.reject(
-            CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code)
+            CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
           );
 
-        jobs = await partner.$get("jobs", {
+        jobs = await partner.$get('jobs', {
           include: [RideShareDriverSubscription, CustomerSubscription, Technician],
         });
       }
@@ -84,12 +84,12 @@ export default class JobController {
         ],
       });
 
-      if (job && typeof job.checkList !== "object") {
+      if (job && typeof job.checkList !== 'object') {
         const checkList = JSON.parse(job.checkList) as unknown as CheckListType;
 
         if (checkList.sections) {
-          checkList.sections = checkList.sections.map((section) => {
-            if (typeof section !== "string") return section;
+          checkList.sections = checkList.sections.map(section => {
+            if (typeof section !== 'string') return section;
             else return JSON.parse(section as unknown as string);
           });
         } else checkList.sections = JSON.parse(JSON.stringify([INITIAL_CHECK_LIST_VALUES]));
@@ -99,7 +99,7 @@ export default class JobController {
           {
             ...job.toJSON(),
             checkList,
-          }
+          },
         );
       } else result = job;
 
@@ -120,10 +120,10 @@ export default class JobController {
       const partnerId = req.params.partnerId as string;
 
       const { value, error } = Joi.object({
-        subscriptionId: Joi.number().required().label("Subscription Id"),
-        techId: Joi.number().required().label("Technician Id"),
-        partnerId: Joi.number().required().label("Partner Id"),
-        checkListId: Joi.number().required().label("Check List Id"),
+        subscriptionId: Joi.number().required().label('Subscription Id'),
+        techId: Joi.number().required().label('Technician Id'),
+        partnerId: Joi.number().required().label('Partner Id'),
+        checkListId: Joi.number().required().label('Check List Id'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -132,7 +132,7 @@ export default class JobController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
       const checkList = await dataSources.checkListDAOService.findById(value.checkListId);
@@ -141,8 +141,8 @@ export default class JobController {
         return Promise.reject(
           CustomAPIError.response(
             `Check List does not exist. You need a check list to carry out inspection`,
-            HttpStatus.NOT_FOUND.code
-          )
+            HttpStatus.NOT_FOUND.code,
+          ),
         );
 
       const technician = await dataSources.technicianDAOService.findById(+value.techId);
@@ -160,7 +160,7 @@ export default class JobController {
       if (!rideShareSub)
         return Promise.reject(CustomAPIError.response(`Subscription does not exist`, HttpStatus.NOT_FOUND.code));
 
-      const vehicle = await rideShareSub.$get("vehicles", {
+      const vehicle = await rideShareSub.$get('vehicles', {
         include: [RideShareDriver],
       });
 
@@ -189,34 +189,34 @@ export default class JobController {
       const job = await dataSources.jobDAOService.create(jobValues);
 
       //associate job with vehicle
-      await vehicle[0].$add("jobs", [job]);
+      await vehicle[0].$add('jobs', [job]);
 
       //associate job with subscription
-      await rideShareSub.$add("jobs", [job]);
+      await rideShareSub.$add('jobs', [job]);
 
       //create job check list
       await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
 
       //associate partner with job
-      await partner.$add("jobs", [job]);
+      await partner.$add('jobs', [job]);
 
       //associate technician with jobs
-      await technician.$add("jobs", [job]);
+      await technician.$add('jobs', [job]);
 
       //update technician job status
       await technician.update({ hasJob: true });
 
       //update vehicle job status
-      if (rideShareSub.programme.match(new RegExp("inspection", "i"))?.input)
+      if (rideShareSub.programme.match(new RegExp('inspection', 'i'))?.input)
         await vehicle[0].update({ onInspection: true });
 
-      if (rideShareSub.programme.match(new RegExp("maintenance", "i"))?.input)
+      if (rideShareSub.programme.match(new RegExp('maintenance', 'i'))?.input)
         await vehicle[0].update({ onMaintenance: true });
 
       //increment mode of service count
       await this.incrementServiceModeCount(plan, rideShareSub);
 
-      const jobs = await partner.$get("jobs");
+      const jobs = await partner.$get('jobs');
 
       appEventEmitter.emit(ASSIGN_DRIVER_JOB, {
         techId: +value.techId,
@@ -240,10 +240,10 @@ export default class JobController {
       const partnerId = req.params.partnerId as string;
 
       const { value, error } = Joi.object({
-        subscriptionId: Joi.number().required().label("Subscription Id"),
-        techId: Joi.number().required().label("Technician Id"),
-        partnerId: Joi.number().required().label("Partner Id"),
-        checkListId: Joi.number().required().label("Check List Id"),
+        subscriptionId: Joi.number().required().label('Subscription Id'),
+        techId: Joi.number().required().label('Technician Id'),
+        partnerId: Joi.number().required().label('Partner Id'),
+        checkListId: Joi.number().required().label('Check List Id'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -252,7 +252,7 @@ export default class JobController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
       const checkList = await dataSources.checkListDAOService.findById(value.checkListId);
@@ -261,8 +261,8 @@ export default class JobController {
         return Promise.reject(
           CustomAPIError.response(
             `Check List does not exist. You need a check list to carry out inspection`,
-            HttpStatus.NOT_FOUND.code
-          )
+            HttpStatus.NOT_FOUND.code,
+          ),
         );
 
       const technician = await dataSources.technicianDAOService.findById(+value.techId);
@@ -279,7 +279,7 @@ export default class JobController {
       if (!customerSub)
         return Promise.reject(CustomAPIError.response(`Subscription does not exist`, HttpStatus.NOT_FOUND.code));
 
-      const vehicle = await customerSub.$get("vehicles", {
+      const vehicle = await customerSub.$get('vehicles', {
         include: [Customer],
       });
 
@@ -308,34 +308,34 @@ export default class JobController {
       const job = await dataSources.jobDAOService.create(jobValues);
 
       //associate job with vehicle
-      await vehicle[0].$add("jobs", [job]);
+      await vehicle[0].$add('jobs', [job]);
 
       //associate job with subscription
-      await customerSub.$add("jobs", [job]);
+      await customerSub.$add('jobs', [job]);
 
       //associate job with check list
       await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
 
       //associate partner with job
-      await partner.$add("jobs", [job]);
+      await partner.$add('jobs', [job]);
 
       //associate technician with jobs
-      await technician.$add("jobs", [job]);
+      await technician.$add('jobs', [job]);
 
       //update technician job status
       await technician.update({ hasJob: true });
 
       //update vehicle job status
-      if (customerSub.programme.match(new RegExp("inspection", "i"))?.input)
+      if (customerSub.programme.match(new RegExp('inspection', 'i'))?.input)
         await vehicle[0].update({ onInspection: true });
 
-      if (customerSub.programme.match(new RegExp("maintenance", "i"))?.input)
+      if (customerSub.programme.match(new RegExp('maintenance', 'i'))?.input)
         await vehicle[0].update({ onMaintenance: true });
 
       //increment mode of service count
       await this.incrementServiceModeCount(plan, customerSub);
 
-      const jobs = await partner.$get("jobs");
+      const jobs = await partner.$get('jobs');
 
       const response: HttpResponse<Job> = {
         code: HttpStatus.OK.code,
@@ -354,8 +354,8 @@ export default class JobController {
 
     try {
       const { error, value } = Joi.object({
-        jobId: Joi.number().required().label("Job Id"),
-        approved: Joi.boolean().required().label("Approved"),
+        jobId: Joi.number().required().label('Job Id'),
+        approved: Joi.boolean().required().label('Approved'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -376,15 +376,15 @@ export default class JobController {
 
       if (!checkList.length)
         return Promise.reject(
-          CustomAPIError.response(`Can not approve job, checklist does not available.`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Can not approve job, checklist does not available.`, HttpStatus.NOT_FOUND.code),
         );
 
       const iCheckList = JSON.parse(checkList) as unknown as CheckListType;
 
       let message;
 
-      if (value.approved) message = "Approved";
-      else message = "Not approved";
+      if (value.approved) message = 'Approved';
+      else message = 'Not approved';
 
       iCheckList.approvedByGarageAdmin = value.approved;
 
@@ -418,7 +418,7 @@ export default class JobController {
       form.parse(req, async (err, fields, files) => {
         try {
           const { error, value } = Joi.object({
-            vehicleInfo: Joi.string().required().label("Vehicle Info"),
+            vehicleInfo: Joi.string().required().label('Vehicle Info'),
           }).validate(fields);
 
           if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -428,7 +428,7 @@ export default class JobController {
 
           if (!job) return reject(CustomAPIError.response(`Job does not exist`, HttpStatus.NOT_FOUND.code));
 
-          const vehicle = await job.$get("vehicle");
+          const vehicle = await job.$get('vehicle');
 
           if (!vehicle) return reject(CustomAPIError.response(`Vehicle does not exist`, HttpStatus.NOT_FOUND.code));
 
@@ -477,7 +477,7 @@ export default class JobController {
 
   private static async incrementServiceModeCount(
     plan: Plan,
-    subscription: RideShareDriverSubscription | CustomerSubscription
+    subscription: RideShareDriverSubscription | CustomerSubscription,
   ) {
     const defaultMobileInspections = plan.mobile;
     const defaultDriveInInspections = plan.driveIn;
@@ -514,8 +514,8 @@ export default class JobController {
     return Promise.reject(
       CustomAPIError.response(
         `Maximum number of ${category} inspections reached for plan ${subscriptionName}`,
-        HttpStatus.BAD_REQUEST.code
-      )
+        HttpStatus.BAD_REQUEST.code,
+      ),
     );
   }
 }

@@ -1,8 +1,8 @@
-import React, { FocusEvent } from "react";
+import React, { FocusEvent } from 'react';
 
-import { FormControlLabel, FormGroup, Switch } from "@mui/material";
-import { useFormikContext } from "formik";
-import ErrorField from "./ErrorField";
+import { FormControlLabel, FormGroup, Switch } from '@mui/material';
+import { useFormikContext } from 'formik';
+import ErrorField from './ErrorField';
 
 interface IProps {
   inputGroupStyle?: { [p: string]: string };
@@ -11,7 +11,7 @@ interface IProps {
   fullWidth?: boolean;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (event: FocusEvent<HTMLButtonElement>) => void;
-  size?: "small" | "medium";
+  size?: 'small' | 'medium';
   value: boolean;
   name: string;
   label: string;

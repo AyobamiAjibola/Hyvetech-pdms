@@ -1,10 +1,10 @@
-import React, { createContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Divider, Paper, Stack } from "@mui/material";
-import CustomerTab from "../../components/tabs/CustomerTab";
-import { customerDetailTabs } from "../../navigation/menus";
-import { CustomerPageContextProps, ILocationState } from "@app-interfaces";
-import { ICustomer } from "@app-models";
+import React, { createContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Divider, Paper, Stack } from '@mui/material';
+import CustomerTab from '../../components/tabs/CustomerTab';
+import { customerDetailTabs } from '../../navigation/menus';
+import { CustomerPageContextProps, ILocationState } from '@app-interfaces';
+import { ICustomer } from '@app-models';
 
 export const CustomerPageContext = createContext<CustomerPageContextProps | null>(null);
 

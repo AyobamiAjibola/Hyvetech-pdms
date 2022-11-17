@@ -1,7 +1,7 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
-import cookie from "../../utils/cookie";
-import settings from "../../config/settings";
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import cookie from '../../utils/cookie';
+import settings from '../../config/settings';
 
 const cookieName = settings.auth.admin;
 

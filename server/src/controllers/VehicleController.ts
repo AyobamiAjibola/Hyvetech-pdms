@@ -1,14 +1,14 @@
-import { Request } from "express";
+import { Request } from 'express';
 
-import dataSources from "../services/dao";
-import CustomAPIError from "../exceptions/CustomAPIError";
-import HttpStatus from "../helpers/HttpStatus";
-import Vehicle, { $vinSchema } from "../models/Vehicle";
-import { appCommonTypes } from "../@types/app-common";
-import Transaction from "../models/Transaction";
-import Job from "../models/Job";
-import Joi from "joi";
-import { VINData } from "../services/dao/VINDecoderProviderDAOService";
+import dataSources from '../services/dao';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
+import Vehicle, { $vinSchema } from '../models/Vehicle';
+import { appCommonTypes } from '../@types/app-common';
+import Transaction from '../models/Transaction';
+import Job from '../models/Job';
+import Joi from 'joi';
+import { VINData } from '../services/dao/VINDecoderProviderDAOService';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class VehicleController {
@@ -21,18 +21,18 @@ export default class VehicleController {
 
       if (!vehicle)
         return Promise.reject(
-          CustomAPIError.response(`Vehicle with id: ${vehicleId} does not exist`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Vehicle with id: ${vehicleId} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
       let subscriptions: any[] = [];
 
       switch (path) {
-        case path.match("customer-subs")?.input:
+        case path.match('customer-subs')?.input:
           subscriptions = await dataSources.customerSubscriptionDAOService.findAll({
             include: [{ model: Vehicle, where: { id: +vehicleId } }, Transaction, Job],
           });
           break;
-        case path.match("driver-subs")?.input:
+        case path.match('driver-subs')?.input:
           subscriptions = await dataSources.rideShareDriverSubscriptionDAOService.findAll({
             include: [{ model: Vehicle, where: { id: +vehicleId } }, Transaction, Job],
           });
@@ -73,7 +73,7 @@ export default class VehicleController {
 
       if (!vinData.length)
         return Promise.reject(
-          CustomAPIError.response(`Could not find matching result for vin: ${vin}`, HttpStatus.NOT_FOUND.code)
+          CustomAPIError.response(`Could not find matching result for vin: ${vin}`, HttpStatus.NOT_FOUND.code),
         );
 
       const response: HttpResponse<VINData> = {

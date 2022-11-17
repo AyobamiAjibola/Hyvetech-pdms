@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useMemo } from "react";
-import { TechniciansPageContext } from "./TechniciansPage";
-import { TechniciansPageContextProps } from "@app-interfaces";
+import React, { useCallback, useContext, useMemo } from 'react';
+import { TechniciansPageContext } from './TechniciansPage';
+import { TechniciansPageContextProps } from '@app-interfaces';
 import {
   Box,
   Card,
@@ -17,22 +17,22 @@ import {
   TableContainer,
   TableRow,
   Typography,
-} from "@mui/material";
-import AppDataGrid from "../../components/tables/AppDataGrid";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { PlaylistAddCheck, Visibility } from "@mui/icons-material";
-import { IJob } from "@app-models";
-import useAdmin from "../../hooks/useAdmin";
-import { JOB_STATUS } from "../../config/constants";
-import moment from "moment";
-import AppModal from "../../components/modal/AppModal";
-import { useNavigate } from "react-router-dom";
+} from '@mui/material';
+import AppDataGrid from '../../components/tables/AppDataGrid';
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import { PlaylistAddCheck, Visibility } from '@mui/icons-material';
+import { IJob } from '@app-models';
+import useAdmin from '../../hooks/useAdmin';
+import { JOB_STATUS } from '../../config/constants';
+import moment from 'moment';
+import AppModal from '../../components/modal/AppModal';
+import { useNavigate } from 'react-router-dom';
 
 function TechnicianPage() {
   const admin = useAdmin();
 
   const { detail, setShowViewJob, showViewJob, job, setJob } = useContext(
-    TechniciansPageContext
+    TechniciansPageContext,
   ) as TechniciansPageContextProps;
 
   const navigate = useNavigate();
@@ -43,9 +43,9 @@ function TechnicianPage() {
       inProgress = 0;
 
     if (detail) {
-      pending = detail.jobs.filter((job) => job.status === JOB_STATUS.pending).length;
-      complete = detail.jobs.filter((job) => job.status === JOB_STATUS.complete).length;
-      inProgress = detail.jobs.filter((job) => job.status === JOB_STATUS.inProgress).length;
+      pending = detail.jobs.filter(job => job.status === JOB_STATUS.pending).length;
+      complete = detail.jobs.filter(job => job.status === JOB_STATUS.complete).length;
+      inProgress = detail.jobs.filter(job => job.status === JOB_STATUS.inProgress).length;
     }
 
     return { pending, complete, inProgress };
@@ -56,44 +56,44 @@ function TechnicianPage() {
       setJob(job);
       setShowViewJob(true);
     },
-    [setJob, setShowViewJob]
+    [setJob, setShowViewJob],
   );
 
   const handleViewJobCheckList = useCallback(
     (job: IJob) => navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
-    [navigate]
+    [navigate],
   );
 
   const columns = useMemo(() => {
     return [
       {
-        field: "id",
-        headerName: "ID",
-        headerAlign: "center",
-        align: "center",
+        field: 'id',
+        headerName: 'ID',
+        headerAlign: 'center',
+        align: 'center',
         sortable: true,
-        type: "number",
+        type: 'number',
       },
 
       {
-        field: "type",
-        headerName: "Type",
-        headerAlign: "center",
-        align: "center",
+        field: 'type',
+        headerName: 'Type',
+        headerAlign: 'center',
+        align: 'center',
         sortable: true,
-        type: "string",
+        type: 'string',
         width: 180,
       },
 
       {
-        field: "status",
-        headerName: "Status",
-        headerAlign: "center",
-        align: "center",
+        field: 'status',
+        headerName: 'Status',
+        headerAlign: 'center',
+        align: 'center',
         sortable: true,
-        type: "string",
+        type: 'string',
         width: 150,
-        renderCell: (params) => {
+        renderCell: params => {
           const status = params.value;
           return status === JOB_STATUS.pending ? (
             <Chip label={status} color="warning" />
@@ -102,49 +102,49 @@ function TechnicianPage() {
           ) : status === JOB_STATUS.complete ? (
             <Chip label={status} color="success" />
           ) : (
-            ""
+            ''
           );
         },
       },
       {
-        field: "jobDate",
-        headerName: "Completed Date",
-        headerAlign: "center",
-        align: "center",
+        field: 'jobDate',
+        headerName: 'Completed Date',
+        headerAlign: 'center',
+        align: 'center',
         sortable: true,
-        type: "dateTime",
+        type: 'dateTime',
         width: 200,
-        valueFormatter: (params) => {
+        valueFormatter: params => {
           const date = params.value;
-          return date ? moment(date).format("LLL") : "-";
+          return date ? moment(date).format('LLL') : '-';
         },
       },
       {
-        field: "createdAt",
-        headerName: "Created At",
-        headerAlign: "center",
-        align: "center",
+        field: 'createdAt',
+        headerName: 'Created At',
+        headerAlign: 'center',
+        align: 'center',
         sortable: true,
-        type: "dateTime",
+        type: 'dateTime',
         width: 200,
-        valueFormatter: (params) => {
+        valueFormatter: params => {
           const date = params.value;
-          return date ? moment(date).format("LLL") : "";
+          return date ? moment(date).format('LLL') : '';
         },
       },
 
       {
-        field: "actions",
-        type: "actions",
-        headerAlign: "center",
-        align: "center",
+        field: 'actions',
+        type: 'actions',
+        headerAlign: 'center',
+        align: 'center',
         getActions: (params: any) => {
           const job = params.row;
 
           return [
             <GridActionsCellItem
               key={0}
-              icon={<Visibility sx={{ color: "dodgerblue" }} />}
+              icon={<Visibility sx={{ color: 'dodgerblue' }} />}
               onClick={() => handleView(params.row)}
               label="View"
               showInMenu={false}
@@ -153,12 +153,12 @@ function TechnicianPage() {
             <GridActionsCellItem
               hidden={!admin.isTechAdmin}
               key={1}
-              icon={<PlaylistAddCheck sx={{ color: "limegreen" }} />}
+              icon={<PlaylistAddCheck sx={{ color: 'limegreen' }} />}
               onClick={() => handleViewJobCheckList(params.row)}
               label="Edit"
               showInMenu={false}
               sx={{
-                display: job.status === JOB_STATUS.complete ? "block" : "none",
+                display: job.status === JOB_STATUS.complete ? 'block' : 'none',
               }}
             />,
           ];
@@ -170,7 +170,7 @@ function TechnicianPage() {
   return (
     <React.Fragment>
       {!detail ? (
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: '100%' }}>
           <LinearProgress />
         </Box>
       ) : (
@@ -178,7 +178,7 @@ function TechnicianPage() {
           <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 2, sm: 8, md: 12 }}>
             <Grid item xs={12} md={4}>
               <Card>
-                <CardContent sx={{ textAlign: "center" }}>
+                <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="body1">Jobs Pending</Typography>
                   <Typography variant="subtitle1">{jobStatusCount.pending}</Typography>
                 </CardContent>
@@ -186,7 +186,7 @@ function TechnicianPage() {
             </Grid>
             <Grid item xs={12} md={4}>
               <Card>
-                <CardContent sx={{ textAlign: "center" }}>
+                <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="body1">Jobs In-Progress</Typography>
                   <Typography variant="subtitle1">{jobStatusCount.inProgress}</Typography>
                 </CardContent>
@@ -194,7 +194,7 @@ function TechnicianPage() {
             </Grid>
             <Grid item xs={12} md={4}>
               <Card>
-                <CardContent sx={{ textAlign: "center" }}>
+                <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="body1">Jobs Completed</Typography>
                   <Typography variant="subtitle1">{jobStatusCount.complete}</Typography>
                 </CardContent>
@@ -256,7 +256,7 @@ function TechnicianPage() {
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Date</TableCell>
-                    <TableCell component="td">{moment(job.jobDate).format("LLL")}</TableCell>
+                    <TableCell component="td">{moment(job.jobDate).format('LLL')}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Client</TableCell>

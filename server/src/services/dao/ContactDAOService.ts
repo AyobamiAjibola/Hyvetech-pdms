@@ -6,11 +6,11 @@ import {
   FindOptions,
   InferAttributes,
   UpdateOptions,
-} from "sequelize";
+} from 'sequelize';
 
-import ContactRepository from "../../repositories/ContactRepository";
-import Contact from "../../models/Contact";
-import { appModelTypes } from "../../@types/app-model";
+import ContactRepository from '../../repositories/ContactRepository';
+import Contact from '../../models/Contact';
+import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class ContactDAOService implements ICrudDAO<Contact> {
@@ -43,7 +43,7 @@ export default class ContactDAOService implements ICrudDAO<Contact> {
   update(
     contact: Contact,
     values: InferAttributes<Contact>,
-    options: UpdateOptions<Attributes<Contact>>
+    options: UpdateOptions<Attributes<Contact>>,
   ): Promise<Contact> {
     return this.contactRepository.updateOne(contact, values, options);
   }

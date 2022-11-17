@@ -1,10 +1,10 @@
-import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequelize';
 
 @Table({
   timestamps: true,
 
-  tableName: "payment_gateways",
+  tableName: 'payment_gateways',
 })
 export default class PaymentGateway extends Model<
   InferAttributes<PaymentGateway>,

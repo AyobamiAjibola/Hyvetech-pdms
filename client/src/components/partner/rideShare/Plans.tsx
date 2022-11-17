@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Delete, Visibility } from "@mui/icons-material";
-import { IPlan } from "@app-models";
-import { Button, DialogActions, DialogContentText, Grid, TableBody, TableCell, TableRow } from "@mui/material";
-import AppDataGrid from "../../tables/AppDataGrid";
-import useAppSelector from "../../../hooks/useAppSelector";
-import AppModal from "../../modal/AppModal";
-import { Formik, FormikHelpers } from "formik";
-import planModel, { IPlanModel } from "../../forms/models/planModel";
-import AddPlanForm from "../../forms/partner/AddPlanForm";
-import { addPlanAction, deletePlanAction } from "../../../store/actions/partnerActions";
-import { useParams } from "react-router-dom";
-import useAppDispatch from "../../../hooks/useAppDispatch";
-import capitalize from "capitalize";
-import { MESSAGES } from "../../../config/constants";
-import moment from "moment";
-import { CustomHookMessage } from "@app-types";
-import AppAlert from "../../alerts/AppAlert";
-import { clearDeletePlanStatus } from "../../../store/reducers/partnerReducer";
+import React, { useEffect, useState } from 'react';
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import { Delete, Visibility } from '@mui/icons-material';
+import { IPlan } from '@app-models';
+import { Button, DialogActions, DialogContentText, Grid, TableBody, TableCell, TableRow } from '@mui/material';
+import AppDataGrid from '../../tables/AppDataGrid';
+import useAppSelector from '../../../hooks/useAppSelector';
+import AppModal from '../../modal/AppModal';
+import { Formik, FormikHelpers } from 'formik';
+import planModel, { IPlanModel } from '../../forms/models/planModel';
+import AddPlanForm from '../../forms/partner/AddPlanForm';
+import { addPlanAction, deletePlanAction } from '../../../store/actions/partnerActions';
+import { useParams } from 'react-router-dom';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import capitalize from 'capitalize';
+import { MESSAGES } from '../../../config/constants';
+import moment from 'moment';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../../alerts/AppAlert';
+import { clearDeletePlanStatus } from '../../../store/reducers/partnerReducer';
 
 function Plans() {
   const [openAddPlan, setOpenAddPlan] = useState<boolean>(false);
@@ -29,24 +29,24 @@ function Plans() {
 
   const params = useParams();
 
-  const partnerReducer = useAppSelector((state) => state.partnerReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (partnerReducer.addPlanStatus === "completed") {
+    if (partnerReducer.addPlanStatus === 'completed') {
       setOpenAddPlan(false);
     }
   }, [partnerReducer.addPlanStatus]);
 
   useEffect(() => {
-    if (partnerReducer.deletePlanStatus === "completed") {
+    if (partnerReducer.deletePlanStatus === 'completed') {
       setSuccess({ message: partnerReducer.deletePlanSuccess });
     }
   }, [partnerReducer.deletePlanStatus, partnerReducer.deletePlanSuccess]);
 
   useEffect(() => {
-    if (partnerReducer.deletePlanStatus === "failed") {
+    if (partnerReducer.deletePlanStatus === 'failed') {
       if (partnerReducer.deletePlanError) {
         setError({ message: partnerReducer.deletePlanError });
       }
@@ -80,7 +80,7 @@ function Plans() {
       serviceMode: values.serviceMode,
     };
 
-    if (undefined === params.id) throw Error("Partner ID is required");
+    if (undefined === params.id) throw Error('Partner ID is required');
 
     dispatch(addPlanAction({ plan: data, partnerId: params.id }));
 
@@ -116,7 +116,7 @@ function Plans() {
           </Grid>
         </Grid>
         <AppDataGrid
-          loading={partnerReducer.getPlansStatus === "loading"}
+          loading={partnerReducer.getPlansStatus === 'loading'}
           showToolbar
           rows={partnerReducer.plans}
           columns={columns({ onView: handleView, onDelete: handleDelete })}
@@ -143,7 +143,7 @@ function Plans() {
                   Plan Name
                 </TableCell>
                 <TableCell colSpan={4} align="right">
-                  {capitalize.words(plan.label).replaceAll("_", " ")}
+                  {capitalize.words(plan.label).replaceAll('_', ' ')}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -191,7 +191,7 @@ function Plans() {
                   Date Added
                 </TableCell>
                 <TableCell colSpan={4} align="right">
-                  {moment(plan.createdAt).format("LLL")}
+                  {moment(plan.createdAt).format('LLL')}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -199,7 +199,7 @@ function Plans() {
                   Date Modified
                 </TableCell>
                 <TableCell colSpan={4} align="right">
-                  {moment(plan.updatedAt).format("LLL")}
+                  {moment(plan.updatedAt).format('LLL')}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -238,86 +238,86 @@ function Plans() {
 const columns = (options?: any) =>
   [
     {
-      field: "id",
-      headerName: "ID",
-      headerAlign: "center",
-      align: "center",
+      field: 'id',
+      headerName: 'ID',
+      headerAlign: 'center',
+      align: 'center',
       sortable: true,
-      type: "number",
+      type: 'number',
     },
     {
-      field: "label",
-      headerName: "Name",
-      headerAlign: "left",
+      field: 'label',
+      headerName: 'Name',
+      headerAlign: 'left',
       width: 300,
-      align: "left",
-      type: "string",
+      align: 'left',
+      type: 'string',
       sortable: true,
-      valueFormatter: (params) => {
-        return params.value ? params.value.replaceAll("_", " ") : "";
+      valueFormatter: params => {
+        return params.value ? params.value.replaceAll('_', ' ') : '';
       },
     },
     {
-      field: "validity",
-      headerName: "Interval",
-      headerAlign: "center",
+      field: 'validity',
+      headerName: 'Interval',
+      headerAlign: 'center',
       width: 150,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "serviceMode",
-      headerName: "Service Mode",
-      headerAlign: "center",
+      field: 'serviceMode',
+      headerName: 'Service Mode',
+      headerAlign: 'center',
       width: 150,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "maxVehicles",
-      headerName: "Maximum Vehicles",
-      headerAlign: "center",
+      field: 'maxVehicles',
+      headerName: 'Maximum Vehicles',
+      headerAlign: 'center',
       width: 170,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "minVehicles",
-      headerName: "Minimum Vehicles",
-      headerAlign: "center",
+      field: 'minVehicles',
+      headerName: 'Minimum Vehicles',
+      headerAlign: 'center',
       width: 170,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "inspections",
-      headerName: "Inspections",
-      headerAlign: "center",
+      field: 'inspections',
+      headerName: 'Inspections',
+      headerAlign: 'center',
       width: 150,
-      align: "center",
-      type: "string",
+      align: 'center',
+      type: 'string',
       sortable: true,
     },
     {
-      field: "actions",
-      type: "actions",
-      align: "center",
-      headerAlign: "center",
+      field: 'actions',
+      type: 'actions',
+      align: 'center',
+      headerAlign: 'center',
       getActions: (params: any) => [
         <GridActionsCellItem
           key={0}
-          icon={<Visibility sx={{ color: "dodgerblue" }} />}
+          icon={<Visibility sx={{ color: 'dodgerblue' }} />}
           onClick={() => options.onView(params.row)}
           label="View"
           showInMenu={false}
         />,
         <GridActionsCellItem
           key={1}
-          icon={<Delete sx={{ color: "red" }} />}
+          icon={<Delete sx={{ color: 'red' }} />}
           onClick={() => options.onDelete(params.row)}
           label="Delete"
           showInMenu={false}

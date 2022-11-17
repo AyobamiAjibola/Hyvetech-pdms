@@ -1,8 +1,8 @@
-import React from "react";
-import { Grid } from "@mui/material";
-import TextField from "@mui/material/TextField";
-import SelectField from "../fields/SelectField";
-import { PartArgs } from "./EstimateForm";
+import React from 'react';
+import { Grid } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import SelectField from '../fields/SelectField';
+import { PartArgs } from './EstimateForm';
 
 function QuantityFields(props: PartArgs) {
   const index = props.index;
@@ -14,7 +14,7 @@ function QuantityFields(props: PartArgs) {
       {Object.keys(quantity).map((value, idx) => {
         return (
           <Grid key={idx} item xs container spacing={0.2}>
-            {value === "quantity" && (
+            {value === 'quantity' && (
               <Grid item xs>
                 <TextField
                   fullWidth
@@ -22,7 +22,7 @@ function QuantityFields(props: PartArgs) {
                   label={value}
                   type="number"
                   inputProps={{
-                    min: "0",
+                    min: '0',
                   }}
                   name={`parts.${index}.quantity.quantity`}
                   value={values.parts[index].quantity.quantity}
@@ -30,14 +30,14 @@ function QuantityFields(props: PartArgs) {
                 />
               </Grid>
             )}
-            {value === "unit" && (
+            {value === 'unit' && (
               <Grid item xs>
                 <SelectField
                   data={[
-                    { label: "litre", value: "litre" },
-                    { label: "cm", value: "cm" },
-                    { label: "kg", value: "kg" },
-                    { label: "m", value: "m" },
+                    { label: 'litre', value: 'litre' },
+                    { label: 'cm', value: 'cm' },
+                    { label: 'kg', value: 'kg' },
+                    { label: 'm', value: 'm' },
                   ]}
                   fullWidth
                   label={value}

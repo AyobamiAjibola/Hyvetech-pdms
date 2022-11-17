@@ -1,13 +1,13 @@
-import React, { useContext, useEffect } from "react";
-import { Form, useFormikContext } from "formik";
-import { Divider, Grid } from "@mui/material";
-import TextInputField from "../fields/TextInputField";
-import technicianModel, { ITechnicianValues } from "../models/technicianModel";
-import { LoadingButton } from "@mui/lab";
-import { Send } from "@mui/icons-material";
-import { TechniciansPageContext } from "../../../pages/technician/TechniciansPage";
-import { TechniciansPageContextProps } from "@app-interfaces";
-import SwitchField from "../fields/SwitchField";
+import React, { useContext, useEffect } from 'react';
+import { Form, useFormikContext } from 'formik';
+import { Divider, Grid } from '@mui/material';
+import TextInputField from '../fields/TextInputField';
+import technicianModel, { ITechnicianValues } from '../models/technicianModel';
+import { LoadingButton } from '@mui/lab';
+import { Send } from '@mui/icons-material';
+import { TechniciansPageContext } from '../../../pages/technician/TechniciansPage';
+import { TechniciansPageContextProps } from '@app-interfaces';
+import SwitchField from '../fields/SwitchField';
 
 const { fields } = technicianModel;
 
@@ -92,8 +92,7 @@ function CreateTechnicianForm(props: IProps) {
             type="submit"
             variant="contained"
             color="secondary"
-            endIcon={<Send />}
-          >
+            endIcon={<Send />}>
             Submit
           </LoadingButton>
         </Grid>
