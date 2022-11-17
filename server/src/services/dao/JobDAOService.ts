@@ -20,10 +20,7 @@ export default class JobDAOService implements ICrudDAO<Job> {
     this.jobRepository = jobRepository;
   }
 
-  create(
-    values: CreationAttributes<Job>,
-    options?: CreateOptions<Attributes<Job>>
-  ): Promise<Job> {
+  create(values: CreationAttributes<Job>, options?: CreateOptions<Attributes<Job>>): Promise<Job> {
     return this.jobRepository.save(values, options);
   }
 
@@ -39,18 +36,11 @@ export default class JobDAOService implements ICrudDAO<Job> {
     return this.jobRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Job>>
-  ): Promise<Job | null> {
+  findById(id: number, options?: FindOptions<Attributes<Job>>): Promise<Job | null> {
     return this.jobRepository.findById(id, options);
   }
 
-  update(
-    job: Job,
-    values: InferAttributes<Job>,
-    options: UpdateOptions<Attributes<Job>>
-  ): Promise<Job> {
+  update(job: Job, values: InferAttributes<Job>, options: UpdateOptions<Attributes<Job>>): Promise<Job> {
     return this.jobRepository.updateOne(job, values, options);
   }
 }

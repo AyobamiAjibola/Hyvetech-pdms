@@ -12,9 +12,7 @@ import {
 import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
-export default class RideShareDriverDAOService
-  implements ICrudDAO<RideShareDriver>
-{
+export default class RideShareDriverDAOService implements ICrudDAO<RideShareDriver> {
   private rideShareDriverRepository: RideShareDriverRepository;
 
   constructor(rideShareDriverRepository: RideShareDriverRepository) {
@@ -36,29 +34,19 @@ export default class RideShareDriverDAOService
     return this.rideShareDriverRepository.updateOne(district, values, options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<InferAttributes<RideShareDriver>>
-  ): Promise<RideShareDriver | null> {
+  findById(id: number, options?: FindOptions<InferAttributes<RideShareDriver>>): Promise<RideShareDriver | null> {
     return this.rideShareDriverRepository.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<RideShareDriver>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<RideShareDriver>>): Promise<void> {
     return this.rideShareDriverRepository.deleteById(id, options);
   }
 
-  findByAny(
-    options: FindOptions<InferAttributes<RideShareDriver>>
-  ): Promise<RideShareDriver | null> {
+  findByAny(options: FindOptions<InferAttributes<RideShareDriver>>): Promise<RideShareDriver | null> {
     return this.rideShareDriverRepository.findOne(options);
   }
 
-  findAll(
-    options?: FindOptions<InferAttributes<RideShareDriver>>
-  ): Promise<RideShareDriver[]> {
+  findAll(options?: FindOptions<InferAttributes<RideShareDriver>>): Promise<RideShareDriver[]> {
     return this.rideShareDriverRepository.findAll(options);
   }
 }

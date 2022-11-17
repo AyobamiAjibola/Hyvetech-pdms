@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import useAppSelector from "../../hooks/useAppSelector";
 import useAppDispatch from "../../hooks/useAppDispatch";
-import {
-  approveJobCheckListAction,
-  getJobAction,
-} from "../../store/actions/jobActions";
+import { approveJobCheckListAction, getJobAction } from "../../store/actions/jobActions";
 import { IJob } from "@app-models";
 import { useLocation } from "react-router-dom";
 import {
@@ -30,12 +27,7 @@ import {
   Typography,
 } from "@mui/material";
 import settings from "../../config/settings";
-import {
-  CheckListAnswerType,
-  CheckListQuestionType,
-  CheckListSectionType,
-  CustomHookMessage,
-} from "@app-types";
+import { CheckListAnswerType, CheckListQuestionType, CheckListSectionType, CustomHookMessage } from "@app-types";
 import checkListVectorImg from "../../assets/images/check-list-vector.png";
 import { AccessTime, LocationOn, Print, Today } from "@mui/icons-material";
 import moment from "moment";
@@ -119,20 +111,13 @@ function JobCheckListReportPage() {
     if (jobReducer.approveJobCheckListStatus === "completed") {
       setSuccess({ message: jobReducer.approveJobCheckListSuccess });
     }
-  }, [
-    jobReducer.approveJobCheckListStatus,
-    jobReducer.approveJobCheckListSuccess,
-  ]);
+  }, [jobReducer.approveJobCheckListStatus, jobReducer.approveJobCheckListSuccess]);
 
   useEffect(() => {
     if (jobReducer.approveJobCheckListStatus === "failed") {
-      if (jobReducer.approveJobCheckListError)
-        setError({ message: jobReducer.approveJobCheckListError });
+      if (jobReducer.approveJobCheckListError) setError({ message: jobReducer.approveJobCheckListError });
     }
-  }, [
-    jobReducer.approveJobCheckListStatus,
-    jobReducer.approveJobCheckListError,
-  ]);
+  }, [jobReducer.approveJobCheckListStatus, jobReducer.approveJobCheckListError]);
 
   useEffect(() => {
     return () => {
@@ -178,38 +163,20 @@ function JobCheckListReportPage() {
             alignItems="center"
           >
             <Grid item hidden={!isSuperAdmin}>
-              <Button
-                onClick={handlePrint}
-                variant="outlined"
-                color="error"
-                endIcon={<Print />}
-              >
+              <Button onClick={handlePrint} variant="outlined" color="error" endIcon={<Print />}>
                 Print
               </Button>
             </Grid>
-            <Grid
-              item
-              hidden={isTechAdmin && job.checkList.approvedByGarageAdmin}
-            >
+            <Grid item hidden={isTechAdmin && job.checkList.approvedByGarageAdmin}>
               <FormControlLabel
                 control={
-                  <Switch
-                    checked={approved}
-                    onChange={(event, checked) =>
-                      handleApproveReport(job.id, checked)
-                    }
-                  />
+                  <Switch checked={approved} onChange={(event, checked) => handleApproveReport(job.id, checked)} />
                 }
                 label="Approve"
               />
             </Grid>
           </Grid>
-          <Grid
-            container
-            spacing={{ xs: 0.5, md: 0.5 }}
-            columns={{ xs: 4, sm: 8, md: 12 }}
-            ref={containerRef}
-          >
+          <Grid container spacing={{ xs: 0.5, md: 0.5 }} columns={{ xs: 4, sm: 8, md: 12 }} ref={containerRef}>
             <style type="text/css" media="print">
               {"\
                @page { size: portrait; }\
@@ -226,8 +193,7 @@ function JobCheckListReportPage() {
                   </Grid>
                   <Grid item xs={7}>
                     <Typography variant="body1" component="div" gutterBottom>
-                      {job.vehicle.modelYear} {job.vehicle.make}{" "}
-                      {job.vehicle.model}
+                      {job.vehicle.modelYear} {job.vehicle.make} {job.vehicle.model}
                     </Typography>
                     <Typography variant="caption" component="div" gutterBottom>
                       VIN: {job.vehicle.vin}
@@ -236,17 +202,12 @@ function JobCheckListReportPage() {
                       License Plate: {job.vehicle.plateNumber}
                     </Typography>
                     <Typography variant="caption" component="div" gutterBottom>
-                      Mileage: {job.vehicle.mileageValue}/
-                      {job.vehicle.mileageUnit}
+                      Mileage: {job.vehicle.mileageValue}/{job.vehicle.mileageUnit}
                     </Typography>
                   </Grid>
                   <Grid item xs>
                     <ButtonBase
-                      onClick={() =>
-                        handleViewImage(
-                          `${settings.api.driverBaseURL}/${job.vehicle.imageUrl}`
-                        )
-                      }
+                      onClick={() => handleViewImage(`${settings.api.driverBaseURL}/${job.vehicle.imageUrl}`)}
                     >
                       <img
                         width="100%"
@@ -263,16 +224,12 @@ function JobCheckListReportPage() {
                     mt: 4,
                     p: 2,
                     bgcolor: "#FFEAAB",
-                    color: (theme) =>
-                      theme.palette.mode === "dark" ? "#263238" : "#000000",
+                    color: (theme) => (theme.palette.mode === "dark" ? "#263238" : "#000000"),
                   }}
                 >
                   <Grid item container xs={12} spacing={1}>
                     <Grid item xs={2} alignSelf="center">
-                      <Avatar
-                        sx={{ width: 24, height: 24 }}
-                        src={checkListVectorImg}
-                      />
+                      <Avatar sx={{ width: 24, height: 24 }} src={checkListVectorImg} />
                     </Grid>
                     <Grid item xs={6} alignSelf="center">
                       <Typography variant="subtitle2" component="p">
@@ -280,22 +237,14 @@ function JobCheckListReportPage() {
                       </Typography>
                     </Grid>
                     <Grid item>
-                      <Typography variant="h4">
-                        {computeScore(job.checkList.sections)}%
-                      </Typography>
+                      <Typography variant="h4">{computeScore(job.checkList.sections)}%</Typography>
                     </Grid>
                   </Grid>
                 </Paper>
                 <Divider flexItem orientation="horizontal" sx={{ mt: 4 }} />
                 <Grid item container xs={12} spacing={1}>
                   <Grid item xs alignSelf="center">
-                    <ButtonBase
-                      onClick={() =>
-                        handleViewImage(
-                          `${settings.api.baseURL}/${job.partner.logo}`
-                        )
-                      }
-                    >
+                    <ButtonBase onClick={() => handleViewImage(`${settings.api.baseURL}/${job.partner.logo}`)}>
                       <img
                         src={`${settings.api.baseURL}/${job.partner.logo}`}
                         crossOrigin="anonymous"
@@ -311,9 +260,7 @@ function JobCheckListReportPage() {
                           <ListItemIcon>
                             <AccessTime />
                           </ListItemIcon>
-                          <ListItemText
-                            primary={moment(job.jobDate).format("LT")}
-                          />
+                          <ListItemText primary={moment(job.jobDate).format("LT")} />
                         </ListItemButton>
                       </ListItem>
                       <ListItem disablePadding>
@@ -321,9 +268,7 @@ function JobCheckListReportPage() {
                           <ListItemIcon>
                             <Today />
                           </ListItemIcon>
-                          <ListItemText
-                            primary={moment(job.jobDate).format("LL")}
-                          />
+                          <ListItemText primary={moment(job.jobDate).format("LL")} />
                         </ListItemButton>
                       </ListItem>
                       <ListItem disablePadding>
@@ -343,11 +288,7 @@ function JobCheckListReportPage() {
                   <Grid item xs={12} container spacing={1}>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() =>
-                          handleViewImage(
-                            `${settings.api.baseURL}/${job.vehicle.frontImageUrl}`
-                          )
-                        }
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`)}
                       >
                         <img
                           alt="front"
@@ -360,11 +301,7 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() =>
-                          handleViewImage(
-                            `${settings.api.baseURL}/${job.vehicle.rearImageUrl}`
-                          )
-                        }
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`)}
                       >
                         <img
                           alt="rear"
@@ -377,11 +314,7 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() =>
-                          handleViewImage(
-                            `${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`
-                          )
-                        }
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`)}
                       >
                         <img
                           alt="right"
@@ -394,11 +327,7 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() =>
-                          handleViewImage(
-                            `${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`
-                          )
-                        }
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`)}
                       >
                         <img
                           alt="left"
@@ -411,11 +340,7 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() =>
-                          handleViewImage(
-                            `${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`
-                          )
-                        }
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`)}
                       >
                         <img
                           alt="engine bay"
@@ -429,9 +354,7 @@ function JobCheckListReportPage() {
                     <Grid item xs={4}>
                       <ButtonBase
                         onClick={() =>
-                          handleViewImage(
-                            `${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`
-                          )
+                          handleViewImage(`${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`)
                         }
                       >
                         <img
@@ -441,9 +364,7 @@ function JobCheckListReportPage() {
                           width="100%"
                         />
                       </ButtonBase>
-                      <Typography variant="caption">
-                        Instrument Cluster
-                      </Typography>
+                      <Typography variant="caption">Instrument Cluster</Typography>
                     </Grid>
                   </Grid>
                 )}
@@ -469,11 +390,7 @@ function JobCheckListReportPage() {
                               <Stack>
                                 <Typography>{question.question}</Typography>
                                 {question.note && (
-                                  <Typography
-                                    gutterBottom
-                                    variant="caption"
-                                    sx={{ color: "#F80000" }}
-                                  >
+                                  <Typography gutterBottom variant="caption" sx={{ color: "#F80000" }}>
                                     {question.text}
                                   </Typography>
                                 )}
@@ -481,20 +398,13 @@ function JobCheckListReportPage() {
                                   {!question.images
                                     ? null
                                     : question.images
-                                        .filter(
-                                          (img) =>
-                                            img.questionId === question.id
-                                        )
+                                        .filter((img) => img.questionId === question.id)
                                         .map((image, index) => {
                                           return (
                                             <Box
                                               sx={{ cursor: "pointer" }}
                                               key={index}
-                                              onClick={() =>
-                                                handleViewImage(
-                                                  `${settings.api.baseURL}/${image.url}`
-                                                )
-                                              }
+                                              onClick={() => handleViewImage(`${settings.api.baseURL}/${image.url}`)}
                                             >
                                               <img
                                                 alt={image.title}
@@ -507,10 +417,7 @@ function JobCheckListReportPage() {
                                         })}
                                 </Stack>
                               </Stack>
-                              <Chip
-                                label={answer}
-                                sx={{ bgcolor: color, color: "white" }}
-                              />
+                              <Chip label={answer} sx={{ bgcolor: color, color: "white" }} />
                             </CardContent>
                             <Divider flexItem orientation="horizontal" />
                           </React.Fragment>
@@ -529,15 +436,7 @@ function JobCheckListReportPage() {
         title=""
         size="sm"
         fullWidth
-        Content={
-          <img
-            width="100%"
-            height="100%"
-            src={imageUrl}
-            alt="Driver license"
-            crossOrigin="anonymous"
-          />
-        }
+        Content={<img width="100%" height="100%" src={imageUrl} alt="Driver license" crossOrigin="anonymous" />}
         onClose={() => setViewImage(false)}
       />
       <AppAlert

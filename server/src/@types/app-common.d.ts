@@ -89,6 +89,7 @@ export declare namespace appCommonTypes {
   type AuthPayload = {
     permissions: IPermission[];
     userId: number;
+    partnerId?: number;
     customer?: number;
     pass?: string;
   };
@@ -102,6 +103,39 @@ export declare namespace appCommonTypes {
   };
 
   type QueueMailTypes = "DEFAULT" | "WEBSITE" | "BOOKING" | "CUSTOMER";
+
+  export type IPartWarranty = { warranty: string; interval: string };
+  export type IPartQuantity = { quantity: string; unit: string };
+
+  export interface IPart {
+    name: string;
+    warranty: IPartWarranty;
+    quantity: IPartQuantity;
+    price: string;
+  }
+
+  export interface ILabour {
+    title: string;
+    cost: string;
+  }
+
+  export interface IEstimateValues {
+    parts: IPart[];
+    labours: ILabour[];
+    tax: string;
+    vin: string;
+    make: string;
+    model: string;
+    modelYear: string;
+    plateNumber: string;
+    mileage: { count: string; unit: string };
+    address: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    depositAmount: string;
+    jobDuration: { count: string; interval: string };
+  }
 
   interface DatabaseConfig {
     host?: string;
@@ -169,11 +203,7 @@ export declare namespace appCommonTypes {
     results?: T[];
   }
 
-  type AsyncWrapper = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => Promise<void>;
+  type AsyncWrapper = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
   interface RouteEndpointConfig {
     name: string;

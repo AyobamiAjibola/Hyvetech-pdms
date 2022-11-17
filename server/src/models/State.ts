@@ -1,18 +1,5 @@
-import {
-  AutoIncrement,
-  Column,
-  DataType,
-  HasMany,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { AutoIncrement, Column, DataType, HasMany, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import District from "./District";
 
 @Table({
@@ -20,10 +7,7 @@ import District from "./District";
 
   tableName: "states",
 })
-export default class State extends Model<
-  InferAttributes<State>,
-  InferCreationAttributes<State>
-> {
+export default class State extends Model<InferAttributes<State>, InferCreationAttributes<State>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "state_id", allowNull: false })

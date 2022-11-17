@@ -34,29 +34,19 @@ export default class VehicleFaultDAOService implements ICrudDAO<VehicleFault> {
     return this.carFaultRepository.updateOne(vehicleFault, values, options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<InferAttributes<VehicleFault>>
-  ): Promise<VehicleFault | null> {
+  findById(id: number, options?: FindOptions<InferAttributes<VehicleFault>>): Promise<VehicleFault | null> {
     return this.carFaultRepository.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<VehicleFault>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<VehicleFault>>): Promise<void> {
     return this.carFaultRepository.deleteById(id, options);
   }
 
-  findByAny(
-    options: FindOptions<InferAttributes<VehicleFault>>
-  ): Promise<VehicleFault | null> {
+  findByAny(options: FindOptions<InferAttributes<VehicleFault>>): Promise<VehicleFault | null> {
     return this.carFaultRepository.findOne(options);
   }
 
-  findAll(
-    options?: FindOptions<InferAttributes<VehicleFault>>
-  ): Promise<VehicleFault[]> {
+  findAll(options?: FindOptions<InferAttributes<VehicleFault>>): Promise<VehicleFault[]> {
     return this.carFaultRepository.findAll(options);
   }
 }

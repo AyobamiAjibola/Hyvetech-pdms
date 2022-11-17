@@ -14,11 +14,7 @@ const logger = AppLogger.init(authenticateRoute.name).logger;
 const userRepo = new UserRepository();
 const customerRepo = new CustomerRepository();
 
-export default async function authenticateRoute(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export default async function authenticateRoute(req: Request, res: Response, next: NextFunction) {
   const headers = req.headers;
   const cookie = headers.cookie;
   const authorization = headers.authorization;
@@ -30,12 +26,7 @@ export default async function authenticateRoute(
     if (!name.startsWith("_admin_auth")) {
       logger.error("malformed authorization: '_admin_auth' missing");
 
-      return next(
-        CustomAPIError.response(
-          HttpStatus.UNAUTHORIZED.value,
-          HttpStatus.UNAUTHORIZED.code
-        )
-      );
+      return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
     }
 
     jwt = token.trim();
@@ -45,24 +36,14 @@ export default async function authenticateRoute(
     if (!name.startsWith("Bearer")) {
       logger.error("malformed token: no Bearer in header");
 
-      return next(
-        CustomAPIError.response(
-          HttpStatus.UNAUTHORIZED.value,
-          HttpStatus.UNAUTHORIZED.code
-        )
-      );
+      return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
     }
 
     jwt = token.trim();
   } else {
     logger.error("Cookie or Authorization not in header");
 
-    return next(
-      CustomAPIError.response(
-        HttpStatus.UNAUTHORIZED.value,
-        HttpStatus.UNAUTHORIZED.code
-      )
-    );
+    return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
   }
 
   const key = settings.jwt.key;
@@ -73,12 +54,7 @@ export default async function authenticateRoute(
     const user = await userRepo.findById(payload.userId);
 
     if (!user) {
-      return next(
-        CustomAPIError.response(
-          HttpStatus.UNAUTHORIZED.value,
-          HttpStatus.UNAUTHORIZED.code
-        )
-      );
+      return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
     }
   }
 
@@ -86,12 +62,7 @@ export default async function authenticateRoute(
     const customer = await customerRepo.findById(payload.customer);
 
     if (!customer) {
-      return next(
-        CustomAPIError.response(
-          HttpStatus.UNAUTHORIZED.value,
-          HttpStatus.UNAUTHORIZED.code
-        )
-      );
+      return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
     }
   }
 
@@ -99,13 +70,7 @@ export default async function authenticateRoute(
 
   const authorised = await authorizeRoute(req);
 
-  if (!authorised)
-    return next(
-      CustomAPIError.response(
-        HttpStatus.FORBIDDEN.value,
-        HttpStatus.FORBIDDEN.code
-      )
-    );
+  if (!authorised) return next(CustomAPIError.response(HttpStatus.FORBIDDEN.value, HttpStatus.FORBIDDEN.code));
 
   next();
 }

@@ -1,31 +1,14 @@
-import {
-  AutoIncrement,
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 
 import Appointment from "./Appointment";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 
 @Table({
   timestamps: true,
 
   tableName: "vehicle_faults",
 })
-export default class VehicleFault extends Model<
-  InferAttributes<VehicleFault>,
-  InferCreationAttributes<VehicleFault>
-> {
+export default class VehicleFault extends Model<InferAttributes<VehicleFault>, InferCreationAttributes<VehicleFault>> {
   @PrimaryKey
   @AutoIncrement
   @Column({

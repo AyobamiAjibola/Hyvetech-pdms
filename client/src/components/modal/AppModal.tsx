@@ -1,12 +1,5 @@
 import React, { ReactNode } from "react";
-import {
-  AppBar,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Dialog, DialogContent, DialogTitle, IconButton, Toolbar } from "@mui/material";
 import TransitionUp from "../transitions/TransitionUp";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -36,12 +29,7 @@ function AppModal(props: IProps) {
       >
         <AppBar sx={{ position: "relative" }}>
           <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={props.onClose}
-              aria-label="close"
-            >
+            <IconButton edge="start" color="inherit" onClick={props.onClose} aria-label="close">
               <CloseIcon />
             </IconButton>
           </Toolbar>

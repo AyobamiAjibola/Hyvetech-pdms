@@ -1,9 +1,5 @@
 import { useEffect } from "react";
-import {
-  getCurrentDateAction,
-  getTimeslotsAction,
-  initCurrentTimeSlotsAction,
-} from "../store/actions/timeSlotActions";
+import { getCurrentDateAction, getTimeslotsAction, initCurrentTimeSlotsAction } from "../store/actions/timeSlotActions";
 import useAppSelector from "./useAppSelector";
 import useAppDispatch from "./useAppDispatch";
 import moment from "moment";

@@ -15,10 +15,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import {
-  IDriversFilterData,
-  RideShareDriverPageContextProps,
-} from "@app-interfaces";
+import { IDriversFilterData, RideShareDriverPageContextProps } from "@app-interfaces";
 import { getDriverAction } from "../../../store/actions/rideShareActions";
 import { IRideShareDriver } from "@app-models";
 import AppLoader from "../../loader/AppLoader";
@@ -31,8 +28,7 @@ const filterOptions = createFilterOptions({
   stringify: (option: IDriversFilterData) => `${option.query}`,
 });
 
-export const RideShareDriverPageContext =
-  createContext<RideShareDriverPageContextProps | null>(null);
+export const RideShareDriverPageContext = createContext<RideShareDriverPageContextProps | null>(null);
 
 function RideShareDriver() {
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
@@ -67,10 +63,7 @@ function RideShareDriver() {
     if (partnerReducer.getDriversFilterDataStatus === "completed") {
       setOptions(partnerReducer.driversFilterData);
     }
-  }, [
-    partnerReducer.driversFilterData,
-    partnerReducer.getDriversFilterDataStatus,
-  ]);
+  }, [partnerReducer.driversFilterData, partnerReducer.getDriversFilterDataStatus]);
 
   useEffect(() => {
     if (rideShareReducer.getDriverStatus === "completed") {
@@ -102,9 +95,7 @@ function RideShareDriver() {
               value={value}
               loading={partnerReducer.getDriversFilterDataStatus === "loading"}
               getOptionLabel={(option) => option.fullName}
-              isOptionEqualToValue={(option, value) =>
-                option.fullName === value.fullName
-              }
+              isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
               onChange={(event: any, newValue: IDriversFilterData | null) => {
                 setValue(newValue);
                 handleGetDriverInfo(newValue?.id);
@@ -121,8 +112,7 @@ function RideShareDriver() {
                     ...props.InputProps,
                     endAdornment: (
                       <React.Fragment>
-                        {partnerReducer.getDriversFilterDataStatus ===
-                        "loading" ? (
+                        {partnerReducer.getDriversFilterDataStatus === "loading" ? (
                           <CircularProgress color="inherit" size={20} />
                         ) : null}
                         {props.InputProps.endAdornment}

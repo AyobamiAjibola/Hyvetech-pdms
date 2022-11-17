@@ -1,18 +1,5 @@
-import {
-  AutoIncrement,
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-} from "sequelize/types";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize/types";
 import Vehicle from "./Vehicle";
 import { NonAttribute } from "sequelize";
 import Technician from "./Technician";
@@ -21,10 +8,7 @@ import RideShareDriverSubscription from "./RideShareDriverSubscription";
 import CustomerSubscription from "./CustomerSubscription";
 
 @Table({ tableName: "jobs", timestamps: true })
-export default class Job extends Model<
-  InferAttributes<Job>,
-  InferCreationAttributes<Job>
-> {
+export default class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "job_id", allowNull: false })

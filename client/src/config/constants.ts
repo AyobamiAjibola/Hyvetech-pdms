@@ -7,8 +7,7 @@ export const LOCAL_STORAGE = {
   timeSlot: "_time_slot",
   permissions: "_permissions",
 };
-export const PASSWORD_PATTERN =
-  "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$";
+export const PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$";
 
 export const MONTHS = [
   "January",

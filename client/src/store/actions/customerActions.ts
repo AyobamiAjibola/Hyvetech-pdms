@@ -11,38 +11,25 @@ const GET_CUSTOMER_APPOINTMENTS = "customer:GET_CUSTOMER_APPOINTMENTS";
 const GET_CUSTOMER_TRANSACTIONS = "customer:GET_CUSTOMER_TRANSACTIONS";
 const API_ROOT = settings.api.rest;
 
-export const getCustomersAction = asyncThunkWrapper<any, void>(
-  GET_CUSTOMERS,
-  async () => {
-    const response = await axiosClient.get(`${API_ROOT}/customers`);
-    return response.data;
-  }
-);
+export const getCustomersAction = asyncThunkWrapper<any, void>(GET_CUSTOMERS, async () => {
+  const response = await axiosClient.get(`${API_ROOT}/customers`);
+  return response.data;
+});
 
-export const getCustomerAction = asyncThunkWrapper<
-  ApiResponseSuccess<ICustomer>,
-  number
->(GET_CUSTOMER, async (id) => {
+export const getCustomerAction = asyncThunkWrapper<ApiResponseSuccess<ICustomer>, number>(GET_CUSTOMER, async (id) => {
   const response = await axiosClient.get(`${API_ROOT}/customer/${id}`);
   return response.data;
 });
 
-export const getCustomerVehiclesAction = asyncThunkWrapper<any, number>(
-  GET_CUSTOMER_VEHICLES,
-  async (id: number) => {
-    const response = await axiosClient.get(
-      `${API_ROOT}/customers/${id}/vehicles`
-    );
-    return response.data;
-  }
-);
+export const getCustomerVehiclesAction = asyncThunkWrapper<any, number>(GET_CUSTOMER_VEHICLES, async (id: number) => {
+  const response = await axiosClient.get(`${API_ROOT}/customers/${id}/vehicles`);
+  return response.data;
+});
 
 export const getCustomerAppointmentsAction = asyncThunkWrapper<any, number>(
   GET_CUSTOMER_APPOINTMENTS,
   async (id: number) => {
-    const response = await axiosClient.get(
-      `${API_ROOT}/customers/${id}/appointments`
-    );
+    const response = await axiosClient.get(`${API_ROOT}/customers/${id}/appointments`);
     return response.data;
   }
 );
@@ -50,9 +37,7 @@ export const getCustomerAppointmentsAction = asyncThunkWrapper<any, number>(
 export const getCustomerTransactionsAction = asyncThunkWrapper<any, number>(
   GET_CUSTOMER_TRANSACTIONS,
   async (id: number) => {
-    const response = await axiosClient.get(
-      `${API_ROOT}/customers/${id}/transactions`
-    );
+    const response = await axiosClient.get(`${API_ROOT}/customers/${id}/transactions`);
     return response.data;
   }
 );

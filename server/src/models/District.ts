@@ -9,12 +9,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Discount from "./Discount";
 import DistrictDiscount from "./DistrictDiscount";
 import State from "./State";
@@ -24,10 +19,7 @@ import State from "./State";
 
   tableName: "districts",
 })
-export default class District extends Model<
-  InferAttributes<District>,
-  InferCreationAttributes<District>
-> {
+export default class District extends Model<InferAttributes<District>, InferCreationAttributes<District>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "district_id", allowNull: false })
@@ -37,9 +29,7 @@ export default class District extends Model<
   declare name: string;
 
   @BelongsToMany(() => Discount, () => DistrictDiscount)
-  declare discounts: NonAttribute<
-    Array<Discount & { DistrictDiscount: DistrictDiscount }>
-  >;
+  declare discounts: NonAttribute<Array<Discount & { DistrictDiscount: DistrictDiscount }>>;
 
   @BelongsTo(() => State, { onDelete: "cascade" })
   declare state: NonAttribute<State>;

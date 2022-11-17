@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Box, Chip, Divider, Stack, Typography } from "@mui/material";
+import { Button, Chip, DialogActions, DialogContentText, Divider, Stack, Typography } from "@mui/material";
 import { AppContext } from "../../context/AppContextProvider";
 import { AppContextProps } from "@app-interfaces";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,11 @@ import useDriver from "../../hooks/useDriver";
 import AppDataGrid from "../../components/tables/AppDataGrid";
 import moment from "moment";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Visibility } from "@mui/icons-material";
+import { Delete, Visibility } from "@mui/icons-material";
+import AppModal from "../../components/modal/AppModal";
+import { MESSAGES } from "../../config/constants";
+import AppLoader from "../../components/loader/AppLoader";
+import AppAlert from "../../components/alerts/AppAlert";
 
 export default function DriversPage() {
   const { setDriver } = useContext(AppContext) as AppContextProps;
@@ -21,11 +25,8 @@ export default function DriversPage() {
     navigate(`/drivers/${driver.id}`, { state: { driver } });
   };
 
-  const handleDelete = () => {
-    driver.setShowDelete(true);
-  };
   return (
-    <Box>
+    <React.Fragment>
       <Typography variant="h4" gutterBottom>
         Drivers
       </Typography>
@@ -41,7 +42,7 @@ export default function DriversPage() {
             loading={driver.loading}
             rows={driver.rows}
             columns={getTableColumn({
-              onDelete: handleDelete,
+              onDelete: driver.onDelete,
               onView: handleView,
             })}
             showToolbar
@@ -52,11 +53,41 @@ export default function DriversPage() {
           />
         </Stack>
       </Stack>
-    </Box>
+      <AppModal
+        fullWidth
+        show={driver.showDelete}
+        Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => driver.setShowDelete(false)}>Disagree</Button>
+            <Button onClick={driver.handleDelete}>Agree</Button>
+          </DialogActions>
+        }
+        onClose={() => driver.setShowDelete(false)}
+      />
+      <AppAlert
+        alertType="success"
+        show={undefined !== driver.success}
+        message={driver.success?.message}
+        onClose={() => driver.setSuccess(undefined)}
+      />
+      <AppAlert
+        alertType="error"
+        show={undefined !== driver.error}
+        message={driver.error?.message}
+        onClose={() => driver.setError(undefined)}
+      />
+      <AppLoader show={driver.loading} />
+    </React.Fragment>
   );
 }
 
-const getTableColumn = (options?: any) =>
+interface IColumn {
+  onDelete: (driver: IRideShareDriver) => void;
+  onView: (driver: IRideShareDriver) => void;
+}
+
+const getTableColumn = (options: IColumn) =>
   [
     {
       field: "id",
@@ -145,6 +176,13 @@ const getTableColumn = (options?: any) =>
           key={0}
           icon={<Visibility sx={{ color: "dodgerblue" }} />}
           onClick={() => options.onView(params.row)}
+          label="View"
+          showInMenu={false}
+        />,
+        <GridActionsCellItem
+          key={0}
+          icon={<Delete sx={{ color: "orangered" }} />}
+          onClick={() => options.onDelete(params.row)}
           label="View"
           showInMenu={false}
         />,

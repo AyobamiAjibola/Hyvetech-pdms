@@ -25,9 +25,7 @@ const MenuProps = {
 function getStyles(name: string, personName: readonly string[], theme: Theme) {
   return {
     fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
+      personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
   };
 }
 
@@ -38,9 +36,7 @@ interface IProps {
   helperStyle?: { [p: string]: string };
   fullWidth?: boolean;
   size?: "small" | "medium";
-  onChange: (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   value: string[];
   name: string;
@@ -58,10 +54,7 @@ export default function WorkingDaysSelectField(props: IProps) {
     const {
       target: { value },
     } = event;
-    setFieldValue(
-      props.name,
-      typeof value === "string" ? value.split(",") : value
-    );
+    setFieldValue(props.name, typeof value === "string" ? value.split(",") : value);
   };
 
   return (
@@ -79,9 +72,7 @@ export default function WorkingDaysSelectField(props: IProps) {
           multiple
           value={props.value}
           onChange={handleChange}
-          input={
-            <OutlinedInput id="select-multiple-chip" label={props.label} />
-          }
+          input={<OutlinedInput id="select-multiple-chip" label={props.label} />}
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
               {selected.map((value) => (
@@ -92,11 +83,7 @@ export default function WorkingDaysSelectField(props: IProps) {
           MenuProps={MenuProps}
         >
           {props.options.map((name) => (
-            <MenuItem
-              key={name}
-              value={name}
-              style={getStyles(name, props.value, theme)}
-            >
+            <MenuItem key={name} value={name} style={getStyles(name, props.value, theme)}>
               {name}
             </MenuItem>
           ))}

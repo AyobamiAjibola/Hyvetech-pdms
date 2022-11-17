@@ -106,10 +106,7 @@ const schema = [
       .matches(new RegExp(PASSWORD_PATTERN), fields.password.error.invalid)
       .label(fields.password.label),
     [fields.confirmPassword.name]: Yup.string()
-      .oneOf(
-        [Yup.ref(fields.password.name), null],
-        fields.confirmPassword.error.invalid
-      )
+      .oneOf([Yup.ref(fields.password.name), null], fields.confirmPassword.error.invalid)
       .label(fields.confirmPassword.label)
       .required(fields.confirmPassword.error.required),
     [fields.active.name]: Yup.boolean()

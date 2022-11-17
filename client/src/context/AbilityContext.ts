@@ -14,9 +14,7 @@ store.subscribe(() => {
 
   let permissions: IPermission[];
 
-  const localPermissions = JSON.parse(
-    localStorage.getItem(LOCAL_STORAGE.permissions) as string
-  );
+  const localPermissions = JSON.parse(localStorage.getItem(LOCAL_STORAGE.permissions) as string);
 
   if (null !== localPermissions) {
     permissions = localPermissions as IPermission[];

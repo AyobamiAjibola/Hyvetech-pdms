@@ -8,12 +8,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 
 import Plan from "./Plan";
 import ServiceSubscription from "./ServiceSubscription";
@@ -31,10 +26,7 @@ export const $subscriptionSchema = {
   tableName: "subscriptions",
   timestamps: true,
 })
-export default class Subscription extends Model<
-  InferAttributes<Subscription>,
-  InferCreationAttributes<Subscription>
-> {
+export default class Subscription extends Model<InferAttributes<Subscription>, InferCreationAttributes<Subscription>> {
   @PrimaryKey
   @AutoIncrement
   @Column({
@@ -53,9 +45,7 @@ export default class Subscription extends Model<
   declare slug: string;
 
   @BelongsToMany(() => Service, () => ServiceSubscription)
-  declare services: NonAttribute<
-    Array<Service & { ServiceSubscription: ServiceSubscription }>
-  >;
+  declare services: NonAttribute<Array<Service & { ServiceSubscription: ServiceSubscription }>>;
 
   @HasMany(() => Plan, { onDelete: "cascade" })
   declare plans: NonAttribute<Plan[]>;

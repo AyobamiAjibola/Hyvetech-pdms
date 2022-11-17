@@ -25,10 +25,7 @@ export default function useVINDecoder() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (
-        values.vin.length &&
-        (values.vin.length < 17 || values.vin.length > 17)
-      ) {
+      if (values.vin.length && (values.vin.length < 17 || values.vin.length > 17)) {
         setFieldError("vin", "VIN is invalid");
         setFieldTouched("vin", true);
       }
@@ -48,9 +45,7 @@ export default function useVINDecoder() {
 
   useEffect(() => {
     if (vehicleReducer.getVehicleVINStatus === "completed") {
-      const tempVehicleDetails = JSON.parse(
-        JSON.stringify([...vehicleReducer.vehicleVINDetails])
-      );
+      const tempVehicleDetails = JSON.parse(JSON.stringify([...vehicleReducer.vehicleVINDetails]));
 
       tempVehicleDetails.forEach((detail: IVINDecoderSchema) => {
         if (detail.label === "engineCylinders") {
@@ -70,22 +65,14 @@ export default function useVINDecoder() {
 
   useEffect(() => {
     if (vehicleReducer.getVehicleVINStatus === "failed") {
-      if (
-        vehicleReducer.getVehicleVINError ===
-        "Cannot read properties of undefined (reading 'map')"
-      ) {
+      if (vehicleReducer.getVehicleVINError === "Cannot read properties of undefined (reading 'map')") {
         setFieldError("vin", "VIN is invalid");
       } else {
         setFieldError("vin", vehicleReducer.getVehicleVINError);
       }
       setFieldTouched("vin", true);
     }
-  }, [
-    setFieldError,
-    setFieldTouched,
-    vehicleReducer.getVehicleVINError,
-    vehicleReducer.getVehicleVINStatus,
-  ]);
+  }, [setFieldError, setFieldTouched, vehicleReducer.getVehicleVINError, vehicleReducer.getVehicleVINStatus]);
 
   useEffect(() => {
     return () => {

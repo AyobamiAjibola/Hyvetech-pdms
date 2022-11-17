@@ -4,28 +4,15 @@ import { Delete, Visibility } from "@mui/icons-material";
 import { IPaymentPlan } from "@app-models";
 import AppDataGrid from "../../tables/AppDataGrid";
 import useAppSelector from "../../../hooks/useAppSelector";
-import {
-  Button,
-  DialogActions,
-  DialogContentText,
-  Grid,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@mui/material";
+import { Button, DialogActions, DialogContentText, Grid, TableBody, TableCell, TableRow } from "@mui/material";
 import { CustomHookMessage } from "@app-types";
 import { useParams } from "react-router-dom";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import AppModal from "../../modal/AppModal";
 import { Formik, FormikHelpers } from "formik";
-import paymentPlanModel, {
-  IPaymentPlanModel,
-} from "../../forms/models/paymentPlanModel";
+import paymentPlanModel, { IPaymentPlanModel } from "../../forms/models/paymentPlanModel";
 import AddPaymentPlanForm from "../../forms/partner/AddPaymentPlanForm";
-import {
-  addPaymentPlanAction,
-  deletePaymentPlanAction,
-} from "../../../store/actions/partnerActions";
+import { addPaymentPlanAction, deletePaymentPlanAction } from "../../../store/actions/partnerActions";
 import AppAlert from "../../alerts/AppAlert";
 import moment from "moment";
 import capitalize from "capitalize";
@@ -55,20 +42,13 @@ function PaymentPlans() {
     if (partnerReducer.deletePaymentPlanStatus === "completed") {
       setSuccess({ message: partnerReducer.deletePaymentPlanSuccess });
     }
-  }, [
-    partnerReducer.deletePaymentPlanStatus,
-    partnerReducer.deletePaymentPlanSuccess,
-  ]);
+  }, [partnerReducer.deletePaymentPlanStatus, partnerReducer.deletePaymentPlanSuccess]);
 
   useEffect(() => {
     if (partnerReducer.deletePaymentPlanStatus === "failed") {
-      if (partnerReducer.deletePaymentPlanError)
-        setError({ message: partnerReducer.deletePaymentPlanError });
+      if (partnerReducer.deletePaymentPlanError) setError({ message: partnerReducer.deletePaymentPlanError });
     }
-  }, [
-    partnerReducer.deletePaymentPlanStatus,
-    partnerReducer.deletePaymentPlanError,
-  ]);
+  }, [partnerReducer.deletePaymentPlanStatus, partnerReducer.deletePaymentPlanError]);
 
   useEffect(() => {
     return () => {
@@ -84,10 +64,7 @@ function PaymentPlans() {
     setOpenAddPaymentPlan(false);
   };
 
-  const handleAddPaymentPlan = (
-    values: IPaymentPlanModel,
-    formikHelper: FormikHelpers<IPaymentPlanModel>
-  ) => {
+  const handleAddPaymentPlan = (values: IPaymentPlanModel, formikHelper: FormikHelpers<IPaymentPlanModel>) => {
     const data = {
       name: values.name,
       discount: values.discount,
@@ -134,12 +111,7 @@ function PaymentPlans() {
         <Grid container justifyContent="space-between" mb={1}>
           <Grid item />
           <Grid item>
-            <Button
-              onClick={handleOpenAddPaymentPlan}
-              size="small"
-              variant="contained"
-              color="success"
-            >
+            <Button onClick={handleOpenAddPaymentPlan} size="small" variant="contained" color="success">
               Add
             </Button>
           </Grid>

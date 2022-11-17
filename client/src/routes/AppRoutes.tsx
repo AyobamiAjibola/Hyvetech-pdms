@@ -10,13 +10,7 @@ function AppRoutes() {
       <Routes>
         {routes.map((route, index) => {
           if (route.isPublic) {
-            return (
-              <Route
-                key={index}
-                path={route.path}
-                element={<route.Element />}
-              />
-            );
+            return <Route key={index} path={route.path} element={<route.Element />} />;
           }
           return (
             <Route

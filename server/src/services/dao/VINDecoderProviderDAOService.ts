@@ -29,16 +29,11 @@ export interface VINData {
   value: string;
 }
 
-export default class VINDecoderProviderDAOService
-  implements ICrudDAO<VINDecoderProvider>
-{
+export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoderProvider> {
   private vinDecoderProviderRepository: VINDecoderProviderRepository;
   private vinRepository: VINRepository;
 
-  constructor(
-    vinDecoderProviderRepository: VINDecoderProviderRepository,
-    vinRepository: VINRepository
-  ) {
+  constructor(vinDecoderProviderRepository: VINDecoderProviderRepository, vinRepository: VINRepository) {
     this.vinDecoderProviderRepository = vinDecoderProviderRepository;
     this.vinRepository = vinRepository;
   }
@@ -58,36 +53,22 @@ export default class VINDecoderProviderDAOService
     values: InferAttributes<VINDecoderProvider>,
     options: UpdateOptions<InferAttributes<VINDecoderProvider>>
   ): Promise<VINDecoderProvider> {
-    return this.vinDecoderProviderRepository.updateOne(
-      vinDecoderProvider,
-      values,
-      options
-    );
+    return this.vinDecoderProviderRepository.updateOne(vinDecoderProvider, values, options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<InferAttributes<VINDecoderProvider>>
-  ): Promise<VINDecoderProvider | null> {
+  findById(id: number, options?: FindOptions<InferAttributes<VINDecoderProvider>>): Promise<VINDecoderProvider | null> {
     return this.vinDecoderProviderRepository.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<VINDecoderProvider>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<VINDecoderProvider>>): Promise<void> {
     return this.vinDecoderProviderRepository.deleteById(id, options);
   }
 
-  findByAny(
-    options: FindOptions<InferAttributes<VINDecoderProvider>>
-  ): Promise<VINDecoderProvider | null> {
+  findByAny(options: FindOptions<InferAttributes<VINDecoderProvider>>): Promise<VINDecoderProvider | null> {
     return this.vinDecoderProviderRepository.findOne(options);
   }
 
-  findAll(
-    options?: FindOptions<InferAttributes<VINDecoderProvider>>
-  ): Promise<VINDecoderProvider[]> {
+  findAll(options?: FindOptions<InferAttributes<VINDecoderProvider>>): Promise<VINDecoderProvider[]> {
     return this.vinDecoderProviderRepository.findAll(options);
   }
 
@@ -113,9 +94,7 @@ export default class VINDecoderProviderDAOService
         });
       });
 
-      result = result.filter((detail: any) =>
-        VIN_FILTER_CONSTRAINTS.includes(detail.label)
-      );
+      result = result.filter((detail: any) => VIN_FILTER_CONSTRAINTS.includes(detail.label));
 
       return result;
     }
@@ -139,9 +118,7 @@ export default class VINDecoderProviderDAOService
         });
       });
 
-      result = result.filter((detail: any) =>
-        VIN_FILTER_CONSTRAINTS.includes(detail.label)
-      );
+      result = result.filter((detail: any) => VIN_FILTER_CONSTRAINTS.includes(detail.label));
 
       let temp = [...result];
 
@@ -156,10 +133,7 @@ export default class VINDecoderProviderDAOService
       const apiPrefix = provider.apiPrefix;
 
       const id = "decode";
-      const hash = crypto
-        .createHash("sha1")
-        .update(`${vin}|${id}|${apiKey}|${apiSecret}`)
-        .digest("hex");
+      const hash = crypto.createHash("sha1").update(`${vin}|${id}|${apiKey}|${apiSecret}`).digest("hex");
 
       const controlSum = hash.substring(0, 10);
       url = `${apiPrefix}/${apiKey}/${controlSum}/decode/${vin}.json`;

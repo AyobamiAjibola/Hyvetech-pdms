@@ -18,32 +18,14 @@ interface IProps {
 const { fields } = partnerModel;
 
 function GarageSettingsForm(props: IProps) {
-  const { values, handleChange, setFieldValue } =
-    useFormikContext<IGarageSettings>();
+  const { values, handleChange, setFieldValue } = useFormikContext<IGarageSettings>();
 
   return (
     <Form>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        <Grid
-          item
-          container
-          xs={12}
-          justifyContent="space-evenly"
-          alignItems="center"
-          spacing={2}
-          mb={3}
-        >
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+        <Grid item container xs={12} justifyContent="space-evenly" alignItems="center" spacing={2} mb={3}>
           <Grid item>
-            <Button
-              endIcon={<PhotoCamera />}
-              color="primary"
-              aria-label="upload picture"
-              component="label"
-            >
+            <Button endIcon={<PhotoCamera />} color="primary" aria-label="upload picture" component="label">
               upload logo
               <input
                 hidden
@@ -60,14 +42,7 @@ function GarageSettingsForm(props: IProps) {
             </Button>
           </Grid>
           <Grid item xs>
-            {values.logo && (
-              <img
-                src={getImageUrl(values.logo)}
-                crossOrigin="anonymous"
-                width="10%"
-                alt="logo"
-              />
-            )}
+            {values.logo && <img src={getImageUrl(values.logo)} crossOrigin="anonymous" width="10%" alt="logo" />}
           </Grid>
         </Grid>
         <Grid item xs={12} md={3}>
@@ -145,22 +120,11 @@ function GarageSettingsForm(props: IProps) {
                   {values.brands.length > 0 &&
                     values.brands.map((brand, index) => {
                       return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
+                        <Grid container item spacing={2} xs={12} key={index} columns={13}>
                           {Object.keys(brand).map((value) => {
                             return (
                               <React.Fragment key={`${value}`}>
-                                <Grid
-                                  item
-                                  xs={value === "name" ? 4 : 8}
-                                  sx={{ mb: 2 }}
-                                >
+                                <Grid item xs={value === "name" ? 4 : 8} sx={{ mb: 2 }}>
                                   <TextField
                                     fullWidth
                                     variant="outlined"
@@ -175,9 +139,7 @@ function GarageSettingsForm(props: IProps) {
                             );
                           })}
                           <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
+                            <IconButton onClick={() => arrayHelpers.remove(index)}>
                               <Remove />
                             </IconButton>
                           </Grid>
@@ -213,14 +175,7 @@ function GarageSettingsForm(props: IProps) {
                   {values.workingHours.length > 0 &&
                     values.workingHours.map((workingHour, index) => {
                       return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
+                        <Grid container item spacing={2} xs={12} key={index} columns={13}>
                           {Object.keys(workingHour).map((value) => {
                             return (
                               <React.Fragment key={`${value}`}>
@@ -231,22 +186,13 @@ function GarageSettingsForm(props: IProps) {
                                       options={DAYS}
                                       value={workingHour.days}
                                       onChange={(event, newValue) => {
-                                        setFieldValue(
-                                          `workingHours.${index}.${value}`,
-                                          newValue
-                                        );
+                                        setFieldValue(`workingHours.${index}.${value}`, newValue);
                                       }}
                                       onInputChange={(event, newValue) => {
-                                        setFieldValue(
-                                          `workingHours.${index}.${value}`,
-                                          newValue
-                                        );
+                                        setFieldValue(`workingHours.${index}.${value}`, newValue);
                                       }}
                                       renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          name={`workingHours.${index}.${value}`}
-                                        />
+                                        <TextField {...params} name={`workingHours.${index}.${value}`} />
                                       )}
                                     />
                                   </Grid>
@@ -266,9 +212,7 @@ function GarageSettingsForm(props: IProps) {
                             );
                           })}
                           <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
+                            <IconButton onClick={() => arrayHelpers.remove(index)}>
                               <Remove />
                             </IconButton>
                           </Grid>

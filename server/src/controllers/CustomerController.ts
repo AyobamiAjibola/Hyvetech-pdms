@@ -10,7 +10,6 @@ import Appointment from "../models/Appointment";
 import Transaction from "../models/Transaction";
 import VehicleFault from "../models/VehicleFault";
 import { Request } from "express";
-import { HasAnyRole } from "../decorators";
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
 
@@ -42,12 +41,10 @@ export default class CustomerController {
     };
 
     try {
-      const customer = await dataSources.customerDAOService.findById(
-        customerId,
-        {
-          attributes: { exclude: ["password", "rawPassword", "loginToken"] },
-        }
-      );
+      const customer = await dataSources.customerDAOService.findById(customerId, {
+        attributes: { exclude: ["password", "rawPassword", "loginToken"] },
+        include: [{ all: true }],
+      });
 
       if (!customer) {
         response.result = customer;
@@ -69,26 +66,14 @@ export default class CustomerController {
     }).validate(params);
 
     if (error) {
-      return Promise.reject(
-        CustomAPIError.response(
-          error.details[0].message,
-          HttpStatus.NOT_FOUND.code
-        )
-      );
+      return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
     }
 
     try {
-      const customer = await dataSources.customerDAOService.findById(
-        +value?.customerId
-      );
+      const customer = await dataSources.customerDAOService.findById(+value?.customerId);
 
       if (!customer) {
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.NOT_FOUND.value,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
       }
 
       const vehicles = await customer.$get("vehicles");
@@ -113,26 +98,14 @@ export default class CustomerController {
     }).validate(params);
 
     if (error) {
-      return Promise.reject(
-        CustomAPIError.response(
-          error.details[0].message,
-          HttpStatus.NOT_FOUND.code
-        )
-      );
+      return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
     }
 
     try {
-      const customer = await dataSources.customerDAOService.findById(
-        +value.customerId
-      );
+      const customer = await dataSources.customerDAOService.findById(+value.customerId);
 
       if (!customer) {
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.NOT_FOUND.value,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
       }
 
       const appointments = await customer.$get("appointments", {
@@ -166,26 +139,14 @@ export default class CustomerController {
     }).validate(params);
 
     if (error) {
-      return Promise.reject(
-        CustomAPIError.response(
-          error.details[0].message,
-          HttpStatus.NOT_FOUND.code
-        )
-      );
+      return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
     }
 
     try {
-      const customer = await dataSources.customerDAOService.findById(
-        +value.customerId
-      );
+      const customer = await dataSources.customerDAOService.findById(+value.customerId);
 
       if (!customer) {
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.NOT_FOUND.value,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
       }
 
       const transactions = await customer.$get("transactions");

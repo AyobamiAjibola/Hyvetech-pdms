@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import moment from "moment";
 import { Form, Formik, FormikHelpers } from "formik";
 
@@ -15,13 +9,7 @@ import "./bookingForm.css";
 import { Paper, Stack } from "@mui/material";
 import bookingModel from "../../../components/forms/models/bookingModel";
 import settings from "../../../config/settings";
-import {
-  DRIVE_IN_PLAN,
-  HYBRID_PLAN,
-  LOCAL_STORAGE,
-  MAIN_OFFICE,
-  MOBILE_PLAN,
-} from "../../../config/constants";
+import { DRIVE_IN_PLAN, HYBRID_PLAN, LOCAL_STORAGE, MAIN_OFFICE, MOBILE_PLAN } from "../../../config/constants";
 import { AppContext } from "../../../context/AppContextProvider";
 import { IAppointment } from "@app-models";
 import useAppDispatch from "../../../hooks/useAppDispatch";
@@ -53,8 +41,7 @@ export default function BookingForm(props: IBookingProps) {
   const [slot, setSlot] = useState<string>("");
   const [planCategory, setPlanCategory] = useState<string>(DRIVE_IN_PLAN);
   const [bookingData, setBookingData] = useState<IAppointment>();
-  const [_bookingFormValues, _setBookingFormValues] =
-    useState<IBookingFormValues>(bookingFormValues);
+  const [_bookingFormValues, _setBookingFormValues] = useState<IBookingFormValues>(bookingFormValues);
   const [mobileLocation, setMobileLocation] = useState<string>("");
 
   const {
@@ -106,9 +93,7 @@ export default function BookingForm(props: IBookingProps) {
 
       _setBookingFormValues({
         location,
-        vehicleFault: appointment.vehicleFault.description
-          ? appointment.vehicleFault.description
-          : "",
+        vehicleFault: appointment.vehicleFault.description ? appointment.vehicleFault.description : "",
       });
     }
   }, [props.appointment]);
@@ -138,13 +123,7 @@ export default function BookingForm(props: IBookingProps) {
       setPlanTab(0);
       localStorage.removeItem(LOCAL_STORAGE.bookingData);
     };
-  }, [
-    setCheckedSlot,
-    setMobileDate,
-    setPlanTab,
-    setShowBookingBtn,
-    setShowTime,
-  ]);
+  }, [setCheckedSlot, setMobileDate, setPlanTab, setShowBookingBtn, setShowTime]);
 
   const handleSelectSlot = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -155,10 +134,7 @@ export default function BookingForm(props: IBookingProps) {
     [setCheckedSlot, setShowBookingBtn, showBookingBtn]
   );
 
-  const handleBookAppointment = (
-    values: IBookingFormValues,
-    formikHelpers: FormikHelpers<IBookingFormValues>
-  ) => {
+  const handleBookAppointment = (values: IBookingFormValues, formikHelpers: FormikHelpers<IBookingFormValues>) => {
     //If location is empty for mobile plan, set error
     if (planCategory === MOBILE_PLAN && !values.location.length) {
       return formikHelpers.setFieldError(
@@ -168,11 +144,7 @@ export default function BookingForm(props: IBookingProps) {
     }
 
     //If location is empty for hybrid mobile plan, set error
-    if (
-      planCategory === HYBRID_PLAN &&
-      planTab === 0 &&
-      !values.location.length
-    ) {
+    if (planCategory === HYBRID_PLAN && planTab === 0 && !values.location.length) {
       return formikHelpers.setFieldError(
         bookingModel.fields.location.name,
         bookingModel.fields.location.error.required
@@ -183,36 +155,25 @@ export default function BookingForm(props: IBookingProps) {
     let timeSlot = slot;
 
     // If plan is drive-in, set location to main office address
-    if (planCategory === DRIVE_IN_PLAN)
-      serviceLocation = settings.office.secondary;
+    if (planCategory === DRIVE_IN_PLAN) serviceLocation = settings.office.secondary;
 
     // If plan is hybrid and drive-in, set location to main office address
-    if (planCategory === HYBRID_PLAN && planTab === 1)
-      serviceLocation = settings.office.secondary;
+    if (planCategory === HYBRID_PLAN && planTab === 1) serviceLocation = settings.office.secondary;
 
     // If plan is mobile, or hybrid mobile set time slot to normal date time
-    if (
-      planCategory === MOBILE_PLAN ||
-      (planCategory === HYBRID_PLAN && planTab === 0)
-    ) {
+    if (planCategory === MOBILE_PLAN || (planCategory === HYBRID_PLAN && planTab === 0)) {
       timeSlot = moment(date.toISOString()).format("LT");
     }
 
     // If plan is drive-in or hybrid drive-in, set local storage data
     // to update time slots for each day
-    if (
-      planCategory === DRIVE_IN_PLAN ||
-      (planCategory === HYBRID_PLAN && planTab === 1)
-    ) {
+    if (planCategory === DRIVE_IN_PLAN || (planCategory === HYBRID_PLAN && planTab === 1)) {
       const timeSlotDate = timeSlotReducer.timeSlot?.date;
       const time = slot;
 
       if (showBooking) setShowBooking(!showBooking);
 
-      localStorage.setItem(
-        LOCAL_STORAGE.timeSlot,
-        JSON.stringify({ date: timeSlotDate, time })
-      );
+      localStorage.setItem(LOCAL_STORAGE.timeSlot, JSON.stringify({ date: timeSlotDate, time }));
     }
 
     // const now = moment();
@@ -264,11 +225,7 @@ export default function BookingForm(props: IBookingProps) {
               image={image}
             />
 
-            <VehicleFaultAndTimeSlot
-              slot={slot}
-              handleSelectSlot={handleSelectSlot}
-              planCategory={planCategory}
-            />
+            <VehicleFaultAndTimeSlot slot={slot} handleSelectSlot={handleSelectSlot} planCategory={planCategory} />
 
             <SkipAndSubmitButtons />
           </Stack>

@@ -40,18 +40,9 @@ const schema = Yup.object().shape({
   discount: Yup.string().nullable().label("Discount"),
   plan: Yup.string().required().label("Plans Name"),
   coverage: Yup.string().required().label("Coverage"),
-  description: Yup.array()
-    .of(Yup.object())
-    .nullable()
-    .label("Payment Plans Description"),
-  parameter: Yup.array()
-    .of(Yup.object())
-    .nullable()
-    .label("Payment Plans Coverage"),
-  pricing: Yup.array()
-    .of(Yup.object())
-    .required()
-    .label("Payment Plans Pricing"),
+  description: Yup.array().of(Yup.object()).nullable().label("Payment Plans Description"),
+  parameter: Yup.array().of(Yup.object()).nullable().label("Payment Plans Coverage"),
+  pricing: Yup.array().of(Yup.object()).required().label("Payment Plans Pricing"),
 });
 
 const fields = {

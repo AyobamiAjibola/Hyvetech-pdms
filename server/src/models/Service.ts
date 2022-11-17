@@ -1,15 +1,5 @@
-import {
-  BelongsToMany,
-  Column,
-  DataType,
-  Model,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-} from "sequelize";
+import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
 import Subscription from "./Subscription";
 import ServiceSubscription from "./ServiceSubscription";
 
@@ -17,10 +7,7 @@ import ServiceSubscription from "./ServiceSubscription";
   tableName: "services",
   timestamps: true,
 })
-export default class Service extends Model<
-  InferAttributes<Service>,
-  InferCreationAttributes<Service>
-> {
+export default class Service extends Model<InferAttributes<Service>, InferCreationAttributes<Service>> {
   @Column({
     type: DataType.INTEGER,
     field: "service_id",
@@ -39,7 +26,5 @@ export default class Service extends Model<
   declare slug: string;
 
   @BelongsToMany(() => Subscription, () => ServiceSubscription)
-  declare subscriptions: Array<
-    Subscription & { ServiceSubscription: ServiceSubscription }
-  >;
+  declare subscriptions: Array<Subscription & { ServiceSubscription: ServiceSubscription }>;
 }

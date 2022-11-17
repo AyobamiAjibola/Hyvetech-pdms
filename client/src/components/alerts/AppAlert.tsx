@@ -14,12 +14,7 @@ export default function AppAlert(props: AppAlertProps) {
       TransitionComponent={TransitionLeft}
       key={props.message}
     >
-      <Alert
-        onClose={props.onClose}
-        variant="filled"
-        severity={props.alertType}
-        sx={{ width: "100%" }}
-      >
+      <Alert onClose={props.onClose} variant="filled" severity={props.alertType} sx={{ width: "100%" }}>
         {props.message}
       </Alert>
     </Snackbar>

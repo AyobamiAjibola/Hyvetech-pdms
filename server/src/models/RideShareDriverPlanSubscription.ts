@@ -1,12 +1,4 @@
-import {
-  AutoIncrement,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 import { InferAttributes, InferCreationAttributes } from "sequelize";
 import RideShareDriver from "./RideShareDriver";
 import RideShareDriverSubscription from "./RideShareDriverSubscription";

@@ -43,15 +43,9 @@ function TechnicianPage() {
       inProgress = 0;
 
     if (detail) {
-      pending = detail.jobs.filter(
-        (job) => job.status === JOB_STATUS.pending
-      ).length;
-      complete = detail.jobs.filter(
-        (job) => job.status === JOB_STATUS.complete
-      ).length;
-      inProgress = detail.jobs.filter(
-        (job) => job.status === JOB_STATUS.inProgress
-      ).length;
+      pending = detail.jobs.filter((job) => job.status === JOB_STATUS.pending).length;
+      complete = detail.jobs.filter((job) => job.status === JOB_STATUS.complete).length;
+      inProgress = detail.jobs.filter((job) => job.status === JOB_STATUS.inProgress).length;
     }
 
     return { pending, complete, inProgress };
@@ -66,8 +60,7 @@ function TechnicianPage() {
   );
 
   const handleViewJobCheckList = useCallback(
-    (job: IJob) =>
-      navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
+    (job: IJob) => navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
     [navigate]
   );
 
@@ -182,18 +175,12 @@ function TechnicianPage() {
         </Box>
       ) : (
         <Stack spacing={4} divider={<Divider orientation="horizontal" />}>
-          <Grid
-            container
-            spacing={{ xs: 2, md: 3 }}
-            columns={{ xs: 2, sm: 8, md: 12 }}
-          >
+          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 2, sm: 8, md: 12 }}>
             <Grid item xs={12} md={4}>
               <Card>
                 <CardContent sx={{ textAlign: "center" }}>
                   <Typography variant="body1">Jobs Pending</Typography>
-                  <Typography variant="subtitle1">
-                    {jobStatusCount.pending}
-                  </Typography>
+                  <Typography variant="subtitle1">{jobStatusCount.pending}</Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -201,9 +188,7 @@ function TechnicianPage() {
               <Card>
                 <CardContent sx={{ textAlign: "center" }}>
                   <Typography variant="body1">Jobs In-Progress</Typography>
-                  <Typography variant="subtitle1">
-                    {jobStatusCount.inProgress}
-                  </Typography>
+                  <Typography variant="subtitle1">{jobStatusCount.inProgress}</Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -211,18 +196,12 @@ function TechnicianPage() {
               <Card>
                 <CardContent sx={{ textAlign: "center" }}>
                   <Typography variant="body1">Jobs Completed</Typography>
-                  <Typography variant="subtitle1">
-                    {jobStatusCount.complete}
-                  </Typography>
+                  <Typography variant="subtitle1">{jobStatusCount.complete}</Typography>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
-          <Grid
-            container
-            spacing={{ xs: 2, md: 3 }}
-            columns={{ xs: 2, sm: 8, md: 12 }}
-          >
+          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 2, sm: 8, md: 12 }}>
             <Grid item xs={12} md={4}>
               <Typography variant="h5">Personal Information</Typography>
               <TableContainer component={Paper}>
@@ -277,9 +256,7 @@ function TechnicianPage() {
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Date</TableCell>
-                    <TableCell component="td">
-                      {moment(job.jobDate).format("LLL")}
-                    </TableCell>
+                    <TableCell component="td">{moment(job.jobDate).format("LLL")}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Client</TableCell>
@@ -288,8 +265,7 @@ function TechnicianPage() {
                   <TableRow>
                     <TableCell component="th">Vehicle Info</TableCell>
                     <TableCell component="td">
-                      {job.vehicle.make} {job.vehicle.model} (
-                      {job.vehicle.plateNumber})
+                      {job.vehicle.make} {job.vehicle.model} ({job.vehicle.plateNumber})
                     </TableCell>
                   </TableRow>
                 </TableBody>

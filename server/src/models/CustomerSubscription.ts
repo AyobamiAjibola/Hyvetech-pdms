@@ -9,11 +9,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import {
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Customer from "./Customer";
 import Vehicle from "./Vehicle";
 import CustomerPlanSubscription from "./CustomerPlanSubscription";
@@ -98,9 +94,7 @@ export default class CustomerSubscription extends Model<
   declare nextPaymentDate: Date;
 
   @BelongsToMany(() => Customer, () => CustomerPlanSubscription)
-  declare customers: NonAttribute<
-    Array<Customer & { CustomerPlanSubscription: CustomerPlanSubscription }>
-  >;
+  declare customers: NonAttribute<Array<Customer & { CustomerPlanSubscription: CustomerPlanSubscription }>>;
 
   @HasMany(() => Vehicle, { onDelete: "cascade" })
   declare vehicles: NonAttribute<Vehicle[]>;

@@ -20,10 +20,7 @@ export default class PermissionDAOService implements ICrudDAO<Permission> {
     this.permissionRepository = permissionRepository;
   }
 
-  create(
-    values: CreationAttributes<Permission>,
-    options?: CreateOptions<Attributes<Permission>>
-  ): Promise<Permission> {
+  create(values: CreationAttributes<Permission>, options?: CreateOptions<Attributes<Permission>>): Promise<Permission> {
     return this.permissionRepository.save(values, options);
   }
 
@@ -31,22 +28,15 @@ export default class PermissionDAOService implements ICrudDAO<Permission> {
     return this.permissionRepository.deleteById(id, options);
   }
 
-  findAll(
-    options?: FindOptions<Attributes<Permission>>
-  ): Promise<Permission[]> {
+  findAll(options?: FindOptions<Attributes<Permission>>): Promise<Permission[]> {
     return this.permissionRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Permission>>
-  ): Promise<Permission | null> {
+  findByAny(options: FindOptions<Attributes<Permission>>): Promise<Permission | null> {
     return this.permissionRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Permission>>
-  ): Promise<Permission | null> {
+  findById(id: number, options?: FindOptions<Attributes<Permission>>): Promise<Permission | null> {
     return this.permissionRepository.findById(id, options);
   }
 

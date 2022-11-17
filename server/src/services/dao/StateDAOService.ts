@@ -20,10 +20,7 @@ export default class StateDAOService implements ICrudDAO<State> {
     this.stateRepository = stateRepository;
   }
 
-  create(
-    values: CreationAttributes<State>,
-    options?: CreateOptions<Attributes<State>>
-  ): Promise<State> {
+  create(values: CreationAttributes<State>, options?: CreateOptions<Attributes<State>>): Promise<State> {
     return this.stateRepository.save(values, options);
   }
 
@@ -39,18 +36,11 @@ export default class StateDAOService implements ICrudDAO<State> {
     return this.stateRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<State>>
-  ): Promise<State | null> {
+  findById(id: number, options?: FindOptions<Attributes<State>>): Promise<State | null> {
     return this.stateRepository.findById(id, options);
   }
 
-  update(
-    state: State,
-    values: InferAttributes<State>,
-    options: UpdateOptions<Attributes<State>>
-  ): Promise<State> {
+  update(state: State, values: InferAttributes<State>, options: UpdateOptions<Attributes<State>>): Promise<State> {
     return this.stateRepository.updateOne(state, values, options);
   }
 }

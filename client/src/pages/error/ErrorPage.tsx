@@ -18,33 +18,17 @@ export default function ErrorPage() {
 
   return (
     <PublicLayout>
-      <Typography
-        textAlign="center"
-        variant="caption"
-        gutterBottom
-        component="div"
-        sx={{ mt: 5 }}
-      >
+      <Typography textAlign="center" variant="caption" gutterBottom component="div" sx={{ mt: 5 }}>
         An Error Occurred! {message}
       </Typography>
       <Grid container spacing={1} justifyContent="center" alignItems="center">
         <Grid item>
-          <Button
-            fullWidth
-            onClick={() => navigate("/dashboard")}
-            color="secondary"
-            variant="contained"
-          >
+          <Button fullWidth onClick={() => navigate("/dashboard")} color="secondary" variant="contained">
             Home
           </Button>
         </Grid>
         <Grid item>
-          <Button
-            fullWidth
-            onClick={() => navigate(-1)}
-            color="secondary"
-            variant="contained"
-          >
+          <Button fullWidth onClick={() => navigate(-1)} color="secondary" variant="contained">
             Go Back
           </Button>
         </Grid>

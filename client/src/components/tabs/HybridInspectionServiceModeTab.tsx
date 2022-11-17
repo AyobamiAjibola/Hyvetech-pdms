@@ -54,10 +54,7 @@ export default function HybridInspectionServiceModeTab() {
               <LocationOnIcon />
             </Avatar>
           </ListItemIcon>
-          <ListItemText
-            primary={settings.office.primary}
-            secondary={settings.office.secondary}
-          />
+          <ListItemText primary={settings.office.primary} secondary={settings.office.secondary} />
         </ListItem>
       </TabPanel>
     </Box>

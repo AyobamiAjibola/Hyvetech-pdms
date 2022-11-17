@@ -1,13 +1,4 @@
-import React, {
-  ChangeEvent,
-  createContext,
-  FormEvent,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, createContext, FormEvent, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Box,
@@ -31,16 +22,8 @@ import {
   useTheme,
 } from "@mui/material";
 
-import {
-  CheckListQuestionType,
-  CheckListSectionType,
-  CheckListType,
-  CustomHookMessage,
-} from "@app-types";
-import {
-  IImageButtonData,
-  IJobCheckListPageContextProps,
-} from "@app-interfaces";
+import { CheckListQuestionType, CheckListSectionType, CheckListType, CustomHookMessage } from "@app-types";
+import { IImageButtonData, IJobCheckListPageContextProps } from "@app-interfaces";
 import AppAlert from "../components/alerts/AppAlert";
 import { getJobAction } from "../store/actions/jobActions";
 import useAppDispatch from "../hooks/useAppDispatch";
@@ -54,13 +37,10 @@ import { createJobCheckListAction } from "../store/actions/checkListActions";
 
 const COLORS = ["#E14B5A", "#F2994A", "#009A49", "#E6E6E6"];
 
-const JobCheckListPageContext =
-  createContext<IJobCheckListPageContextProps | null>(null);
+const JobCheckListPageContext = createContext<IJobCheckListPageContextProps | null>(null);
 
 interface FormProps {
-  onChangeTextArea: (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => void;
+  onChangeTextArea: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
   question: CheckListQuestionType;
   onChangeRadioBtn: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeImage: (e: ChangeEvent<HTMLInputElement>, questionId?: any) => void;
@@ -75,9 +55,7 @@ function NoteAnswerForm(props: FormProps) {
 
   const { question } = props;
 
-  const { imageRef } = useContext(
-    JobCheckListPageContext
-  ) as IJobCheckListPageContextProps;
+  const { imageRef } = useContext(JobCheckListPageContext) as IJobCheckListPageContextProps;
 
   useEffect(() => {
     if (prevOpen.current && !openNote) {
@@ -92,11 +70,7 @@ function NoteAnswerForm(props: FormProps) {
   };
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
-    if (
-      anchorRef.current &&
-      anchorRef.current.contains(event.target as HTMLElement)
-    )
-      return;
+    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) return;
 
     setOpenNote(false);
   };
@@ -151,11 +125,7 @@ function NoteAnswerForm(props: FormProps) {
       </CardContent>
       {question.images ? (
         <CardContent sx={{ overflowX: "scroll" }}>
-          <CustomRadioIconField
-            questionId={question.id}
-            options={question.images}
-            onDelete={props.onRemoveImage}
-          />
+          <CustomRadioIconField questionId={question.id} options={question.images} onDelete={props.onRemoveImage} />
         </CardContent>
       ) : null}
       <CardActions
@@ -191,8 +161,7 @@ function NoteAnswerForm(props: FormProps) {
                 <Grow
                   {...TransitionProps}
                   style={{
-                    transformOrigin:
-                      placement === "bottom-start" ? "left top" : "left bottom",
+                    transformOrigin: placement === "bottom-start" ? "left top" : "left bottom",
                   }}
                 >
                   <Paper>
@@ -234,11 +203,7 @@ function NoteAnswerForm(props: FormProps) {
           </React.Fragment>
         )}
         {question.media && (
-          <Button
-            component="label"
-            sx={{ textTransform: "capitalize" }}
-            startIcon={<CameraAlt />}
-          >
+          <Button component="label" sx={{ textTransform: "capitalize" }} startIcon={<CameraAlt />}>
             media
             <input
               onChange={(e) => props.onChangeImage(e, question.id)}
@@ -268,10 +233,7 @@ export default function JobCheckListTest() {
 
   const lastStep = useMemo(() => sections.length - 1, [sections]);
 
-  const isLastStep = useMemo(
-    () => activeStep === lastStep,
-    [activeStep, lastStep]
-  );
+  const isLastStep = useMemo(() => activeStep === lastStep, [activeStep, lastStep]);
 
   const jobReducer = useAppSelector((state) => state.jobReducer);
   const dispatch = useAppDispatch();
@@ -309,9 +271,7 @@ export default function JobCheckListTest() {
   const handleBack = () => setActiveStep(activeStep - 1);
 
   const handleChangeRadioBtn = (e: ChangeEvent<HTMLInputElement>) => {
-    const tempSections = JSON.parse(
-      JSON.stringify([...sections])
-    ) as Array<CheckListSectionType>;
+    const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     const id = e.target.id;
 
@@ -322,9 +282,7 @@ export default function JobCheckListTest() {
         const answer = questions[j].answers.find((answer) => answer.id == id);
 
         if (answer) {
-          const isChecked = questions[j].answers.find(
-            (value) => value.selected
-          );
+          const isChecked = questions[j].answers.find((value) => value.selected);
 
           if (isChecked) isChecked.selected = false;
 
@@ -337,19 +295,13 @@ export default function JobCheckListTest() {
     setSections(tempSections);
   };
 
-  const handleChangeTextArea = (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    const tempSections = JSON.parse(
-      JSON.stringify([...sections])
-    ) as Array<CheckListSectionType>;
+  const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     const id = e.target.id;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find(
-        (question) => question.id === id
-      );
+      const question = tempSections[i].questions.find((question) => question.id === id);
 
       if (question) {
         question.text = e.target.value;
@@ -360,20 +312,13 @@ export default function JobCheckListTest() {
     setSections(tempSections);
   };
 
-  const handleChangeImage = (
-    e: ChangeEvent<HTMLInputElement>,
-    questionId: any
-  ) => {
+  const handleChangeImage = (e: ChangeEvent<HTMLInputElement>, questionId: any) => {
     const files = e.target.files;
 
-    const tempSections = JSON.parse(
-      JSON.stringify([...sections])
-    ) as Array<CheckListSectionType>;
+    const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find(
-        (question) => question.id === questionId
-      );
+      const question = tempSections[i].questions.find((question) => question.id === questionId);
 
       if (question && files) {
         const file = files[0];
@@ -408,14 +353,10 @@ export default function JobCheckListTest() {
   };
 
   const handleRemoveImage = (id: any, questionId?: any) => {
-    const tempSections = JSON.parse(
-      JSON.stringify([...sections])
-    ) as Array<CheckListSectionType>;
+    const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find(
-        (question) => question.id === questionId
-      );
+      const question = tempSections[i].questions.find((question) => question.id === questionId);
 
       if (question && question.images) {
         const tempImages = [...question.images];
@@ -448,24 +389,11 @@ export default function JobCheckListTest() {
       <form autoComplete="off" onSubmit={handleNext}>
         {sections.map((tab, index) => {
           return (
-            <Slide
-              key={index}
-              direction="left"
-              in={activeStep === index}
-              container={containerRef.current}
-            >
+            <Slide key={index} direction="left" in={activeStep === index} container={containerRef.current}>
               <div>
-                <TabPanel
-                  value={activeStep}
-                  index={index}
-                  dir={theme.direction}
-                >
+                <TabPanel value={activeStep} index={index} dir={theme.direction}>
                   <Box sx={{ pt: 6 }}>
-                    <Grid
-                      container
-                      spacing={{ xs: 2, md: 3 }}
-                      columns={{ xs: 4, sm: 8, md: 12 }}
-                    >
+                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                       {tab.questions.map((question, idx1) => {
                         return (
                           <Grid item xs={4} key={idx1}>
@@ -488,12 +416,7 @@ export default function JobCheckListTest() {
           );
         })}
         <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-          <Button
-            color="inherit"
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-          >
+          <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
             Back
           </Button>
           <Box sx={{ flex: "1 1 auto" }} />

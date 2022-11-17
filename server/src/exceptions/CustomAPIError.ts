@@ -6,11 +6,11 @@ export default class CustomAPIError extends Error {
     this._code = code;
   }
 
-  public static response(message: string, code: number) {
-    return new CustomAPIError(message, code);
-  }
-
   get code(): number {
     return this._code;
+  }
+
+  public static response(message: string, code: number) {
+    return new CustomAPIError(message, code);
   }
 }

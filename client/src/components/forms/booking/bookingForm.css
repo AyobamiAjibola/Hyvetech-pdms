@@ -198,22 +198,22 @@ input[type="radio"] {
     display: block !important;
     flex-direction: column;
     /* align-items: center !important;
-                                                    justify-content: center !important; */
+                                                        justify-content: center !important; */
   }
 
   .radio-container {
     /* display: flex;
-                                                    flex-direction: row;
-                                                    flex-wrap: wrap;
-                                                    width: 100%;
-                                                    height: auto; */
+                                                        flex-direction: row;
+                                                        flex-wrap: wrap;
+                                                        width: 100%;
+                                                        height: auto; */
     display: block !important;
   }
 
   .radio-btn {
     /* width: auto;
-                                                    flex: 0.5 ;
-                                                    margin: 2px; */
+                                                        flex: 0.5 ;
+                                                        margin: 2px; */
     display: inline-block;
     width: 47%;
     margin: 4px;

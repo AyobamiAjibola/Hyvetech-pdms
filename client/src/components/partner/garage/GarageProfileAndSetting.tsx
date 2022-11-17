@@ -1,29 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Formik } from "formik";
 import { Box, Divider, Stack, Typography } from "@mui/material";
-import {
-  IBrands,
-  IGarageSettings,
-  IKycValues,
-  IWorkingHours,
-} from "../../forms/models/partnerModel";
+import { IBrands, IGarageSettings, IKycValues, IWorkingHours } from "../../forms/models/partnerModel";
 import GarageKycForm from "../../forms/partner/GarageKYCForm";
 import { PartnerPageContext } from "../../../pages/partner/PartnerPage";
 import { PartnerPageContextProps } from "@app-interfaces";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import useAppSelector from "../../../hooks/useAppSelector";
 import { MESSAGES } from "../../../config/constants";
-import {
-  createPartnerKycAction,
-  createPartnerSettingsAction,
-} from "../../../store/actions/partnerActions";
+import { createPartnerKycAction, createPartnerSettingsAction } from "../../../store/actions/partnerActions";
 import { CustomHookMessage } from "@app-types";
 import AppAlert from "../../alerts/AppAlert";
 import GarageSettingsForm from "../../forms/partner/GarageSettingsForm";
-import {
-  clearCreatePartnerKycStatus,
-  clearCreatePartnerSettingsStatus,
-} from "../../../store/reducers/partnerReducer";
+import { clearCreatePartnerKycStatus, clearCreatePartnerSettingsStatus } from "../../../store/reducers/partnerReducer";
 
 function GarageProfileAndSetting() {
   const [success, setSuccess] = useState<CustomHookMessage>();
@@ -79,12 +68,8 @@ function GarageProfileAndSetting() {
         bankName: partner.bankName ? partner.bankName : "",
         phone: partner.phone ? partner.phone : "",
         totalStaff: partner.totalStaff ? `${partner.totalStaff}` : "",
-        totalTechnicians: partner.totalTechnicians
-          ? `${partner.totalTechnicians}`
-          : "",
-        workingHours: workingHours
-          ? workingHours
-          : [{ days: [], from: new Date(), to: new Date() }],
+        totalTechnicians: partner.totalTechnicians ? `${partner.totalTechnicians}` : "",
+        workingHours: workingHours ? workingHours : [{ days: [], from: new Date(), to: new Date() }],
         brands: brands ? brands : [{ name: "", description: "" }],
       }));
     }
@@ -94,10 +79,7 @@ function GarageProfileAndSetting() {
     if (partnerReducer.createPartnerKycStatus === "completed") {
       setSuccess({ message: partnerReducer.createPartnerKycSuccess });
     }
-  }, [
-    partnerReducer.createPartnerKycSuccess,
-    partnerReducer.createPartnerKycStatus,
-  ]);
+  }, [partnerReducer.createPartnerKycSuccess, partnerReducer.createPartnerKycStatus]);
 
   useEffect(() => {
     if (partnerReducer.createPartnerKycStatus === "failed") {
@@ -105,19 +87,13 @@ function GarageProfileAndSetting() {
         setError({ message: partnerReducer.createPartnerKycError });
       }
     }
-  }, [
-    partnerReducer.createPartnerKycError,
-    partnerReducer.createPartnerKycStatus,
-  ]);
+  }, [partnerReducer.createPartnerKycError, partnerReducer.createPartnerKycStatus]);
 
   useEffect(() => {
     if (partnerReducer.createPartnerSettingsStatus === "completed") {
       setSuccess({ message: partnerReducer.createPartnerSettingsSuccess });
     }
-  }, [
-    partnerReducer.createPartnerSettingsSuccess,
-    partnerReducer.createPartnerSettingsStatus,
-  ]);
+  }, [partnerReducer.createPartnerSettingsSuccess, partnerReducer.createPartnerSettingsStatus]);
 
   useEffect(() => {
     if (partnerReducer.createPartnerSettingsStatus === "failed") {
@@ -125,10 +101,7 @@ function GarageProfileAndSetting() {
         setError({ message: partnerReducer.createPartnerSettingsError });
       }
     }
-  }, [
-    partnerReducer.createPartnerSettingsError,
-    partnerReducer.createPartnerSettingsStatus,
-  ]);
+  }, [partnerReducer.createPartnerSettingsError, partnerReducer.createPartnerSettingsStatus]);
 
   useEffect(() => {
     return () => {
@@ -145,9 +118,7 @@ function GarageProfileAndSetting() {
 
   const handleSubmitSettings = (values: IGarageSettings) => {
     if (partner) {
-      dispatch(
-        createPartnerSettingsAction({ partnerId: partner.id, data: values })
-      );
+      dispatch(createPartnerSettingsAction({ partnerId: partner.id, data: values }));
     } else throw new Error(MESSAGES.internalError);
   };
 
@@ -157,25 +128,13 @@ function GarageProfileAndSetting() {
         <Box>
           <Typography variant="h6">KYC</Typography>
           <Box sx={{ my: 1 }} />
-          <Formik
-            onSubmit={handleSubmitKyc}
-            initialValues={kycValues}
-            enableReinitialize
-          >
-            <GarageKycForm
-              isSubmitting={partnerReducer.createPartnerKycStatus === "loading"}
-            />
+          <Formik onSubmit={handleSubmitKyc} initialValues={kycValues} enableReinitialize>
+            <GarageKycForm isSubmitting={partnerReducer.createPartnerKycStatus === "loading"} />
           </Formik>
         </Box>
         <Box>
-          <Formik
-            onSubmit={handleSubmitSettings}
-            initialValues={settingsValues}
-            enableReinitialize
-          >
-            <GarageSettingsForm
-              isSubmitting={partnerReducer.createPartnerKycStatus === "loading"}
-            />
+          <Formik onSubmit={handleSubmitSettings} initialValues={settingsValues} enableReinitialize>
+            <GarageSettingsForm isSubmitting={partnerReducer.createPartnerKycStatus === "loading"} />
           </Formik>
         </Box>
       </Stack>

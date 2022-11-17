@@ -2,25 +2,14 @@ import React, { useEffect, useState } from "react";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Delete, Visibility } from "@mui/icons-material";
 import { IPlan } from "@app-models";
-import {
-  Button,
-  DialogActions,
-  DialogContentText,
-  Grid,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@mui/material";
+import { Button, DialogActions, DialogContentText, Grid, TableBody, TableCell, TableRow } from "@mui/material";
 import AppDataGrid from "../../tables/AppDataGrid";
 import useAppSelector from "../../../hooks/useAppSelector";
 import AppModal from "../../modal/AppModal";
 import { Formik, FormikHelpers } from "formik";
 import planModel, { IPlanModel } from "../../forms/models/planModel";
 import AddPlanForm from "../../forms/partner/AddPlanForm";
-import {
-  addPlanAction,
-  deletePlanAction,
-} from "../../../store/actions/partnerActions";
+import { addPlanAction, deletePlanAction } from "../../../store/actions/partnerActions";
 import { useParams } from "react-router-dom";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import capitalize from "capitalize";
@@ -78,10 +67,7 @@ function Plans() {
     setOpenAddPlan(false);
   };
 
-  const handleAddPlan = (
-    values: IPlanModel,
-    formikHelper: FormikHelpers<IPlanModel>
-  ) => {
+  const handleAddPlan = (values: IPlanModel, formikHelper: FormikHelpers<IPlanModel>) => {
     const data = {
       label: values.label,
       minVehicles: +values.minVehicles,
@@ -124,12 +110,7 @@ function Plans() {
         <Grid container justifyContent="space-between" mb={1}>
           <Grid item />
           <Grid item>
-            <Button
-              onClick={handleOpenAddPlan}
-              size="small"
-              variant="contained"
-              color="success"
-            >
+            <Button onClick={handleOpenAddPlan} size="small" variant="contained" color="success">
               Add
             </Button>
           </Grid>
@@ -146,11 +127,7 @@ function Plans() {
         size="md"
         show={openAddPlan}
         Content={
-          <Formik
-            validationSchema={planModel.schema}
-            initialValues={planModel.initialValues}
-            onSubmit={handleAddPlan}
-          >
+          <Formik validationSchema={planModel.schema} initialValues={planModel.initialValues} onSubmit={handleAddPlan}>
             <AddPlanForm />
           </Formik>
         }

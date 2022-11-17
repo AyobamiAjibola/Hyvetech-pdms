@@ -131,10 +131,7 @@ const appointmentSlice = createSlice({
   },
 });
 
-export const {
-  clearGetAppointmentsStatus,
-  clearUpdateAppointmentsStatus,
-  clearGetAppointmentStatus,
-} = appointmentSlice.actions;
+export const { clearGetAppointmentsStatus, clearUpdateAppointmentsStatus, clearGetAppointmentStatus } =
+  appointmentSlice.actions;
 
 export default appointmentSlice.reducer;

@@ -13,12 +13,7 @@ import Joi from "joi";
 
 import Role from "./Role";
 import Contact from "./Contact";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Job from "./Job";
 import TechnicianRole from "./TechnicianRole";
 import PartnerTechnician from "./PartnerTechnician";
@@ -37,10 +32,7 @@ export const $technicianSchema = {
   timestamps: true,
   tableName: "technicians",
 })
-export default class Technician extends Model<
-  InferAttributes<Technician>,
-  InferCreationAttributes<Technician>
-> {
+export default class Technician extends Model<InferAttributes<Technician>, InferCreationAttributes<Technician>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "technician_id" })
@@ -113,7 +105,5 @@ export default class Technician extends Model<
   declare roles: NonAttribute<Array<Role & { TechnicianRole: TechnicianRole }>>;
 
   @BelongsToMany(() => Partner, () => PartnerTechnician)
-  declare partners: NonAttribute<
-    Array<Partner & { PartnerTechnician: PartnerTechnician }>
-  >;
+  declare partners: NonAttribute<Array<Partner & { PartnerTechnician: PartnerTechnician }>>;
 }

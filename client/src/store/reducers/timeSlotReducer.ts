@@ -72,9 +72,7 @@ const timeSlotSlice = createSlice({
         state.getTimeSlotsStatus = "failed";
 
         const payload = <IThunkAPIPayloadError>action.payload;
-        state.getTimeSlotsError = action.payload
-          ? payload.message
-          : <string>action.error.message;
+        state.getTimeSlotsError = action.payload ? payload.message : <string>action.error.message;
       });
 
     builder
@@ -87,9 +85,7 @@ const timeSlotSlice = createSlice({
         state.slots = action.payload.slots as ITimeSlot[];
 
         //Decide which date to disable, given that it has already been selected
-        const now = action.payload.date
-          ? moment(action.payload.date)
-          : moment();
+        const now = action.payload.date ? moment(action.payload.date) : moment();
 
         let tempSlots = [...state.slots];
 
@@ -101,9 +97,7 @@ const timeSlotSlice = createSlice({
         state.initTimeSlotsStatus = "failed";
 
         const payload = <IThunkAPIPayloadError>action.payload;
-        state.initTimeSlotsError = action.payload
-          ? payload.message
-          : <string>action.error.message;
+        state.initTimeSlotsError = action.payload ? payload.message : <string>action.error.message;
       });
 
     builder
@@ -118,9 +112,7 @@ const timeSlotSlice = createSlice({
       .addCase(disableTimeSlotAction.rejected, (state, action) => {
         state.disablingTimeSlotStatus = "failed";
         const payload = <IThunkAPIPayloadError>action.payload;
-        state.disablingTimeSlotError = action.payload
-          ? payload.message
-          : <string>action.error.message;
+        state.disablingTimeSlotError = action.payload ? payload.message : <string>action.error.message;
       });
 
     builder
@@ -135,9 +127,7 @@ const timeSlotSlice = createSlice({
       .addCase(getCurrentDateAction.rejected, (state, action) => {
         state.fetchingCurrentDateStatus = "failed";
         const payload = <IThunkAPIPayloadError>action.payload;
-        state.fetchingCurrentDateError = action.payload
-          ? payload.message
-          : <string>action.error.message;
+        state.fetchingCurrentDateError = action.payload ? payload.message : <string>action.error.message;
       });
   },
 });

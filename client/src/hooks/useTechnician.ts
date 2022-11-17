@@ -65,11 +65,7 @@ export default function useTechnician() {
       setSuccess({ message: technicianReducer.createTechnicianSuccess });
       dispatch(getTechniciansAction());
     }
-  }, [
-    dispatch,
-    technicianReducer.createTechnicianStatus,
-    technicianReducer.createTechnicianSuccess,
-  ]);
+  }, [dispatch, technicianReducer.createTechnicianStatus, technicianReducer.createTechnicianSuccess]);
 
   useEffect(() => {
     if (technicianReducer.createTechnicianStatus === "failed") {
@@ -79,11 +75,7 @@ export default function useTechnician() {
         setError({ message: technicianReducer.createTechnicianError });
       }
     }
-  }, [
-    dispatch,
-    technicianReducer.createTechnicianError,
-    technicianReducer.createTechnicianStatus,
-  ]);
+  }, [dispatch, technicianReducer.createTechnicianError, technicianReducer.createTechnicianStatus]);
 
   useEffect(() => {
     if (technicianReducer.updateTechnicianStatus === "loading") {
@@ -98,11 +90,7 @@ export default function useTechnician() {
       setSuccess({ message: technicianReducer.updateTechnicianSuccess });
       dispatch(getTechniciansAction());
     }
-  }, [
-    dispatch,
-    technicianReducer.updateTechnicianStatus,
-    technicianReducer.updateTechnicianSuccess,
-  ]);
+  }, [dispatch, technicianReducer.updateTechnicianStatus, technicianReducer.updateTechnicianSuccess]);
 
   useEffect(() => {
     if (technicianReducer.updateTechnicianStatus === "failed") {
@@ -112,11 +100,7 @@ export default function useTechnician() {
         setError({ message: technicianReducer.updateTechnicianError });
       }
     }
-  }, [
-    dispatch,
-    technicianReducer.updateTechnicianError,
-    technicianReducer.updateTechnicianStatus,
-  ]);
+  }, [dispatch, technicianReducer.updateTechnicianError, technicianReducer.updateTechnicianStatus]);
 
   useEffect(() => {
     if (technicianReducer.deleteTechnicianStatus === "loading") {
@@ -131,11 +115,7 @@ export default function useTechnician() {
       setSuccess({ message: technicianReducer.deleteTechnicianSuccess });
       dispatch(getTechniciansAction());
     }
-  }, [
-    dispatch,
-    technicianReducer.deleteTechnicianStatus,
-    technicianReducer.deleteTechnicianSuccess,
-  ]);
+  }, [dispatch, technicianReducer.deleteTechnicianStatus, technicianReducer.deleteTechnicianSuccess]);
 
   useEffect(() => {
     if (technicianReducer.deleteTechnicianStatus === "failed") {
@@ -145,11 +125,7 @@ export default function useTechnician() {
         setError({ message: technicianReducer.deleteTechnicianError });
       }
     }
-  }, [
-    dispatch,
-    technicianReducer.deleteTechnicianError,
-    technicianReducer.deleteTechnicianStatus,
-  ]);
+  }, [dispatch, technicianReducer.deleteTechnicianError, technicianReducer.deleteTechnicianStatus]);
 
   const handleCreate = (values: ITechnicianValues) => {
     const data: { [p: string]: any } = {

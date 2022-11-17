@@ -32,23 +32,12 @@ function TimeSlot({ handleChange, slot }: Props) {
               checked={checkedSlot && value.time === slot}
             />
 
-            <Button
-              disabled={!value.available}
-              className={!value.available ? "disabled time-btn" : "time-btn"}
-            >
+            <Button disabled={!value.available} className={!value.available ? "disabled time-btn" : "time-btn"}>
               <label htmlFor={value.time}>
-                {value.label === "Morning" && (
-                  <img src={morning} alt="slot" className="slot-img" />
-                )}
-                {value.label === "Late Morning" && (
-                  <img src={morning} alt="slot" className="slot-img" />
-                )}
-                {value.label === "Afternoon" && (
-                  <img src={sun} alt="slot" className="slot-img" />
-                )}
-                {value.label === "Late Afternoon" && (
-                  <img src={sun} alt="slot" className="slot-img" />
-                )}
+                {value.label === "Morning" && <img src={morning} alt="slot" className="slot-img" />}
+                {value.label === "Late Morning" && <img src={morning} alt="slot" className="slot-img" />}
+                {value.label === "Afternoon" && <img src={sun} alt="slot" className="slot-img" />}
+                {value.label === "Late Afternoon" && <img src={sun} alt="slot" className="slot-img" />}
                 <div>
                   <span className="time-slot-btn-title">{value.time}</span>
                 </div>

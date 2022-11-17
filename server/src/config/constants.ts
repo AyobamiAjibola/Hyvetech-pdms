@@ -4,8 +4,7 @@ import { v4 } from "uuid";
 import QueueEvents = appCommonTypes.QueueEvents;
 import CheckListSectionType = appCommonTypes.CheckListSectionType;
 
-export const PASSWORD_PATTERN =
-  "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$";
+export const PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$";
 
 export const UPLOAD_BASE_PATH = "uploads";
 
@@ -56,12 +55,8 @@ export const QUARTER_PAYMENT_PLAN = "Quarterly Payment Plans";
 export const ONE_TIME_MOBILE_PLAN = Generic.generateSlug("one time mobile");
 export const ONE_TIME_DRIVE_IN_PLAN = Generic.generateSlug("one time drive-in");
 
-export const MOBILE_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug(
-  "mobile one time payment plan"
-);
-export const DRIVE_IN_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug(
-  "drive-in one time payment plan"
-);
+export const MOBILE_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug("mobile one time payment plan");
+export const DRIVE_IN_ONE_TIME_PAYMENT_PLAN = Generic.generateSlug("drive-in one time payment plan");
 
 export const MOBILE_CATEGORY = "Mobile";
 export const DRIVE_IN_CATEGORY = "Drive-in";
@@ -70,35 +65,19 @@ export const GARAGE_CATEGORY = "Garage";
 export const RIDE_SHARE_CATEGORY = "Ride-Share";
 
 export const HOUSE_HOLD_MOBILE_PLAN = Generic.generateSlug("house hold mobile");
-export const HOUSE_HOLD_DRIVE_IN_PLAN = Generic.generateSlug(
-  "house hold drive-in"
-);
+export const HOUSE_HOLD_DRIVE_IN_PLAN = Generic.generateSlug("house hold drive-in");
 export const HOUSE_HOLD_HYBRID_PLAN = Generic.generateSlug("house hold hybrid");
 
 export const FAF_MOBILE_PLAN = Generic.generateSlug("family & friends mobile");
-export const FAF_DRIVE_IN_PLAN = Generic.generateSlug(
-  "family & friends drive-in"
-);
+export const FAF_DRIVE_IN_PLAN = Generic.generateSlug("family & friends drive-in");
 export const FAF_HYBRID_PLAN = Generic.generateSlug("family & friends hybrid");
 
-export const MOBILE_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug(
-  "mobile house hold payment plan"
-);
-export const DRIVE_IN_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug(
-  "drive-in house hold payment plan"
-);
-export const HYBRID_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug(
-  "hybrid house hold payment plan"
-);
-export const MOBILE_FAF_PAYMENT_PLAN = Generic.generateSlug(
-  "mobile family & friends payment plan"
-);
-export const DRIVE_IN_FAF_PAYMENT_PLAN = Generic.generateSlug(
-  "drive-in family & friends payment plan"
-);
-export const HYBRID_FAF_PAYMENT_PLAN = Generic.generateSlug(
-  "hybrid family & friends payment plan"
-);
+export const MOBILE_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug("mobile house hold payment plan");
+export const DRIVE_IN_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug("drive-in house hold payment plan");
+export const HYBRID_HOUSE_HOLD_PAYMENT_PLAN = Generic.generateSlug("hybrid house hold payment plan");
+export const MOBILE_FAF_PAYMENT_PLAN = Generic.generateSlug("mobile family & friends payment plan");
+export const DRIVE_IN_FAF_PAYMENT_PLAN = Generic.generateSlug("drive-in family & friends payment plan");
+export const HYBRID_FAF_PAYMENT_PLAN = Generic.generateSlug("hybrid family & friends payment plan");
 
 export const INSPECTIONS_SERVICE = "Inspection";
 export const MAINTENANCE_SERVICE = "Maintenance";
@@ -136,8 +115,7 @@ export const CATEGORIES = [
 ];
 
 const VEHICLE_RISK_TEXT = "Vehicle Health & Risk Report";
-const HOME_OFFICE_LOCATION_TEXT =
-  "Home, office or any location within AMAC, Abuja";
+const HOME_OFFICE_LOCATION_TEXT = "Home, office or any location within AMAC, Abuja";
 const CLOSEST_OFFICE_LOCATION_TEXT = "Any Jiffix Garage Closest to you";
 const ONE_THREE_VEHICLES = "1-3 vehicle";
 const FOUR_SIX_VEHICLES = "4-6 vehicle";
@@ -180,11 +158,7 @@ export const PAYMENT_PLANS = {
       value: 9000,
       hasPromo: true,
       discount: 44.44,
-      descriptions: [
-        ONE_TIME_PLAN_DESC_VEHICLES,
-        PLAN_DESC_HOME_OFFICE,
-        PLAN_DESC_REPORT,
-      ],
+      descriptions: [ONE_TIME_PLAN_DESC_VEHICLES, PLAN_DESC_HOME_OFFICE, PLAN_DESC_REPORT],
     },
     {
       name: ANNUAL_PAYMENT_PLAN,
@@ -192,11 +166,7 @@ export const PAYMENT_PLANS = {
       value: 5000,
       hasPromo: true,
       discount: 80,
-      descriptions: [
-        ONE_TIME_PLAN_DESC_VEHICLES,
-        PLAN_DESC_CLOSEST_OFFICE,
-        PLAN_DESC_REPORT,
-      ],
+      descriptions: [ONE_TIME_PLAN_DESC_VEHICLES, PLAN_DESC_CLOSEST_OFFICE, PLAN_DESC_REPORT],
     },
   ],
   houseHold: [
@@ -454,3 +424,12 @@ export const INITIAL_CHECK_LIST_VALUES: CheckListSectionType = {
     },
   ],
 };
+
+export const INITIAL_PARTS_VALUE = {
+  name: "",
+  warranty: { warranty: "", interval: "" },
+  quantity: { quantity: "", unit: "" },
+  price: "0",
+};
+
+export const INITIAL_LABOURS_VALUE = { title: "", cost: "0" };

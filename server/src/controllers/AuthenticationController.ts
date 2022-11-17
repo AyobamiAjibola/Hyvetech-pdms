@@ -16,6 +16,7 @@ import dataSources from "../services/dao";
 import settings from "../config/settings";
 import { Op } from "sequelize";
 import Permission from "../models/Permission";
+import Partner from "../models/Partner";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -34,13 +35,7 @@ export default class AuthenticationController {
     try {
       const { error, value } = Joi.object($userSchema).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       const userExist = await dataSources.userDAOService.findByAny({
         where: {
@@ -49,25 +44,14 @@ export default class AuthenticationController {
       });
 
       if (userExist)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.BAD_REQUEST.value,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
 
       //find role by name
       const role = await dataSources.roleDAOService.findByAny({
         where: { slug: value.role },
       });
 
-      if (!role)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.NOT_FOUND.value,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+      if (!role) return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
 
       value.password = Generic.generateRandomString(15);
 
@@ -84,12 +68,7 @@ export default class AuthenticationController {
         });
 
         if (!partner)
-          return Promise.reject(
-            CustomAPIError.response(
-              HttpStatus.NOT_FOUND.value,
-              HttpStatus.NOT_FOUND.code
-            )
-          );
+          return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
 
         await partner.$add("users", [user]);
       }
@@ -117,10 +96,7 @@ export default class AuthenticationController {
           },
           subject: `Welcome to Jiffix ${value.companyName}`,
           html: mail,
-          bcc: [
-            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-            <string>process.env.SMTP_EMAIL_FROM,
-          ],
+          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
         },
       });
 
@@ -145,26 +121,13 @@ export default class AuthenticationController {
       //validate request body
       const { error, value } = Joi.object($loginSchema).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       //find user by username
-      const user = await dataSources.userDAOService.findByUsername(
-        value.username
-      );
+      const user = await dataSources.userDAOService.findByUsername(value.username, { include: [Partner] });
 
       if (!user)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.UNAUTHORIZED.value,
-            HttpStatus.UNAUTHORIZED.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
 
       //verify password
       const hash = user.password;
@@ -173,12 +136,7 @@ export default class AuthenticationController {
       const isMatch = await this.passwordEncoder.match(password, hash);
 
       if (!isMatch)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.UNAUTHORIZED.value,
-            HttpStatus.UNAUTHORIZED.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
 
       const roles = await user.$get("roles", {
         include: [
@@ -191,12 +149,7 @@ export default class AuthenticationController {
       });
 
       if (!roles.length)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Roles does not exist`,
-            HttpStatus.UNAUTHORIZED.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Roles does not exist`, HttpStatus.UNAUTHORIZED.code));
 
       const permissions = [];
 
@@ -209,6 +162,7 @@ export default class AuthenticationController {
       //generate JWT
       const jwt = Generic.generateJwt({
         userId: user.id,
+        partnerId: user.partnerId,
         permissions,
       });
 
@@ -218,10 +172,7 @@ export default class AuthenticationController {
         loginToken: jwt,
       };
 
-      await dataSources.userDAOService.update(
-        user,
-        <InferAttributes<User>>updateValues
-      );
+      await dataSources.userDAOService.update(user, <InferAttributes<User>>updateValues);
 
       const response: HttpResponse<string> = {
         code: HttpStatus.OK.code,
@@ -286,25 +237,14 @@ export default class AuthenticationController {
       const rawPassword = process.env.BOOTSTRAP_PASS;
 
       if (undefined === rawPassword)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.BAD_REQUEST.value,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
 
       //find role by name
       const role = await dataSources.roleDAOService.findByAny({
         where: { slug: settings.roles[2] },
       });
 
-      if (!role)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.NOT_FOUND.value,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+      if (!role) return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
 
       const hash = await this.passwordEncoder.encode(rawPassword);
 

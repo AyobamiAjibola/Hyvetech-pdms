@@ -25,25 +25,15 @@ export default class UserDAOService implements ICrudDAO<User> {
     this.passwordEncoder = new PasswordEncoder();
   }
 
-  update(
-    user: User,
-    values: InferAttributes<User>,
-    options?: UpdateOptions<InferAttributes<User>>
-  ): Promise<User> {
+  update(user: User, values: InferAttributes<User>, options?: UpdateOptions<InferAttributes<User>>): Promise<User> {
     return this.userRepository.updateOne(user, values, options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<InferAttributes<User>>
-  ): Promise<User | null> {
+  findById(id: number, options?: FindOptions<InferAttributes<User>>): Promise<User | null> {
     return this.userRepository.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<User>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<User>>): Promise<void> {
     return this.userRepository.deleteById(id, options);
   }
 
@@ -51,10 +41,7 @@ export default class UserDAOService implements ICrudDAO<User> {
     return this.userRepository.findOne(options);
   }
 
-  findByUsername(
-    username: string,
-    options?: FindOptions<InferAttributes<User>>
-  ): Promise<User | null> {
+  findByUsername(username: string, options?: FindOptions<InferAttributes<User>>): Promise<User | null> {
     return this.userRepository.findOne({ where: { username }, ...options });
   }
 
@@ -62,10 +49,7 @@ export default class UserDAOService implements ICrudDAO<User> {
     return this.userRepository.findAll(options);
   }
 
-  async create(
-    values: CreationAttributes<User>,
-    options?: CreateOptions<Attributes<User>>
-  ): Promise<User> {
+  async create(values: CreationAttributes<User>, options?: CreateOptions<Attributes<User>>): Promise<User> {
     if (values.password) {
       values.password = await this.passwordEncoder.encode(values.password);
     }

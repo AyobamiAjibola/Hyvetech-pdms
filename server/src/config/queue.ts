@@ -1,4 +1,4 @@
-import { connect } from "amqplib";
+import {connect} from "amqplib";
 import settings from "./settings";
 
 // @ts-ignore

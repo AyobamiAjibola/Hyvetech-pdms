@@ -11,12 +11,7 @@ import {
 } from "sequelize-typescript";
 import VehicleFault from "./VehicleFault";
 import Customer from "./Customer";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Vehicle from "./Vehicle";
 import Joi from "joi";
 import RideShareDriver from "./RideShareDriver";
@@ -40,10 +35,7 @@ export const $cancelInspectionSchema = {
   timestamps: true,
   tableName: "appointments",
 })
-export default class Appointment extends Model<
-  InferAttributes<Appointment>,
-  InferCreationAttributes<Appointment>
-> {
+export default class Appointment extends Model<InferAttributes<Appointment>, InferCreationAttributes<Appointment>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "appointment_id", allowNull: false })

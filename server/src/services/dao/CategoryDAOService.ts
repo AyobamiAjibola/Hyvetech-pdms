@@ -28,10 +28,7 @@ export default class CategoryDAOService implements ICrudDAO<Category> {
     this.categoryRepository = categoryRepository;
   }
 
-  create(
-    values: CreationAttributes<Category>,
-    options?: CreateOptions<Attributes<Category>>
-  ): Promise<Category> {
+  create(values: CreationAttributes<Category>, options?: CreateOptions<Attributes<Category>>): Promise<Category> {
     return this.categoryRepository.save(values, options);
   }
 
@@ -43,16 +40,11 @@ export default class CategoryDAOService implements ICrudDAO<Category> {
     return this.categoryRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Category>>
-  ): Promise<Category | null> {
+  findByAny(options: FindOptions<Attributes<Category>>): Promise<Category | null> {
     return this.categoryRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Category>>
-  ): Promise<Category | null> {
+  findById(id: number, options?: FindOptions<Attributes<Category>>): Promise<Category | null> {
     return this.categoryRepository.findById(id, options);
   }
 

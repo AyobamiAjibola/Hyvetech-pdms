@@ -337,7 +337,7 @@ export default function DriverVehicle(props: ILocationState) {
         show={viewImage}
         title="Vehicle paper"
         fullScreen
-        Content={<img src={imageUrl} alt="Vehicle paper" crossOrigin="anonymous" />}
+        Content={<img width="50%" src={imageUrl} alt="Vehicle paper" crossOrigin="anonymous" />}
         onClose={() => setViewImage(false)}
       />
       <AppModal fullWidth size="xs" show={viewSub} Content={<DriverSubscription />} onClose={() => setViewSub(false)} />

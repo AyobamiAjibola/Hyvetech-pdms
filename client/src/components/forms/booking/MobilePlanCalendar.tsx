@@ -32,9 +32,7 @@ function MobilePlanCalendar({
   const [_minDate, _setMinDate] = useState<any>();
   const [_date, _setDate] = useState(new Date());
 
-  const { setMobileDate, showTime, setShowTime } = useContext(
-    AppContext
-  ) as AppContextProps;
+  const { setMobileDate, showTime, setShowTime } = useContext(AppContext) as AppContextProps;
 
   useEffect(() => {
     _setMinDate(minDate);
@@ -111,8 +109,7 @@ function MobilePlanCalendar({
           sx={{
             mb: 1,
             fontSize: (theme) => theme.spacing(1),
-            color: (theme) =>
-              theme.palette.mode === "dark" ? "#FFFFFF" : "#383838",
+            color: (theme) => (theme.palette.mode === "dark" ? "#FFFFFF" : "#383838"),
           }}
         >
           Select Preferred Date
@@ -120,9 +117,7 @@ function MobilePlanCalendar({
         <StaticDatePicker
           displayStaticWrapperAs="desktop"
           openTo="day"
-          renderInput={(props) => (
-            <TextField {...props} fullWidth sx={{ alignSelf: "center" }} />
-          )}
+          renderInput={(props) => <TextField {...props} fullWidth sx={{ alignSelf: "center" }} />}
           value={_date}
           showToolbar={false}
           maxDate={_maxDate}
@@ -148,8 +143,7 @@ function MobilePlanCalendar({
                 mt: 2,
                 mb: 1,
                 fontSize: (theme) => theme.spacing(1),
-                color: (theme) =>
-                  theme.palette.mode === "dark" ? "#FFFFFF" : "#383838",
+                color: (theme) => (theme.palette.mode === "dark" ? "#FFFFFF" : "#383838"),
               }}
               textAlign="center"
               // className="time-header"

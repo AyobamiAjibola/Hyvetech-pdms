@@ -5,8 +5,7 @@ export default {
       info: {
         title: "PMS Application API",
         version: "1.0.0",
-        description:
-          "Jiffix Auto Care Project Management System Application Resource Endpoint API",
+        description: "Jiffix Auto Care Project Management System Application Resource Endpoint API",
       },
       host: "localhost:5400",
       components: {

@@ -17,15 +17,11 @@ import Contact from "./Contact";
 import PaymentDetail from "./PaymentDetail";
 import Appointment from "./Appointment";
 import Vehicle, { $vehicleSchema } from "./Vehicle";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Transaction from "./Transaction";
 import CustomerSubscription from "./CustomerSubscription";
 import CustomerPlanSubscription from "./CustomerPlanSubscription";
+import Estimate from "./Estimate";
 
 export const $customerSchema = {
   firstName: Joi.string().required().label("First Name"),
@@ -64,10 +60,7 @@ export const $addVehicleSchema = {
   timestamps: true,
   tableName: "customers",
 })
-export default class Customer extends Model<
-  InferAttributes<Customer>,
-  InferCreationAttributes<Customer>
-> {
+export default class Customer extends Model<InferAttributes<Customer>, InferCreationAttributes<Customer>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "customer_id" })
@@ -123,6 +116,9 @@ export default class Customer extends Model<
 
   @Column(DataType.DATE)
   declare loginDate: Date;
+
+  @HasMany(() => Estimate, { onDelete: "cascade" })
+  declare estimates: NonAttribute<Estimate[]>;
 
   @HasMany(() => Contact, { onDelete: "cascade" })
   declare contacts: NonAttribute<Contact[]>;

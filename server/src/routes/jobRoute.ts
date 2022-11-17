@@ -11,30 +11,22 @@ export const getJobHandler = authenticateRouteWrapper(async (req, res) => {
   res.status(response.code).json(response);
 });
 
-export const assignDriverJobHandler = authenticateRouteWrapper(
-  async (req, res) => {
-    const response = await JobController.assignDriverJob(req);
-    res.status(response.code).json(response);
-  }
-);
+export const assignDriverJobHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.assignDriverJob(req);
+  res.status(response.code).json(response);
+});
 
-export const assignCustomerJobHandler = authenticateRouteWrapper(
-  async (req, res) => {
-    const response = await JobController.assignCustomerJob(req);
-    res.status(response.code).json(response);
-  }
-);
+export const assignCustomerJobHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.assignCustomerJob(req);
+  res.status(response.code).json(response);
+});
 
-export const approveJobCheckListHandler = authenticateRouteWrapper(
-  async (req, res) => {
-    const response = await JobController.approveJobCheckList(req);
-    res.status(response.code).json(response);
-  }
-);
+export const approveJobCheckListHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.approveJobCheckList(req);
+  res.status(response.code).json(response);
+});
 
-export const updateJobVehicleHandler = authenticateRouteWrapper(
-  async (req, res) => {
-    const response = await JobController.updateJobVehicle(req);
-    res.status(response.code).json(response);
-  }
-);
+export const updateJobVehicleHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.updateJobVehicle(req);
+  res.status(response.code).json(response);
+});

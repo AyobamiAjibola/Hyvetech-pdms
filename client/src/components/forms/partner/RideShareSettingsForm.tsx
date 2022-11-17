@@ -1,9 +1,7 @@
 import React from "react";
 import { FieldArray, Form, useFormikContext } from "formik";
 import { Divider, Grid, Typography } from "@mui/material";
-import rideShareSettingsModel, {
-  IRideShareSettings,
-} from "../models/rideShareSettingsModel";
+import rideShareSettingsModel, { IRideShareSettings } from "../models/rideShareSettingsModel";
 import TextInputField from "../fields/TextInputField";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
@@ -63,14 +61,7 @@ function RideShareSettingsForm() {
                   {values.brands.length > 0 &&
                     values.brands.map((brand, index) => {
                       return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
+                        <Grid container item spacing={2} xs={12} key={index} columns={13}>
                           {Object.keys(brand).map((value) => (
                             <React.Fragment key={`${value}`}>
                               {value === "image" ? (
@@ -101,9 +92,7 @@ function RideShareSettingsForm() {
                             </React.Fragment>
                           ))}
                           <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
+                            <IconButton onClick={() => arrayHelpers.remove(index)}>
                               <Remove />
                             </IconButton>
                           </Grid>
@@ -143,14 +132,7 @@ function RideShareSettingsForm() {
                   {values.workingHours.length > 0 &&
                     values.workingHours.map((workingHour, index) => {
                       return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
+                        <Grid container item spacing={2} xs={12} key={index} columns={13}>
                           {Object.keys(workingHour).map((value) => (
                             <React.Fragment key={`${value}`}>
                               <Grid item xs={6} sx={{ mb: 2 }}>
@@ -167,9 +149,7 @@ function RideShareSettingsForm() {
                             </React.Fragment>
                           ))}
                           <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
+                            <IconButton onClick={() => arrayHelpers.remove(index)}>
                               <Remove />
                             </IconButton>
                           </Grid>
@@ -208,14 +188,7 @@ function RideShareSettingsForm() {
                   {values.images.length > 0 &&
                     values.images.map((image, index) => {
                       return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
+                        <Grid container item spacing={2} xs={12} key={index} columns={13}>
                           {Object.keys(image).map((value) => (
                             <React.Fragment key={`${value}`}>
                               <Grid item xs={11} sx={{ mb: 2 }}>
@@ -234,9 +207,7 @@ function RideShareSettingsForm() {
                             </React.Fragment>
                           ))}
                           <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
+                            <IconButton onClick={() => arrayHelpers.remove(index)}>
                               <Remove />
                             </IconButton>
                           </Grid>
@@ -244,9 +215,7 @@ function RideShareSettingsForm() {
                       );
                     })}
                   <Grid item xs>
-                    <IconButton
-                      onClick={() => arrayHelpers.push({ value: "" })}
-                    >
+                    <IconButton onClick={() => arrayHelpers.push({ value: "" })}>
                       <Add />
                     </IconButton>
                   </Grid>
@@ -256,14 +225,7 @@ function RideShareSettingsForm() {
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <LoadingButton
-            type="submit"
-            fullWidth
-            variant="outlined"
-            color="primary"
-            size="large"
-            endIcon={<Save />}
-          >
+          <LoadingButton type="submit" fullWidth variant="outlined" color="primary" size="large" endIcon={<Save />}>
             Save
           </LoadingButton>
         </Grid>

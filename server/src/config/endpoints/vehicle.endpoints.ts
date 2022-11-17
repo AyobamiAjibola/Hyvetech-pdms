@@ -1,7 +1,4 @@
-import {
-  getVehicleSubscriptions,
-  getVehicleVIN,
-} from "../../routes/vehicleRoute";
+import { getVehicleSubscriptions, getVehicleVIN } from "../../routes/vehicleRoute";
 import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 

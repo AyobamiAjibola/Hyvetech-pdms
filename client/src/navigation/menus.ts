@@ -9,6 +9,7 @@ import DriverTransactions from "../components/driver/Transactions";
 import DriverVehicles from "../components/driver/Vehicles";
 import DriverProfile from "../components/partner/garage/DriverProfile";
 import GarageVehicles from "../components/partner/garage/DriverVehicles";
+import OwnerVehicles from "../components/partner/garage/CustomerVehicles";
 import GarageProfileAndSetting from "../components/partner/garage/GarageProfileAndSetting";
 import RideShareDriver from "../components/partner/garage/RideShareDriver";
 import PaymentPlans from "../components/partner/rideShare/PaymentPlans";
@@ -17,6 +18,7 @@ import RideShareSettings from "../components/partner/rideShare/RideShareSettings
 import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from "../config/constants";
 import TechniciansPage from "../pages/technician/TechniciansPage";
 import Estimate from "../components/partner/garage/Estimate";
+import VehicleOwner from "../components/partner/garage/VehicleOwner";
 
 export const customerDetailTabs: ITab[] = [
   { name: "Vehicles", Element: CustomerVehicles },
@@ -43,11 +45,11 @@ export const partnerDetailTabs: ITab[] = [
     name: "Settings",
     Element: RideShareSettings,
   },
-  // {
-  //   tag: GARAGE_CATEGORY,
-  //   name: "Jiffix Hyve",
-  //   Element: VehicleOwner,
-  // },
+  {
+    tag: GARAGE_CATEGORY,
+    name: "Auto Hyve",
+    Element: VehicleOwner,
+  },
   {
     tag: GARAGE_CATEGORY,
     name: "Ride Share Hyve",
@@ -68,5 +70,10 @@ export const partnerDetailTabs: ITab[] = [
 export const driverSearchResultTabs: ITab[] = [
   { tag: "driver", name: "Driver Profile", Element: DriverProfile },
   { tag: "driver", name: "Vehicles", Element: GarageVehicles },
+];
+
+export const customerSearchResultTabs: ITab[] = [
+  { tag: "driver", name: "Driver Profile", Element: DriverProfile },
+  { tag: "driver", name: "Vehicles", Element: OwnerVehicles },
   { tag: "driver", name: "Create Estimate", Element: Estimate },
 ];

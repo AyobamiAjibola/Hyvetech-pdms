@@ -5,24 +5,13 @@ import Typography from "@mui/material/Typography";
 import { Formik, FormikHelpers } from "formik";
 import { Button } from "@mui/material";
 import AppModal from "../../components/modal/AppModal";
-import {
-  Image,
-  ImageBackdrop,
-  ImageButton,
-  ImageMarked,
-  ImageSrc,
-} from "../../components/buttons/imageButton";
+import { Image, ImageBackdrop, ImageButton, ImageMarked, ImageSrc } from "../../components/buttons/imageButton";
 
-import partnerModel, {
-  ICreatePartnerModel,
-} from "../../components/forms/models/partnerModel";
+import partnerModel, { ICreatePartnerModel } from "../../components/forms/models/partnerModel";
 import useAppSelector from "../../hooks/useAppSelector";
 import useAppDispatch from "../../hooks/useAppDispatch";
 import { getStatesAndDistrictsAction } from "../../store/actions/miscellaneousActions";
-import {
-  createPartnerAction,
-  getPartnersAction,
-} from "../../store/actions/partnerActions";
+import { createPartnerAction, getPartnersAction } from "../../store/actions/partnerActions";
 import CreatePartnerForm from "../../components/forms/partner/CreatePartnerForm";
 
 import partnerImg from "../../assets/images/partner2.jpg";
@@ -30,10 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { getImageUrl } from "../../utils/generic";
 import { IImageButtonData } from "@app-interfaces";
 import { clearGetStatesAndDistrictsStatus } from "../../store/reducers/miscellaneousReducer";
-import {
-  clearCreatePartnerStatus,
-  clearGetPartnersStatus,
-} from "../../store/reducers/partnerReducer";
+import { clearCreatePartnerStatus, clearGetPartnersStatus } from "../../store/reducers/partnerReducer";
 import AppLoader from "../../components/loader/AppLoader";
 
 export default function PartnersPage() {
@@ -106,10 +92,7 @@ export default function PartnersPage() {
     setCreatePartner(false);
   };
 
-  function handleSubmit(
-    values: ICreatePartnerModel,
-    formikHelper: FormikHelpers<ICreatePartnerModel>
-  ) {
+  function handleSubmit(values: ICreatePartnerModel, formikHelper: FormikHelpers<ICreatePartnerModel>) {
     dispatch(createPartnerAction(values));
     formikHelper.resetForm();
   }
@@ -117,17 +100,11 @@ export default function PartnersPage() {
   return (
     <React.Fragment>
       <Box mb={1}>
-        <Button
-          onClick={handleOpenCreatePartner}
-          variant="outlined"
-          color="secondary"
-        >
+        <Button onClick={handleOpenCreatePartner} variant="outlined" color="secondary">
           Create Partner
         </Button>
       </Box>
-      <Box
-        sx={{ display: "flex", flexWrap: "wrap", minWidth: 300, width: "100%" }}
-      >
+      <Box sx={{ display: "flex", flexWrap: "wrap", minWidth: 300, width: "100%" }}>
         {images.map((image) => {
           return (
             <ImageButton

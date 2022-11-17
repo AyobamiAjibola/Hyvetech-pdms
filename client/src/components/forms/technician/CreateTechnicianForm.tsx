@@ -16,12 +16,9 @@ interface IProps {
 }
 
 function CreateTechnicianForm(props: IProps) {
-  const { handleChange, values, resetForm } =
-    useFormikContext<ITechnicianValues>();
+  const { handleChange, values, resetForm } = useFormikContext<ITechnicianValues>();
 
-  const { showCreate, showEdit } = useContext(
-    TechniciansPageContext
-  ) as TechniciansPageContextProps;
+  const { showCreate, showEdit } = useContext(TechniciansPageContext) as TechniciansPageContextProps;
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -31,12 +28,7 @@ function CreateTechnicianForm(props: IProps) {
 
   return (
     <Form>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        sx={{ p: 1 }}
-      >
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }}>
         <Grid item xs={12}>
           <SwitchField
             onChange={handleChange}

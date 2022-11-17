@@ -1,25 +1,11 @@
-import {
-  AutoIncrement,
-  Column,
-  DataType,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-} from "sequelize/types";
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize/types";
 
 @Table({
   timestamps: true,
   tableName: "banks",
 })
-export default class Bank extends Model<
-  InferAttributes<Bank>,
-  InferCreationAttributes<Bank>
-> {
+export default class Bank extends Model<InferAttributes<Bank>, InferCreationAttributes<Bank>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "bank_id", allowNull: false })

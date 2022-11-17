@@ -1,11 +1,6 @@
 import React, { SyntheticEvent } from "react";
 
-import {
-  Autocomplete,
-  AutocompleteChangeReason,
-  createFilterOptions,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, AutocompleteChangeReason, createFilterOptions, TextField } from "@mui/material";
 import bookingModel from "../../../components/forms/models/bookingModel";
 import { useFormikContext } from "formik";
 import { IBookingFormValues } from "./BookingForm";
@@ -19,23 +14,15 @@ export interface IOptionType {
 export const filterOptions = createFilterOptions<IOptionType>();
 
 function Location() {
-  const { values, setFieldValue, handleBlur, errors, touched } =
-    useFormikContext<IBookingFormValues>();
+  const { values, setFieldValue, handleBlur, errors, touched } = useFormikContext<IBookingFormValues>();
 
   const customerReducer = useAppSelector((state) => state.customerReducer);
 
-  const _handleChange = (
-    event: SyntheticEvent,
-    value: any,
-    reason: AutocompleteChangeReason
-  ) => {
-    if (reason === "clear")
-      return setFieldValue(bookingModel.fields.location.name, "");
-    if (typeof value === "string")
-      return setFieldValue(bookingModel.fields.location.name, value);
+  const _handleChange = (event: SyntheticEvent, value: any, reason: AutocompleteChangeReason) => {
+    if (reason === "clear") return setFieldValue(bookingModel.fields.location.name, "");
+    if (typeof value === "string") return setFieldValue(bookingModel.fields.location.name, value);
 
-    if (value.inputValue)
-      return setFieldValue(bookingModel.fields.location.name, value.inputValue);
+    if (value.inputValue) return setFieldValue(bookingModel.fields.location.name, value.inputValue);
   };
 
   return (
@@ -63,9 +50,7 @@ function Location() {
 
         const { inputValue } = params;
         // Suggest the creation of a new value
-        const isExisting = options.some(
-          (option: { title: string }) => inputValue === option.title
-        );
+        const isExisting = options.some((option: { title: string }) => inputValue === option.title);
         if (inputValue !== "" && !isExisting) {
           filtered.push({
             inputValue,
@@ -81,18 +66,12 @@ function Location() {
           name={bookingModel.fields.location.name}
           label={bookingModel.fields.location.label}
           fullWidth
-          error={
-            errors.location !== undefined && touched.location !== undefined
-          }
+          error={errors.location !== undefined && touched.location !== undefined}
           helperText={errors.location && touched.location && errors.location}
         />
       )}
-      options={customerReducer.contacts
-        .filter((value) => value.address)
-        .map((value) => value.label)}
-      isOptionEqualToValue={(option: any, value) =>
-        option.label === value.label
-      }
+      options={customerReducer.contacts.filter((value) => value.address).map((value) => value.label)}
+      isOptionEqualToValue={(option: any, value) => option.label === value.label}
     />
   );
 }

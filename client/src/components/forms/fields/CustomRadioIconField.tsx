@@ -47,9 +47,7 @@ export default function CustomRadioIconField(props: IProps) {
         {props.options
           .filter((img) => img.questionId === props.questionId)
           .map((option, index) => {
-            const imgUrl = option.url.match("blob")?.input
-              ? option.url
-              : getImageUrl(option.url);
+            const imgUrl = option.url.match("blob")?.input ? option.url : getImageUrl(option.url);
 
             return (
               <Sheet
@@ -71,25 +69,14 @@ export default function CustomRadioIconField(props: IProps) {
                 <Radio
                   id={option.id}
                   value={option.title}
-                  onClick={() =>
-                    props.onView ? props.onView(option.id) : null
-                  }
+                  onClick={() => (props.onView ? props.onView(option.id) : null)}
                   checkedIcon={
                     <CloseOutlined
-                      onClick={() =>
-                        props.onDelete
-                          ? props.onDelete(option.id, props.questionId)
-                          : null
-                      }
+                      onClick={() => (props.onDelete ? props.onDelete(option.id, props.questionId) : null)}
                     />
                   }
                 />
-                <img
-                  crossOrigin="anonymous"
-                  src={imgUrl}
-                  width="50%"
-                  alt={option.title}
-                />
+                <img crossOrigin="anonymous" src={imgUrl} width="50%" alt={option.title} />
               </Sheet>
             );
           })}

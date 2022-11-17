@@ -16,9 +16,7 @@ import { MESSAGES } from "../../config/constants";
 function Transactions() {
   const [_transactions, _setTransactions] = useState<ITransaction[]>([]);
 
-  const { customer } = useContext(
-    CustomerPageContext
-  ) as CustomerPageContextProps;
+  const { customer } = useContext(CustomerPageContext) as CustomerPageContextProps;
 
   const customerReducer = useAppSelector((state) => state.customerReducer);
 
@@ -36,10 +34,7 @@ function Transactions() {
     if (customerReducer.getCustomerTransactionsStatus === "completed") {
       _setTransactions(customerReducer.transactions);
     }
-  }, [
-    customerReducer.getCustomerTransactionsStatus,
-    customerReducer.transactions,
-  ]);
+  }, [customerReducer.getCustomerTransactionsStatus, customerReducer.transactions]);
 
   const handleView = (txn: ITransaction) => {
     navigate(`/transactions/${txn.id}`, { state: { transaction: txn } });
@@ -134,9 +129,7 @@ const columns = (options?: any) =>
       sortable: true,
       width: 200,
       valueFormatter: (params) => {
-        return params.value
-          ? moment(params.value).utc(true).format("LLL")
-          : "-";
+        return params.value ? moment(params.value).utc(true).format("LLL") : "-";
       },
     },
     {

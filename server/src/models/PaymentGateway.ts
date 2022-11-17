@@ -1,16 +1,5 @@
-import {
-  AutoIncrement,
-  Column,
-  DataType,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-} from "sequelize";
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize";
 
 @Table({
   timestamps: true,

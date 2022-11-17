@@ -204,6 +204,12 @@ const partnerSlice = createSlice({
       state.getDriversFilterDataError = "";
     },
 
+    clearGetOwnersFilterDataStatus(state: IPartnerState) {
+      state.getOwnersFilterDataStatus = "idle";
+      state.getOwnersFilterDataSuccess = "";
+      state.getOwnersFilterDataError = "";
+    },
+
     clearDeletePlanStatus(state: IPartnerState) {
       state.deletePlanStatus = "idle";
       state.deletePlanSuccess = "";
@@ -468,6 +474,7 @@ export const {
   clearDeletePaymentPlanStatus,
   clearDeletePlanStatus,
   clearDeletePartnerStatus,
+  clearGetOwnersFilterDataStatus,
 } = partnerSlice.actions;
 
 export default partnerSlice.reducer;

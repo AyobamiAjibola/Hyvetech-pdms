@@ -23,16 +23,13 @@ interface IDateTimeFieldProps {
 }
 
 export default function DateInputField(props: IDateTimeFieldProps) {
-  const { errors, touched, setFieldValue, setFieldTouched } =
-    useFormikContext();
+  const { errors, touched, setFieldValue, setFieldTouched } = useFormikContext();
 
   const handleChange = (date: Date | null) => {
     setFieldValue(props.name, date);
   };
 
-  const handleBlur = (
-    event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleBlur = (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFieldTouched(props.name, event.target.value.length === 0);
   };
 
@@ -46,9 +43,7 @@ export default function DateInputField(props: IDateTimeFieldProps) {
           //@ts-ignore
           date={props.value}
           rawValue={props.value}
-          renderInput={(params) => (
-            <TextField {...params} {...props} onBlur={handleBlur} />
-          )}
+          renderInput={(params) => <TextField {...params} {...props} onBlur={handleBlur} />}
         />
         <ErrorField
           helperStyle={props.helperStyle}

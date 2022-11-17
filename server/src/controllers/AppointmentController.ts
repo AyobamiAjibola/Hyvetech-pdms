@@ -8,10 +8,7 @@ import { QueueManager } from "rabbitmq-email-manager";
 import { appCommonTypes } from "../@types/app-common";
 import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
-import Appointment, {
-  $cancelInspectionSchema,
-  $rescheduleInspectionSchema,
-} from "../models/Appointment";
+import Appointment, { $cancelInspectionSchema, $rescheduleInspectionSchema } from "../models/Appointment";
 
 import CustomAPIError from "../exceptions/CustomAPIError";
 import Vehicle from "../models/Vehicle";
@@ -85,33 +82,16 @@ export default class AppointmentController {
     }).validate(params);
 
     if (error) {
-      return Promise.reject(
-        CustomAPIError.response(
-          error.details[0].message,
-          HttpStatus.NOT_FOUND.code
-        )
-      );
+      return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
     }
 
     try {
-      const appointment = await dataSources.appointmentDAOService.findById(
-        +value?.appointmentId,
-        {
-          include: [
-            { model: Vehicle },
-            { model: VehicleFault },
-            { model: Customer },
-          ],
-        }
-      );
+      const appointment = await dataSources.appointmentDAOService.findById(+value?.appointmentId, {
+        include: [{ model: Vehicle }, { model: VehicleFault }, { model: Customer }],
+      });
 
       if (!appointment) {
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.NOT_FOUND.value,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
       }
 
       const response: HttpResponse<Appointment> = {
@@ -142,12 +122,7 @@ export default class AppointmentController {
     }).validate(req.body);
 
     if (error) {
-      return Promise.reject(
-        CustomAPIError.response(
-          error.details[0].message,
-          HttpStatus.BAD_REQUEST.code
-        )
-      );
+      return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
     }
 
     const planCategory = value.planCategory;
@@ -161,9 +136,7 @@ export default class AppointmentController {
     const reference = value.reference;
 
     //construct plan label
-    const planLabel = Generic.generateSlug(
-      `${subscriptionName} ${planCategory}`
-    );
+    const planLabel = Generic.generateSlug(`${subscriptionName} ${planCategory}`);
 
     try {
       /**** Find subscription -> start*****/
@@ -175,10 +148,7 @@ export default class AppointmentController {
 
       if (!subscription) {
         return Promise.reject(
-          CustomAPIError.response(
-            `Subscription ${subscriptionName} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Subscription ${subscriptionName} does not exist`, HttpStatus.NOT_FOUND.code)
         );
       }
       /**** Find subscription -> end*****/
@@ -206,25 +176,13 @@ export default class AppointmentController {
 
       //if vehicle does not exist, throw error
       if (!vehicle) {
-        return Promise.reject(
-          CustomAPIError.response(
-            `Vehicle does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Vehicle does not exist`, HttpStatus.NOT_FOUND.code));
       }
 
-      const customerData = await dataSources.customerDAOService.findById(
-        customerId
-      );
+      const customerData = await dataSources.customerDAOService.findById(customerId);
 
       if (!customerData) {
-        return Promise.reject(
-          CustomAPIError.response(
-            `Customer does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Customer does not exist`, HttpStatus.NOT_FOUND.code));
       }
 
       let message, modeOfService, startDate, endDate;
@@ -234,19 +192,15 @@ export default class AppointmentController {
       const date = appointmentDate.date();
 
       //find customer subscription by subscription name and plan category
-      const customerSubscription =
-        await dataSources.customerSubscriptionDAOService.findByAny({
-          where: {
-            [Op.and]: [{ planType: subscriptionName }, { planCategory }],
-          },
-          include: [{ model: Customer, where: { id: customerId } }],
-        });
+      const customerSubscription = await dataSources.customerSubscriptionDAOService.findByAny({
+        where: {
+          [Op.and]: [{ planType: subscriptionName }, { planCategory }],
+        },
+        include: [{ model: Customer, where: { id: customerId } }],
+      });
 
       //If plan is mobile or plan is hybrid and mobile
-      if (
-        planCategory === MOBILE_CATEGORY ||
-        (planCategory === HYBRID_CATEGORY && serviceLocation !== MAIN_OFFICE)
-      ) {
+      if (planCategory === MOBILE_CATEGORY || (planCategory === HYBRID_CATEGORY && serviceLocation !== MAIN_OFFICE)) {
         startDate = appointmentDate;
 
         endDate = moment(appointmentDate).add(MOBILE_INSPECTION_TIME, "hours");
@@ -285,17 +239,13 @@ export default class AppointmentController {
       };
 
       //book appointment
-      const booking = await dataSources.appointmentDAOService.create(
-        bookingValues
-      );
+      const booking = await dataSources.appointmentDAOService.create(bookingValues);
 
       const vehicleFaultValues: any = {
         description: vehicleFault,
       };
 
-      const _vehicleFault = await dataSources.vehicleFaultDAOService.create(
-        vehicleFaultValues
-      );
+      const _vehicleFault = await dataSources.vehicleFaultDAOService.create(vehicleFaultValues);
 
       await booking.$set("vehicleFault", _vehicleFault);
 
@@ -310,10 +260,7 @@ export default class AppointmentController {
       await customerData.$add("appointments", [booking]);
 
       //if this is a plan, then update mode of service of customer subscription
-      if (
-        value.subscriptionName !== SUBSCRIPTIONS[0].name &&
-        customerSubscription
-      ) {
+      if (value.subscriptionName !== SUBSCRIPTIONS[0].name && customerSubscription) {
         const subscriptionPlan = await subscription.$get("plans", {
           where: { label: planLabel },
         });
@@ -325,53 +272,31 @@ export default class AppointmentController {
         let driveInCount = customerSubscription.driveInCount;
 
         //Hybrid mobile
-        if (
-          planCategory === HYBRID_CATEGORY &&
-          serviceLocation !== MAIN_OFFICE
-        ) {
+        if (planCategory === HYBRID_CATEGORY && serviceLocation !== MAIN_OFFICE) {
           if (mobileCount < defaultMobileInspections) {
             mobileCount++;
-          } else
-            return this.getInspectionsCountError(
-              subscriptionName,
-              MOBILE_CATEGORY
-            );
+          } else return this.getInspectionsCountError(subscriptionName, MOBILE_CATEGORY);
         }
 
         //Hybrid drive-in
-        if (
-          planCategory === HYBRID_CATEGORY &&
-          serviceLocation === MAIN_OFFICE
-        ) {
+        if (planCategory === HYBRID_CATEGORY && serviceLocation === MAIN_OFFICE) {
           if (driveInCount < defaultDriveInInspections) {
             driveInCount++;
-          } else
-            return this.getInspectionsCountError(
-              subscriptionName,
-              DRIVE_IN_CATEGORY
-            );
+          } else return this.getInspectionsCountError(subscriptionName, DRIVE_IN_CATEGORY);
         }
 
         //Increment count for normal mobile inspection
         if (planCategory === MOBILE_CATEGORY) {
           if (mobileCount < defaultMobileInspections) {
             mobileCount++;
-          } else
-            return this.getInspectionsCountError(
-              subscriptionName,
-              MOBILE_CATEGORY
-            );
+          } else return this.getInspectionsCountError(subscriptionName, MOBILE_CATEGORY);
         }
 
         //increment count for normal drive-in inspection
         if (planCategory === DRIVE_IN_CATEGORY) {
           if (driveInCount < defaultDriveInInspections) {
             driveInCount++;
-          } else
-            return this.getInspectionsCountError(
-              subscriptionName,
-              DRIVE_IN_CATEGORY
-            );
+          } else return this.getInspectionsCountError(subscriptionName, DRIVE_IN_CATEGORY);
         }
 
         await customerSubscription.update({
@@ -439,10 +364,7 @@ export default class AppointmentController {
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
           subject: "Jiffix Appointment Confirmation",
-          bcc: [
-            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-            <string>process.env.SMTP_EMAIL_FROM,
-          ],
+          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,
           icalEvent: {
             method: "request",
@@ -466,47 +388,34 @@ export default class AppointmentController {
     }
   }
 
-  public static async updateAppointment(
-    req: Request
-  ): Promise<HttpResponse<Appointment>> {
+  public static async updateAppointment(req: Request): Promise<HttpResponse<Appointment>> {
     const appointmentId = req.params.appointmentId as string;
 
     return new Promise((resolve, reject) => {
       form.parse(req, async (err, fields, files) => {
         try {
-          const appointment = await dataSources.appointmentDAOService.findById(
-            +appointmentId,
-            {
-              include: [
-                { model: Vehicle },
-                { model: VehicleFault },
-                {
-                  model: Customer,
-                  attributes: {
-                    exclude: ["password", "rawPassword", "loginToken"],
-                  },
+          const appointment = await dataSources.appointmentDAOService.findById(+appointmentId, {
+            include: [
+              { model: Vehicle },
+              { model: VehicleFault },
+              {
+                model: Customer,
+                attributes: {
+                  exclude: ["password", "rawPassword", "loginToken"],
                 },
-              ],
-            }
-          );
+              },
+            ],
+          });
 
           if (!appointment) {
-            return reject(
-              CustomAPIError.response(
-                HttpStatus.NOT_FOUND.value,
-                HttpStatus.NOT_FOUND.code
-              )
-            );
+            return reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
           }
 
           const basePath = `${UPLOAD_BASE_PATH}/docs`;
 
           if (undefined === fields || undefined === files) {
             return reject(
-              CustomAPIError.response(
-                HttpStatus.INTERNAL_SERVER_ERROR.value,
-                HttpStatus.INTERNAL_SERVER_ERROR.code
-              )
+              CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code)
             );
           }
 
@@ -564,49 +473,31 @@ export default class AppointmentController {
   public static async rescheduleInspection(req: Request) {
     try {
       //validate request body
-      const { error, value } = Joi.object($rescheduleInspectionSchema).validate(
-        req.body
-      );
+      const { error, value } = Joi.object($rescheduleInspectionSchema).validate(req.body);
 
       if (error) {
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
       }
 
       const id = req.params?.appointmentId as string;
       const customerId = value?.customerId;
 
-      const customer = await dataSources.customerDAOService.findById(
-        customerId
-      );
+      const customer = await dataSources.customerDAOService.findById(customerId);
 
       if (!customer) {
         return Promise.reject(
-          CustomAPIError.response(
-            `Customer with Id: ${id} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Customer with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code)
         );
       }
 
       //find appointment by id
-      const appointment = await dataSources.appointmentDAOService.findById(
-        +id,
-        {
-          include: [VehicleFault, Vehicle],
-        }
-      );
+      const appointment = await dataSources.appointmentDAOService.findById(+id, {
+        include: [VehicleFault, Vehicle],
+      });
 
       if (!appointment) {
         return Promise.reject(
-          CustomAPIError.response(
-            `Appointment with Id: ${id} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Appointment with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code)
         );
       }
 
@@ -627,10 +518,7 @@ export default class AppointmentController {
       const now = moment();
       if (appointmentDate.diff(now) === RESCHEDULE_CONSTRAINT) {
         return Promise.reject(
-          CustomAPIError.response(
-            "Sorry you cannot reschedule 1 hour to inspection",
-            HttpStatus.BAD_REQUEST.code
-          )
+          CustomAPIError.response("Sorry you cannot reschedule 1 hour to inspection", HttpStatus.BAD_REQUEST.code)
         );
       }
 
@@ -641,10 +529,7 @@ export default class AppointmentController {
       const date = appointmentDate.date();
 
       //If plan is mobile or plan is hybrid and mobile
-      if (
-        planCategory === MOBILE_CATEGORY ||
-        (planCategory === HYBRID_CATEGORY && serviceLocation !== MAIN_OFFICE)
-      ) {
+      if (planCategory === MOBILE_CATEGORY || (planCategory === HYBRID_CATEGORY && serviceLocation !== MAIN_OFFICE)) {
         startDate = appointmentDate;
 
         endDate = moment(appointmentDate).add(MOBILE_INSPECTION_TIME, "hours");
@@ -680,34 +565,24 @@ export default class AppointmentController {
         if (currDate === appointmentDate) {
           return Promise.reject(
             CustomAPIError.response(
-              `New date ${appointmentDate.format(
-                "LLL"
-              )} is already taken. Choose another date and time`,
+              `New date ${appointmentDate.format("LLL")} is already taken. Choose another date and time`,
               HttpStatus.BAD_REQUEST.code
             )
           );
         }
       }
 
-      const subscription =
-        await dataSources.customerSubscriptionDAOService.findByAny({
-          where: { id: vehicle?.customerSubscriptionId },
-        });
+      const subscription = await dataSources.customerSubscriptionDAOService.findByAny({
+        where: { id: vehicle?.customerSubscriptionId },
+      });
 
       //If this is a subscribed plan && hybrid mode of service
       if (subscription && subscription.isHybrid) {
         //Mobile service mode
-        await this.mutateMobileServiceModeAfterReschedule(
-          serviceLocation,
-          subscription,
-          appointment
-        );
+        await this.mutateMobileServiceModeAfterReschedule(serviceLocation, subscription, appointment);
 
         //Drive in service mode
-        this.mutateDriveInModeCountsAfterReschedule(
-          serviceLocation,
-          subscription
-        );
+        this.mutateDriveInModeCountsAfterReschedule(serviceLocation, subscription);
 
         await subscription.save();
       }
@@ -780,10 +655,7 @@ export default class AppointmentController {
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
           subject: "Vehicle Appointment Reschedule Confirmation",
-          bcc: [
-            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-            <string>process.env.SMTP_EMAIL_FROM,
-          ],
+          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,
           icalEvent: {
             method: "request",
@@ -812,49 +684,31 @@ export default class AppointmentController {
   public static async cancelInspection(req: Request) {
     try {
       //validate request body
-      const { error, value } = Joi.object($cancelInspectionSchema).validate(
-        req.body
-      );
+      const { error, value } = Joi.object($cancelInspectionSchema).validate(req.body);
 
       if (error) {
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
       }
 
       const id = req.params?.appointmentId as string;
       const customerId = value?.customerId;
 
-      const customer = await dataSources.customerDAOService.findById(
-        customerId
-      );
+      const customer = await dataSources.customerDAOService.findById(customerId);
 
       if (!customer) {
         return Promise.reject(
-          CustomAPIError.response(
-            `Customer with Id: ${id} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Customer with Id: ${id} does not exist`, HttpStatus.NOT_FOUND.code)
         );
       }
 
       //find appointment by id
-      const appointment = await dataSources.appointmentDAOService.findById(
-        +id,
-        {
-          include: [Vehicle, VehicleFault],
-        }
-      );
+      const appointment = await dataSources.appointmentDAOService.findById(+id, {
+        include: [Vehicle, VehicleFault],
+      });
 
       if (!appointment) {
         return Promise.reject(
-          CustomAPIError.response(
-            `Appointment with Id: ${id} does not exist`,
-            HttpStatus.BAD_REQUEST.code
-          )
+          CustomAPIError.response(`Appointment with Id: ${id} does not exist`, HttpStatus.BAD_REQUEST.code)
         );
       }
 
@@ -864,10 +718,9 @@ export default class AppointmentController {
       const appointmentDate = moment(appointment.appointmentDate).utc(true);
       const vehicle = appointment.vehicle;
 
-      const subscription =
-        await dataSources.customerSubscriptionDAOService.findByAny({
-          where: { id: vehicle.customerSubscriptionId },
-        });
+      const subscription = await dataSources.customerSubscriptionDAOService.findByAny({
+        where: { id: vehicle.customerSubscriptionId },
+      });
 
       if (appointment.planCategory === DRIVE_IN_CATEGORY) {
         await Generic.enableTimeSlot(appointmentDate, appointment);
@@ -917,10 +770,7 @@ export default class AppointmentController {
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
           subject: "Vehicle Appointment Cancellation Confirmation",
-          bcc: [
-            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-            <string>process.env.SMTP_EMAIL_FROM,
-          ],
+          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,
         },
       });
@@ -938,10 +788,7 @@ export default class AppointmentController {
     }
   }
 
-  private static async mutatePlanCountsAfterCancel(
-    subscription: CustomerSubscription,
-    serviceLocation: string
-  ) {
+  private static async mutatePlanCountsAfterCancel(subscription: CustomerSubscription, serviceLocation: string) {
     //handle for hybrid mode of service
     if (subscription.isHybrid) {
       //mobile service mode
@@ -949,10 +796,8 @@ export default class AppointmentController {
       //drive in service mode
       if (serviceLocation === MAIN_OFFICE) subscription.driveInCount -= 1;
     } else {
-      if (subscription.planCategory === MOBILE_CATEGORY)
-        subscription.mobileCount -= 1;
-      if (subscription.planCategory === DRIVE_IN_CATEGORY)
-        subscription.driveInCount -= 1;
+      if (subscription.planCategory === MOBILE_CATEGORY) subscription.mobileCount -= 1;
+      if (subscription.planCategory === DRIVE_IN_CATEGORY) subscription.driveInCount -= 1;
     }
 
     subscription.inspections -= 1; //decrement total inspections
@@ -960,10 +805,7 @@ export default class AppointmentController {
     await subscription.save();
   }
 
-  private static mutateDriveInModeCountsAfterReschedule(
-    serviceLocation: string,
-    subscription: CustomerSubscription
-  ) {
+  private static mutateDriveInModeCountsAfterReschedule(serviceLocation: string, subscription: CustomerSubscription) {
     //Only update drive in count if it is less than 1
     if (serviceLocation === MAIN_OFFICE && subscription.driveInCount < 1) {
       subscription.driveInCount += 1;
@@ -988,10 +830,7 @@ export default class AppointmentController {
     }
   }
 
-  private static getInspectionsCountError(
-    subscriptionName: string,
-    category: string
-  ) {
+  private static getInspectionsCountError(subscriptionName: string, category: string) {
     return Promise.reject(
       CustomAPIError.response(
         `Maximum number of ${category} inspections reached for plan ${subscriptionName}`,

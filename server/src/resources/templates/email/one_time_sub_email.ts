@@ -6,11 +6,9 @@ export default function one_time_sub_email(config: MailTextConfig) {
     let text = "";
 
     if (config.planCategory === "Mobile")
-      text =
-        "your location (no need to stress, tell us where and when, and we will come to you).";
+      text = "your location (no need to stress, tell us where and when, and we will come to you).";
 
-    if (config.planCategory === "Drive-in")
-      text = "any of our partner garages.";
+    if (config.planCategory === "Drive-in") text = "any of our partner garages.";
 
     return text;
   };

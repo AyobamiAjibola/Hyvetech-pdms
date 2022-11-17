@@ -1,17 +1,15 @@
-import './publicLayout.css';
+import "./publicLayout.css";
 
-import { Box, Paper, Theme } from '@mui/material';
-import React from 'react';
+import { Box, Paper, Theme } from "@mui/material";
+import React from "react";
 
-import cover from '../../assets/images/cover.png';
-import mechanic from '../../assets/images/mechanic.jpg';
+import cover from "../../assets/images/cover.png";
+import mechanic from "../../assets/images/mechanic.jpg";
 
 export default function PublicLayout({ children }: any) {
   return (
     <Box sx={mainContainerStyle}>
-      <span className="rightReserved">
-        © 2022 All Rights Reserved, Jiffix Technologies Limited.
-      </span>
+      <span className="rightReserved">© 2022 All Rights Reserved, Jiffix Technologies Limited.</span>
       <a href="https://www.jiffixtech.com/" className="aboutUs">
         About Us
       </a>
@@ -45,8 +43,7 @@ const childrenWrapperStyle = {
   pr: "60px",
   pt: "20px",
   pb: "50px",
-  background: (theme: Theme) =>
-    theme.palette.mode === "dark" ? "paper.default" : "#FFFFFF",
+  background: (theme: Theme) => (theme.palette.mode === "dark" ? "paper.default" : "#FFFFFF"),
   boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.5) !important",
   borderRadius: "10px !important",
 };

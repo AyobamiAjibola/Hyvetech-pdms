@@ -20,10 +20,7 @@ export default class TechnicianDAOService implements ICrudDAO<Technician> {
     this.technicianRepository = technicianRepository;
   }
 
-  create(
-    values: CreationAttributes<Technician>,
-    options?: CreateOptions<Attributes<Technician>>
-  ): Promise<Technician> {
+  create(values: CreationAttributes<Technician>, options?: CreateOptions<Attributes<Technician>>): Promise<Technician> {
     return this.technicianRepository.save(values, options);
   }
 
@@ -31,22 +28,15 @@ export default class TechnicianDAOService implements ICrudDAO<Technician> {
     return this.technicianRepository.deleteById(id, options);
   }
 
-  findAll(
-    options?: FindOptions<Attributes<Technician>>
-  ): Promise<Technician[]> {
+  findAll(options?: FindOptions<Attributes<Technician>>): Promise<Technician[]> {
     return this.technicianRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Technician>>
-  ): Promise<Technician | null> {
+  findByAny(options: FindOptions<Attributes<Technician>>): Promise<Technician | null> {
     return this.technicianRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Technician>>
-  ): Promise<Technician | null> {
+  findById(id: number, options?: FindOptions<Attributes<Technician>>): Promise<Technician | null> {
     return this.technicianRepository.findById(id, options);
   }
 

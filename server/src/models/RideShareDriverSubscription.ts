@@ -9,11 +9,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import {
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Vehicle from "./Vehicle";
 import RideShareDriver from "./RideShareDriver";
 import RideShareDriverPlanSubscription from "./RideShareDriverPlanSubscription";

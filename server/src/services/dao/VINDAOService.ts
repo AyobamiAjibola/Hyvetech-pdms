@@ -19,17 +19,11 @@ export default class VINDAOService implements ICrudDAO<VIN> {
     this.vinRepository = vinRepository;
   }
 
-  create(
-    values: CreationAttributes<VIN>,
-    options?: CreateOptions<Attributes<VIN>>
-  ): Promise<VIN> {
+  create(values: CreationAttributes<VIN>, options?: CreateOptions<Attributes<VIN>>): Promise<VIN> {
     return this.vinRepository.save(values, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<Attributes<VIN>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<Attributes<VIN>>): Promise<void> {
     return this.vinRepository.deleteById(id, options);
   }
 
@@ -41,18 +35,11 @@ export default class VINDAOService implements ICrudDAO<VIN> {
     return this.vinRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<VIN>>
-  ): Promise<VIN | null> {
+  findById(id: number, options?: FindOptions<Attributes<VIN>>): Promise<VIN | null> {
     return this.vinRepository.findById(id, options);
   }
 
-  update(
-    vin: VIN,
-    values: InferAttributes<VIN>,
-    options: UpdateOptions<Attributes<VIN>>
-  ): Promise<VIN> {
+  update(vin: VIN, values: InferAttributes<VIN>, options: UpdateOptions<Attributes<VIN>>): Promise<VIN> {
     return this.vinRepository.updateOne(vin, values, options);
   }
 }

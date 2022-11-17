@@ -1,5 +1,6 @@
 import { appCommonTypes } from "../../@types/app-common";
 import {
+  deleteRideShareDriverHandler,
   getDriverHandler,
   getRideShareDriverAppointmentsHandler,
   getRideShareDriverHandler,
@@ -46,6 +47,12 @@ const rideShareEndpoints: RouteEndpoints = [
     method: "get",
     path: "/ride-share/:driverId/transactions",
     handler: getRideShareDriverTransactionsHandler,
+  },
+  {
+    name: "delete ride share driver",
+    method: "delete",
+    path: "/ride-share/:driverId",
+    handler: deleteRideShareDriverHandler,
   },
 ];
 

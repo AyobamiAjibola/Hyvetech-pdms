@@ -64,9 +64,5 @@ export const getCurrentDateAction = createAsyncThunk(
 );
 
 const _getCurrentDateFromDB = async (shortDate: string) => {
-  return db
-    .table("timeSlots")
-    .where("shortDate")
-    .equalsIgnoreCase(shortDate)
-    .toArray();
+  return db.table("timeSlots").where("shortDate").equalsIgnoreCase(shortDate).toArray();
 };

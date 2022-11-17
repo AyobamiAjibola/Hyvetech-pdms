@@ -86,10 +86,8 @@ export const bootstrapHandler = async (req: Request, res: Response) => {
   res.status(response.code).json(response);
 };
 
-export const signOutHandler = authenticateRouteWrapper(
-  async (req: Request, res: Response) => {
-    const response = await authenticationController.signOut(req);
+export const signOutHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
+  const response = await authenticationController.signOut(req);
 
-    res.status(response.code).json(response);
-  }
-);
+  res.status(response.code).json(response);
+});

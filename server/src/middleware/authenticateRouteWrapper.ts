@@ -29,12 +29,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
       if (!cookie.split("=")[0].startsWith("_admin_auth")) {
         logger.error("malformed authorization: '_admin_auth' missing");
 
-        return next(
-          CustomAPIError.response(
-            HttpStatus.UNAUTHORIZED.value,
-            HttpStatus.UNAUTHORIZED.code
-          )
-        );
+        return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
       }
 
       jwt = cookie.split("=")[1];
@@ -44,12 +39,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
       if (!authorization.startsWith("Bearer")) {
         logger.error("malformed authorization: 'Bearer' missing");
 
-        return next(
-          CustomAPIError.response(
-            HttpStatus.UNAUTHORIZED.value,
-            HttpStatus.UNAUTHORIZED.code
-          )
-        );
+        return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
       }
 
       jwt = authorization.split(" ")[1].trim();
@@ -64,12 +54,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
     });
 
     if (!user) {
-      return next(
-        CustomAPIError.response(
-          HttpStatus.UNAUTHORIZED.value,
-          HttpStatus.UNAUTHORIZED.code
-        )
-      );
+      return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
     }
 
     req.permissions = payload.permissions;
@@ -78,13 +63,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
 
     const authorised = await authorizeRoute(req);
 
-    if (!authorised)
-      return next(
-        CustomAPIError.response(
-          HttpStatus.FORBIDDEN.value,
-          HttpStatus.FORBIDDEN.code
-        )
-      );
+    if (!authorised) return next(CustomAPIError.response(HttpStatus.FORBIDDEN.value, HttpStatus.FORBIDDEN.code));
 
     await handler(req, res, next);
   };

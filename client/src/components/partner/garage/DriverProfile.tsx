@@ -4,19 +4,22 @@ import useAppSelector from "../../../hooks/useAppSelector";
 import settings from "../../../config/settings";
 import AppModal from "../../modal/AppModal";
 import { FileOpen } from "@mui/icons-material";
-import { IRideShareDriver } from "@app-models";
+import { ICustomer, IRideShareDriver } from "@app-models";
 import axiosClient from "../../../config/axiosClient";
 
 function DriverProfile() {
   const [viewImage, setViewImage] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>();
   const [driver, setDriver] = useState<IRideShareDriver | null>(null);
+  const [customer, setCustomer] = useState<ICustomer | null>(null);
 
   const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
+  const customerReducer = useAppSelector((state) => state.customerReducer);
 
   useEffect(() => {
     setDriver(rideShareReducer.driver);
-  }, [rideShareReducer.driver]);
+    setCustomer(customerReducer.customer);
+  }, [customerReducer.customer, rideShareReducer.driver]);
 
   const handleViewImage = async (imageUrl: string) => {
     imageUrl = `${settings.api.driverBaseURL}/${imageUrl}`;
@@ -101,6 +104,67 @@ function DriverProfile() {
                 </TableCell>
               </TableRow>
             </TableBody>
+          ) : customer ? (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  First Name
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {customer.firstName}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Last Name
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {customer.lastName}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Phone Number
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {customer.phone}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Driver License (front)
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {customer.frontLicenseImageUrl && (
+                    <Avatar
+                      onClick={() => handleViewImage(customer.frontLicenseImageUrl)}
+                      sx={{ cursor: "pointer" }}
+                      variant="square"
+                      src={customer.frontLicenseImageUrl}
+                    >
+                      <FileOpen />
+                    </Avatar>
+                  )}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={4} component="th" scope="row">
+                  Driver License (rear)
+                </TableCell>
+                <TableCell colSpan={4} align="right">
+                  {customer.rearLicenseImageUrl && (
+                    <Avatar
+                      onClick={() => handleViewImage(customer.rearLicenseImageUrl)}
+                      sx={{ cursor: "pointer" }}
+                      variant="square"
+                      src={customer.rearLicenseImageUrl}
+                    >
+                      <FileOpen />
+                    </Avatar>
+                  )}
+                </TableCell>
+              </TableRow>
+            </TableBody>
           ) : (
             <TableBody>
               <TableRow>
@@ -119,7 +183,7 @@ function DriverProfile() {
         show={viewImage}
         title="Driver license"
         size="xl"
-        Content={<img src={imageUrl} alt="Driver license" crossOrigin="anonymous" />}
+        Content={<img width="50%" src={imageUrl} alt="Driver license" crossOrigin="anonymous" />}
         onClose={() => setViewImage(false)}
       />
     </React.Fragment>

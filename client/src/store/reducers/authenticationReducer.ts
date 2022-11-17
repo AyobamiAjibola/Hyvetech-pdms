@@ -57,16 +57,11 @@ const authenticationSlice = createSlice({
         state.signingInSuccess = action.payload.message;
         state.authToken = action.payload.result as string;
 
-        const { permissions } = jwt.decode(
-          action.payload.result as string
-        ) as CustomJwtPayload;
+        const { permissions } = jwt.decode(action.payload.result as string) as CustomJwtPayload;
 
         state.permissions = permissions;
 
-        localStorage.setItem(
-          LOCAL_STORAGE.permissions,
-          JSON.stringify(permissions)
-        );
+        localStorage.setItem(LOCAL_STORAGE.permissions, JSON.stringify(permissions));
       })
       .addCase(signInAction.rejected, (state, action) => {
         state.signingInStatus = "failed";
@@ -94,7 +89,6 @@ const authenticationSlice = createSlice({
   },
 });
 
-export const { clearLoginStatus, clearLogoutStatus } =
-  authenticationSlice.actions;
+export const { clearLoginStatus, clearLogoutStatus } = authenticationSlice.actions;
 
 export default authenticationSlice.reducer;

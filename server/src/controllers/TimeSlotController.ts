@@ -6,7 +6,6 @@ import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
 import TimeSlot from "../models/TimeSlot";
 import AppLogger from "../utils/AppLogger";
-import { HasAnyRole } from "../decorators";
 import ISchedule = appCommonTypes.ISchedule;
 
 export default class TimeSlotController {
@@ -33,9 +32,7 @@ export default class TimeSlotController {
     if (slots) {
       timeSlot.date = value.date;
       const _slots = JSON.parse(slots);
-      timeSlot.slots = _slots?.sort(
-        (a: { id: number }, b: { id: number }) => a.id - b.id
-      );
+      timeSlot.slots = _slots?.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
 
       return Promise.resolve({
         message: HttpStatus.OK.value,
@@ -52,9 +49,7 @@ export default class TimeSlotController {
       const _slots = JSON.parse(result);
 
       timeSlot.date = value.date;
-      timeSlot.slots = _slots?.sort(
-        (a: { id: number }, b: { id: number }) => a.id - b.id
-      );
+      timeSlot.slots = _slots?.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
 
       timeSlot.slots = JSON.parse(result);
 
@@ -106,9 +101,7 @@ export default class TimeSlotController {
       const _slots = JSON.parse(<any>tempSlots);
 
       timeSlot.date = value?.date;
-      timeSlot.slots = _slots?.sort(
-        (a: { id: number }, b: { id: number }) => a.id - b.id
-      );
+      timeSlot.slots = _slots?.sort((a: { id: number }, b: { id: number }) => a.id - b.id);
 
       return Promise.resolve({
         message: HttpStatus.OK.value,

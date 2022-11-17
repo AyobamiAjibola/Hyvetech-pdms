@@ -90,28 +90,19 @@ const schema = Yup.object().shape({
     .max(80, fields.lastName.error.invalid)
     .label(fields.lastName.label)
     .required(fields.lastName.error.required),
-  [fields.username.name]: Yup.string()
-    .required(fields.username.error.required)
-    .label(fields.username.label),
+  [fields.username.name]: Yup.string().required(fields.username.error.required).label(fields.username.label),
   [fields.email.name]: Yup.string()
     .email(fields.email.error.invalid)
     .label(fields.email.label)
     .required(fields.email.error.required),
-  [fields.phone.name]: Yup.string()
-    .max(11, fields.phone.error.invalid)
-    .label(fields.phone.label),
-  [fields.role.name]: Yup.string()
-    .label(fields.role.label)
-    .required(fields.role.error.required),
+  [fields.phone.name]: Yup.string().max(11, fields.phone.error.invalid).label(fields.phone.label),
+  [fields.role.name]: Yup.string().label(fields.role.label).required(fields.role.error.required),
   [fields.password.name]: Yup.string()
     .required(fields.password.error.required)
     .matches(new RegExp(PASSWORD_PATTERN), fields.password.error.invalid)
     .label(fields.password.label),
   [fields.confirmPassword.name]: Yup.string()
-    .oneOf(
-      [Yup.ref(fields.password.name), null],
-      fields.confirmPassword.error.invalid
-    )
+    .oneOf([Yup.ref(fields.password.name), null], fields.confirmPassword.error.invalid)
     .label(fields.confirmPassword.label)
     .required(fields.confirmPassword.error.required),
 });

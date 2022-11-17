@@ -47,9 +47,7 @@ export default function AppCreatableAutocomplete(props: IProps) {
 
           const { inputValue } = params;
           // Suggest the creation of a new value
-          const isExisting = options.some(
-            (option) => inputValue === option.label
-          );
+          const isExisting = options.some((option) => inputValue === option.label);
           if (inputValue !== "" && !isExisting) {
             filtered.push({
               inputValue,

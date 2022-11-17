@@ -1,16 +1,5 @@
-import {
-  BelongsToMany,
-  Column,
-  DataType,
-  Model,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Plan from "./Plan";
 import PaymentPlan from "./PaymentPlan";
 import PlanCategory from "./PlanCategory";
@@ -22,10 +11,7 @@ import PartnerCategory from "./PartnerCategory";
   tableName: "categories",
   timestamps: true,
 })
-export default class Category extends Model<
-  InferAttributes<Category>,
-  InferCreationAttributes<Category>
-> {
+export default class Category extends Model<InferAttributes<Category>, InferCreationAttributes<Category>> {
   @Column({
     type: DataType.INTEGER,
     field: "category_id",
@@ -44,12 +30,8 @@ export default class Category extends Model<
   declare plans: NonAttribute<Array<Plan & { PlanCategory: PlanCategory }>>;
 
   @BelongsToMany(() => Partner, () => PartnerCategory)
-  declare partners: NonAttribute<
-    Array<Partner & { PartnerCategory: PartnerCategory }>
-  >;
+  declare partners: NonAttribute<Array<Partner & { PartnerCategory: PartnerCategory }>>;
 
   @BelongsToMany(() => PaymentPlan, () => PaymentPlanCategory)
-  declare paymentPlans: NonAttribute<
-    Array<PaymentPlan & { PaymentPlanCategory: PaymentPlanCategory }>
-  >;
+  declare paymentPlans: NonAttribute<Array<PaymentPlan & { PaymentPlanCategory: PaymentPlanCategory }>>;
 }

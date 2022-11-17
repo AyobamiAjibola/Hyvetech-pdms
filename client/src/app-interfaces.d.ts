@@ -4,6 +4,8 @@ declare module "@app-interfaces" {
   import {
     ICheckList,
     ICustomer,
+    ICustomerSubscription,
+    IEstimate,
     IJob,
     IPartner,
     IPermission,
@@ -30,6 +32,7 @@ declare module "@app-interfaces" {
   type CustomJwtPayload = JwtPayload & {
     permissions: IPermission[];
     userId: number;
+    partnerId?: number;
     [p: string]: any;
   };
 
@@ -170,6 +173,8 @@ declare module "@app-interfaces" {
     setViewSub: React.Dispatch<React.SetStateAction<boolean>>;
     driverSub: IRideShareDriverSubscription | null;
     setDriverSub: React.Dispatch<React.SetStateAction<IRideShareDriverSubscription | null>>;
+    customerSub: ICustomerSubscription | null;
+    setCustomerSub: React.Dispatch<React.SetStateAction<ICustomerSubscription | null>>;
     vehicle: IVehicle | null;
     setVehicle: React.Dispatch<React.SetStateAction<IVehicle | null>>;
   }
@@ -188,6 +193,12 @@ declare module "@app-interfaces" {
   interface EstimatePageContextProps {
     driver: IRideShareDriver | null;
     setDriver: React.Dispatch<React.SetStateAction<IRideShareDriver | null>>;
+    estimates: IEstimate[];
+    setEstimates: React.Dispatch<React.SetStateAction<IEstimate[]>>;
+    showCreate: boolean;
+    setShowCreate: React.Dispatch<React.SetStateAction<boolean>>;
+    showEdit: boolean;
+    setShowEdit: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
   export interface IComponentErrorState {

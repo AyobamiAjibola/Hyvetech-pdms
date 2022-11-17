@@ -405,10 +405,9 @@ export declare namespace appModelTypes {
 
   type DomainClass<M> = new () => M;
 
-  abstract class AbstractCrudRepository<
-    M extends Model = Model,
-    Id extends number = number
-  > {
+  abstract class AbstractCrudRepository<M extends Model = Model, Id extends number = number> {
+    model?: string;
+
     /**
      * @name save
      * @param values
@@ -418,10 +417,7 @@ export declare namespace appModelTypes {
      * This method calls sequelize create method.
      * Pass optional config, to control the query outcome
      */
-    save(
-      values: CreationAttributes<M>,
-      options?: CreateOptions<Attributes<M>>
-    ): Promise<M>;
+    save(values: CreationAttributes<M>, options?: CreateOptions<Attributes<M>>): Promise<M>;
 
     /**
      * @name exist
@@ -499,11 +495,7 @@ export declare namespace appModelTypes {
      * This method calls the update method in sequelize.
      * Pass optional config, to control the query outcome
      */
-    updateOne(
-      t: M,
-      values: Attributes<M>,
-      options?: UpdateOptions<Attributes<M>>
-    ): Promise<M>;
+    updateOne(t: M, values: Attributes<M>, options?: UpdateOptions<Attributes<M>>): Promise<M>;
 
     /**
      * @name bulkCreate
@@ -514,35 +506,17 @@ export declare namespace appModelTypes {
      * This method calls the bulkCreate method in sequelize.
      * Pass optional config, to control the query outcome
      */
-    bulkCreate(
-      records: ReadonlyArray<CreationAttributes<M>>,
-      options?: BulkCreateOptions<Attributes<M>>
-    ): Promise<M[]>;
-
-    model?: string;
+    bulkCreate(records: ReadonlyArray<CreationAttributes<M>>, options?: BulkCreateOptions<Attributes<M>>): Promise<M[]>;
   }
 
   interface ICrudDAO<M extends Model = Model> {
-    create(
-      values: CreationAttributes<M>,
-      options?: CreateOptions<Attributes<M>>
-    ): Promise<M>;
+    create(values: CreationAttributes<M>, options?: CreateOptions<Attributes<M>>): Promise<M>;
 
-    update(
-      t: M,
-      values: CreationAttributes<M>,
-      options?: UpdateOptions<Attributes<M>>
-    ): Promise<M>;
+    update(t: M, values: CreationAttributes<M>, options?: UpdateOptions<Attributes<M>>): Promise<M>;
 
-    findById(
-      id: number,
-      options?: FindOptions<Attributes<M>>
-    ): Promise<M | null>;
+    findById(id: number, options?: FindOptions<Attributes<M>>): Promise<M | null>;
 
-    deleteById(
-      id: number,
-      options?: DestroyOptions<Attributes<M>>
-    ): Promise<void>;
+    deleteById(id: number, options?: DestroyOptions<Attributes<M>>): Promise<void>;
 
     findByAny(options: FindOptions<Attributes<M>>): Promise<M | null>;
 

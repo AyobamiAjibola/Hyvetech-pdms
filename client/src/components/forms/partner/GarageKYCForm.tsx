@@ -17,11 +17,7 @@ function GarageKycForm(props: IProps) {
 
   return (
     <Form autoComplete="off">
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         <Grid item xs={12} md={6}>
           <TextInputField
             onChange={handleChange}
@@ -47,12 +43,7 @@ function GarageKycForm(props: IProps) {
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <TextInputField
-            onChange={handleChange}
-            value={values.cac}
-            name={fields.cac.name}
-            label={fields.cac.label}
-          />
+          <TextInputField onChange={handleChange} value={values.cac} name={fields.cac.name} label={fields.cac.label} />
         </Grid>
         <Grid item xs={12} md={6}>
           <TextInputField

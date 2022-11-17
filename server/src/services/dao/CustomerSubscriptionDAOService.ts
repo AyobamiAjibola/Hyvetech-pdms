@@ -13,9 +13,7 @@ import CustomerSubscription from "../../models/CustomerSubscription";
 import { appModelTypes } from "../../@types/app-model";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
-export default class CustomerSubscriptionDAOService
-  implements ICrudDAO<CustomerSubscription>
-{
+export default class CustomerSubscriptionDAOService implements ICrudDAO<CustomerSubscription> {
   private customerSubscriptionRepository: CustomerSubscriptionRepository;
 
   constructor(customerSubscriptionRepository: CustomerSubscriptionRepository) {
@@ -29,29 +27,19 @@ export default class CustomerSubscriptionDAOService
     return this.customerSubscriptionRepository.save(values, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<CustomerSubscription>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<CustomerSubscription>): Promise<void> {
     return this.customerSubscriptionRepository.deleteById(id, options);
   }
 
-  findAll(
-    options?: FindOptions<Attributes<CustomerSubscription>>
-  ): Promise<CustomerSubscription[]> {
+  findAll(options?: FindOptions<Attributes<CustomerSubscription>>): Promise<CustomerSubscription[]> {
     return this.customerSubscriptionRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<CustomerSubscription>>
-  ): Promise<CustomerSubscription | null> {
+  findByAny(options: FindOptions<Attributes<CustomerSubscription>>): Promise<CustomerSubscription | null> {
     return this.customerSubscriptionRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<CustomerSubscription>>
-  ): Promise<CustomerSubscription | null> {
+  findById(id: number, options?: FindOptions<Attributes<CustomerSubscription>>): Promise<CustomerSubscription | null> {
     return this.customerSubscriptionRepository.findById(id, options);
   }
 
@@ -60,10 +48,6 @@ export default class CustomerSubscriptionDAOService
     values: InferAttributes<CustomerSubscription>,
     options: UpdateOptions<Attributes<CustomerSubscription>>
   ): Promise<CustomerSubscription> {
-    return this.customerSubscriptionRepository.updateOne(
-      customerSubscription,
-      values,
-      options
-    );
+    return this.customerSubscriptionRepository.updateOne(customerSubscription, values, options);
   }
 }

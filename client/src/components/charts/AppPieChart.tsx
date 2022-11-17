@@ -11,11 +11,11 @@ highchartsAccessibility(Highcharts);
 highChartsNoDataToDisplay(Highcharts);
 
 interface IProps {
-  [p: string]: any;
-
   title: string;
   caption?: string;
   series: any;
+
+  [p: string]: any;
 }
 
 export default function AppPieChart(props: IProps) {
@@ -59,12 +59,7 @@ export default function AppPieChart(props: IProps) {
 
   return (
     <Box component="div" sx={{ width: "100%", minWidth: 400 }}>
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={options}
-        ref={chartComponentRef}
-        {...props}
-      />
+      <HighchartsReact highcharts={Highcharts} options={options} ref={chartComponentRef} {...props} />
     </Box>
   );
 }

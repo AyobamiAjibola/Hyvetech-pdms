@@ -22,12 +22,7 @@ export default function AppTab(props: IProps) {
 
   return (
     <Box>
-      <Tabs
-        centered
-        value={tabValue}
-        onChange={handleChange}
-        aria-label="icon label tabs example"
-      >
+      <Tabs centered value={tabValue} onChange={handleChange} aria-label="icon label tabs example">
         {props.tabMenus.map((tab, index) => {
           return <Tab label={tab.name} key={index} {...a11yProps(index)} />;
         })}
@@ -35,12 +30,7 @@ export default function AppTab(props: IProps) {
 
       {props.tabMenus.map((tab, index) => {
         return (
-          <Slide
-            key={index}
-            direction={props.slideDirection}
-            in={tabValue === index}
-            container={containerRef.current}
-          >
+          <Slide key={index} direction={props.slideDirection} in={tabValue === index} container={containerRef.current}>
             <div>
               <TabPanel value={tabValue} index={index} dir={theme.direction}>
                 <Box sx={{ pt: 6 }}>

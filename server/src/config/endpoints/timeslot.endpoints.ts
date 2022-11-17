@@ -1,8 +1,4 @@
-import {
-  handleDisableTimeslots,
-  handleGetTimeslots,
-  handleInitTimeslots,
-} from "../../routes/timeslotRoute";
+import { handleDisableTimeslots, handleGetTimeslots, handleInitTimeslots } from "../../routes/timeslotRoute";
 import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 

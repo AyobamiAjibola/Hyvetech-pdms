@@ -39,22 +39,15 @@ export default class PaymentPlanDAOService implements ICrudDAO<PaymentPlan> {
     return this.paymentPlanRepository.deleteById(id, options);
   }
 
-  findAll(
-    options?: FindOptions<Attributes<PaymentPlan>>
-  ): Promise<PaymentPlan[]> {
+  findAll(options?: FindOptions<Attributes<PaymentPlan>>): Promise<PaymentPlan[]> {
     return this.paymentPlanRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<PaymentPlan>>
-  ): Promise<PaymentPlan | null> {
+  findByAny(options: FindOptions<Attributes<PaymentPlan>>): Promise<PaymentPlan | null> {
     return this.paymentPlanRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<PaymentPlan>>
-  ): Promise<PaymentPlan | null> {
+  findById(id: number, options?: FindOptions<Attributes<PaymentPlan>>): Promise<PaymentPlan | null> {
     return this.paymentPlanRepository.findById(id, options);
   }
 

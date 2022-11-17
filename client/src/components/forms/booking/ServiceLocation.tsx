@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Avatar,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+import { Avatar, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 
 import { blue } from "@mui/material/colors";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -13,11 +7,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import settings from "../../../config/settings";
 import HybridInspectionServiceModeTab from "../../tabs/HybridInspectionServiceModeTab";
 import Location from "./Location";
-import {
-  DRIVE_IN_PLAN,
-  HYBRID_PLAN,
-  MOBILE_PLAN,
-} from "../../../config/constants";
+import { DRIVE_IN_PLAN, HYBRID_PLAN, MOBILE_PLAN } from "../../../config/constants";
 
 interface IServiceLocationProps {
   planCategory: string;
@@ -40,10 +30,7 @@ function ServiceLocation({ planCategory }: IServiceLocationProps) {
                 <LocationOnIcon />
               </Avatar>
             </ListItemIcon>
-            <ListItemText
-              primary={settings.office.primary}
-              secondary={settings.office.secondary}
-            />
+            <ListItemText primary={settings.office.primary} secondary={settings.office.secondary} />
           </ListItem>
         );
       case HYBRID_PLAN:

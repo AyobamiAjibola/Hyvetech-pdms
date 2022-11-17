@@ -1,24 +1,18 @@
 import React from "react";
 
 import { Box, LinearProgress } from "@mui/material";
-import {
-  DataGrid,
-  GridColumns,
-  GridOverlay,
-  GridSortModel,
-  GridToolbar,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColumns, GridOverlay, GridSortModel, GridToolbar } from "@mui/x-data-grid";
 import CustomSquarePagination from "./CustomSquarePagination";
 
 interface IProps {
-  [p: string]: any;
-
   rows: readonly any[];
   columns: GridColumns;
   showToolbar?: boolean;
   sortModel?: GridSortModel;
   loading?: boolean;
   onSortModel?: any;
+
+  [p: string]: any;
 }
 
 function AppDataGrid(props: IProps) {

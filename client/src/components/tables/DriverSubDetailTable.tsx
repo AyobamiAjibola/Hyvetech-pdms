@@ -48,16 +48,8 @@ export default function DriverSubDetailTable(props: IProps) {
               <React.Fragment key={index}>
                 <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
                   <TableCell>
-                    <IconButton
-                      aria-label="expand row"
-                      size="small"
-                      onClick={() => handleToggle(index)}
-                    >
-                      {open ? (
-                        <KeyboardArrowUpIcon />
-                      ) : (
-                        <KeyboardArrowDownIcon />
-                      )}
+                    <IconButton aria-label="expand row" size="small" onClick={() => handleToggle(index)}>
+                      {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                   </TableCell>
                   <TableCell component="th" scope="row">
@@ -69,10 +61,7 @@ export default function DriverSubDetailTable(props: IProps) {
                   <TableCell align="right">{row.status}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell
-                    style={{ paddingBottom: 0, paddingTop: 0 }}
-                    colSpan={6}
-                  >
+                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open === index} timeout="auto" unmountOnExit>
                       <Box sx={{ margin: 1 }}>
                         <Typography variant="h6" gutterBottom component="div">
@@ -94,12 +83,8 @@ export default function DriverSubDetailTable(props: IProps) {
                                   {vehicle.make}
                                 </TableCell>
                                 <TableCell>{vehicle.model}</TableCell>
-                                <TableCell align="right">
-                                  {vehicle.modelYear}
-                                </TableCell>
-                                <TableCell align="right">
-                                  {vehicle.vin}
-                                </TableCell>
+                                <TableCell align="right">{vehicle.modelYear}</TableCell>
+                                <TableCell align="right">{vehicle.vin}</TableCell>
                               </TableRow>
                             ))}
                           </TableBody>

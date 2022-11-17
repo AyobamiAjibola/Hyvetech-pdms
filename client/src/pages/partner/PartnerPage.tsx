@@ -26,6 +26,7 @@ import { Delete } from "@mui/icons-material";
 import AppModal from "../../components/modal/AppModal";
 import { CustomHookMessage } from "@app-types";
 import AppAlert from "../../components/alerts/AppAlert";
+import { clearCreateEstimateStatus } from "../../store/reducers/estimateReducer";
 
 export const PartnerPageContext = createContext<PartnerPageContextProps | null>(null);
 
@@ -114,6 +115,7 @@ function PartnerPage() {
       dispatch(clearGetPlansStatus());
       dispatch(clearGetPaymentPlansStatus());
       dispatch(clearDeletePartnerStatus());
+      dispatch(clearCreateEstimateStatus());
       clearTimeout(_timeout);
     };
   }, [_timeout, dispatch]);

@@ -27,29 +27,19 @@ export default class SubscriptionDAOService implements ICrudDAO<Subscription> {
     return this.subscriptionRepository.save(values, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<Subscription>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<Subscription>): Promise<void> {
     return this.subscriptionRepository.deleteById(id, options);
   }
 
-  findAll(
-    options?: FindOptions<Attributes<Subscription>>
-  ): Promise<Subscription[]> {
+  findAll(options?: FindOptions<Attributes<Subscription>>): Promise<Subscription[]> {
     return this.subscriptionRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Subscription>>
-  ): Promise<Subscription | null> {
+  findByAny(options: FindOptions<Attributes<Subscription>>): Promise<Subscription | null> {
     return this.subscriptionRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Subscription>>
-  ): Promise<Subscription | null> {
+  findById(id: number, options?: FindOptions<Attributes<Subscription>>): Promise<Subscription | null> {
     return this.subscriptionRepository.findById(id, options);
   }
 

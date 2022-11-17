@@ -25,6 +25,7 @@ export interface IEstimateValues {
   modelYear: string;
   plateNumber: string;
   mileage: { count: string; unit: string };
+  addressType: string;
   address: string;
   firstName: string;
   lastName: string;
@@ -96,6 +97,14 @@ const fields = {
     error: {
       invalid: "Address is invalid",
       required: "Address is required",
+    },
+  },
+  addressType: {
+    name: "addressType",
+    label: "Type",
+    error: {
+      invalid: "Address Type is invalid",
+      required: "Address Type is required",
     },
   },
   vin: {
@@ -177,6 +186,7 @@ const initialValues: IEstimateValues = {
   phone: "",
   vin: "",
   address: "",
+  addressType: "",
   parts: [
     {
       name: "",
@@ -189,32 +199,17 @@ const initialValues: IEstimateValues = {
   tax: "0",
 };
 
-const jobIntervalSchema = Yup.object().shape({
-  count: Yup.string().required().label("Duration"),
-  interval: Yup.string().required().label("Interval"),
-});
-
 const schema = Yup.object().shape({
-  firstName: Yup.string()
-    .required(fields.firstName.error.required)
-    .label(fields.firstName.label),
-  lastName: Yup.string()
-    .required(fields.lastName.error.required)
-    .label(fields.lastName.label),
-  address: Yup.string().nullable().label(fields.address.label),
-  phone: Yup.string()
-    .required(fields.phone.error.required)
-    .label(fields.phone.label),
+  firstName: Yup.string().required(fields.firstName.error.required).label(fields.firstName.label),
+  lastName: Yup.string().required(fields.lastName.error.required).label(fields.lastName.label),
+  address: Yup.string().required().label(fields.address.label),
+  addressType: Yup.string().required().label(fields.addressType.label),
+  phone: Yup.string().required(fields.phone.error.required).label(fields.phone.label),
   vin: Yup.string().required(fields.vin.error.required).label(fields.vin.label),
-  make: Yup.string()
-    .required(fields.make.error.required)
-    .label(fields.make.label),
-  model: Yup.string()
-    .required(fields.model.error.required)
-    .label(fields.model.label),
-  modelYear: Yup.string()
-    .required(fields.modelYear.error.required)
-    .label(fields.modelYear.label),
+  make: Yup.string().required(fields.make.error.required).label(fields.make.label),
+  model: Yup.string().required(fields.model.error.required).label(fields.model.label),
+  modelYear: Yup.string().required(fields.modelYear.error.required).label(fields.modelYear.label),
+  plateNumber: Yup.string().required(fields.plateNumber.error.required).label(fields.plateNumber.label),
   tax: Yup.string().nullable().label(fields.tax.label),
   depositAmount: Yup.string().nullable().label(fields.depositAmount.label),
 });

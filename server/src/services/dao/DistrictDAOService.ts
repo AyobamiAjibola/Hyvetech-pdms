@@ -19,10 +19,7 @@ export default class DistrictDAOService implements ICrudDAO<District> {
     this.districtRepository = districtRepository;
   }
 
-  create(
-    values: CreationAttributes<District>,
-    options?: CreateOptions<Attributes<District>>
-  ): Promise<District> {
+  create(values: CreationAttributes<District>, options?: CreateOptions<Attributes<District>>): Promise<District> {
     return this.districtRepository.save(values, options);
   }
 
@@ -34,29 +31,19 @@ export default class DistrictDAOService implements ICrudDAO<District> {
     return this.districtRepository.updateOne(district, values, options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<InferAttributes<District>>
-  ): Promise<District | null> {
+  findById(id: number, options?: FindOptions<InferAttributes<District>>): Promise<District | null> {
     return this.districtRepository.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<District>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<District>>): Promise<void> {
     return this.districtRepository.deleteById(id, options);
   }
 
-  findByAny(
-    options: FindOptions<InferAttributes<District>>
-  ): Promise<District | null> {
+  findByAny(options: FindOptions<InferAttributes<District>>): Promise<District | null> {
     return this.districtRepository.findOne(options);
   }
 
-  findAll(
-    options?: FindOptions<InferAttributes<District>>
-  ): Promise<District[]> {
+  findAll(options?: FindOptions<InferAttributes<District>>): Promise<District[]> {
     return this.districtRepository.findAll(options);
   }
 }

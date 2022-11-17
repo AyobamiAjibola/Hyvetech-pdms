@@ -7,9 +7,7 @@ import { driverDetailTabs } from "../../navigation/menus";
 import { DriverPageContextProps, ILocationState, ITab } from "@app-interfaces";
 import useAdmin from "../../hooks/useAdmin";
 
-export const DriverPageContext = createContext<DriverPageContextProps | null>(
-  null
-);
+export const DriverPageContext = createContext<DriverPageContextProps | null>(null);
 
 function DriverPage() {
   const [driver, setDriver] = useState<IRideShareDriver>();
@@ -20,8 +18,7 @@ function DriverPage() {
 
   useEffect(() => {
     if (isSuperAdmin) setTabs(driverDetailTabs);
-    if (isDriverAdmin)
-      setTabs(driverDetailTabs.filter((value) => value.name === "Vehicles"));
+    if (isDriverAdmin) setTabs(driverDetailTabs.filter((value) => value.name === "Vehicles"));
   }, [isSuperAdmin, isDriverAdmin]);
 
   useEffect(() => {
@@ -32,11 +29,7 @@ function DriverPage() {
   }, [location.state]);
 
   return (
-    <Stack
-      direction="column"
-      spacing={5}
-      divider={<Divider orientation="horizontal" flexItem />}
-    >
+    <Stack direction="column" spacing={5} divider={<Divider orientation="horizontal" flexItem />}>
       <Paper sx={{ p: 3 }}>
         <DriverPageContext.Provider value={{ driver, setDriver }}>
           <CustomerTab tabMenus={tabs} />

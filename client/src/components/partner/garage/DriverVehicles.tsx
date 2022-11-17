@@ -1,41 +1,24 @@
 import React, { createContext, useEffect, useState } from "react";
 import useAppSelector from "../../../hooks/useAppSelector";
-import {
-  IRideShareDriver,
-  IRideShareDriverSubscription,
-  IVehicle,
-} from "@app-models";
-import {
-  Avatar,
-  Box,
-  IconButton,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-} from "@mui/material";
+import { ICustomerSubscription, IRideShareDriverSubscription, IVehicle } from "@app-models";
+import { Avatar, Box, IconButton, LinearProgress, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { FaCarAlt, FaExpandAlt } from "react-icons/fa";
 import AppModal from "../../modal/AppModal";
 import DriverVehicle from "./DriverVehicle";
 import { DriverVehiclesContextProps } from "@app-interfaces";
-import {
-  clearDriverAssignJobStatus,
-  clearGetJobsStatus,
-} from "../../../store/reducers/jobReducer";
+import { clearDriverAssignJobStatus, clearGetJobsStatus } from "../../../store/reducers/jobReducer";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import { getCheckListsAction } from "../../../store/actions/checkListActions";
 
-export const DriverVehiclesContext =
-  createContext<DriverVehiclesContextProps | null>(null);
+export const DriverVehiclesContext = createContext<DriverVehiclesContextProps | null>(null);
 
 export default function DriverVehicles() {
-  const [driver, setDriver] = useState<IRideShareDriver | null>(null);
   const [vehicle, setVehicle] = useState<IVehicle | null>(null);
   const [openViewVehicle, setOpenViewVehicle] = useState<boolean>(false);
   const [viewSub, setViewSub] = useState<boolean>(false);
-  const [driverSub, setDriverSub] =
-    useState<IRideShareDriverSubscription | null>(null);
+  const [driverSub, setDriverSub] = useState<IRideShareDriverSubscription | null>(null);
+  const [customerSub, setCustomerSub] = useState<ICustomerSubscription | null>(null);
+  const [vehicles, setVehicles] = useState<IVehicle[]>([]);
 
   const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
   const checkListReducer = useAppSelector((state) => state.checkListReducer);
@@ -48,7 +31,9 @@ export default function DriverVehicles() {
   }, [dispatch, checkListReducer.getCheckListsStatus]);
 
   useEffect(() => {
-    setDriver(rideShareReducer.driver);
+    if (rideShareReducer.driver) {
+      setVehicles(rideShareReducer.driver.vehicles);
+    }
   }, [rideShareReducer.driver]);
 
   useEffect(() => {
@@ -72,6 +57,8 @@ export default function DriverVehicles() {
         setViewSub,
         driverSub,
         setDriverSub,
+        customerSub,
+        setCustomerSub,
         vehicle,
         setVehicle,
       }}
@@ -85,17 +72,13 @@ export default function DriverVehicles() {
       >
         <Box sx={{ width: 500 }}>
           <List dense={true}>
-            {driver ? (
-              driver.vehicles.map((vehicle, index) => {
+            {vehicles.length ? (
+              vehicles.map((vehicle, index) => {
                 return (
                   <ListItem
                     key={index}
                     secondaryAction={
-                      <IconButton
-                        onClick={() => handleViewVehicle(vehicle)}
-                        edge="end"
-                        aria-label="delete"
-                      >
+                      <IconButton onClick={() => handleViewVehicle(vehicle)} edge="end" aria-label="delete">
                         <FaExpandAlt />
                       </IconButton>
                     }
@@ -114,7 +97,7 @@ export default function DriverVehicles() {
               })
             ) : (
               <ListItem>
-                <LinearProgress />
+                <ListItemText primary="No data" secondary="Driver have not added a vehicle yet." />
               </ListItem>
             )}
           </List>

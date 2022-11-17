@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, useFormikContext } from "formik";
 import { Grid, InputAdornment, Typography } from "@mui/material";
 import TextInputField from "../fields/TextInputField";
-import { Lock, VerifiedUser, Visibility, VisibilityOff } from "@mui/icons-material";
+import { VerifiedUser, Visibility, VisibilityOff } from "@mui/icons-material";
 
 import { ISignInModel } from "@app-interfaces";
 import signInModel from "../models/signInModel";
@@ -59,22 +59,14 @@ function SignInForm() {
                 </InputAdornment>
               ),
               endAdornment: (
-                <InputAdornment
-                  onClick={togglePasswordVisibility}
-                  position="start"
-                  sx={{ cursor: "pointer" }}
-                >
+                <InputAdornment onClick={togglePasswordVisibility} position="start" sx={{ cursor: "pointer" }}>
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </InputAdornment>
               ),
             }}
           />
 
-          <Typography
-            textAlign="center"
-            variant="h4"
-            className="forgotPasswordText"
-          >
+          <Typography textAlign="center" variant="h4" className="forgotPasswordText">
             Forgot my password
           </Typography>
         </Grid>

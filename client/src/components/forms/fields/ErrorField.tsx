@@ -9,9 +9,7 @@ interface IErrorField {
 
 function ErrorField(props: IErrorField) {
   return !props.hasError ? null : (
-    <FormHelperText sx={{ ...style, ...props.helperStyle }}>
-      {props.message}
-    </FormHelperText>
+    <FormHelperText sx={{ ...style, ...props.helperStyle }}>{props.message}</FormHelperText>
   );
 }
 

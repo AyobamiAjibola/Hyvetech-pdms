@@ -15,11 +15,9 @@ import database from "../config/database";
 import DomainClass = appModelTypes.DomainClass;
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 
-export default class CrudRepository<M extends Model, Id extends number>
-  implements AbstractCrudRepository<M, Id>
-{
-  private repository: Repository<M>;
+export default class CrudRepository<M extends Model, Id extends number> implements AbstractCrudRepository<M, Id> {
   protected sequelize: Sequelize;
+  private repository: Repository<M>;
   private declare readonly _model: string;
 
   constructor(modelClass: DomainClass<M>) {
@@ -28,10 +26,11 @@ export default class CrudRepository<M extends Model, Id extends number>
     this.repository = this.sequelize.getRepository(modelClass);
   }
 
-  bulkCreate(
-    records: ReadonlyArray<CreationAttributes<M>>,
-    options?: BulkCreateOptions<Attributes<M>>
-  ): Promise<M[]> {
+  get model(): string {
+    return this._model;
+  }
+
+  bulkCreate(records: ReadonlyArray<CreationAttributes<M>>, options?: BulkCreateOptions<Attributes<M>>): Promise<M[]> {
     return this.sequelize.transaction(async () => {
       return this.repository.bulkCreate(records, options);
     });
@@ -81,20 +80,13 @@ export default class CrudRepository<M extends Model, Id extends number>
     });
   }
 
-  save(
-    values: CreationAttributes<M>,
-    options?: CreateOptions<Attributes<M>>
-  ): Promise<M> {
+  save(values: CreationAttributes<M>, options?: CreateOptions<Attributes<M>>): Promise<M> {
     return this.sequelize.transaction(async () => {
       return this.repository.create(values, options);
     });
   }
 
-  updateOne(
-    t: M,
-    values: CreationAttributes<M>,
-    options?: UpdateOptions<Attributes<M>>
-  ): Promise<M> {
+  updateOne(t: M, values: CreationAttributes<M>, options?: UpdateOptions<Attributes<M>>): Promise<M> {
     return this.sequelize.transaction(async () => {
       return t.update(values, options);
     });
@@ -106,18 +98,11 @@ export default class CrudRepository<M extends Model, Id extends number>
     });
   }
 
-  updateByAny(
-    update: Attributes<M>,
-    options: UpdateOptions<Attributes<M>> | undefined
-  ): Promise<M | null> {
+  updateByAny(update: Attributes<M>, options: UpdateOptions<Attributes<M>> | undefined): Promise<M | null> {
     return this.sequelize.transaction(async () => {
       const model = await this.repository.findOne(options);
       await model?.update(update);
       return model;
     });
-  }
-
-  get model(): string {
-    return this._model;
   }
 }

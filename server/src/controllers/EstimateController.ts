@@ -1,71 +1,160 @@
 import { Request } from "express";
 import Joi from "joi";
-import Estimate, {
-  $createEstimateSchema,
-  CreateEstimateType,
-} from "../models/Estimate";
+import Estimate, { $createEstimateSchema, CreateEstimateType } from "../models/Estimate";
 import CustomAPIError from "../exceptions/CustomAPIError";
 import HttpStatus from "../helpers/HttpStatus";
 import dataSources from "../services/dao";
-import { Op } from "sequelize";
 import { appCommonTypes } from "../@types/app-common";
+import Contact from "../models/Contact";
+import Generic from "../utils/Generic";
+import { INITIAL_LABOURS_VALUE, INITIAL_PARTS_VALUE } from "../config/constants";
+import Vehicle from "../models/Vehicle";
+import Partner from "../models/Partner";
+import Customer from "../models/Customer";
+import RideShareDriver from "../models/RideShareDriver";
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class EstimateController {
   public async create(req: Request) {
-    const response: HttpResponse<Estimate> = {
-      code: HttpStatus.NOT_FOUND.code,
-      message: HttpStatus.NOT_FOUND.value,
-    };
-
     try {
-      const { error, value } = Joi.object<CreateEstimateType>(
-        $createEstimateSchema
-      ).validate(req.body);
+      const { error, value } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       if (!value)
         return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.INTERNAL_SERVER_ERROR.value,
-            HttpStatus.INTERNAL_SERVER_ERROR.code
-          )
+          CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code)
         );
 
-      const driver = await dataSources.rideShareDriverDAOService.findByAny({
-        where: {
-          [Op.or]: [{ email: value.email }, { phone: value.phone }],
-        },
-      });
+      const partner = await dataSources.partnerDAOService.findById(value.id);
 
-      const customer = await dataSources.customerDAOService.findByAny({
-        where: {
-          [Op.or]: [{ email: value.email }, { phone: value.phone }],
-        },
-      });
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code)
+        );
 
-      if (driver) {
-        //todo: handle create estimate
+      const findVehicle = await dataSources.vehicleDAOService.findByPlateNumber(value.plateNumber);
+
+      let vehicle: Vehicle, customer: Customer;
+
+      if (!findVehicle) {
+        const data: any = {
+          vin: value.vin,
+          make: value.make,
+          model: value.model,
+          modelYear: value.modelYear,
+          plateNumber: value.plateNumber,
+          mileageValue: value.mileageValue,
+          mileageUnit: value.mileageUnit,
+        };
+
+        vehicle = await dataSources.vehicleDAOService.create(data);
+      } else {
+        vehicle = await findVehicle.update({
+          vin: value.vin,
+          make: value.make,
+          model: value.model,
+          modelYear: value.modelYear,
+          mileageValue: value.mileageValue,
+          mileageUnit: value.mileageUnit,
+          plateNumber: value.plateNumber,
+        });
       }
 
-      if (customer) {
-        //todo: handle create estimate
+      const findCustomer = await dataSources.customerDAOService.findByAny({
+        where: { phone: value.phone },
+        include: [Contact],
+      });
+
+      if (!findCustomer) {
+        const data: any = {
+          firstName: value.firstName,
+          lastName: value.lastName,
+          phone: value.phone,
+        };
+
+        customer = await dataSources.customerDAOService.create(data);
+        await customer.$add("vehicles", [vehicle]);
+      } else {
+        await findCustomer.$add("vehicles", [vehicle]);
+        customer = findCustomer;
       }
 
-      return Promise.reject(response);
+      const estimate = await this.doCreateEstimate(value);
+
+      await partner.$add("estimates", [estimate]);
+
+      await vehicle.$add("estimates", [estimate]);
+
+      await customer.$add("estimates", [estimate]);
+
+      const response: HttpResponse<Estimate> = {
+        code: HttpStatus.OK.code,
+        message: "Estimate created successfully.",
+        result: estimate,
+      };
+
+      return Promise.resolve(response);
     } catch (e) {
       return Promise.reject(e);
     }
   }
 
-  private async doCreateEstimate() {
-    //
+  public async estimates(req: Request) {
+    const partner = req.user.partner;
+
+    try {
+      let estimates: Estimate[];
+
+      //Super Admin should see all estimates
+      if (!partner) {
+        estimates = await dataSources.estimateDAOService.findAll({
+          include: [Vehicle, Customer, RideShareDriver, { model: Partner, include: [Contact] }],
+        });
+      } else {
+        estimates = await partner.$get("estimates", {
+          include: [Vehicle, Customer, RideShareDriver, { model: Partner, include: [Contact] }],
+        });
+      }
+
+      estimates = estimates.map((estimate) => {
+        const parts = estimate.parts;
+        const labours = estimate.labours;
+
+        estimate.parts = parts.length ? parts.map((part) => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+        estimate.labours = labours.length ? labours.map((labour) => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+
+        return estimate;
+      });
+
+      const response: HttpResponse<Estimate> = {
+        code: HttpStatus.OK.code,
+        message: HttpStatus.OK.value,
+        results: estimates,
+      };
+
+      return Promise.resolve(response);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  private async doCreateEstimate(values: CreateEstimateType): Promise<Estimate> {
+    const estimateValues = {
+      jobDurationUnit: values.jobDurationUnit,
+      labours: values.labours.map((value) => JSON.stringify(value)),
+      parts: values.parts.map((value) => JSON.stringify(value)),
+      depositAmount: values.depositAmount,
+      grandTotal: values.grandTotal,
+      jobDurationValue: values.jobDurationValue,
+      laboursTotal: values.laboursTotal,
+      partsTotal: values.partsTotal,
+      address: values.address,
+      addressType: values.addressType,
+      tax: values.tax,
+      code: Generic.randomize({ count: 6, number: true }),
+    };
+
+    return await dataSources.estimateDAOService.create(estimateValues);
   }
 }

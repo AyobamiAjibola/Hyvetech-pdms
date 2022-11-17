@@ -31,22 +31,15 @@ export default class PaymentTermDAOService implements ICrudDAO<PaymentTerm> {
     return this.paymentTerm.deleteById(id, options);
   }
 
-  findAll(
-    options?: FindOptions<Attributes<PaymentTerm>>
-  ): Promise<PaymentTerm[]> {
+  findAll(options?: FindOptions<Attributes<PaymentTerm>>): Promise<PaymentTerm[]> {
     return this.paymentTerm.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<PaymentTerm>>
-  ): Promise<PaymentTerm | null> {
+  findByAny(options: FindOptions<Attributes<PaymentTerm>>): Promise<PaymentTerm | null> {
     return this.paymentTerm.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<PaymentTerm>>
-  ): Promise<PaymentTerm | null> {
+  findById(id: number, options?: FindOptions<Attributes<PaymentTerm>>): Promise<PaymentTerm | null> {
     return this.paymentTerm.findById(id, options);
   }
 

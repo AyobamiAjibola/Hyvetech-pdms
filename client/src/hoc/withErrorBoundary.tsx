@@ -7,10 +7,7 @@ interface Props {
 }
 
 export default function withErrorBoundary(Component: () => JSX.Element) {
-  return class WithErrorBoundary extends React.Component<
-    Props,
-    IComponentErrorState
-  > {
+  return class WithErrorBoundary extends React.Component<Props, IComponentErrorState> {
     public state: IComponentErrorState = {
       hasError: false,
       errorMessage: "",

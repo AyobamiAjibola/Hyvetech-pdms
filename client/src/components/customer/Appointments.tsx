@@ -15,9 +15,7 @@ import { Visibility } from "@mui/icons-material";
 function Appointments() {
   const [_appointments, _setAppointments] = useState<IAppointment[]>([]);
 
-  const { customer } = useContext(
-    CustomerPageContext
-  ) as CustomerPageContextProps;
+  const { customer } = useContext(CustomerPageContext) as CustomerPageContextProps;
 
   const customerReducer = useAppSelector((state) => state.customerReducer);
 
@@ -35,10 +33,7 @@ function Appointments() {
     if (customerReducer.getCustomerAppointmentsStatus === "completed") {
       _setAppointments(customerReducer.appointments);
     }
-  }, [
-    customerReducer.getCustomerAppointmentsStatus,
-    customerReducer.appointments,
-  ]);
+  }, [customerReducer.getCustomerAppointmentsStatus, customerReducer.appointments]);
 
   const handleView = (appointment: IAppointment) => {
     navigate(`/appointments/${appointment.id}`);

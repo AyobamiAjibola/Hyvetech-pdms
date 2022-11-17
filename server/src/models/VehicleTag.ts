@@ -1,12 +1,4 @@
-import {
-  AutoIncrement,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 import { InferAttributes, InferCreationAttributes } from "sequelize";
 import Vehicle from "./Vehicle";
 import Tag from "./Tag";
@@ -15,10 +7,7 @@ import Tag from "./Tag";
   timestamps: false,
   tableName: "vehicle_tags",
 })
-export default class VehicleTag extends Model<
-  InferAttributes<VehicleTag>,
-  InferCreationAttributes<VehicleTag>
-> {
+export default class VehicleTag extends Model<InferAttributes<VehicleTag>, InferCreationAttributes<VehicleTag>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, allowNull: false })

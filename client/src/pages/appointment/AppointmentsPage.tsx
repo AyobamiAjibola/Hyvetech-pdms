@@ -15,9 +15,7 @@ function AppointmentsPage() {
 
   const navigate = useNavigate();
 
-  const appointmentReducer = useAppSelector(
-    (state) => state.appointmentReducer
-  );
+  const appointmentReducer = useAppSelector((state) => state.appointmentReducer);
 
   const dispatch = useAppDispatch();
 
@@ -31,11 +29,7 @@ function AppointmentsPage() {
     if (appointmentReducer.getAppointmentsStatus === "completed") {
       setAppointments(appointmentReducer.appointments);
     }
-  }, [
-    appointmentReducer.appointments,
-    appointmentReducer.getAppointmentsStatus,
-    dispatch,
-  ]);
+  }, [appointmentReducer.appointments, appointmentReducer.getAppointmentsStatus, dispatch]);
 
   const handleView = (appointment: IAppointment) => {
     navigate(`/appointments/${appointment.id}`);

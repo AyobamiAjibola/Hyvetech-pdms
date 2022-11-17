@@ -11,13 +11,13 @@ highchartsAccessibility(Highcharts);
 highChartsNoDataToDisplay(Highcharts);
 
 interface IProps {
-  [p: string]: any;
-
   title: string;
   categories: string[];
   yAxisText: string;
   caption?: string;
   series: any;
+
+  [p: string]: any;
 }
 
 export default function AppStackedColumnChart(props: IProps) {
@@ -49,9 +49,7 @@ export default function AppStackedColumnChart(props: IProps) {
           fontWeight: "bold",
           color:
             // theme
-            (Highcharts.defaultOptions.title?.style &&
-              Highcharts.defaultOptions.title?.style.color) ||
-            "gray",
+            (Highcharts.defaultOptions.title?.style && Highcharts.defaultOptions.title?.style.color) || "gray",
           textOutline: "none",
         },
       },
@@ -62,8 +60,7 @@ export default function AppStackedColumnChart(props: IProps) {
       verticalAlign: "top",
       y: 25,
       floating: true,
-      backgroundColor:
-        Highcharts.defaultOptions.legend?.backgroundColor || "white",
+      backgroundColor: Highcharts.defaultOptions.legend?.backgroundColor || "white",
       borderColor: "#CCC",
       borderWidth: 1,
       shadow: false,
@@ -90,12 +87,7 @@ export default function AppStackedColumnChart(props: IProps) {
         minWidth: 1660,
       }}
     >
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={options}
-        ref={chartComponentRef}
-        {...props}
-      />
+      <HighchartsReact highcharts={Highcharts} options={options} ref={chartComponentRef} {...props} />
     </Box>
   );
 }

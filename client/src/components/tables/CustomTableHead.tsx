@@ -19,10 +19,7 @@ export interface HeadCell {
 
 export interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Data
-  ) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: any;
@@ -31,18 +28,10 @@ export interface EnhancedTableProps {
 }
 
 export default function CustomTableHead(props: EnhancedTableProps) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
-  const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+    onRequestSort(event, property);
+  };
 
   return (
     <TableHead>

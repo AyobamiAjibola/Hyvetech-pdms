@@ -9,11 +9,7 @@ import {
   Table,
 } from "sequelize-typescript";
 import { InferAttributes } from "sequelize/types";
-import {
-  CreationOptional,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferCreationAttributes, NonAttribute } from "sequelize";
 import Contact from "./Contact";
 import PaymentDetail from "./PaymentDetail";
 import Vehicle from "./Vehicle";
@@ -125,10 +121,7 @@ export default class RideShareDriver extends Model<
   @HasMany(() => Appointment, { onDelete: "cascade" })
   declare appointments: NonAttribute<Appointment[]>;
 
-  @BelongsToMany(
-    () => RideShareDriverSubscription,
-    () => RideShareDriverPlanSubscription
-  )
+  @BelongsToMany(() => RideShareDriverSubscription, () => RideShareDriverPlanSubscription)
   declare subscriptions: NonAttribute<
     Array<
       RideShareDriverSubscription & {
@@ -138,12 +131,8 @@ export default class RideShareDriver extends Model<
   >;
 
   @BelongsToMany(() => Role, () => RideShareDriverRole)
-  declare roles: NonAttribute<
-    Array<Role & { RideShareDriverRole: RideShareDriverRole }>
-  >;
+  declare roles: NonAttribute<Array<Role & { RideShareDriverRole: RideShareDriverRole }>>;
 
   @BelongsToMany(() => Partner, () => PartnerRideShareDriver)
-  declare partners: NonAttribute<
-    Array<Partner & { PartnerRideShareDriver: PartnerRideShareDriver }>
-  >;
+  declare partners: NonAttribute<Array<Partner & { PartnerRideShareDriver: PartnerRideShareDriver }>>;
 }

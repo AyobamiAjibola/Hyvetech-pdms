@@ -12,14 +12,10 @@ import {
 import { Attributes } from "sequelize";
 import ICrudDAO = appModelTypes.ICrudDAO;
 
-export default class RideShareDriverSubscriptionDAOService
-  implements ICrudDAO<RideShareDriverSubscription>
-{
+export default class RideShareDriverSubscriptionDAOService implements ICrudDAO<RideShareDriverSubscription> {
   private rideShareDriverSubscription: RideShareDriverSubscriptionRepository;
 
-  constructor(
-    rideShareDriverSubscription: RideShareDriverSubscriptionRepository
-  ) {
+  constructor(rideShareDriverSubscription: RideShareDriverSubscriptionRepository) {
     this.rideShareDriverSubscription = rideShareDriverSubscription;
   }
 
@@ -35,11 +31,7 @@ export default class RideShareDriverSubscriptionDAOService
     values: InferAttributes<RideShareDriverSubscription>,
     options: UpdateOptions<InferAttributes<RideShareDriverSubscription>>
   ): Promise<RideShareDriverSubscription> {
-    return this.rideShareDriverSubscription.updateOne(
-      district,
-      values,
-      options
-    );
+    return this.rideShareDriverSubscription.updateOne(district, values, options);
   }
 
   findById(
@@ -49,10 +41,7 @@ export default class RideShareDriverSubscriptionDAOService
     return this.rideShareDriverSubscription.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<RideShareDriverSubscription>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<RideShareDriverSubscription>>): Promise<void> {
     return this.rideShareDriverSubscription.deleteById(id, options);
   }
 
@@ -62,9 +51,7 @@ export default class RideShareDriverSubscriptionDAOService
     return this.rideShareDriverSubscription.findOne(options);
   }
 
-  findAll(
-    options?: FindOptions<InferAttributes<RideShareDriverSubscription>>
-  ): Promise<RideShareDriverSubscription[]> {
+  findAll(options?: FindOptions<InferAttributes<RideShareDriverSubscription>>): Promise<RideShareDriverSubscription[]> {
     return this.rideShareDriverSubscription.findAll(options);
   }
 }

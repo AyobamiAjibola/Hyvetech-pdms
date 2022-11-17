@@ -1,11 +1,5 @@
 import React, { memo } from "react";
-import {
-  CircularProgress,
-  Divider,
-  Grid,
-  InputAdornment,
-  Typography,
-} from "@mui/material";
+import { CircularProgress, Divider, Grid, InputAdornment, Typography } from "@mui/material";
 import TextInputField from "../fields/TextInputField";
 import SelectField from "../fields/SelectField";
 import estimateModel, { IEstimateValues } from "../models/estimateModel";
@@ -16,6 +10,7 @@ const { fields } = estimateModel;
 interface IProps {
   values: IEstimateValues;
   handleChange: any;
+  handleChangeVIN: any;
 }
 
 function VehicleInformationFields(props: IProps) {
@@ -34,16 +29,11 @@ function VehicleInformationFields(props: IProps) {
           label={fields.vin.label}
           name={fields.vin.name}
           value={props.values.vin}
-          onChange={props.handleChange}
+          onChange={props.handleChangeVIN}
           InputProps={{
             endAdornment: (
-              <InputAdornment
-                position="end"
-                sx={{ position: "absolute", left: "90%" }}
-              >
-                {vehicleReducer.getVehicleVINStatus === "loading" && (
-                  <CircularProgress size={25} />
-                )}
+              <InputAdornment position="end" sx={{ position: "absolute", left: "90%" }}>
+                {vehicleReducer.getVehicleVINStatus === "loading" && <CircularProgress size={25} />}
               </InputAdornment>
             ),
           }}

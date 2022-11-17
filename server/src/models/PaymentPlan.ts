@@ -1,18 +1,5 @@
-import {
-  BelongsTo,
-  BelongsToMany,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Plan from "./Plan";
 import Category from "./Category";
 import PaymentPlanCategory from "./PaymentPlanCategory";
@@ -32,10 +19,7 @@ export const $paymentPlanSchema = {
   tableName: "payment_plans",
   timestamps: true,
 })
-export default class PaymentPlan extends Model<
-  InferAttributes<PaymentPlan>,
-  InferCreationAttributes<PaymentPlan>
-> {
+export default class PaymentPlan extends Model<InferAttributes<PaymentPlan>, InferCreationAttributes<PaymentPlan>> {
   @Column({
     type: DataType.INTEGER,
     field: "payment_plan_id",
@@ -79,7 +63,5 @@ export default class PaymentPlan extends Model<
   declare planId: NonAttribute<number>;
 
   @BelongsToMany(() => Category, () => PaymentPlanCategory)
-  declare categories: NonAttribute<
-    Array<Category & { PaymentPlanCategory: PaymentPlanCategory }>
-  >;
+  declare categories: NonAttribute<Array<Category & { PaymentPlanCategory: PaymentPlanCategory }>>;
 }

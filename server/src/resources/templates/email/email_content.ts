@@ -341,9 +341,7 @@ export default function email_content(mailBody: MailBody) {
                               line-height: 22px;
                             "
                           >
-                            <strong>${
-                              mailBody.signature
-                            }</strong> <span style="font-style: italic">from Jiffix</span>
+                            <strong>${mailBody.signature}</strong> <span style="font-style: italic">from Jiffix</span>
                           </p>
                         </td>
                       </tr>

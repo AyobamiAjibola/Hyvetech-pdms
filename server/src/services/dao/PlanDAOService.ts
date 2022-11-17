@@ -20,10 +20,7 @@ export default class PlanDAOService implements ICrudDAO<Plan> {
     this.planRepository = planRepository;
   }
 
-  create(
-    values: CreationAttributes<Plan>,
-    options?: CreateOptions<Attributes<Plan>>
-  ): Promise<Plan> {
+  create(values: CreationAttributes<Plan>, options?: CreateOptions<Attributes<Plan>>): Promise<Plan> {
     return this.planRepository.save(values, options);
   }
 
@@ -39,28 +36,18 @@ export default class PlanDAOService implements ICrudDAO<Plan> {
     return this.planRepository.findOne(options);
   }
 
-  findByName(
-    name: string,
-    options?: FindOptions<Attributes<Plan>>
-  ): Promise<Plan | null> {
+  findByName(name: string, options?: FindOptions<Attributes<Plan>>): Promise<Plan | null> {
     return this.planRepository.findOne({
       where: { label: name },
       ...options,
     });
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Plan>>
-  ): Promise<Plan | null> {
+  findById(id: number, options?: FindOptions<Attributes<Plan>>): Promise<Plan | null> {
     return this.planRepository.findById(id, options);
   }
 
-  update(
-    plan: Plan,
-    values: InferAttributes<Plan>,
-    options: UpdateOptions<Attributes<Plan>>
-  ): Promise<Plan> {
+  update(plan: Plan, values: InferAttributes<Plan>, options: UpdateOptions<Attributes<Plan>>): Promise<Plan> {
     return this.planRepository.updateOne(plan, values, options);
   }
 }

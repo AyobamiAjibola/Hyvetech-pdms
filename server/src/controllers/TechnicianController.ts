@@ -38,13 +38,7 @@ export default class TechnicianController {
         active: Joi.boolean().truthy().required().label("Active"),
       }).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       const partnerId = value.partnerId;
 
@@ -52,10 +46,7 @@ export default class TechnicianController {
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(
-            `Partner with Id ${partnerId} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Partner with Id ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code)
         );
 
       const userExist = await dataSources.technicianDAOService.findByAny({
@@ -66,10 +57,7 @@ export default class TechnicianController {
 
       if (userExist)
         return Promise.reject(
-          CustomAPIError.response(
-            `User with email or phone number already exist`,
-            HttpStatus.BAD_REQUEST.code
-          )
+          CustomAPIError.response(`User with email or phone number already exist`, HttpStatus.BAD_REQUEST.code)
         );
 
       //find role by name
@@ -78,12 +66,7 @@ export default class TechnicianController {
       });
 
       if (!role)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Role ${value.role} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Role ${value.role} does not exist`, HttpStatus.NOT_FOUND.code));
 
       const password = value.password;
       value.rawPassword = password;
@@ -122,10 +105,7 @@ export default class TechnicianController {
           },
           subject: `Welcome to ${partner.name} Garage`,
           html: mail,
-          bcc: [
-            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-            <string>process.env.SMTP_EMAIL_FROM,
-          ],
+          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
         },
       });
 
@@ -166,25 +146,11 @@ export default class TechnicianController {
         partnerId: Joi.string().allow("").label("Partner Id"),
       }).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-      const technician = await dataSources.technicianDAOService.findById(
-        +techId
-      );
+      const technician = await dataSources.technicianDAOService.findById(+techId);
 
-      if (!technician)
-        return Promise.reject(
-          CustomAPIError.response(
-            `User does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+      if (!technician) return Promise.reject(CustomAPIError.response(`User does not exist`, HttpStatus.NOT_FOUND.code));
 
       //check new email and phone does not exist
       const exist = await dataSources.technicianDAOService.findByAny({
@@ -219,12 +185,7 @@ export default class TechnicianController {
       const result = await technician.update(value);
 
       if (!result)
-        return Promise.reject(
-          CustomAPIError.response(
-            "ErrorPage Updating Information",
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response("ErrorPage Updating Information", HttpStatus.BAD_REQUEST.code));
 
       response.result = result;
       return Promise.resolve(response);
@@ -237,16 +198,11 @@ export default class TechnicianController {
     const techId = req.params.techId as string;
 
     try {
-      const technician = await dataSources.technicianDAOService.findById(
-        +techId
-      );
+      const technician = await dataSources.technicianDAOService.findById(+techId);
 
       if (!technician)
         return Promise.reject(
-          CustomAPIError.response(
-            `Technician with Id ${techId} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Technician with Id ${techId} does not exist`, HttpStatus.NOT_FOUND.code)
         );
 
       await technician.update({
@@ -268,17 +224,13 @@ export default class TechnicianController {
     const techId = req.params.techId as string;
 
     try {
-      const technician = await dataSources.technicianDAOService.findById(
-        +techId,
-        { attributes: { exclude: ["password", "loginToken", "rawPassword"] } }
-      );
+      const technician = await dataSources.technicianDAOService.findById(+techId, {
+        attributes: { exclude: ["password", "loginToken", "rawPassword"] },
+      });
 
       if (!technician)
         return Promise.reject(
-          CustomAPIError.response(
-            `Technician with Id ${techId} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Technician with Id ${techId} does not exist`, HttpStatus.NOT_FOUND.code)
         );
 
       const response: HttpResponse<Technician> = {
@@ -328,13 +280,7 @@ export default class TechnicianController {
     try {
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
-      if (!partner)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Partner does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+      if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist`, HttpStatus.NOT_FOUND.code));
 
       const technicians = await partner.$get("technicians", {
         attributes: { exclude: ["password", "loginToken", "rawPassword"] },
@@ -357,13 +303,7 @@ export default class TechnicianController {
       //validate request body
       const { error, value } = Joi.object($loginSchema).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       //find user by username
       const user = await dataSources.technicianDAOService.findByAny({
@@ -371,24 +311,14 @@ export default class TechnicianController {
       });
 
       if (!user)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.UNAUTHORIZED.value,
-            HttpStatus.UNAUTHORIZED.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
 
       //verify password
       const hash = user.password;
       const isMatch = await this.passwordEncoder.match(value.password, hash);
 
       if (!isMatch)
-        return Promise.reject(
-          CustomAPIError.response(
-            HttpStatus.UNAUTHORIZED.value,
-            HttpStatus.UNAUTHORIZED.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
 
       const roles = await user.$get("roles");
 

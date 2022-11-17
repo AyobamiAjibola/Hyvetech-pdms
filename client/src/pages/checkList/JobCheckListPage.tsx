@@ -1,35 +1,11 @@
-import React, {
-  ChangeEvent,
-  createContext,
-  FormEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, createContext, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import useAppSelector from "../../hooks/useAppSelector";
 import useAppDispatch from "../../hooks/useAppDispatch";
 import { getJobAction } from "../../store/actions/jobActions";
-import {
-  Box,
-  Button,
-  Grid,
-  Slide,
-  Step,
-  StepButton,
-  Stepper,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Grid, Slide, Step, StepButton, Stepper, useTheme } from "@mui/material";
 import TabPanel from "../../components/tabs/TabPanel";
-import {
-  CheckListSectionType,
-  CheckListType,
-  CustomHookMessage,
-} from "@app-types";
-import {
-  IImageButtonData,
-  IJobCheckListPageContextProps,
-} from "@app-interfaces";
+import { CheckListSectionType, CheckListType, CustomHookMessage } from "@app-types";
+import { IImageButtonData, IJobCheckListPageContextProps } from "@app-interfaces";
 import AppAlert from "../../components/alerts/AppAlert";
 import NoteAnswerForm from "../../components/forms/checkList/NoteAnswerForm";
 import { IJob } from "@app-models";
@@ -41,8 +17,7 @@ interface ILocationState {
   job: IJob;
 }
 
-export const JobCheckListPageContext =
-  createContext<IJobCheckListPageContextProps | null>(null);
+export const JobCheckListPageContext = createContext<IJobCheckListPageContextProps | null>(null);
 
 function JobCheckListPage() {
   const [sections, setSections] = useState<CheckListSectionType[]>([]);
@@ -58,10 +33,7 @@ function JobCheckListPage() {
 
   const lastStep = useMemo(() => sections.length - 1, [sections]);
 
-  const isLastStep = useMemo(
-    () => activeStep === lastStep,
-    [activeStep, lastStep]
-  );
+  const isLastStep = useMemo(() => activeStep === lastStep, [activeStep, lastStep]);
 
   const jobReducer = useAppSelector((state) => state.jobReducer);
   const dispatch = useAppDispatch();
@@ -100,22 +72,17 @@ function JobCheckListPage() {
 
           const someSelected = answers.some((answer) => answer.selected);
 
-          if (!someSelected)
-            errorMessage =
-              "You must select one answer from the options in the check list";
+          if (!someSelected) errorMessage = "You must select one answer from the options in the check list";
           if (question.note && !question.text)
-            errorMessage =
-              "It appears one of the questions, requires you to add a note. Please check.";
+            errorMessage = "It appears one of the questions, requires you to add a note. Please check.";
           if (question.media && !question.images)
-            errorMessage =
-              "It appears one of the questions, requires you to upload an image. Please check.";
+            errorMessage = "It appears one of the questions, requires you to upload an image. Please check.";
         });
 
         return errorMessage;
       });
 
-      if (errors.some((value) => value.length !== 0))
-        return setError({ message: errors[0] });
+      if (errors.some((value) => value.length !== 0)) return setError({ message: errors[0] });
 
       const _checkList = {
         ...checkList,
@@ -134,9 +101,7 @@ function JobCheckListPage() {
   const handleBack = () => setActiveStep(activeStep - 1);
 
   const handleChangeRadioBtn = (e: ChangeEvent<HTMLInputElement>) => {
-    const tempSections = JSON.parse(
-      JSON.stringify([...sections])
-    ) as Array<CheckListSectionType>;
+    const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     const id = e.target.id;
 
@@ -147,9 +112,7 @@ function JobCheckListPage() {
         const answer = questions[j].answers.find((answer) => answer.id == id);
 
         if (answer) {
-          const isChecked = questions[j].answers.find(
-            (value) => value.selected
-          );
+          const isChecked = questions[j].answers.find((value) => value.selected);
 
           if (isChecked) isChecked.selected = false;
 
@@ -162,19 +125,13 @@ function JobCheckListPage() {
     setSections(tempSections);
   };
 
-  const handleChangeTextArea = (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    const tempSections = JSON.parse(
-      JSON.stringify([...sections])
-    ) as Array<CheckListSectionType>;
+  const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     const id = e.target.id;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find(
-        (question) => question.id === id
-      );
+      const question = tempSections[i].questions.find((question) => question.id === id);
 
       if (question) {
         question.text = e.target.value;
@@ -185,20 +142,13 @@ function JobCheckListPage() {
     setSections(tempSections);
   };
 
-  const handleChangeImage = (
-    e: ChangeEvent<HTMLInputElement>,
-    questionId: any
-  ) => {
+  const handleChangeImage = (e: ChangeEvent<HTMLInputElement>, questionId: any) => {
     const files = e.target.files;
 
-    const tempSections = JSON.parse(
-      JSON.stringify([...sections])
-    ) as Array<CheckListSectionType>;
+    const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find(
-        (question) => question.id === questionId
-      );
+      const question = tempSections[i].questions.find((question) => question.id === questionId);
 
       if (question && files) {
         const file = files[0];
@@ -233,14 +183,10 @@ function JobCheckListPage() {
   };
 
   const handleRemoveImage = (id: any, questionId?: any) => {
-    const tempSections = JSON.parse(
-      JSON.stringify([...sections])
-    ) as Array<CheckListSectionType>;
+    const tempSections = JSON.parse(JSON.stringify([...sections])) as Array<CheckListSectionType>;
 
     for (let i = 0; i < tempSections.length; i++) {
-      const question = tempSections[i].questions.find(
-        (question) => question.id === questionId
-      );
+      const question = tempSections[i].questions.find((question) => question.id === questionId);
 
       if (question && question.images) {
         const tempImages = [...question.images];
@@ -273,24 +219,11 @@ function JobCheckListPage() {
       <form autoComplete="off" onSubmit={handleNext}>
         {sections.map((tab, index) => {
           return (
-            <Slide
-              key={index}
-              direction="left"
-              in={activeStep === index}
-              container={containerRef.current}
-            >
+            <Slide key={index} direction="left" in={activeStep === index} container={containerRef.current}>
               <div>
-                <TabPanel
-                  value={activeStep}
-                  index={index}
-                  dir={theme.direction}
-                >
+                <TabPanel value={activeStep} index={index} dir={theme.direction}>
                   <Box sx={{ pt: 6 }}>
-                    <Grid
-                      container
-                      spacing={{ xs: 2, md: 3 }}
-                      columns={{ xs: 4, sm: 8, md: 12 }}
-                    >
+                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                       {tab.questions.map((question, idx1) => {
                         return (
                           <Grid item xs={4} key={idx1}>
@@ -313,12 +246,7 @@ function JobCheckListPage() {
           );
         })}
         <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-          <Button
-            color="inherit"
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-          >
+          <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
             Back
           </Button>
           <Box sx={{ flex: "1 1 auto" }} />

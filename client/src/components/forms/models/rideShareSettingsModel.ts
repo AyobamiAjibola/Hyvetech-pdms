@@ -98,15 +98,10 @@ const schema = Yup.object().shape({
   cac: Yup.string().nullable().label(fields.cac.label),
   phone: Yup.string().nullable().label(fields.phone.label),
   totalStaff: Yup.string().nullable().label(fields.totalStaff.label),
-  yearOfIncorporation: Yup.string()
-    .nullable()
-    .label(fields.yearOfIncorporation.label),
+  yearOfIncorporation: Yup.string().nullable().label(fields.yearOfIncorporation.label),
   brands: Yup.array().of(Yup.object()).nullable().label(fields.brands.label),
   images: Yup.array().of(Yup.object()).nullable().label(fields.images.label),
-  workingHours: Yup.array()
-    .of(Yup.object())
-    .nullable()
-    .label(fields.workingHours.label),
+  workingHours: Yup.array().of(Yup.object()).nullable().label(fields.workingHours.label),
 });
 
 const rideShareSettingsModel = {

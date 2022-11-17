@@ -44,27 +44,16 @@ export default class JobController {
 
         if (!partner)
           return Promise.reject(
-            CustomAPIError.response(
-              `Partner with Id: ${partnerId} does not exist`,
-              HttpStatus.NOT_FOUND.code
-            )
+            CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code)
           );
 
         jobs = await partner.$get("jobs", {
-          include: [
-            RideShareDriverSubscription,
-            CustomerSubscription,
-            Technician,
-          ],
+          include: [RideShareDriverSubscription, CustomerSubscription, Technician],
         });
       }
 
       jobs = await dataSources.jobDAOService.findAll({
-        include: [
-          RideShareDriverSubscription,
-          CustomerSubscription,
-          Technician,
-        ],
+        include: [RideShareDriverSubscription, CustomerSubscription, Technician],
       });
 
       const response: HttpResponse<Job> = {
@@ -103,10 +92,7 @@ export default class JobController {
             if (typeof section !== "string") return section;
             else return JSON.parse(section as unknown as string);
           });
-        } else
-          checkList.sections = JSON.parse(
-            JSON.stringify([INITIAL_CHECK_LIST_VALUES])
-          );
+        } else checkList.sections = JSON.parse(JSON.stringify([INITIAL_CHECK_LIST_VALUES]));
 
         result = Object.assign(
           {},
@@ -140,27 +126,16 @@ export default class JobController {
         checkListId: Joi.number().required().label("Check List Id"),
       }).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(
-            `Partner with Id: ${partnerId} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code)
         );
 
-      const checkList = await dataSources.checkListDAOService.findById(
-        value.checkListId
-      );
+      const checkList = await dataSources.checkListDAOService.findById(value.checkListId);
 
       if (!checkList)
         return Promise.reject(
@@ -170,47 +145,27 @@ export default class JobController {
           )
         );
 
-      const technician = await dataSources.technicianDAOService.findById(
-        +value.techId
-      );
+      const technician = await dataSources.technicianDAOService.findById(+value.techId);
 
       if (!technician)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Technician does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Technician does not exist`, HttpStatus.NOT_FOUND.code));
 
       const jobValues: any = {
         status: JOB_STATUS.pending,
         hasJob: true,
       };
 
-      const rideShareSub =
-        await dataSources.rideShareDriverSubscriptionDAOService.findById(
-          +value.subscriptionId
-        );
+      const rideShareSub = await dataSources.rideShareDriverSubscriptionDAOService.findById(+value.subscriptionId);
 
       if (!rideShareSub)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Subscription does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Subscription does not exist`, HttpStatus.NOT_FOUND.code));
 
       const vehicle = await rideShareSub.$get("vehicles", {
         include: [RideShareDriver],
       });
 
       if (!vehicle.length)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Vehicle not subscribed to plan`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Vehicle not subscribed to plan`, HttpStatus.NOT_FOUND.code));
 
       const planLabel = Generic.generateSlug(`${rideShareSub.planType}`);
 
@@ -221,12 +176,7 @@ export default class JobController {
       });
 
       if (!plan)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Plan: ${planLabel} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Plan: ${planLabel} does not exist`, HttpStatus.NOT_FOUND.code));
 
       const owner = vehicle[0].rideShareDriver;
 
@@ -296,27 +246,16 @@ export default class JobController {
         checkListId: Joi.number().required().label("Check List Id"),
       }).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       const partner = await dataSources.partnerDAOService.findById(+partnerId);
 
       if (!partner)
         return Promise.reject(
-          CustomAPIError.response(
-            `Partner with Id: ${partnerId} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code)
         );
 
-      const checkList = await dataSources.checkListDAOService.findById(
-        value.checkListId
-      );
+      const checkList = await dataSources.checkListDAOService.findById(value.checkListId);
 
       if (!checkList)
         return Promise.reject(
@@ -326,46 +265,26 @@ export default class JobController {
           )
         );
 
-      const technician = await dataSources.technicianDAOService.findById(
-        +value.techId
-      );
+      const technician = await dataSources.technicianDAOService.findById(+value.techId);
 
       if (!technician)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Technician does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Technician does not exist`, HttpStatus.NOT_FOUND.code));
 
       const jobValues: any = {
         status: JOB_STATUS.pending,
       };
 
-      const customerSub =
-        await dataSources.customerSubscriptionDAOService.findById(
-          +value.subscriptionId
-        );
+      const customerSub = await dataSources.customerSubscriptionDAOService.findById(+value.subscriptionId);
 
       if (!customerSub)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Subscription does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Subscription does not exist`, HttpStatus.NOT_FOUND.code));
 
       const vehicle = await customerSub.$get("vehicles", {
         include: [Customer],
       });
 
       if (!vehicle.length)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Vehicle not subscribed to plan`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Vehicle not subscribed to plan`, HttpStatus.NOT_FOUND.code));
 
       const planLabel = Generic.generateSlug(`${customerSub.planType}`);
 
@@ -376,12 +295,7 @@ export default class JobController {
       });
 
       if (!plan)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Plan: ${planLabel} does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+        return Promise.reject(CustomAPIError.response(`Plan: ${planLabel} does not exist`, HttpStatus.NOT_FOUND.code));
 
       const owner = vehicle[0].customer;
 
@@ -444,13 +358,7 @@ export default class JobController {
         approved: Joi.boolean().required().label("Approved"),
       }).validate(req.body);
 
-      if (error)
-        return Promise.reject(
-          CustomAPIError.response(
-            error.details[0].message,
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       const job = await dataSources.jobDAOService.findById(+jobId, {
         include: [
@@ -462,22 +370,13 @@ export default class JobController {
         ],
       });
 
-      if (!job)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Job does not exist`,
-            HttpStatus.NOT_FOUND.code
-          )
-        );
+      if (!job) return Promise.reject(CustomAPIError.response(`Job does not exist`, HttpStatus.NOT_FOUND.code));
 
       const checkList = job.checkList;
 
       if (!checkList.length)
         return Promise.reject(
-          CustomAPIError.response(
-            `Can not approve job, checklist does not available.`,
-            HttpStatus.NOT_FOUND.code
-          )
+          CustomAPIError.response(`Can not approve job, checklist does not available.`, HttpStatus.NOT_FOUND.code)
         );
 
       const iCheckList = JSON.parse(checkList) as unknown as CheckListType;
@@ -514,9 +413,7 @@ export default class JobController {
     }
   }
 
-  public static async updateJobVehicle(
-    req: Request
-  ): Promise<HttpResponse<Vehicle>> {
+  public static async updateJobVehicle(req: Request): Promise<HttpResponse<Vehicle>> {
     return new Promise((resolve, reject) => {
       form.parse(req, async (err, fields, files) => {
         try {
@@ -524,34 +421,16 @@ export default class JobController {
             vehicleInfo: Joi.string().required().label("Vehicle Info"),
           }).validate(fields);
 
-          if (error)
-            return reject(
-              CustomAPIError.response(
-                error.details[0].message,
-                HttpStatus.BAD_REQUEST.code
-              )
-            );
+          if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
           const jobId = req.params.jobId as string;
           const job = await dataSources.jobDAOService.findById(+jobId);
 
-          if (!job)
-            return reject(
-              CustomAPIError.response(
-                `Job does not exist`,
-                HttpStatus.NOT_FOUND.code
-              )
-            );
+          if (!job) return reject(CustomAPIError.response(`Job does not exist`, HttpStatus.NOT_FOUND.code));
 
           const vehicle = await job.$get("vehicle");
 
-          if (!vehicle)
-            return reject(
-              CustomAPIError.response(
-                `Vehicle does not exist`,
-                HttpStatus.NOT_FOUND.code
-              )
-            );
+          if (!vehicle) return reject(CustomAPIError.response(`Vehicle does not exist`, HttpStatus.NOT_FOUND.code));
 
           const vehicleInfo = JSON.parse(value.vehicleInfo);
 
@@ -608,48 +487,20 @@ export default class JobController {
 
     if (subscription.planCategory === HYBRID_CATEGORY) {
       //Hybrid mobile
-      if (
-        subscription.modeOfService !== MOBILE_CATEGORY &&
-        mobileCount < defaultMobileInspections
-      )
-        mobileCount++;
-      else
-        return this.getInspectionsCountError(
-          subscription.planType,
-          MOBILE_CATEGORY
-        );
+      if (subscription.modeOfService !== MOBILE_CATEGORY && mobileCount < defaultMobileInspections) mobileCount++;
+      else return this.getInspectionsCountError(subscription.planType, MOBILE_CATEGORY);
 
       //Hybrid drive-in
-      if (
-        subscription.modeOfService !== DRIVE_IN_CATEGORY &&
-        driveInCount < defaultDriveInInspections
-      )
-        driveInCount++;
-      else
-        return this.getInspectionsCountError(
-          subscription.planType,
-          DRIVE_IN_CATEGORY
-        );
+      if (subscription.modeOfService !== DRIVE_IN_CATEGORY && driveInCount < defaultDriveInInspections) driveInCount++;
+      else return this.getInspectionsCountError(subscription.planType, DRIVE_IN_CATEGORY);
     }
 
-    if (
-      subscription.planCategory === MOBILE_CATEGORY &&
-      mobileCount === defaultMobileInspections
-    )
-      return this.getInspectionsCountError(
-        subscription.planType,
-        MOBILE_CATEGORY
-      );
+    if (subscription.planCategory === MOBILE_CATEGORY && mobileCount === defaultMobileInspections)
+      return this.getInspectionsCountError(subscription.planType, MOBILE_CATEGORY);
     else mobileCount++; //Increment count for mobile drive-in inspection
 
-    if (
-      subscription.planCategory === DRIVE_IN_CATEGORY &&
-      driveInCount === defaultDriveInInspections
-    )
-      return this.getInspectionsCountError(
-        subscription.planType,
-        DRIVE_IN_CATEGORY
-      );
+    if (subscription.planCategory === DRIVE_IN_CATEGORY && driveInCount === defaultDriveInInspections)
+      return this.getInspectionsCountError(subscription.planType, DRIVE_IN_CATEGORY);
     else driveInCount++; //Increment count for normal drive-in inspection
 
     await subscription.update({
@@ -659,10 +510,7 @@ export default class JobController {
     });
   }
 
-  private static getInspectionsCountError(
-    subscriptionName: string,
-    category: string
-  ) {
+  private static getInspectionsCountError(subscriptionName: string, category: string) {
     return Promise.reject(
       CustomAPIError.response(
         `Maximum number of ${category} inspections reached for plan ${subscriptionName}`,

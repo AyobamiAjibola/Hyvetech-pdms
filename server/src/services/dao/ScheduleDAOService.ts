@@ -19,10 +19,7 @@ export default class ScheduleDAOService implements ICrudDAO<Schedule> {
     this.scheduleRepository = scheduleRepository;
   }
 
-  create(
-    values: CreationAttributes<Schedule>,
-    options?: CreateOptions<Attributes<Schedule>>
-  ): Promise<Schedule> {
+  create(values: CreationAttributes<Schedule>, options?: CreateOptions<Attributes<Schedule>>): Promise<Schedule> {
     return this.scheduleRepository.save(values, options);
   }
 
@@ -34,29 +31,19 @@ export default class ScheduleDAOService implements ICrudDAO<Schedule> {
     return this.scheduleRepository.updateOne(schedule, values, options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<InferAttributes<Schedule>>
-  ): Promise<Schedule | null> {
+  findById(id: number, options?: FindOptions<InferAttributes<Schedule>>): Promise<Schedule | null> {
     return this.scheduleRepository.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<Schedule>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<Schedule>>): Promise<void> {
     return this.scheduleRepository.deleteById(id, options);
   }
 
-  findByAny(
-    options: FindOptions<InferAttributes<Schedule>>
-  ): Promise<Schedule | null> {
+  findByAny(options: FindOptions<InferAttributes<Schedule>>): Promise<Schedule | null> {
     return this.scheduleRepository.findOne(options);
   }
 
-  findAll(
-    options?: FindOptions<InferAttributes<Schedule>>
-  ): Promise<Schedule[]> {
+  findAll(options?: FindOptions<InferAttributes<Schedule>>): Promise<Schedule[]> {
     return this.scheduleRepository.findAll(options);
   }
 }

@@ -1,12 +1,7 @@
 import { IThunkAPIStatus } from "@app-types";
 import { IJob } from "@app-models";
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  approveJobCheckListAction,
-  driverAssignJobAction,
-  getJobAction,
-  getJobsAction,
-} from "../actions/jobActions";
+import { approveJobCheckListAction, driverAssignJobAction, getJobAction, getJobsAction } from "../actions/jobActions";
 
 interface IJobState {
   getJobsStatus: IThunkAPIStatus;
@@ -142,10 +137,6 @@ const jobSlice = createSlice({
   },
 });
 
-export const {
-  clearDriverAssignJobStatus,
-  clearGetJobsStatus,
-  clearGetJobStatus,
-  clearApproveJobCheckListStatus,
-} = jobSlice.actions;
+export const { clearDriverAssignJobStatus, clearGetJobsStatus, clearGetJobStatus, clearApproveJobCheckListStatus } =
+  jobSlice.actions;
 export default jobSlice.reducer;

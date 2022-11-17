@@ -20,10 +20,7 @@ export default class RoleDAOService implements ICrudDAO<Role> {
     this.roleRepository = roleRepository;
   }
 
-  create(
-    values: CreationAttributes<Role>,
-    options?: CreateOptions<Attributes<Role>>
-  ): Promise<Role> {
+  create(values: CreationAttributes<Role>, options?: CreateOptions<Attributes<Role>>): Promise<Role> {
     return this.roleRepository.save(values, options);
   }
 
@@ -39,18 +36,11 @@ export default class RoleDAOService implements ICrudDAO<Role> {
     return this.roleRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Role>>
-  ): Promise<Role | null> {
+  findById(id: number, options?: FindOptions<Attributes<Role>>): Promise<Role | null> {
     return this.roleRepository.findById(id, options);
   }
 
-  update(
-    role: Role,
-    values: InferAttributes<Role>,
-    options: UpdateOptions<Attributes<Role>>
-  ): Promise<Role> {
+  update(role: Role, values: InferAttributes<Role>, options: UpdateOptions<Attributes<Role>>): Promise<Role> {
     return this.roleRepository.updateOne(role, values, options);
   }
 }

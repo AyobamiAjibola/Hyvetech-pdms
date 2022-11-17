@@ -1,11 +1,4 @@
-import React, {
-  ChangeEvent,
-  MouseEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, MouseEvent, useContext, useEffect, useRef, useState } from "react";
 import {
   Avatar,
   Box,
@@ -55,12 +48,7 @@ import AppModal from "../../components/modal/AppModal";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack5";
 import { AppContext } from "../../context/AppContextProvider";
 import { AppContextProps } from "@app-interfaces";
-import {
-  APPOINTMENT_STATUS,
-  ESTIMATE,
-  INVENTORY,
-  REPORT,
-} from "../../config/constants";
+import { APPOINTMENT_STATUS, ESTIMATE, INVENTORY, REPORT } from "../../config/constants";
 import BookingModal from "../../components/modal/BookingModal";
 import BookingForm from "../../components/forms/booking/BookingForm";
 import useTimeslot from "../../hooks/useTimeslot";
@@ -95,13 +83,9 @@ function AppointmentPage() {
   const urlParams = useParams();
   useTimeslot();
 
-  const { showBooking, setShowBooking } = useContext(
-    AppContext
-  ) as AppContextProps;
+  const { showBooking, setShowBooking } = useContext(AppContext) as AppContextProps;
 
-  const appointmentReducer = useAppSelector(
-    (state) => state.appointmentReducer
-  );
+  const appointmentReducer = useAppSelector((state) => state.appointmentReducer);
 
   const dispatch = useAppDispatch();
 
@@ -122,15 +106,9 @@ function AppointmentPage() {
 
       setAppointment(appointmentReducer.appointment);
     }
-  }, [
-    appointmentReducer.appointment,
-    appointmentReducer.updateAppointmentStatus,
-  ]);
+  }, [appointmentReducer.appointment, appointmentReducer.updateAppointmentStatus]);
 
-  const downloadFile = async (
-    evt: MouseEvent<HTMLButtonElement>,
-    url: string
-  ) => {
+  const downloadFile = async (evt: MouseEvent<HTMLButtonElement>, url: string) => {
     evt.preventDefault();
 
     url = `${settings.api.baseURL}/${url}`;
@@ -169,13 +147,8 @@ function AppointmentPage() {
         tempImageList[index].img = pdfImg;
 
         setImageList(tempImageList);
-      } else
-        setImageList((prevState) => [
-          ...prevState,
-          { img: pdfImg, title: file.name, showDeleteIcon: true },
-        ]);
-    } else
-      setImageList([{ img: pdfImg, title: file.name, showDeleteIcon: true }]);
+      } else setImageList((prevState) => [...prevState, { img: pdfImg, title: file.name, showDeleteIcon: true }]);
+    } else setImageList([{ img: pdfImg, title: file.name, showDeleteIcon: true }]);
 
     if (name === INVENTORY) setInventoryFile(file);
     if (name === REPORT) setReportFile(file);
@@ -285,15 +258,13 @@ function AppointmentPage() {
             <div>
               <span className={styles.title}>Appointment</span> -{" "}
               <span className={styles.subtitle}>
-                {appointment?.customer?.firstName}{" "}
-                {appointment?.customer?.lastName} |{" "}
-                {appointment?.customer?.email} | {appointment?.customer?.phone}
+                {appointment?.customer?.firstName} {appointment?.customer?.lastName} | {appointment?.customer?.email} |{" "}
+                {appointment?.customer?.phone}
               </span>
             </div>
           </Grid>
           <Grid item>
-            {imageList.length ||
-            ($status.length && $status !== appointment?.status) ? (
+            {imageList.length || ($status.length && $status !== appointment?.status) ? (
               <Button onClick={handleUpdate} variant="outlined">
                 Update
               </Button>
@@ -303,25 +274,16 @@ function AppointmentPage() {
         <Box sx={{ flexGrow: 1 }}>
           {!appointment ? (
             <Skeleton variant="rectangular">
-              <Grid
-                container
-                spacing={{ xs: 2, md: 3 }}
-                columns={{ xs: 4, sm: 8, md: 12 }}
-              />
+              <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} />
             </Skeleton>
           ) : (
-            <Grid
-              container
-              spacing={{ xs: 2, md: 3 }}
-              columns={{ xs: 4, sm: 8, md: 12 }}
-            >
+            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
               <Grid item xs={12} md={4}>
                 <Paper
                   elevation={5}
                   sx={{
                     p: 2,
-                    backgroundColor: (theme) =>
-                      theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+                    backgroundColor: (theme) => (theme.palette.mode === "dark" ? "#1A2027" : "#fff"),
                   }}
                 >
                   <Grid container spacing={2}>
@@ -333,22 +295,15 @@ function AppointmentPage() {
                     <Grid item xs={12} sm container>
                       <Grid item xs container direction="column" spacing={2}>
                         <Grid item xs>
-                          <Typography
-                            gutterBottom
-                            variant="subtitle1"
-                            component="div"
-                          >
-                            {appointment.vehicle?.modelYear}{" "}
-                            {appointment.vehicle?.model} (
+                          <Typography gutterBottom variant="subtitle1" component="div">
+                            {appointment.vehicle?.modelYear} {appointment.vehicle?.model} (
                             {appointment.vehicle?.plateNumber})
                           </Typography>
                         </Grid>
                       </Grid>
                       <Grid item>
                         <Typography variant="subtitle1" component="div">
-                          {appointment.vehicle?.isBooked && (
-                            <Chip size="small" label="Booked" color="success" />
-                          )}
+                          {appointment.vehicle?.isBooked && <Chip size="small" label="Booked" color="success" />}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -364,27 +319,19 @@ function AppointmentPage() {
                 >
                   <Item elevation={5}>
                     <Typography>Programme</Typography>
-                    <Typography variant="caption">
-                      {appointment.programme}
-                    </Typography>
+                    <Typography variant="caption">{appointment.programme}</Typography>
                   </Item>
                   <Item elevation={5}>
                     <Typography>Service Mode</Typography>
-                    <Typography variant="caption">
-                      {appointment.modeOfService}
-                    </Typography>
+                    <Typography variant="caption">{appointment.modeOfService}</Typography>
                   </Item>
                   <Item elevation={5}>
                     <Typography>Status</Typography>
-                    <Typography variant="caption">
-                      {$status.length ? $status : appointment.status}
-                    </Typography>
+                    <Typography variant="caption">{$status.length ? $status : appointment.status}</Typography>
                   </Item>
                   <Item elevation={5}>
                     <Typography>Service Cost</Typography>
-                    <Typography variant="caption">
-                      ₦{formatNumberToIntl(+appointment.serviceCost)}
-                    </Typography>
+                    <Typography variant="caption">₦{formatNumberToIntl(+appointment.serviceCost)}</Typography>
                   </Item>
                 </Stack>
                 <Box sx={{ my: { xs: 1, sm: 2, md: 2 } }} />
@@ -404,20 +351,14 @@ function AppointmentPage() {
                   </Item>
                   <Item elevation={5}>
                     <Typography>Service Location</Typography>
-                    <Typography variant="caption">
-                      {appointment.serviceLocation}
-                    </Typography>
+                    <Typography variant="caption">{appointment.serviceLocation}</Typography>
                   </Item>
                   <Item elevation={5}>
                     <Grid container>
                       {appointment.vehicleFault.imagePath && (
                         <Grid item xs={4}>
                           <Avatar
-                            onClick={() =>
-                              handleViewImage(
-                                appointment.vehicleFault.imagePath
-                              )
-                            }
+                            onClick={() => handleViewImage(appointment.vehicleFault.imagePath)}
                             sx={{ cursor: "pointer" }}
                             variant="square"
                             src={appointment.vehicleFault.imagePath}
@@ -428,17 +369,12 @@ function AppointmentPage() {
                       )}
                       <Grid item xs>
                         <Typography>Complaint</Typography>
-                        <Typography variant="caption">
-                          {appointment.vehicleFault.description}
-                        </Typography>
+                        <Typography variant="caption">{appointment.vehicleFault.description}</Typography>
                       </Grid>
                     </Grid>
                   </Item>
                 </Stack>
-                <Divider
-                  orientation="horizontal"
-                  sx={{ my: { xs: 2, sm: 4, md: 6 } }}
-                />
+                <Divider orientation="horizontal" sx={{ my: { xs: 2, sm: 4, md: 6 } }} />
                 <Grid
                   container
                   justifyContent="space-between"
@@ -473,19 +409,10 @@ function AppointmentPage() {
                       Cancel
                     </Button>
                   </Grid>
-                  <Grid
-                    item
-                    container
-                    xs
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                  <Grid item container xs justifyContent="space-between" alignItems="center">
                     <Grid item xs>
                       <Stack direction="row" spacing={1}>
-                        <FormControl
-                          size="small"
-                          sx={{ maxWidth: 100, width: "100%" }}
-                        >
+                        <FormControl size="small" sx={{ maxWidth: 100, width: "100%" }}>
                           <InputLabel id="demo-select-small">Status</InputLabel>
                           <Select
                             labelId="demo-select-small"
@@ -505,19 +432,13 @@ function AppointmentPage() {
                         {appointment.inventoryFile ? (
                           <Button
                             variant="outlined"
-                            onClick={(evt) =>
-                              downloadFile(evt, appointment?.inventoryFile)
-                            }
+                            onClick={(evt) => downloadFile(evt, appointment?.inventoryFile)}
                             startIcon={<Download />}
                           >
                             {INVENTORY}
                           </Button>
                         ) : (
-                          <Button
-                            variant="outlined"
-                            startIcon={<UploadFile />}
-                            component="label"
-                          >
+                          <Button variant="outlined" startIcon={<UploadFile />} component="label">
                             {INVENTORY}
                             <input
                               hidden
@@ -534,19 +455,13 @@ function AppointmentPage() {
                         {appointment.reportFile ? (
                           <Button
                             variant="outlined"
-                            onClick={(evt) =>
-                              downloadFile(evt, appointment?.reportFile)
-                            }
+                            onClick={(evt) => downloadFile(evt, appointment?.reportFile)}
                             startIcon={<Download />}
                           >
                             {REPORT}
                           </Button>
                         ) : (
-                          <Button
-                            variant="outlined"
-                            startIcon={<UploadFile />}
-                            component="label"
-                          >
+                          <Button variant="outlined" startIcon={<UploadFile />} component="label">
                             {REPORT}
                             <input
                               name={REPORT}
@@ -563,19 +478,13 @@ function AppointmentPage() {
                         {appointment.estimateFile ? (
                           <Button
                             variant="outlined"
-                            onClick={(evt) =>
-                              downloadFile(evt, appointment?.estimateFile)
-                            }
+                            onClick={(evt) => downloadFile(evt, appointment?.estimateFile)}
                             startIcon={<Download />}
                           >
                             {ESTIMATE}
                           </Button>
                         ) : (
-                          <Button
-                            variant="outlined"
-                            startIcon={<UploadFile />}
-                            component="label"
-                          >
+                          <Button variant="outlined" startIcon={<UploadFile />} component="label">
                             {ESTIMATE}
                             <input
                               name={ESTIMATE}
@@ -602,11 +511,7 @@ function AppointmentPage() {
                 >
                   <Grid item xs />
                   <Grid item xs>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ mt: { xs: 2, md: 3 } }}
-                    >
+                    <Stack direction="row" spacing={1} sx={{ mt: { xs: 2, md: 3 } }}>
                       {imageList.length > 0 ? (
                         <React.Fragment>
                           {imageList.map((item, index) => (

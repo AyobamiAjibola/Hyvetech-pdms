@@ -6,8 +6,6 @@ import { ConsoleTransportInstance } from "winston/lib/winston/transports";
 import { LOG_LEVEL_COLORS } from "../config/constants";
 
 export default class AppLogger {
-  private _logger?: Logger;
-
   private readonly module: string;
   private readonly transports: ConsoleTransportInstance | DailyRotateFile;
 
@@ -15,6 +13,12 @@ export default class AppLogger {
     this.transports = this.getTransports();
     this.module = module;
     this.createLogger();
+  }
+
+  private _logger?: Logger;
+
+  get logger(): Logger {
+    return <Logger>this._logger;
   }
 
   public static init(module: string) {
@@ -58,14 +62,8 @@ export default class AppLogger {
       level: "debug",
       format: format.printf(({ level, label, timestamp, stack, message }) => {
         //@ts-ignore
-        return colors[LOG_LEVEL_COLORS[level]](
-          `[${timestamp}] ${label}.${level}: ${stack ? stack : message}`
-        );
+        return colors[LOG_LEVEL_COLORS[level]](`[${timestamp}] ${label}.${level}: ${stack ? stack : message}`);
       }),
     });
-  }
-
-  get logger(): Logger {
-    return <Logger>this._logger;
   }
 }

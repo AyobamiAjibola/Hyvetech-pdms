@@ -18,12 +18,7 @@ import UserRole from "./UserRole";
 import Contact from "./Contact";
 
 import { PASSWORD_PATTERN } from "../config/constants";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Partner from "./Partner";
 
 export const $userSchema = {
@@ -37,20 +32,14 @@ export const $userSchema = {
 
 export const $loginSchema = {
   username: Joi.string().required().label("Username"),
-  password: Joi.string()
-    .pattern(new RegExp(PASSWORD_PATTERN))
-    .required()
-    .label("Password"),
+  password: Joi.string().pattern(new RegExp(PASSWORD_PATTERN)).required().label("Password"),
 };
 
 @Table({
   timestamps: true,
   tableName: "users",
 })
-export default class User extends Model<
-  InferAttributes<User>,
-  InferCreationAttributes<User>
-> {
+export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "user_id" })

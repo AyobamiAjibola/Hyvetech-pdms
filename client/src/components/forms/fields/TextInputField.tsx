@@ -9,9 +9,7 @@ interface ITextInputFieldProps {
   helperStyle?: { [p: string]: string };
   fullWidth?: boolean;
   size?: "small" | "medium";
-  onChange: (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   value: string | number | boolean;
   name: string;

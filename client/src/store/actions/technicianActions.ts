@@ -13,66 +13,56 @@ const DELETE_TECHNICIAN = "technicians:DELETE_TECHNICIAN";
 
 const API_ROOT = settings.api.rest;
 
-export const getTechniciansAction = asyncThunkWrapper<
-  ApiResponseSuccess<ITechnician>,
-  void
->(GET_TECHNICIANS, async () => {
-  const response = await axiosClient.get(`${API_ROOT}/technicians`);
+export const getTechniciansAction = asyncThunkWrapper<ApiResponseSuccess<ITechnician>, void>(
+  GET_TECHNICIANS,
+  async () => {
+    const response = await axiosClient.get(`${API_ROOT}/technicians`);
 
-  return response.data;
-});
+    return response.data;
+  }
+);
 
-export const getPartnerTechniciansAction = asyncThunkWrapper<
-  ApiResponseSuccess<ITechnician>,
-  number
->(GET_PARTNER_TECHNICIANS, async (partnerId) => {
-  const response = await axiosClient.get(
-    `${API_ROOT}/technicians/${partnerId}/partner`
-  );
+export const getPartnerTechniciansAction = asyncThunkWrapper<ApiResponseSuccess<ITechnician>, number>(
+  GET_PARTNER_TECHNICIANS,
+  async (partnerId) => {
+    const response = await axiosClient.get(`${API_ROOT}/technicians/${partnerId}/partner`);
 
-  return response.data;
-});
+    return response.data;
+  }
+);
 
-export const getTechnicianAction = asyncThunkWrapper<
-  ApiResponseSuccess<ITechnician>,
-  number
->(GET_TECHNICIAN, async (techId) => {
-  const response = await axiosClient.get(`${API_ROOT}/technicians/${techId}`);
+export const getTechnicianAction = asyncThunkWrapper<ApiResponseSuccess<ITechnician>, number>(
+  GET_TECHNICIAN,
+  async (techId) => {
+    const response = await axiosClient.get(`${API_ROOT}/technicians/${techId}`);
 
-  return response.data;
-});
+    return response.data;
+  }
+);
 
-export const createTechnicianAction = asyncThunkWrapper<
-  ApiResponseSuccess<ITechnician>,
-  any
->(CREATE_TECHNICIAN, async (technician) => {
-  const response = await axiosClient.post(
-    `${API_ROOT}/technicians`,
-    technician
-  );
+export const createTechnicianAction = asyncThunkWrapper<ApiResponseSuccess<ITechnician>, any>(
+  CREATE_TECHNICIAN,
+  async (technician) => {
+    const response = await axiosClient.post(`${API_ROOT}/technicians`, technician);
 
-  return response.data;
-});
+    return response.data;
+  }
+);
 
-export const updateTechnicianAction = asyncThunkWrapper<
-  ApiResponseSuccess<ITechnician>,
-  any
->(UPDATE_TECHNICIAN, async (technician) => {
-  const response = await axiosClient.patch(
-    `${API_ROOT}/technicians/${technician.id}`,
-    technician
-  );
+export const updateTechnicianAction = asyncThunkWrapper<ApiResponseSuccess<ITechnician>, any>(
+  UPDATE_TECHNICIAN,
+  async (technician) => {
+    const response = await axiosClient.patch(`${API_ROOT}/technicians/${technician.id}`, technician);
 
-  return response.data;
-});
+    return response.data;
+  }
+);
 
-export const deleteTechnicianAction = asyncThunkWrapper<
-  ApiResponseSuccess<ITechnician>,
-  number
->(DELETE_TECHNICIAN, async (techId) => {
-  const response = await axiosClient.delete(
-    `${API_ROOT}/technicians/${techId}`
-  );
+export const deleteTechnicianAction = asyncThunkWrapper<ApiResponseSuccess<ITechnician>, number>(
+  DELETE_TECHNICIAN,
+  async (techId) => {
+    const response = await axiosClient.delete(`${API_ROOT}/technicians/${techId}`);
 
-  return response.data;
-});
+    return response.data;
+  }
+);

@@ -1,19 +1,5 @@
-import {
-  AutoIncrement,
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 
 import Schedule from "./Schedule";
 
@@ -22,10 +8,7 @@ import Schedule from "./Schedule";
 
   tableName: "time_slots",
 })
-export default class TimeSlot extends Model<
-  InferAttributes<TimeSlot>,
-  InferCreationAttributes<TimeSlot>
-> {
+export default class TimeSlot extends Model<InferAttributes<TimeSlot>, InferCreationAttributes<TimeSlot>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "time_slot_id", allowNull: false })

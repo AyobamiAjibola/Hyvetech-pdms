@@ -6,8 +6,7 @@ import { customerDetailTabs } from "../../navigation/menus";
 import { CustomerPageContextProps, ILocationState } from "@app-interfaces";
 import { ICustomer } from "@app-models";
 
-export const CustomerPageContext =
-  createContext<CustomerPageContextProps | null>(null);
+export const CustomerPageContext = createContext<CustomerPageContextProps | null>(null);
 
 function CustomerPage() {
   const [customer, setCustomer] = useState<ICustomer>();
@@ -22,11 +21,7 @@ function CustomerPage() {
   }, [location.state]);
 
   return (
-    <Stack
-      direction="column"
-      spacing={5}
-      divider={<Divider orientation="horizontal" flexItem />}
-    >
+    <Stack direction="column" spacing={5} divider={<Divider orientation="horizontal" flexItem />}>
       <Paper sx={{ p: 3 }}>
         <CustomerPageContext.Provider value={{ customer, setCustomer }}>
           <CustomerTab tabMenus={customerDetailTabs} />

@@ -22,23 +22,15 @@ export default function useAdmin() {
   const token = useMemo(() => cookie.get(settings.auth.admin), []);
 
   useEffect(() => {
-    const localPermissions = JSON.parse(
-      localStorage.getItem(LOCAL_STORAGE.permissions) as string
-    );
+    const localPermissions = JSON.parse(localStorage.getItem(LOCAL_STORAGE.permissions) as string);
 
     if (null !== localPermissions) {
       const permissions = localPermissions as IPermission[];
 
       permissions.forEach((permission) => {
-        if (permission.action === "manage" && permission.subject === "all")
-          setIsSuperAdmin(true);
-        if (
-          permission.action === "manage" &&
-          permission.subject === "technician"
-        )
-          setIsTechAdmin(true);
-        if (permission.action === "manage" && permission.subject === "driver")
-          setIsDriverAdmin(true);
+        if (permission.action === "manage" && permission.subject === "all") setIsSuperAdmin(true);
+        if (permission.action === "manage" && permission.subject === "technician") setIsTechAdmin(true);
+        if (permission.action === "manage" && permission.subject === "driver") setIsDriverAdmin(true);
       });
     } else throw new Error("You are not authorized to access this resource");
   }, []);

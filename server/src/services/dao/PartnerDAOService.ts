@@ -37,16 +37,11 @@ export default class PartnerDAOService implements ICrudDAO<Partner> {
     return this.partnerRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Partner>>
-  ): Promise<Partner | null> {
+  findByAny(options: FindOptions<Attributes<Partner>>): Promise<Partner | null> {
     return this.partnerRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Partner>>
-  ): Promise<Partner | null> {
+  findById(id: number, options?: FindOptions<Attributes<Partner>>): Promise<Partner | null> {
     return this.partnerRepository.findById(id, options);
   }
 
@@ -66,10 +61,7 @@ export default class PartnerDAOService implements ICrudDAO<Partner> {
     return Generic.getMonthlyData(this.partnerRepository);
   }
 
-  create(
-    values: CreationAttributes<Partner>,
-    options?: CreateOptions<Attributes<Partner>>
-  ): Promise<Partner> {
+  create(values: CreationAttributes<Partner>, options?: CreateOptions<Attributes<Partner>>): Promise<Partner> {
     return this.partnerRepository.save(values, options);
   }
 }

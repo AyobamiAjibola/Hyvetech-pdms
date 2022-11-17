@@ -22,8 +22,7 @@ interface ICreateFormProps {
 export default function CreatePartnerForm(props: ICreateFormProps) {
   const [states, setStates] = useState<ISelectData[]>([]);
 
-  const { handleChange, values, resetForm, setFieldValue } =
-    useFormikContext<ICreatePartnerModel>();
+  const { handleChange, values, resetForm, setFieldValue } = useFormikContext<ICreatePartnerModel>();
 
   const miscReducer = useAppSelector((state) => state.miscellaneousReducer);
   const partnerReducer = useAppSelector((state) => state.partnerReducer);
@@ -98,22 +97,9 @@ export default function CreatePartnerForm(props: ICreateFormProps) {
           />
         </Grid>
 
-        <Grid
-          item
-          container
-          xs={12}
-          md={6}
-          justifyContent="space-evenly"
-          alignItems="center"
-          spacing={2}
-        >
+        <Grid item container xs={12} md={6} justifyContent="space-evenly" alignItems="center" spacing={2}>
           <Grid item>
-            <Button
-              endIcon={<PhotoCamera />}
-              color="primary"
-              aria-label="upload picture"
-              component="label"
-            >
+            <Button endIcon={<PhotoCamera />} color="primary" aria-label="upload picture" component="label">
               upload logo
               <input
                 hidden
@@ -130,14 +116,7 @@ export default function CreatePartnerForm(props: ICreateFormProps) {
             </Button>
           </Grid>
           <Grid item xs>
-            {values.logo && (
-              <img
-                src={getImageUrl(values.logo)}
-                crossOrigin="anonymous"
-                width="10%"
-                alt="logo"
-              />
-            )}
+            {values.logo && <img src={getImageUrl(values.logo)} crossOrigin="anonymous" width="10%" alt="logo" />}
           </Grid>
         </Grid>
         <Grid item xs={12}>

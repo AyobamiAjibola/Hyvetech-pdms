@@ -1,13 +1,6 @@
 import React, { FocusEvent } from "react";
 import { useFormikContext } from "formik";
-import {
-  FormControl,
-  FormGroup,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import { FormControl, FormGroup, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import ErrorField from "./ErrorField";
 
 export interface ISelectData {

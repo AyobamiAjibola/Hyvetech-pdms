@@ -1,14 +1,7 @@
 import VehicleRepository from "../../repositories/VehicleRepository";
 import Vehicle from "../../models/Vehicle";
 import { appModelTypes } from "../../@types/app-model";
-import {
-  Attributes,
-  CreateOptions,
-  CreationAttributes,
-  DestroyOptions,
-  FindOptions,
-  UpdateOptions,
-} from "sequelize";
+import { Attributes, CreateOptions, CreationAttributes, DestroyOptions, FindOptions, UpdateOptions } from "sequelize";
 import moment from "moment/moment";
 import Generic from "../../utils/Generic";
 import ICrudDAO = appModelTypes.ICrudDAO;
@@ -26,17 +19,11 @@ export default class VehicleDAOService implements ICrudDAO<Vehicle> {
     this.vehicleRepository = vehicleRepository;
   }
 
-  create(
-    values: CreationAttributes<Vehicle>,
-    options?: CreateOptions<Attributes<Vehicle>>
-  ): Promise<Vehicle> {
+  create(values: CreationAttributes<Vehicle>, options?: CreateOptions<Attributes<Vehicle>>): Promise<Vehicle> {
     return this.vehicleRepository.save(values, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<Attributes<Vehicle>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<Attributes<Vehicle>>): Promise<void> {
     return this.vehicleRepository.deleteById(id, options);
   }
 
@@ -44,16 +31,11 @@ export default class VehicleDAOService implements ICrudDAO<Vehicle> {
     return this.vehicleRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Vehicle>>
-  ): Promise<Vehicle | null> {
+  findByAny(options: FindOptions<Attributes<Vehicle>>): Promise<Vehicle | null> {
     return this.vehicleRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Vehicle>>
-  ): Promise<Vehicle | null> {
+  findById(id: number, options?: FindOptions<Attributes<Vehicle>>): Promise<Vehicle | null> {
     return this.vehicleRepository.findById(id, options);
   }
 
@@ -71,5 +53,9 @@ export default class VehicleDAOService implements ICrudDAO<Vehicle> {
 
   public async getTotalMonthlyVehicles() {
     return Generic.getMonthlyData(this.vehicleRepository);
+  }
+
+  findByPlateNumber(plateNumber: string, options?: FindOptions<Attributes<Vehicle>>): Promise<Vehicle | null> {
+    return this.vehicleRepository.findOne({ where: { plateNumber }, ...options });
   }
 }

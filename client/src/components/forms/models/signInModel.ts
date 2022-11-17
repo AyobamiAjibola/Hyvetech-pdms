@@ -28,9 +28,7 @@ const initialValues = {
 };
 
 const schema = Yup.object().shape({
-  username: Yup.string()
-    .required(fields.username.error.required)
-    .label(fields.username.label),
+  username: Yup.string().required(fields.username.error.required).label(fields.username.label),
   password: Yup.string()
     .required(fields.password.error.required)
     .matches(new RegExp(PASSWORD_PATTERN), fields.password.error.invalid)

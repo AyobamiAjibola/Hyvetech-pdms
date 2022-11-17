@@ -26,6 +26,14 @@ export default class QueueManager {
     await channel.close();
   }
 
+  static async produce() {
+    const channel = await this.getChannel();
+
+    await channel.assertQueue(this.queue);
+
+    await channel.sendToQueue(this.queue, Buffer.from(JSON.stringify(this.data)));
+  }
+
   private static async consume() {
     const channel = await this.getChannel();
 
@@ -42,16 +50,5 @@ export default class QueueManager {
     );
 
     await this.closeChannel();
-  }
-
-  static async produce() {
-    const channel = await this.getChannel();
-
-    await channel.assertQueue(this.queue);
-
-    await channel.sendToQueue(
-      this.queue,
-      Buffer.from(JSON.stringify(this.data))
-    );
   }
 }

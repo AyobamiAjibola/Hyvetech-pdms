@@ -1,23 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IThunkAPIStatus } from "@app-types";
 import {
+  deleteDriverAction,
   getDriverAction,
   getDriverAppointmentsAction,
   getDriversAction,
   getDriverTransactionsAction,
   getDriverVehiclesAction,
 } from "../actions/rideShareActions";
-import {
-  IAppointment,
-  IRideShareDriver,
-  ITransaction,
-  IVehicle,
-} from "@app-models";
+import { IAppointment, IRideShareDriver, ITransaction, IVehicle } from "@app-models";
 
 interface IDriverState {
   getDriverStatus: IThunkAPIStatus;
   getDriverSuccess: string;
   getDriverError?: string;
+
+  deleteDriverStatus: IThunkAPIStatus;
+  deleteDriverSuccess: string;
+  deleteDriverError?: string;
 
   getDriversStatus: IThunkAPIStatus;
   getDriversSuccess: string;
@@ -46,6 +46,10 @@ const initialState: IDriverState = {
   getDriverError: "",
   getDriverStatus: "idle",
   getDriverSuccess: "",
+
+  deleteDriverError: "",
+  deleteDriverStatus: "idle",
+  deleteDriverSuccess: "",
 
   getDriversStatus: "idle",
   getDriversSuccess: "",
@@ -79,6 +83,11 @@ const rideShareSlice = createSlice({
       state.getDriverSuccess = "";
       state.getDriverError = "";
     },
+    clearDeleteDriverStatus(state: IDriverState) {
+      state.deleteDriverStatus = "idle";
+      state.deleteDriverSuccess = "";
+      state.deleteDriverError = "";
+    },
     clearGetDriversStatus(state: IDriverState) {
       state.getDriversStatus = "idle";
       state.getDriversSuccess = "";
@@ -101,6 +110,22 @@ const rideShareSlice = createSlice({
         if (action.payload) {
           state.getDriverError = action.payload.message;
         } else state.getDriverError = action.error.message;
+      });
+
+    builder
+      .addCase(deleteDriverAction.pending, (state) => {
+        state.deleteDriverStatus = "loading";
+      })
+      .addCase(deleteDriverAction.fulfilled, (state, action) => {
+        state.deleteDriverStatus = "completed";
+        state.deleteDriverSuccess = action.payload.message;
+      })
+      .addCase(deleteDriverAction.rejected, (state, action) => {
+        state.deleteDriverStatus = "failed";
+
+        if (action.payload) {
+          state.deleteDriverError = action.payload.message;
+        } else state.deleteDriverError = action.error.message;
       });
 
     builder
@@ -172,6 +197,6 @@ const rideShareSlice = createSlice({
   },
 });
 
-export const { clearGetDriverStatus } = rideShareSlice.actions;
+export const { clearGetDriverStatus, clearDeleteDriverStatus, clearGetDriversStatus } = rideShareSlice.actions;
 
 export default rideShareSlice.reducer;

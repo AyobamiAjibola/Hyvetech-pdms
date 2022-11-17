@@ -1,26 +1,12 @@
-import {
-  AutoIncrement,
-  Column,
-  DataType,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-} from "sequelize/types";
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize/types";
 
 @Table({
   tableName: "email_config",
 
   timestamps: true,
 })
-export default class EmailConfig extends Model<
-  InferAttributes<EmailConfig>,
-  InferCreationAttributes<EmailConfig>
-> {
+export default class EmailConfig extends Model<InferAttributes<EmailConfig>, InferCreationAttributes<EmailConfig>> {
   @AutoIncrement
   @PrimaryKey
   @Column({

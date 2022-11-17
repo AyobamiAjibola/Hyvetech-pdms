@@ -7,13 +7,7 @@ import {
   getCustomerTransactionsAction,
   getCustomerVehiclesAction,
 } from "../actions/customerActions";
-import {
-  IAppointment,
-  IContact,
-  ICustomer,
-  ITransaction,
-  IVehicle,
-} from "@app-models";
+import { IAppointment, IContact, ICustomer, ITransaction, IVehicle } from "@app-models";
 
 interface ICustomerState {
   getCustomersStatus: IThunkAPIStatus;

@@ -38,20 +38,14 @@ const schema = [
     [fields.vehicleFault.name]: Yup.string()
       .required(fields.vehicleFault.error.required)
       .label(fields.vehicleFault.label),
-    [fields.location.name]: Yup.string()
-      .required(fields.location.error.required)
-      .label(fields.location.label),
+    [fields.location.name]: Yup.string().required(fields.location.error.required).label(fields.location.label),
   }),
   Yup.object().shape({
     [fields.vehicleFault.name]: Yup.string()
       .required(fields.vehicleFault.error.required)
       .label(fields.vehicleFault.label),
-    [fields.location.name]: Yup.string()
-      .required(fields.location.error.required)
-      .label(fields.location.label),
-    [fields.vehicle.name]: Yup.string()
-      .required(fields.vehicle.error.required)
-      .label(fields.vehicle.label),
+    [fields.location.name]: Yup.string().required(fields.location.error.required).label(fields.location.label),
+    [fields.vehicle.name]: Yup.string().required(fields.vehicle.error.required).label(fields.vehicle.label),
   }),
 ];
 

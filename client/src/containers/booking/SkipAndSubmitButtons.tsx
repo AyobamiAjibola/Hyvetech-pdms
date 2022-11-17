@@ -5,16 +5,10 @@ import { AppContext } from "../../context/AppContextProvider";
 import { AppContextProps } from "@app-interfaces";
 
 function SkipAndSubmitButtons() {
-  const { showBookingBtn, mobileDate } = useContext(
-    AppContext
-  ) as AppContextProps;
+  const { showBookingBtn, mobileDate } = useContext(AppContext) as AppContextProps;
 
   return (
-    <Grid
-      container
-      rowSpacing={{ xs: 2, sm: 4, md: 6 }}
-      columnSpacing={{ xs: 2, sm: 4, md: 6 }}
-    >
+    <Grid container rowSpacing={{ xs: 2, sm: 4, md: 6 }} columnSpacing={{ xs: 2, sm: 4, md: 6 }}>
       <Grid item xs={12} md={6} alignSelf="center">
         <React.Fragment />
       </Grid>

@@ -24,6 +24,14 @@ interface IGetImagePath {
   tempPath: string;
 }
 
+interface IRandomize {
+  number?: boolean;
+  alphanumeric?: boolean;
+  string?: boolean;
+  mixed?: boolean;
+  count?: number;
+}
+
 export default class Generic {
   public static async fileExist(path: string) {
     try {
@@ -60,8 +68,7 @@ export default class Generic {
   }
 
   public static generateRandomString(limit: number) {
-    const letters =
-      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz@#!$%^&+=";
+    const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz@#!$%^&+=";
     let randomString = "";
     for (let i = 0; i < limit; i++) {
       const randomNum = Math.floor(Math.random() * letters.length);
@@ -69,6 +76,35 @@ export default class Generic {
     }
 
     return randomString;
+  }
+
+  /**
+   * @name randomize
+   * @description generate random chars (string,numbers,special characters, or mixed)
+   * @description default count is 10 and result is numbers if no options are passed
+   * @param options
+   */
+  public static randomize(options?: IRandomize) {
+    const numbers = "01234567890123456789012345678901234567890123456789";
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+    const specialChars = "@#!$%^&+=*()<>_-?|.";
+
+    let text = numbers;
+    let count = 10;
+    let result = "";
+
+    if (options?.count) count = options.count;
+    if (options?.number) text = numbers;
+    if (options?.string) text = letters;
+    if (options?.mixed) text = numbers + letters + specialChars;
+    if (options?.alphanumeric) text = letters + numbers;
+
+    for (let i = 0; i < count; i++) {
+      const randomNum = Math.floor(Math.random() * text.length);
+      result += text.substring(randomNum, randomNum + 1);
+    }
+
+    return result;
   }
 
   public static convertTextToCamelcase(text: string) {
@@ -188,10 +224,7 @@ export default class Generic {
     };
   }
 
-  public static async enableTimeSlot(
-    appointmentDate: Moment,
-    appointment: Appointment
-  ) {
+  public static async enableTimeSlot(appointmentDate: Moment, appointment: Appointment) {
     const date = appointmentDate.format("YYYY-MM-DD");
     const time = appointment.timeSlot;
 

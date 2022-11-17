@@ -19,17 +19,11 @@ export default class TagDAOService implements ICrudDAO<Tag> {
     this.tagRepository = tagRepository;
   }
 
-  create(
-    values: CreationAttributes<Tag>,
-    options?: CreateOptions<Attributes<Tag>>
-  ): Promise<Tag> {
+  create(values: CreationAttributes<Tag>, options?: CreateOptions<Attributes<Tag>>): Promise<Tag> {
     return this.tagRepository.save(values, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<Attributes<Tag>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<Attributes<Tag>>): Promise<void> {
     return this.tagRepository.deleteById(id, options);
   }
 
@@ -41,18 +35,11 @@ export default class TagDAOService implements ICrudDAO<Tag> {
     return this.tagRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Tag>>
-  ): Promise<Tag | null> {
+  findById(id: number, options?: FindOptions<Attributes<Tag>>): Promise<Tag | null> {
     return this.tagRepository.findById(id, options);
   }
 
-  update(
-    tag: Tag,
-    values: InferAttributes<Tag>,
-    options: UpdateOptions<Attributes<Tag>>
-  ): Promise<Tag> {
+  update(tag: Tag, values: InferAttributes<Tag>, options: UpdateOptions<Attributes<Tag>>): Promise<Tag> {
     return this.tagRepository.updateOne(tag, values, options);
   }
 }

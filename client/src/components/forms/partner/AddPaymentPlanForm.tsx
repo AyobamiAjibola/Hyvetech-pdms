@@ -2,23 +2,13 @@ import React, { useEffect, useState } from "react";
 import SelectField, { ISelectData } from "../fields/SelectField";
 import { FieldArray, Form, useFormikContext } from "formik";
 import useAppSelector from "../../../hooks/useAppSelector";
-import {
-  Divider,
-  FormGroup,
-  FormHelperText,
-  Grid,
-  InputAdornment,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { Divider, FormGroup, FormHelperText, Grid, InputAdornment, MenuItem, Typography } from "@mui/material";
 import TextInputField from "../fields/TextInputField";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import { Add, Remove, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import paymentPlanModel, {
-  IPaymentPlanModel,
-} from "../models/paymentPlanModel";
+import paymentPlanModel, { IPaymentPlanModel } from "../models/paymentPlanModel";
 
 const units = ["None", "Litre"];
 const intervals = [
@@ -33,8 +23,7 @@ const intervals = [
 
 export default function AddPaymentPlanForm() {
   const [plans, setPlans] = useState<ISelectData[]>([]);
-  const { handleChange, values, errors, touched } =
-    useFormikContext<IPaymentPlanModel>();
+  const { handleChange, values, errors, touched } = useFormikContext<IPaymentPlanModel>();
 
   const partnerReducer = useAppSelector((state) => state.partnerReducer);
 
@@ -53,12 +42,7 @@ export default function AddPaymentPlanForm() {
 
   return (
     <Form autoComplete="off">
-      <Grid
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        sx={{ p: 1 }}
-        container
-      >
+      <Grid spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }} container>
         <Grid item xs={12} md={6}>
           <TextInputField
             onChange={handleChange}
@@ -109,14 +93,7 @@ export default function AddPaymentPlanForm() {
                   {values.pricing.length > 0 &&
                     values.pricing.map((item, index) => {
                       return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
+                        <Grid container item spacing={2} xs={12} key={index} columns={13}>
                           {Object.keys(item).map((value) => {
                             return (
                               <React.Fragment key={`${value}`}>
@@ -132,10 +109,7 @@ export default function AddPaymentPlanForm() {
                                       value={item.interval}
                                     >
                                       {intervals.map((interval, index1) => (
-                                        <MenuItem
-                                          key={index1}
-                                          value={interval.value}
-                                        >
+                                        <MenuItem key={index1} value={interval.value}>
                                           {interval.label}
                                         </MenuItem>
                                       ))}
@@ -156,9 +130,7 @@ export default function AddPaymentPlanForm() {
                             );
                           })}
                           <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
+                            <IconButton onClick={() => arrayHelpers.remove(index)}>
                               <Remove />
                             </IconButton>
                           </Grid>
@@ -166,11 +138,7 @@ export default function AddPaymentPlanForm() {
                       );
                     })}
                   <Grid item xs>
-                    <IconButton
-                      onClick={() =>
-                        arrayHelpers.push({ interval: "", amount: "" })
-                      }
-                    >
+                    <IconButton onClick={() => arrayHelpers.push({ interval: "", amount: "" })}>
                       <Add />
                     </IconButton>
                   </Grid>
@@ -178,9 +146,7 @@ export default function AddPaymentPlanForm() {
               );
             }}
           />
-          {errors?.pricing && touched?.pricing && (
-            <FormHelperText>{errors?.pricing?.toString()}</FormHelperText>
-          )}
+          {errors?.pricing && touched?.pricing && <FormHelperText>{errors?.pricing?.toString()}</FormHelperText>}
         </Grid>
 
         <Grid item xs={12}>
@@ -205,18 +171,12 @@ export default function AddPaymentPlanForm() {
                                 fullWidth
                                 variant="outlined"
                                 name={`description.${index}.${value}`}
-                                label={
-                                  paymentPlanModel.fields.description.label
-                                }
+                                label={paymentPlanModel.fields.description.label}
                                 onChange={handleChange}
                                 InputProps={{
                                   endAdornment: (
                                     <InputAdornment position="end">
-                                      <IconButton
-                                        onClick={() =>
-                                          arrayHelpers.remove(index)
-                                        }
-                                      >
+                                      <IconButton onClick={() => arrayHelpers.remove(index)}>
                                         <Remove />
                                       </IconButton>
                                     </InputAdornment>
@@ -229,9 +189,7 @@ export default function AddPaymentPlanForm() {
                       );
                     })}
                   <Grid item xs>
-                    <IconButton
-                      onClick={() => arrayHelpers.push({ value: "" })}
-                    >
+                    <IconButton onClick={() => arrayHelpers.push({ value: "" })}>
                       <Add />
                     </IconButton>
                   </Grid>
@@ -255,14 +213,7 @@ export default function AddPaymentPlanForm() {
                   {values.parameter.length > 0 &&
                     values.parameter.map((item, index) => {
                       return (
-                        <Grid
-                          container
-                          item
-                          spacing={2}
-                          xs={12}
-                          key={index}
-                          columns={13}
-                        >
+                        <Grid container item spacing={2} xs={12} key={index} columns={13}>
                           {Object.keys(item).map((value) => (
                             <React.Fragment key={`${value}`}>
                               {value === "unit" ? (
@@ -297,9 +248,7 @@ export default function AddPaymentPlanForm() {
                             </React.Fragment>
                           ))}
                           <Grid item xs={1}>
-                            <IconButton
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
+                            <IconButton onClick={() => arrayHelpers.remove(index)}>
                               <Remove />
                             </IconButton>
                           </Grid>
@@ -307,11 +256,7 @@ export default function AddPaymentPlanForm() {
                       );
                     })}
                   <Grid item xs>
-                    <IconButton
-                      onClick={() =>
-                        arrayHelpers.push({ name: "", unit: "", value: "" })
-                      }
-                    >
+                    <IconButton onClick={() => arrayHelpers.push({ name: "", unit: "", value: "" })}>
                       <Add />
                     </IconButton>
                   </Grid>

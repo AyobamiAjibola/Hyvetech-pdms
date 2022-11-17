@@ -1,20 +1,7 @@
 import React, { useMemo } from "react";
-import {
-  FieldArray,
-  FieldArrayRenderProps,
-  Form,
-  useFormikContext,
-} from "formik";
+import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from "formik";
 
-import {
-  Button,
-  ButtonGroup,
-  Divider,
-  FormControlLabel,
-  Grid,
-  Switch,
-  TextField,
-} from "@mui/material";
+import { Button, ButtonGroup, Divider, FormControlLabel, Grid, Switch, TextField } from "@mui/material";
 import { Add, Delete, Save } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { CheckListType } from "@app-types";
@@ -29,8 +16,7 @@ interface IProps {
 const { initialValues, fields } = checkListSectionModel;
 
 export default function SectionForm(props: IProps) {
-  const { values, setFieldValue, handleChange } =
-    useFormikContext<CheckListType>();
+  const { values, setFieldValue, handleChange } = useFormikContext<CheckListType>();
 
   const isEmpty = useMemo(() => values.sections.length === 0, [values]);
 
@@ -54,10 +40,7 @@ export default function SectionForm(props: IProps) {
     setFieldValue(fields.sections.name, tempSections);
   };
 
-  const handleRemoveQuestion = (
-    questionIndex: number,
-    sectionIndex: number
-  ) => {
+  const handleRemoveQuestion = (questionIndex: number, sectionIndex: number) => {
     const tempSections = [...values.sections];
 
     tempSections[sectionIndex].questions.splice(questionIndex, 1);
@@ -65,11 +48,7 @@ export default function SectionForm(props: IProps) {
     setFieldValue(fields.sections.name, tempSections);
   };
 
-  const handleAddAnswer = (
-    answerIndex: number,
-    questionIndex: number,
-    sectionIndex: number
-  ) => {
+  const handleAddAnswer = (answerIndex: number, questionIndex: number, sectionIndex: number) => {
     const tempSections = [...values.sections];
 
     tempSections[sectionIndex].questions[questionIndex].answers.push({
@@ -82,29 +61,17 @@ export default function SectionForm(props: IProps) {
     setFieldValue(fields.sections.name, tempSections);
   };
 
-  const handleRemoveAnswer = (
-    answerIndex: number,
-    questionIndex: number,
-    sectionIndex: number
-  ) => {
+  const handleRemoveAnswer = (answerIndex: number, questionIndex: number, sectionIndex: number) => {
     const tempSections = [...values.sections];
 
-    tempSections[sectionIndex].questions[questionIndex].answers.splice(
-      answerIndex,
-      1
-    );
+    tempSections[sectionIndex].questions[questionIndex].answers.splice(answerIndex, 1);
 
     setFieldValue(fields.sections.name, tempSections);
   };
 
   return (
     <Form>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        sx={{ p: 3 }}
-      >
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 3 }}>
         <FieldArray
           name="sections"
           render={(sectionProps) =>
@@ -154,27 +121,18 @@ export default function SectionForm(props: IProps) {
                               size="small"
                               label={`Question ${idx2 + 1}`}
                               fullWidth
-                              value={
-                                values.sections[idx1].questions[idx2].question
-                              }
+                              value={values.sections[idx1].questions[idx2].question}
                               name={`sections.${idx1}.questions.${idx2}.question`}
                               onChange={handleChange}
                             />
                           </Grid>
-                          <Grid
-                            item
-                            xs={3}
-                            container
-                            justifyContent="space-around"
-                          >
+                          <Grid item xs={3} container justifyContent="space-around">
                             <FormControlLabel
                               label="Media"
                               control={
                                 <Switch
                                   size="small"
-                                  checked={
-                                    values.sections[idx1].questions[idx2].media
-                                  }
+                                  checked={values.sections[idx1].questions[idx2].media}
                                   name={`sections.${idx1}.questions.${idx2}.media`}
                                   onChange={handleChange}
                                 />
@@ -185,9 +143,7 @@ export default function SectionForm(props: IProps) {
                               control={
                                 <Switch
                                   size="small"
-                                  checked={
-                                    values.sections[idx1].questions[idx2].note
-                                  }
+                                  checked={values.sections[idx1].questions[idx2].note}
                                   name={`sections.${idx1}.questions.${idx2}.note`}
                                   onChange={handleChange}
                                 />
@@ -227,10 +183,7 @@ export default function SectionForm(props: IProps) {
                                       label={`Answer ${idx3 + 1}`}
                                       fullWidth
                                       name={`sections.${idx1}.questions.${idx2}.answers.${idx3}.answer`}
-                                      value={
-                                        values.sections[idx1].questions[idx2]
-                                          .answers[idx3].answer
-                                      }
+                                      value={values.sections[idx1].questions[idx2].answers[idx3].answer}
                                       onChange={handleChange}
                                     />
                                   </Grid>
@@ -240,10 +193,7 @@ export default function SectionForm(props: IProps) {
                                       label={`Weight ${idx3 + 1}`}
                                       fullWidth
                                       name={`sections.${idx1}.questions.${idx2}.answers.${idx3}.weight`}
-                                      value={
-                                        values.sections[idx1].questions[idx2]
-                                          .answers[idx3].weight
-                                      }
+                                      value={values.sections[idx1].questions[idx2].answers[idx3].weight}
                                       onChange={handleChange}
                                     />
                                   </Grid>
@@ -254,10 +204,7 @@ export default function SectionForm(props: IProps) {
                                       fullWidth
                                       format="hex"
                                       name={`sections.${idx1}.questions.${idx2}.answers.${idx3}.color`}
-                                      value={
-                                        values.sections[idx1].questions[idx2]
-                                          .answers[idx3].color
-                                      }
+                                      value={values.sections[idx1].questions[idx2].answers[idx3].color}
                                       onChange={(value) => {
                                         setFieldValue(
                                           `sections.${idx1}.questions.${idx2}.answers.${idx3}.color`,
@@ -269,9 +216,7 @@ export default function SectionForm(props: IProps) {
                                   <Grid item xs={4} alignSelf="center">
                                     <ButtonGroup fullWidth>
                                       <Button
-                                        onClick={() =>
-                                          handleRemoveAnswer(idx3, idx2, idx1)
-                                        }
+                                        onClick={() => handleRemoveAnswer(idx3, idx2, idx1)}
                                         variant="contained"
                                         color="error"
                                         sx={{ fontSize: 11 }}
@@ -280,9 +225,7 @@ export default function SectionForm(props: IProps) {
                                         Remove Answer
                                       </Button>
                                       <Button
-                                        onClick={() =>
-                                          handleAddAnswer(idx3, idx2, idx1)
-                                        }
+                                        onClick={() => handleAddAnswer(idx3, idx2, idx1)}
                                         variant="contained"
                                         color="success"
                                         sx={{ fontSize: 11 }}
@@ -309,9 +252,7 @@ export default function SectionForm(props: IProps) {
         <Grid item xs={12} md={6}>
           {isEmpty ? (
             <Button
-              onClick={() =>
-                setFieldValue(fields.sections.name, initialValues.sections)
-              }
+              onClick={() => setFieldValue(fields.sections.name, initialValues.sections)}
               type="button"
               variant="outlined"
               color="success"

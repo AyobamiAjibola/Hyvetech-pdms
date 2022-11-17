@@ -40,22 +40,15 @@ export default class AppointmentDAOService implements ICrudDAO<Appointment> {
     return this.appointmentRepository.deleteById(id, options);
   }
 
-  findAll(
-    options?: FindOptions<Attributes<Appointment>>
-  ): Promise<Appointment[]> {
+  findAll(options?: FindOptions<Attributes<Appointment>>): Promise<Appointment[]> {
     return this.appointmentRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Appointment>>
-  ): Promise<Appointment | null> {
+  findByAny(options: FindOptions<Attributes<Appointment>>): Promise<Appointment | null> {
     return this.appointmentRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Appointment>>
-  ): Promise<Appointment | null> {
+  findById(id: number, options?: FindOptions<Attributes<Appointment>>): Promise<Appointment | null> {
     return this.appointmentRepository.findById(id, options);
   }
 

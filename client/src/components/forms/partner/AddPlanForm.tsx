@@ -1,24 +1,19 @@
-import { Save } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Grid, Typography } from '@mui/material';
-import { Form, useFormikContext } from 'formik';
-import React, { useEffect, useMemo } from 'react';
+import { Save } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import { Grid, Typography } from "@mui/material";
+import { Form, useFormikContext } from "formik";
+import React, { useEffect, useMemo } from "react";
 
-import useAppSelector from '../../../hooks/useAppSelector';
-import RadioButtonField from '../fields/RadioButtonField';
-import TextInputField from '../fields/TextInputField';
-import planModel, { IPlanModel } from '../models/planModel';
+import useAppSelector from "../../../hooks/useAppSelector";
+import RadioButtonField from "../fields/RadioButtonField";
+import TextInputField from "../fields/TextInputField";
+import planModel, { IPlanModel } from "../models/planModel";
 
 export default function AddPlanForm() {
-  const { handleChange, values, setFieldValue } =
-    useFormikContext<IPlanModel>();
+  const { handleChange, values, setFieldValue } = useFormikContext<IPlanModel>();
 
   useEffect(() => {
-    if (
-      values.serviceMode === "Mobile" ||
-      values.serviceMode === "Drive-in" ||
-      values.serviceMode === "Hybrid"
-    ) {
+    if (values.serviceMode === "Mobile" || values.serviceMode === "Drive-in" || values.serviceMode === "Hybrid") {
       setFieldValue("mobile", "0");
       setFieldValue("driveIn", "0");
     }
@@ -134,9 +129,7 @@ export default function AddPlanForm() {
         </Grid>
         <Grid item xs={3}>
           <Typography>
-            Total{" "}
-            {values.programme === "Maintenance" ? "Services" : "Inspections"}:{" "}
-            {computeInspections}
+            Total {values.programme === "Maintenance" ? "Services" : "Inspections"}: {computeInspections}
           </Typography>
         </Grid>
         <Grid item xs mt={1} sx={{ mx: "auto" }}>

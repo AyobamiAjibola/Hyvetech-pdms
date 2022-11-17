@@ -16,14 +16,8 @@ export default function useUploadFile() {
     if (_getCustomer) {
       const _customer = JSON.parse(_getCustomer);
 
-      if (_customer.vehicleFaultImg)
-        setImage(
-          `${settings.api.customerBaseURL}/${_customer.vehicleFaultImg}`
-        );
-      if (_customer.vehicleFaultVideo)
-        setVideo(
-          `${settings.api.customerBaseURL}/${_customer.vehicleFaultVideo}`
-        );
+      if (_customer.vehicleFaultImg) setImage(`${settings.api.customerBaseURL}/${_customer.vehicleFaultImg}`);
+      if (_customer.vehicleFaultVideo) setVideo(`${settings.api.customerBaseURL}/${_customer.vehicleFaultVideo}`);
     }
   }, []);
 

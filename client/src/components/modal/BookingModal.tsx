@@ -1,11 +1,5 @@
 import React, { ReactNode } from "react";
-import {
-  AppBar,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Dialog, DialogContent, IconButton, Toolbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import TransitionUp from "../transitions/TransitionUp";
 
@@ -31,12 +25,7 @@ function BookingModal(props: IProps) {
       >
         <AppBar sx={{ position: "relative" }}>
           <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={props.onClose}
-              aria-label="close"
-            >
+            <IconButton edge="start" color="inherit" onClick={props.onClose} aria-label="close">
               <CloseIcon />
             </IconButton>
           </Toolbar>

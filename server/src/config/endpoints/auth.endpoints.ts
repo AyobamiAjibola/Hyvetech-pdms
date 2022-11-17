@@ -1,9 +1,4 @@
-import {
-  bootstrapHandler,
-  signInHandler,
-  signOutHandler,
-  signupHandler,
-} from "../../routes/authRoute";
+import { bootstrapHandler, signInHandler, signOutHandler, signupHandler } from "../../routes/authRoute";
 import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 

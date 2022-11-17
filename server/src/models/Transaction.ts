@@ -1,19 +1,5 @@
-import {
-  AutoIncrement,
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Customer from "./Customer";
 import RideShareDriver from "./RideShareDriver";
 import CustomerSubscription from "./CustomerSubscription";
@@ -26,10 +12,7 @@ import RideShareDriverSubscription from "./RideShareDriverSubscription";
   freezeTableName: true,
   tableName: "transactions",
 })
-export default class Transaction extends Model<
-  InferAttributes<Transaction>,
-  InferCreationAttributes<Transaction>
-> {
+export default class Transaction extends Model<InferAttributes<Transaction>, InferCreationAttributes<Transaction>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "transaction_id", allowNull: false })

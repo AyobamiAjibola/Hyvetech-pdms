@@ -22,6 +22,14 @@ import { clearGetVehicleVINStatus } from "../../../store/reducers/vehicleReducer
 
 interface IProps {
   isSubmitting?: boolean;
+  setLabourTotal: (total: number) => void;
+  setPartTotal: (total: number) => void;
+  setGrandTotal: (total: number) => void;
+  labourTotal: number;
+  partTotal: number;
+  grandTotal: number;
+  showCreate?: boolean;
+  showEdit?: boolean;
 }
 
 const { fields } = estimateModel;
@@ -33,9 +41,6 @@ export type PartArgs = IPart & {
 };
 
 function EstimateForm(props: IProps) {
-  const [labourTotal, setLabourTotal] = useState<number>(0);
-  const [partTotal, setPartTotal] = useState<number>(0);
-  const [grandTotal, setGrandTotal] = useState<number>(0);
   const [vat, setVat] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
@@ -43,8 +48,25 @@ function EstimateForm(props: IProps) {
   const vehicleReducer = useAppSelector((state) => state.vehicleReducer);
   const dispatch = useAppDispatch();
 
-  const { values, handleChange, setFieldValue } =
-    useFormikContext<IEstimateValues>();
+  const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
+
+  const {
+    setGrandTotal,
+    setPartTotal,
+    setLabourTotal,
+    showCreate,
+    showEdit,
+    isSubmitting,
+    grandTotal,
+    labourTotal,
+    partTotal,
+  } = props;
+
+  useEffect(() => {
+    if (!showCreate || !showEdit) {
+      resetForm();
+    }
+  }, [resetForm, showCreate, showEdit]);
 
   useEffect(() => {
     let total = 0;
@@ -55,7 +77,7 @@ function EstimateForm(props: IProps) {
       }
     }
     setPartTotal(total);
-  }, [values.parts]);
+  }, [setPartTotal, values.parts]);
 
   useEffect(() => {
     let total = 0;
@@ -66,7 +88,7 @@ function EstimateForm(props: IProps) {
       }
     }
     setLabourTotal(total);
-  }, [values.labours]);
+  }, [setLabourTotal, values.labours]);
 
   useEffect(() => {
     const vat = 7.5 * 0.01;
@@ -78,7 +100,7 @@ function EstimateForm(props: IProps) {
 
   useEffect(() => {
     setGrandTotal(vat + partTotal + labourTotal);
-  }, [vat, partTotal, labourTotal]);
+  }, [vat, partTotal, labourTotal, setGrandTotal]);
 
   const _handleChangeVIN = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,22 +124,17 @@ function EstimateForm(props: IProps) {
       tempVehicleDetails.forEach((detail: IVINDecoderSchema) => {
         const newDetail: IVINDecoderSchema = { ...detail };
 
-        if (detail.label === "engineCylinders")
-          newDetail.value = `${detail.value} cylinders`;
+        if (detail.label === "engineCylinders") newDetail.value = `${detail.value} cylinders`;
 
         setFieldValue(newDetail.label, newDetail.value);
+        setFieldTouched(newDetail.label, false);
       });
     }
-  }, [
-    vehicleReducer.getVehicleVINStatus,
-    vehicleReducer.vehicleVINDetails,
-    setFieldValue,
-  ]);
+  }, [vehicleReducer.getVehicleVINStatus, vehicleReducer.vehicleVINDetails, setFieldValue, setFieldTouched]);
 
   useEffect(() => {
     if (vehicleReducer.getVehicleVINStatus === "failed") {
-      if (vehicleReducer.getVehicleVINError)
-        setError({ message: vehicleReducer.getVehicleVINError });
+      if (vehicleReducer.getVehicleVINError) setError({ message: vehicleReducer.getVehicleVINError });
     }
   }, [vehicleReducer.getVehicleVINError, vehicleReducer.getVehicleVINStatus]);
 
@@ -131,12 +148,7 @@ function EstimateForm(props: IProps) {
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 4, sm: 8, md: 12 }}
-          sx={{ p: 1 }}
-        >
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }}>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               Customer Information
@@ -159,7 +171,7 @@ function EstimateForm(props: IProps) {
               name={fields.lastName.name}
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <TextInputField
               type="tel"
               onChange={handleChange}
@@ -168,18 +180,30 @@ function EstimateForm(props: IProps) {
               name={fields.phone.name}
             />
           </Grid>
-          <Grid item xs={3}>
-            <TextInputField
-              onChange={handleChange}
-              value={values.address}
-              name={fields.address.name}
-              label={fields.address.label}
-            />
+          <Grid item container xs spacing={0.2}>
+            <Grid item xs={3}>
+              <SelectField
+                data={[
+                  { label: "Home", value: "Home" },
+                  { label: "Office", value: "Office" },
+                ]}
+                onChange={handleChange}
+                value={values.addressType}
+                name={fields.addressType.name}
+                label={fields.addressType.label}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={9}>
+              <TextInputField
+                onChange={handleChange}
+                value={values.address}
+                name={fields.address.name}
+                label={fields.address.label}
+              />
+            </Grid>
           </Grid>
-          <VehicleInformationFields
-            values={values}
-            handleChange={_handleChangeVIN}
-          />
+          <VehicleInformationFields values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               {fields.parts.label}
@@ -195,15 +219,7 @@ function EstimateForm(props: IProps) {
                     {values.parts.length > 0 &&
                       values.parts.map((part, index) => {
                         return (
-                          <Grid
-                            container
-                            item
-                            spacing={2}
-                            xs={13}
-                            key={index}
-                            columns={14}
-                            mb={2}
-                          >
+                          <Grid container item spacing={2} xs={13} key={index} columns={14} mb={2}>
                             {Object.keys(part).map((value) => {
                               return (
                                 <React.Fragment key={`${value}`}>
@@ -257,9 +273,7 @@ function EstimateForm(props: IProps) {
                               );
                             })}
                             <Grid item xs={1}>
-                              <IconButton
-                                onClick={() => partsProps.remove(index)}
-                              >
+                              <IconButton onClick={() => partsProps.remove(index)}>
                                 <Remove />
                               </IconButton>
                             </Grid>
@@ -307,15 +321,7 @@ function EstimateForm(props: IProps) {
                     {values.labours.length > 0 &&
                       values.labours.map((labour, index) => {
                         return (
-                          <Grid
-                            container
-                            item
-                            spacing={2}
-                            xs={12}
-                            key={index}
-                            columns={13}
-                            mb={2}
-                          >
+                          <Grid container item spacing={2} xs={12} key={index} columns={13} mb={2}>
                             {Object.keys(labour).map((value) => {
                               return (
                                 <React.Fragment key={`${value}`}>
@@ -353,9 +359,7 @@ function EstimateForm(props: IProps) {
                               );
                             })}
                             <Grid item xs={1}>
-                              <IconButton
-                                onClick={() => laboursProps.remove(index)}
-                              >
+                              <IconButton onClick={() => laboursProps.remove(index)}>
                                 <Remove />
                               </IconButton>
                             </Grid>
@@ -390,10 +394,7 @@ function EstimateForm(props: IProps) {
                 fullWidth
                 sx={{ mb: 2 }}
               />
-              <Typography>
-                {" "}
-                Sub Total: ₦{formatNumberToIntl(labourTotal)}
-              </Typography>
+              <Typography> Sub Total: ₦{formatNumberToIntl(labourTotal)}</Typography>
             </Grid>
             <Grid item />
           </Grid>
@@ -404,9 +405,7 @@ function EstimateForm(props: IProps) {
             <Divider flexItem orientation="horizontal" />
           </Grid>
           <Grid item xs={4} alignSelf="center">
-            <Typography variant="h6">
-              Grand Total: ₦{formatNumberToIntl(grandTotal)}
-            </Typography>
+            <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(grandTotal)}</Typography>
           </Grid>
           <Grid item xs={4}>
             <TextInputField
@@ -452,8 +451,8 @@ function EstimateForm(props: IProps) {
             <Divider sx={{ mb: 1 }} flexItem orientation="horizontal" />
             <LoadingButton
               type="submit"
-              loading={props.isSubmitting}
-              disabled={props.isSubmitting}
+              loading={isSubmitting}
+              disabled={isSubmitting}
               variant="contained"
               color="secondary"
               endIcon={<Save />}

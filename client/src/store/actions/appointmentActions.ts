@@ -27,17 +27,10 @@ export interface IAppointmentUpdate {
   status: string;
 }
 
-export const createAppointmentAction = createAsyncThunk<
-  any,
-  any,
-  { rejectValue: { message: string } }
->(
+export const createAppointmentAction = createAsyncThunk<any, any, { rejectValue: { message: string } }>(
   CREATE_APPOINTMENT,
   asyncThunkErrorWrapper(async (appointment: any) => {
-    const response = await axiosClient.post(
-      `${API_ROOT}/appointments`,
-      appointment
-    );
+    const response = await axiosClient.post(`${API_ROOT}/appointments`, appointment);
     return response.data;
   })
 );
@@ -65,15 +58,11 @@ export const updateAppointmentAction = createAsyncThunk(
 
     if (args.status) formData.append("status", args.status);
 
-    const response = await axiosClient.patch(
-      `${API_ROOT}/appointments/${args.appointmentId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": contentType,
-        },
-      }
-    );
+    const response = await axiosClient.patch(`${API_ROOT}/appointments/${args.appointmentId}`, formData, {
+      headers: {
+        "Content-Type": contentType,
+      },
+    });
     return response.data;
   })
 );
@@ -89,10 +78,7 @@ export const getAppointmentAction = createAsyncThunk<any, number>(
 export const rescheduleInspectionAction = createAsyncThunk(
   RESCHEDULE_APPOINTMENT,
   asyncThunkErrorWrapper(async (args: any) => {
-    const response = await axiosClient.patch(
-      `${API_ROOT}/appointments/${args.id}/reschedule`,
-      args.data
-    );
+    const response = await axiosClient.patch(`${API_ROOT}/appointments/${args.id}/reschedule`, args.data);
     return response.data;
   })
 );
@@ -100,10 +86,9 @@ export const rescheduleInspectionAction = createAsyncThunk(
 export const cancelInspectionAction = createAsyncThunk(
   CANCEL_APPOINTMENT,
   asyncThunkErrorWrapper(async (args: any) => {
-    const response = await axiosClient.patch(
-      `${API_ROOT}/appointments/${args.id}/cancel`,
-      { customerId: args.customerId }
-    );
+    const response = await axiosClient.patch(`${API_ROOT}/appointments/${args.id}/cancel`, {
+      customerId: args.customerId,
+    });
     return response.data;
   })
 );

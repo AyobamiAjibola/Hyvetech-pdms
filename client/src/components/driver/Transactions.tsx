@@ -34,10 +34,7 @@ function Transactions() {
     if (rideShareReducer.getDriverTransactionsStatus === "completed") {
       _setTransactions(rideShareReducer.transactions);
     }
-  }, [
-    rideShareReducer.getDriverTransactionsStatus,
-    rideShareReducer.transactions,
-  ]);
+  }, [rideShareReducer.getDriverTransactionsStatus, rideShareReducer.transactions]);
 
   const handleView = (txn: ITransaction) => {
     navigate(`/transactions/${txn.id}`, { state: { transaction: txn } });
@@ -132,9 +129,7 @@ const columns = (options?: any) =>
       sortable: true,
       width: 200,
       valueFormatter: (params) => {
-        return params.value
-          ? moment(params.value).utc(true).format("LLL")
-          : "-";
+        return params.value ? moment(params.value).utc(true).format("LLL") : "-";
       },
     },
     {

@@ -1,16 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Divider, Grid, Paper } from "@mui/material";
 import AnalyticsCard from "../data/AnalyticsCard";
-import {
-  blue,
-  blueGrey,
-  brown,
-  cyan,
-  deepOrange,
-  green,
-  indigo,
-  teal,
-} from "@mui/material/colors";
+import { blue, blueGrey, brown, cyan, deepOrange, green, indigo, teal } from "@mui/material/colors";
 import AppPieChart from "../charts/AppPieChart";
 import moment from "moment";
 import AppStackedColumnChart from "../charts/AppStackedColumnChart";
@@ -53,36 +44,18 @@ function AdminDashboard() {
   useEffect(() => {
     if (dashboardReducer.getAnalyticsStatus === "completed") {
       if (dashboardReducer.analytics) {
-        setBarChartSeries(
-          computeMonthlyColumnChartData(dashboardReducer.analytics)
-        );
+        setBarChartSeries(computeMonthlyColumnChartData(dashboardReducer.analytics));
       }
     }
-  }, [
-    dashboardReducer.analytics,
-    dashboardReducer.stackedMonthlyData,
-    dashboardReducer.getAnalyticsStatus,
-  ]);
+  }, [dashboardReducer.analytics, dashboardReducer.stackedMonthlyData, dashboardReducer.getAnalyticsStatus]);
 
-  const totalCustomers = useMemo(
-    () => customerReducer.customers.length,
-    [customerReducer.customers]
-  );
+  const totalCustomers = useMemo(() => customerReducer.customers.length, [customerReducer.customers]);
 
-  const totalDrivers = useMemo(
-    () => rideShareReducer.drivers.length,
-    [rideShareReducer.drivers]
-  );
+  const totalDrivers = useMemo(() => rideShareReducer.drivers.length, [rideShareReducer.drivers]);
 
-  const totalTechnicians = useMemo(
-    () => technicianReducer.technicians.length,
-    [technicianReducer.technicians]
-  );
+  const totalTechnicians = useMemo(() => technicianReducer.technicians.length, [technicianReducer.technicians]);
 
-  const totalPartners = useMemo(
-    () => partnerReducer.partners.length,
-    [partnerReducer.partners]
-  );
+  const totalPartners = useMemo(() => partnerReducer.partners.length, [partnerReducer.partners]);
 
   return (
     <React.Fragment>
@@ -97,32 +70,16 @@ function AdminDashboard() {
         <Grid item xs={12} container direction="column">
           <Grid item container xs spacing={2}>
             <Grid item xs={12} md={3}>
-              <DataCard
-                title="Total Partners"
-                data={totalPartners}
-                bgColor={green[600]}
-              />
+              <DataCard title="Total Partners" data={totalPartners} bgColor={green[600]} />
             </Grid>
             <Grid item xs={12} md={3}>
-              <DataCard
-                data={totalCustomers}
-                title="Total Customers"
-                bgColor={blueGrey[600]}
-              />
+              <DataCard data={totalCustomers} title="Total Customers" bgColor={blueGrey[600]} />
             </Grid>
             <Grid item xs={12} md={3}>
-              <DataCard
-                title="Total Drivers"
-                data={totalDrivers}
-                bgColor={indigo[600]}
-              />
+              <DataCard title="Total Drivers" data={totalDrivers} bgColor={indigo[600]} />
             </Grid>
             <Grid item xs={12} md={3}>
-              <DataCard
-                title="Total Technicians"
-                data={totalTechnicians}
-                bgColor={brown[600]}
-              />
+              <DataCard title="Total Technicians" data={totalTechnicians} bgColor={brown[600]} />
             </Grid>
           </Grid>
         </Grid>
@@ -132,30 +89,17 @@ function AdminDashboard() {
         <Grid item xs={12} container direction="column">
           <Grid item container xs spacing={2}>
             <Grid item xs={12} md={3}>
-              <AnalyticsCard
-                data={
-                  dashboardReducer.analytics?.dailyData.appointments.data[0]
-                }
-                bgColor={teal[600]}
-              />
+              <AnalyticsCard data={dashboardReducer.analytics?.dailyData.appointments.data[0]} bgColor={teal[600]} />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <AnalyticsCard data={dashboardReducer.analytics?.dailyData.customers.data[0]} bgColor={cyan[600]} />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <AnalyticsCard data={dashboardReducer.analytics?.dailyData.vehicles.data[0]} bgColor={blue[600]} />
             </Grid>
             <Grid item xs={12} md={3}>
               <AnalyticsCard
-                data={dashboardReducer.analytics?.dailyData.customers.data[0]}
-                bgColor={cyan[600]}
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <AnalyticsCard
-                data={dashboardReducer.analytics?.dailyData.vehicles.data[0]}
-                bgColor={blue[600]}
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <AnalyticsCard
-                data={
-                  dashboardReducer.analytics?.dailyData.transactions.data[0]
-                }
+                data={dashboardReducer.analytics?.dailyData.transactions.data[0]}
                 bgColor={deepOrange[600]}
               />
             </Grid>

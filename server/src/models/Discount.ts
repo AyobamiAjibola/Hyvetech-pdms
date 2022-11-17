@@ -1,17 +1,5 @@
-import {
-  AutoIncrement,
-  BelongsToMany,
-  Column,
-  DataType,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-} from "sequelize/types";
+import { AutoIncrement, BelongsToMany, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { CreationOptional, InferAttributes, InferCreationAttributes } from "sequelize/types";
 import DistrictDiscount from "./DistrictDiscount";
 import District from "./District";
 
@@ -19,10 +7,7 @@ import District from "./District";
   tableName: "discounts",
   timestamps: true,
 })
-export default class Discount extends Model<
-  InferAttributes<Discount>,
-  InferCreationAttributes<Discount>
-> {
+export default class Discount extends Model<InferAttributes<Discount>, InferCreationAttributes<Discount>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, allowNull: false, field: "discount_id" })

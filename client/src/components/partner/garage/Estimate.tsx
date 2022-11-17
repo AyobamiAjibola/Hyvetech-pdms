@@ -1,58 +1,75 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { Box } from "@mui/material";
 import { Formik } from "formik";
-import estimateModel, {
-  IEstimateValues,
-} from "../../forms/models/estimateModel";
+import estimateModel from "../../forms/models/estimateModel";
 import EstimateForm from "../../forms/estimate/EstimateForm";
-import { RideShareDriverPageContext } from "./RideShareDriver";
-import { RideShareDriverPageContextProps } from "@app-interfaces";
-
-const { schema } = estimateModel;
+import { CustomerPageContextProps } from "@app-interfaces";
+import useAppSelector from "../../../hooks/useAppSelector";
+import AppAlert from "../../alerts/AppAlert";
+import useEstimate from "../../../hooks/useEstimate";
+import { CustomerPageContext } from "../../../pages/customer/CustomerPage";
 
 export default function Estimate() {
-  const [initialValues, setInitialValues] = useState<IEstimateValues>(
-    estimateModel.initialValues
-  );
+  const estimateReducer = useAppSelector((state) => state.estimateReducer);
 
-  const { driver } = useContext(
-    RideShareDriverPageContext
-  ) as RideShareDriverPageContextProps;
+  const { customer } = useContext(CustomerPageContext) as CustomerPageContextProps;
+
+  const estimate = useEstimate();
 
   useEffect(() => {
-    if (driver) {
-      setInitialValues((prevState) => ({
+    if (customer) {
+      estimate.setInitialValues((prevState) => ({
         ...prevState,
-        firstName: driver.firstName,
-        lastName: driver.lastName,
-        phone: driver.phone,
-        address: driver?.contacts[0].address,
+        firstName: customer.firstName ? customer.firstName : "",
+        lastName: customer.lastName ? customer.lastName : "",
+        phone: customer.phone ? customer.phone : "",
+        address: "",
+        addressType: "",
       }));
     }
-  }, [driver]);
-
-  const handleCreateEstimate = (values: IEstimateValues) => {
-    console.log(values);
-  };
+    // eslint-disable-next-line
+  }, [customer]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Box sx={{ minWidth: "100%" }}>
-        <Formik
-          onSubmit={handleCreateEstimate}
-          initialValues={initialValues}
-          validationSchema={schema}
-          enableReinitialize
-        >
-          <EstimateForm />
-        </Formik>
+    <React.Fragment>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box sx={{ minWidth: "100%" }}>
+          <Formik
+            onSubmit={estimate.handleCreateEstimate}
+            initialValues={estimate.initialValues}
+            validationSchema={estimateModel.schema}
+            enableReinitialize
+          >
+            <EstimateForm
+              isSubmitting={estimateReducer.createEstimateStatus === "loading"}
+              setGrandTotal={estimate.setGrandTotal}
+              setPartTotal={estimate.setPartTotal}
+              setLabourTotal={estimate.setLabourTotal}
+              grandTotal={estimate.grandTotal}
+              labourTotal={estimate.labourTotal}
+              partTotal={estimate.partTotal}
+            />
+          </Formik>
+        </Box>
       </Box>
-    </Box>
+      <AppAlert
+        alertType="success"
+        show={undefined !== estimate.success}
+        message={estimate.success?.message}
+        onClose={() => estimate.setSuccess(undefined)}
+      />
+      <AppAlert
+        alertType="error"
+        show={undefined !== estimate.error}
+        message={estimate.error?.message}
+        onClose={() => estimate.setError(undefined)}
+      />
+    </React.Fragment>
   );
 }

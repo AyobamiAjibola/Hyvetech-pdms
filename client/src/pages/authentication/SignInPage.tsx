@@ -20,10 +20,7 @@ function SignInPage() {
 
   const login = useLogin();
 
-  const handleSignIn = (
-    values: ISignInModel,
-    formikHelpers: FormikHelpers<ISignInModel>
-  ) => {
+  const handleSignIn = (values: ISignInModel, formikHelpers: FormikHelpers<ISignInModel>) => {
     dispatch(signInAction(values));
     formikHelpers.resetForm();
   };
@@ -34,11 +31,7 @@ function SignInPage() {
       <Typography textAlign="center" sx={headTextStyle}>
         Welcome to your gateway to boundless opportunities!
       </Typography>
-      <Formik
-        initialValues={signInModel.initialValues}
-        validationSchema={signInModel.schema}
-        onSubmit={handleSignIn}
-      >
+      <Formik initialValues={signInModel.initialValues} validationSchema={signInModel.schema} onSubmit={handleSignIn}>
         <SignInForm />
       </Formik>
       <AppAlert

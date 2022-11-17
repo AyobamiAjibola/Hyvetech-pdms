@@ -14,12 +14,7 @@ import {
 import Customer from "./Customer";
 import Joi from "joi";
 import { VIN_PATTERN } from "../config/constants";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import Appointment from "./Appointment";
 import VehicleTag from "./VehicleTag";
 import Tag from "./Tag";
@@ -32,10 +27,7 @@ import Estimate from "./Estimate";
 export const $vehicleSchema = {
   model: Joi.string().required().label("Car Model"),
   make: Joi.string().required().label("Car Make"),
-  vin: Joi.string()
-    .pattern(VIN_PATTERN)
-    .allow("")
-    .label("Vehicle Identification Number"),
+  vin: Joi.string().pattern(VIN_PATTERN).allow("").label("Vehicle Identification Number"),
   engineCylinders: Joi.string().allow("").label("Engine Type"),
   engineModel: Joi.string().allow("").label("Engine Model"),
   modelYear: Joi.string().allow("").label("Car Model Year"),
@@ -46,8 +38,7 @@ export const $vinSchema: Joi.SchemaMap<Vehicle> = {
     .pattern(VIN_PATTERN)
     .required()
     .messages({
-      "string.pattern.base":
-        "Invalid VIN. Please provide valid VIN like: KL1JH526XXX11864",
+      "string.pattern.base": "Invalid VIN. Please provide valid VIN like: KL1JH526XXX11864",
     })
     .label("Vehicle Identification Number"),
 };
@@ -57,10 +48,7 @@ export const $vinSchema: Joi.SchemaMap<Vehicle> = {
 
   tableName: "vehicles",
 })
-export default class Vehicle extends Model<
-  InferAttributes<Vehicle>,
-  InferCreationAttributes<Vehicle>
-> {
+export default class Vehicle extends Model<InferAttributes<Vehicle>, InferCreationAttributes<Vehicle>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "vehicle_id" })

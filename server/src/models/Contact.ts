@@ -1,21 +1,7 @@
-import {
-  AutoIncrement,
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 import Customer from "./Customer";
 import Joi from "joi";
-import {
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-} from "sequelize";
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import User from "./User";
 import Partner from "./Partner";
 import RideShareDriver from "./RideShareDriver";
@@ -34,10 +20,7 @@ export const $contactSchema = {
   timestamps: true,
   tableName: "contacts",
 })
-export default class Contact extends Model<
-  InferAttributes<Contact>,
-  InferCreationAttributes<Contact>
-> {
+export default class Contact extends Model<InferAttributes<Contact>, InferCreationAttributes<Contact>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, field: "contact_id" })

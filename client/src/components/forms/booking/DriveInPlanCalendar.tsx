@@ -47,8 +47,7 @@ function DriveInPlanCalendar({
 
   const timeSlotReducer = useAppSelector((state) => state.timeSlotReducer);
 
-  const { setShowBookingBtn, showBookingBtn, checkedSlot, setCheckedSlot } =
-    useContext(AppContext) as AppContextProps;
+  const { setShowBookingBtn, showBookingBtn, checkedSlot, setCheckedSlot } = useContext(AppContext) as AppContextProps;
 
   const dispatch = useAppDispatch();
 
@@ -110,8 +109,7 @@ function DriveInPlanCalendar({
           sx={{
             mb: 1,
             fontSize: (theme) => theme.spacing(1.5),
-            color: (theme) =>
-              theme.palette.mode === "dark" ? "#FFFFFF" : "#383838",
+            color: (theme) => (theme.palette.mode === "dark" ? "#FFFFFF" : "#383838"),
           }}
         >
           Select Date

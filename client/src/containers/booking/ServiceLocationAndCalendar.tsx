@@ -60,29 +60,16 @@ function MediaComponent(props: IMediaProps) {
   );
 }
 
-function ServiceLocationAndCalendar({
-  planCategory,
-  date,
-  setDate,
-  height,
-  width,
-  image,
-}: Props) {
+function ServiceLocationAndCalendar({ planCategory, date, setDate, height, width, image }: Props) {
   const { planTab } = useContext(AppContext) as AppContextProps;
-  const { handleBlur, handleChange, errors, touched, values, setErrors } =
-    useFormikContext<IBookingFormValues>();
+  const { handleBlur, handleChange, errors, touched, values, setErrors } = useFormikContext<IBookingFormValues>();
 
   useEffect(() => {
     setErrors({});
   }, [planTab, setErrors]);
 
   return (
-    <Grid
-      container
-      rowSpacing={{ xs: 2, sm: 4, md: 6 }}
-      columnSpacing={{ xs: 2, sm: 4, md: 6 }}
-      sx={{ mb: 3 }}
-    >
+    <Grid container rowSpacing={{ xs: 2, sm: 4, md: 6 }} columnSpacing={{ xs: 2, sm: 4, md: 6 }} sx={{ mb: 3 }}>
       <Grid item xs={12} md={6} className="topOne">
         <Vehicle />
         {planCategory === "Mobile" && <Box sx={{ mt: 3 }} />}
@@ -99,35 +86,24 @@ function ServiceLocationAndCalendar({
           fullWidth
           className="vehicleFaultTextField"
           rows={1}
-          error={
-            errors.vehicleFault !== undefined &&
-            touched.vehicleFault !== undefined
-          }
-          helperText={
-            errors.vehicleFault && touched.vehicleFault && errors.vehicleFault
-          }
+          error={errors.vehicleFault !== undefined && touched.vehicleFault !== undefined}
+          helperText={errors.vehicleFault && touched.vehicleFault && errors.vehicleFault}
         />
 
         <Box className="uploadGridImageVideoContainer">
           <Box>
             <div className="upload-image-wrapper">
-              {image && (
-                <MediaComponent height={height} width={width} image={image} />
-              )}
+              {image && <MediaComponent height={height} width={width} image={image} />}
             </div>
 
-            <label
-              htmlFor="actual-btn"
-              className={image ? "hideContainer" : "upload-image-container"}
-            >
+            <label htmlFor="actual-btn" className={image ? "hideContainer" : "upload-image-container"}>
               <FaCamera className="single-icon" />
             </label>
           </Box>
         </Box>
       </Grid>
       <Grid item xs={12} md={6}>
-        {(planCategory === HYBRID_PLAN && planTab === 0) ||
-        planCategory === MOBILE_PLAN ? (
+        {(planCategory === HYBRID_PLAN && planTab === 0) || planCategory === MOBILE_PLAN ? (
           <MobilePlanCalendar date={date} setDate={setDate} />
         ) : (
           <DriveInPlanCalendar date={date} setDate={setDate} />

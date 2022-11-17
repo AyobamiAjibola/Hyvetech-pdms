@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { CheckListQuestionType } from "@app-types";
 import {
   Button,
@@ -29,9 +23,7 @@ import { IJobCheckListPageContextProps } from "@app-interfaces";
 const COLORS = ["#E14B5A", "#F2994A", "#009A49", "#E6E6E6"];
 
 interface FormProps {
-  onChangeTextArea: (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => void;
+  onChangeTextArea: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
   question: CheckListQuestionType;
   onChangeRadioBtn: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeImage: (e: ChangeEvent<HTMLInputElement>, questionId?: any) => void;
@@ -46,9 +38,7 @@ export default function NoteAnswerForm(props: FormProps) {
 
   const { question } = props;
 
-  const { imageRef } = useContext(
-    JobCheckListPageContext
-  ) as IJobCheckListPageContextProps;
+  const { imageRef } = useContext(JobCheckListPageContext) as IJobCheckListPageContextProps;
 
   useEffect(() => {
     if (prevOpen.current && !openNote) {
@@ -63,11 +53,7 @@ export default function NoteAnswerForm(props: FormProps) {
   };
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
-    if (
-      anchorRef.current &&
-      anchorRef.current.contains(event.target as HTMLElement)
-    )
-      return;
+    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) return;
 
     setOpenNote(false);
   };
@@ -122,11 +108,7 @@ export default function NoteAnswerForm(props: FormProps) {
       </CardContent>
       {question.images ? (
         <CardContent sx={{ overflowX: "scroll" }}>
-          <CustomRadioIconField
-            questionId={question.id}
-            options={question.images}
-            onDelete={props.onRemoveImage}
-          />
+          <CustomRadioIconField questionId={question.id} options={question.images} onDelete={props.onRemoveImage} />
         </CardContent>
       ) : null}
       <CardActions
@@ -162,8 +144,7 @@ export default function NoteAnswerForm(props: FormProps) {
                 <Grow
                   {...TransitionProps}
                   style={{
-                    transformOrigin:
-                      placement === "bottom-start" ? "left top" : "left bottom",
+                    transformOrigin: placement === "bottom-start" ? "left top" : "left bottom",
                   }}
                 >
                   <Paper>
@@ -205,11 +186,7 @@ export default function NoteAnswerForm(props: FormProps) {
           </React.Fragment>
         )}
         {question.media && (
-          <Button
-            component="label"
-            sx={{ textTransform: "capitalize" }}
-            startIcon={<CameraAlt />}
-          >
+          <Button component="label" sx={{ textTransform: "capitalize" }} startIcon={<CameraAlt />}>
             media
             <input
               onChange={(e) => props.onChangeImage(e, question.id)}

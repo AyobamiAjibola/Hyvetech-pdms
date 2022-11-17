@@ -23,9 +23,7 @@ interface LinkRouterProps extends LinkProps {
   replace?: boolean;
 }
 
-const LinkRouter = (props: LinkRouterProps) => (
-  <Link {...props} component={RouterLink as any} />
-);
+const LinkRouter = (props: LinkRouterProps) => <Link {...props} component={RouterLink as any} />;
 
 export default function AppBreadCrumb() {
   const location = useLocation();

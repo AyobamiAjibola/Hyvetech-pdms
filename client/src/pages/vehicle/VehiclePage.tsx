@@ -33,8 +33,7 @@ interface ILocationState {
   isCustomer?: boolean;
 }
 
-export const VehiclePageContext =
-  createContext<DriverVehiclesContextProps | null>(null);
+export const VehiclePageContext = createContext<DriverVehiclesContextProps | null>(null);
 
 function VehiclePage(props: ILocationState) {
   const [vehicle, setVehicle] = useState<IVehicle>();
@@ -80,19 +79,10 @@ function VehiclePage(props: ILocationState) {
   return (
     <React.Fragment>
       {vehicle ? (
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 2, sm: 8, md: 12 }}
-        >
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 2, sm: 8, md: 12 }}>
           <Grid item xs={12} sm={3} md={3}>
             <Card>
-              <CardMedia
-                component="img"
-                alt="green iguana"
-                height="140"
-                image={carImg}
-              />
+              <CardMedia component="img" alt="green iguana" height="140" image={carImg} />
               <CardContent>
                 <Typography variant="h5" component="div">
                   {vehicle.modelYear} {vehicle.make} {vehicle.model}
@@ -115,29 +105,19 @@ function VehiclePage(props: ILocationState) {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Model Year</Typography>
-                    <Typography variant="caption">
-                      {vehicle.modelYear}
-                    </Typography>
+                    <Typography variant="caption">{vehicle.modelYear}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Engine Type</Typography>
-                    <Typography variant="caption">
-                      {vehicle.engineCylinders}
-                    </Typography>
+                    <Typography variant="caption">{vehicle.engineCylinders}</Typography>
                   </Box>
                   <Box>
-                    <Typography variant="subtitle2">
-                      Vehicle Ownership
-                    </Typography>
-                    <Typography variant="caption">
-                      {vehicle.isOwner ? "Owner" : "-"}
-                    </Typography>
+                    <Typography variant="subtitle2">Vehicle Ownership</Typography>
+                    <Typography variant="caption">{vehicle.isOwner ? "Owner" : "-"}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Date Added</Typography>
-                    <Typography variant="caption">
-                      {moment(vehicle.createdAt).format("LL")}
-                    </Typography>
+                    <Typography variant="caption">{moment(vehicle.createdAt).format("LL")}</Typography>
                   </Box>
                 </Stack>
                 <Divider sx={{ my: 2 }} />
@@ -148,9 +128,7 @@ function VehiclePage(props: ILocationState) {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Engine Model</Typography>
-                    <Typography variant="caption">
-                      {vehicle.engineModel}
-                    </Typography>
+                    <Typography variant="caption">{vehicle.engineModel}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">VIN</Typography>
@@ -162,24 +140,18 @@ function VehiclePage(props: ILocationState) {
                   </Box>
                   <Box>
                     <Typography variant="subtitle2">Plate Number</Typography>
-                    <Typography variant="caption">
-                      {vehicle.plateNumber}
-                    </Typography>
+                    <Typography variant="caption">{vehicle.plateNumber}</Typography>
                   </Box>
                 </Stack>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="subtitle1">Vehicle Papers</Typography>
                 <Stack direction="row" spacing={1}>
                   <Box sx={{ minWidth: 160 }}>
-                    <Typography variant="caption">
-                      Vehicle Inspection
-                    </Typography>
+                    <Typography variant="caption">Vehicle Inspection</Typography>
                     {vehicle.vehicleInspectionFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.vehicleInspectionFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.vehicleInspectionFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.vehicleInspectionFileUrl}
@@ -193,9 +165,7 @@ function VehiclePage(props: ILocationState) {
                     {vehicle.motorReceiptFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.motorReceiptFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.motorReceiptFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.motorReceiptFileUrl}
@@ -205,15 +175,11 @@ function VehiclePage(props: ILocationState) {
                     )}
                   </Box>
                   <Box sx={{ minWidth: 160 }}>
-                    <Typography variant="caption">
-                      Proof Of Ownership
-                    </Typography>
+                    <Typography variant="caption">Proof Of Ownership</Typography>
                     {vehicle.proofOfOwnershipFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.proofOfOwnershipFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.proofOfOwnershipFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.proofOfOwnershipFileUrl}
@@ -227,9 +193,7 @@ function VehiclePage(props: ILocationState) {
                     {vehicle.roadWorthinessFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.roadWorthinessFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.roadWorthinessFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.roadWorthinessFileUrl}
@@ -239,15 +203,11 @@ function VehiclePage(props: ILocationState) {
                     )}
                   </Box>
                   <Box sx={{ minWidth: 160 }}>
-                    <Typography variant="caption">
-                      Registration Number
-                    </Typography>
+                    <Typography variant="caption">Registration Number</Typography>
                     {vehicle.registrationNumberFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.registrationNumberFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.registrationNumberFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.registrationNumberFileUrl}
@@ -257,15 +217,11 @@ function VehiclePage(props: ILocationState) {
                     )}
                   </Box>
                   <Box sx={{ minWidth: 160 }}>
-                    <Typography variant="caption">
-                      Third Party Insurance
-                    </Typography>
+                    <Typography variant="caption">Third Party Insurance</Typography>
                     {vehicle.thirdPartyInsuranceFileUrl && (
                       <Avatar
                         style={{ minWidth: "100%" }}
-                        onClick={() =>
-                          handleViewImage(vehicle.thirdPartyInsuranceFileUrl)
-                        }
+                        onClick={() => handleViewImage(vehicle.thirdPartyInsuranceFileUrl)}
                         sx={{ cursor: "pointer" }}
                         variant="square"
                         src={vehicle.thirdPartyInsuranceFileUrl}
@@ -288,11 +244,7 @@ function VehiclePage(props: ILocationState) {
           </Grid>
         </Grid>
       ) : (
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 2, sm: 8, md: 12 }}
-        >
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 2, sm: 8, md: 12 }}>
           <Grid item xs={12}>
             <Typography>No Data</Typography>
           </Grid>

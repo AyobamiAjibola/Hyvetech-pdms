@@ -237,6 +237,7 @@ declare module "@app-models" {
     nextPaymentDate: Date;
     customers: ICustomer[];
     vehicles: IVehicle[];
+    jobs: IJob[];
     transaction: ITransaction;
     createdAt: Date;
     updatedAt: Date;
@@ -399,6 +400,8 @@ declare module "@app-models" {
     enabled: boolean;
     loginToken: string;
     gatewayId: string;
+    frontLicenseImageUrl: string;
+    rearLicenseImageUrl: string;
     loginDate: Date;
     contacts: IContact[];
     paymentDetails: IPaymentDetail[];
@@ -406,6 +409,7 @@ declare module "@app-models" {
     transactions: ITransaction[];
     appointments: IAppointment[];
     subscriptions: ICustomerSubscription[];
+    estimates: IEstimate[];
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
@@ -488,6 +492,7 @@ declare module "@app-models" {
     transactions: ITransaction[];
     appointments: IAppointment[];
     subscriptions: IRideShareDriverSubscription[];
+    estimates: IEstimate[];
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
@@ -535,5 +540,29 @@ declare module "@app-models" {
     jobId: number;
     createdAt: Date;
     updatedAt: Date;
+  }
+
+  interface IEstimate {
+    id: number;
+    code: string;
+    parts: string[];
+    labours: string[];
+    partsTotal: number;
+    laboursTotal: number;
+    grandTotal: number;
+    depositAmount: number;
+    jobDurationValue: number;
+    address: string;
+    addressType: string;
+    jobDurationUnit: string;
+    customer: ICustomer;
+    customerId: number;
+    rideShareDriver: IRideShareDriver;
+    rideShareDriverId: number;
+    vehicle: IVehicle;
+    vehicleId: number;
+    partner: IPartner;
+    partnerId: number;
+    tax: number;
   }
 }

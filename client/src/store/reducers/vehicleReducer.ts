@@ -1,9 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IThunkAPIStatus } from "@app-types";
-import {
-  ICustomerSubscription,
-  IRideShareDriverSubscription,
-} from "@app-models";
+import { ICustomerSubscription, IRideShareDriverSubscription } from "@app-models";
 
 import {
   getCustomerVehicleSubscriptionAction,
@@ -68,37 +65,25 @@ const vehicleSlice = createSlice({
       .addCase(getCustomerVehicleSubscriptionAction.pending, (state) => {
         state.getCustomerVehicleSubscriptionStatus = "loading";
       })
-      .addCase(
-        getCustomerVehicleSubscriptionAction.fulfilled,
-        (state, action) => {
-          state.getCustomerVehicleSubscriptionStatus = "completed";
-          state.customerSubscriptions = action.payload
-            .results as ICustomerSubscription[];
-        }
-      )
-      .addCase(
-        getCustomerVehicleSubscriptionAction.rejected,
-        (state, action) => {
-          state.getCustomerVehicleSubscriptionStatus = "failed";
-          if (action.payload) {
-            state.getCustomerVehicleSubscriptionError = action.payload.message;
-          } else
-            state.getCustomerVehicleSubscriptionError = action.error.message;
-        }
-      );
+      .addCase(getCustomerVehicleSubscriptionAction.fulfilled, (state, action) => {
+        state.getCustomerVehicleSubscriptionStatus = "completed";
+        state.customerSubscriptions = action.payload.results as ICustomerSubscription[];
+      })
+      .addCase(getCustomerVehicleSubscriptionAction.rejected, (state, action) => {
+        state.getCustomerVehicleSubscriptionStatus = "failed";
+        if (action.payload) {
+          state.getCustomerVehicleSubscriptionError = action.payload.message;
+        } else state.getCustomerVehicleSubscriptionError = action.error.message;
+      });
 
     builder
       .addCase(getDriverVehicleSubscriptionAction.pending, (state) => {
         state.getDriverVehicleSubscriptionStatus = "loading";
       })
-      .addCase(
-        getDriverVehicleSubscriptionAction.fulfilled,
-        (state, action) => {
-          state.getDriverVehicleSubscriptionStatus = "completed";
-          state.driverSubscriptions = action.payload
-            .results as IRideShareDriverSubscription[];
-        }
-      )
+      .addCase(getDriverVehicleSubscriptionAction.fulfilled, (state, action) => {
+        state.getDriverVehicleSubscriptionStatus = "completed";
+        state.driverSubscriptions = action.payload.results as IRideShareDriverSubscription[];
+      })
       .addCase(getDriverVehicleSubscriptionAction.rejected, (state, action) => {
         state.getDriverVehicleSubscriptionStatus = "failed";
         if (action.payload) {

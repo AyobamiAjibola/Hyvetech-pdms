@@ -50,36 +50,23 @@ export default class CustomerDAOService implements ICrudDAO<Customer> {
     return this.customerRepository.updateOne(customer, values, options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<InferAttributes<Customer>>
-  ): Promise<Customer | null> {
+  findById(id: number, options?: FindOptions<InferAttributes<Customer>>): Promise<Customer | null> {
     return this.customerRepository.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<Customer>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<Customer>>): Promise<void> {
     return this.customerRepository.deleteById(id, options);
   }
 
-  findByAny(
-    options: FindOptions<InferAttributes<Customer>>
-  ): Promise<Customer | null> {
+  findByAny(options: FindOptions<InferAttributes<Customer>>): Promise<Customer | null> {
     return this.customerRepository.findOne(options);
   }
 
-  findAll(
-    options?: FindOptions<InferAttributes<Customer>>
-  ): Promise<Customer[]> {
+  findAll(options?: FindOptions<InferAttributes<Customer>>): Promise<Customer[]> {
     return this.customerRepository.findAll(options);
   }
 
-  async create(
-    values: CreationAttributes<Customer>,
-    options?: CreateOptions<Attributes<Customer>>
-  ): Promise<Customer> {
+  async create(values: CreationAttributes<Customer>, options?: CreateOptions<Attributes<Customer>>): Promise<Customer> {
     let rawPassword: string;
 
     if (!values.password && !values.rawPassword) {

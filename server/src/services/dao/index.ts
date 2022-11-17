@@ -92,8 +92,7 @@ const partnerRepository = new PartnerRepository();
 const categoryRepository = new CategoryRepository();
 const paymentPlanRepository = new PaymentPlanRepository();
 const rideShareDriverRepository = new RideShareDriverRepository();
-const rideShareDriverSubscriptionRepository =
-  new RideShareDriverSubscriptionRepository();
+const rideShareDriverSubscriptionRepository = new RideShareDriverSubscriptionRepository();
 const technicianRepository = new TechnicianRepository();
 const jobRepository = new JobRepository();
 const checkListRepository = new CheckListRepository();
@@ -102,36 +101,21 @@ const estimateRepository = new EstimateRepository();
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
 const scheduleDAOService = new ScheduleDAOService(scheduleRepository);
-const vehicleFaultDAOService = new VehicleFaultDAOService(
-  vehicleFaultRepository
-);
+const vehicleFaultDAOService = new VehicleFaultDAOService(vehicleFaultRepository);
 const appointmentDAOService = new AppointmentDAOService(appointmentRepository);
 const transactionDAOService = new TransactionDAOService(transactionRepository);
 const districtDAOService = new DistrictDAOService(districtRepository);
-const customerDAOService = new CustomerDAOService(
-  customerRepository,
-  roleRepository,
-  passwordEncoder
-);
+const customerDAOService = new CustomerDAOService(customerRepository, roleRepository, passwordEncoder);
 const paymentTermDAOService = new PaymentTermDAOService(paymentTermRepository);
-const paymentGatewayDAOService = new PaymentGatewayDAOService(
-  paymentGatewayRepository
-);
-const subscriptionDAOService = new SubscriptionDAOService(
-  subscriptionRepository
-);
-const vinDecoderProviderDAOService = new VINDecoderProviderDAOService(
-  vinDecoderProviderRepository,
-  vinRepository
-);
+const paymentGatewayDAOService = new PaymentGatewayDAOService(paymentGatewayRepository);
+const subscriptionDAOService = new SubscriptionDAOService(subscriptionRepository);
+const vinDecoderProviderDAOService = new VINDecoderProviderDAOService(vinDecoderProviderRepository, vinRepository);
 const planDAOService = new PlanDAOService(planRepository);
 const timeSlotDAOService = new TimeSlotDAOService(timeSlotRepository);
 const discountDAOService = new DiscountDAOService(discountRepository);
 const stateDAOService = new StateDAOService(stateRepository);
 
-const customerSubscriptionDAOService = new CustomerSubscriptionDAOService(
-  customerSubscriptionRepository
-);
+const customerSubscriptionDAOService = new CustomerSubscriptionDAOService(customerSubscriptionRepository);
 const bankDAOService = new BankDAOService(bankRepository);
 const tagDAOService = new TagDAOService(tagRepository);
 const userDAOService = new UserDAOService(userRepository);
@@ -140,13 +124,10 @@ const permissionDAOService = new PermissionDAOService(permissionRepository);
 const partnerDAOService = new PartnerDAOService(partnerRepository);
 const categoryDAOService = new CategoryDAOService(categoryRepository);
 const paymentPlanDAOService = new PaymentPlanDAOService(paymentPlanRepository);
-const rideShareDriverDAOService = new RideShareDriverDAOService(
-  rideShareDriverRepository
+const rideShareDriverDAOService = new RideShareDriverDAOService(rideShareDriverRepository);
+const rideShareDriverSubscriptionDAOService = new RideShareDriverSubscriptionDAOService(
+  rideShareDriverSubscriptionRepository
 );
-const rideShareDriverSubscriptionDAOService =
-  new RideShareDriverSubscriptionDAOService(
-    rideShareDriverSubscriptionRepository
-  );
 const technicianDAOService = new TechnicianDAOService(technicianRepository);
 const jobDAOService = new JobDAOService(jobRepository);
 const checkListDAOService = new CheckListDAOService(checkListRepository);

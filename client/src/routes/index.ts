@@ -35,7 +35,7 @@ export const sideNavs: ISideNav[] = [
     Icon: PlaylistAddCheck,
   },
   {
-    tag: "super",
+    tag: "techs",
     name: "Estimates",
     path: "/estimates",
     Icon: RequestQuote,

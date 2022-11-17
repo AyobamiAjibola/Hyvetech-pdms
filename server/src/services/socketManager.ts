@@ -65,12 +65,9 @@ export default function socketManager(io: Server) {
     const { techId, partner } = props;
 
     (async () => {
-      const technician = await dataSources.technicianDAOService.findById(
-        techId
-      );
+      const technician = await dataSources.technicianDAOService.findById(techId);
 
-      if (!technician)
-        throw new Error(`Technician with Id: ${techId} does not exist`);
+      if (!technician) throw new Error(`Technician with Id: ${techId} does not exist`);
 
       const notification = await NotificationModel.create({
         seen: false,

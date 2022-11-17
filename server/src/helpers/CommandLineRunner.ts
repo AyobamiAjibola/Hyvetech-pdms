@@ -74,15 +74,16 @@ import fs from "fs/promises";
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 
 export default class CommandLineRunner {
-  private roleRepository: AbstractCrudRepository;
-  private permissionRepository: AbstractCrudRepository;
-  private subscriptionRepository: AbstractCrudRepository;
-  private planRepository: AbstractCrudRepository;
+  public static singleton: CommandLineRunner = new CommandLineRunner();
   public paymentGatewayRepository: AbstractCrudRepository;
   public districtRepository: AbstractCrudRepository;
   public scheduleRepository: AbstractCrudRepository;
   public timeSlotRepository: AbstractCrudRepository;
   public vinDecoderProviderRepository: AbstractCrudRepository;
+  private roleRepository: AbstractCrudRepository;
+  private permissionRepository: AbstractCrudRepository;
+  private subscriptionRepository: AbstractCrudRepository;
+  private planRepository: AbstractCrudRepository;
   private serviceRepository: AbstractCrudRepository;
   private paymentPlanRepository: AbstractCrudRepository;
   private categoryRepository: AbstractCrudRepository;
@@ -92,8 +93,6 @@ export default class CommandLineRunner {
   private stateRepository: AbstractCrudRepository;
   private tagRepository: AbstractCrudRepository;
   private userRepository: AbstractCrudRepository;
-
-  public static singleton: CommandLineRunner = new CommandLineRunner();
 
   constructor() {
     this.roleRepository = new RoleRepository();
@@ -143,9 +142,7 @@ export default class CommandLineRunner {
     })) as PaymentGateway;
 
     axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
-    axiosClient.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${paymentGateway.secretKey}`;
+    axiosClient.defaults.headers.common["Authorization"] = `Bearer ${paymentGateway.secretKey}`;
 
     const response = await axiosClient.get("/plan");
 
@@ -160,9 +157,7 @@ export default class CommandLineRunner {
     })) as PaymentGateway;
 
     axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
-    axiosClient.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${paymentGateway.secretKey}`;
+    axiosClient.defaults.headers.common["Authorization"] = `Bearer ${paymentGateway.secretKey}`;
 
     const response = await axiosClient.get("/bank");
 
@@ -309,16 +304,11 @@ export default class CommandLineRunner {
     });
 
     //garage driver permissions
-    const garageTechnicianPermissions = await this.permissionRepository.findAll(
-      {
-        where: {
-          [Op.or]: [
-            { name: settings.permissions[22] },
-            { name: settings.permissions[23] },
-          ],
-        },
-      }
-    );
+    const garageTechnicianPermissions = await this.permissionRepository.findAll({
+      where: {
+        [Op.or]: [{ name: settings.permissions[22] }, { name: settings.permissions[23] }],
+      },
+    });
 
     //ride share permissions
     const rideShareAdminPermissions = await this.permissionRepository.findAll({
@@ -330,17 +320,13 @@ export default class CommandLineRunner {
     //ride share permissions
     const rideShareDriverPermissions = await this.permissionRepository.findAll({
       where: {
-        [Op.or]: [
-          { name: settings.permissions[27] },
-          { name: settings.permissions[28] },
-        ],
+        [Op.or]: [{ name: settings.permissions[27] }, { name: settings.permissions[28] }],
       },
     });
 
     //user permissions
     const permissions = settings.permissions.filter(
-      (permission) =>
-        permission !== "manage_all" && !permission.startsWith("delete")
+      (permission) => permission !== "manage_all" && !permission.startsWith("delete")
     );
 
     const userPermissions = [];
@@ -406,10 +392,7 @@ export default class CommandLineRunner {
     await customerRole?.$add("permissions", customerPermissions);
     await adminRole?.$add("permissions", adminPermissions);
     await garageAdminRole?.$add("permissions", garageAdminPermissions);
-    await garageTechnicianRole?.$add(
-      "permissions",
-      garageTechnicianPermissions
-    );
+    await garageTechnicianRole?.$add("permissions", garageTechnicianPermissions);
     await rideShareAdminRole?.$add("permissions", rideShareAdminPermissions);
     await rideShareDriverRole?.$add("permissions", rideShareDriverPermissions);
   }
@@ -436,9 +419,7 @@ export default class CommandLineRunner {
 
     const schedule = await this.scheduleRepository.save(settings.schedule);
 
-    const timeSlots = await this.timeSlotRepository.bulkCreate(
-      settings.schedule.timeSlots
-    );
+    const timeSlots = await this.timeSlotRepository.bulkCreate(settings.schedule.timeSlots);
 
     await schedule.$add("timeSlots", timeSlots);
   }
@@ -482,9 +463,7 @@ export default class CommandLineRunner {
     });
 
     //create subscriptions
-    const subscriptions = await this.subscriptionRepository.bulkCreate(
-      SUBSCRIPTIONS
-    );
+    const subscriptions = await this.subscriptionRepository.bulkCreate(SUBSCRIPTIONS);
 
     await inspectionService?.$add("subscriptions", subscriptions);
 
@@ -562,8 +541,7 @@ export default class CommandLineRunner {
       where: { label: HOUSE_HOLD_HYBRID_PLAN },
     });
 
-    const { mobileCategory, driveInCategory, hybridCategory } =
-      await this.getCategories();
+    const { mobileCategory, driveInCategory, hybridCategory } = await this.getCategories();
 
     //link payment plan categories
     await mobilePaymentPlan?.$add("categories", [<Category>mobileCategory]);
@@ -584,11 +562,7 @@ export default class CommandLineRunner {
       where: { slug: HOUSE_HOLD_SUBSCRIPTION },
     });
 
-    await subscription?.$add("plans", [
-      <Plan>mobilePlan,
-      <Plan>driveInPlan,
-      <Plan>hybridPlan,
-    ]);
+    await subscription?.$add("plans", [<Plan>mobilePlan, <Plan>driveInPlan, <Plan>hybridPlan]);
   }
 
   private async createFAFSubscription() {
@@ -611,8 +585,7 @@ export default class CommandLineRunner {
     const hybridPlan = await this.planRepository.findOne({
       where: { label: FAF_HYBRID_PLAN },
     });
-    const { mobileCategory, driveInCategory, hybridCategory } =
-      await this.getCategories();
+    const { mobileCategory, driveInCategory, hybridCategory } = await this.getCategories();
 
     //link payment plan categories
     await mobilePaymentPlan?.$add("categories", [<Category>mobileCategory]);
@@ -633,11 +606,7 @@ export default class CommandLineRunner {
       where: { slug: FAF_SUBSCRIPTION },
     });
 
-    await subscription?.$add("plans", [
-      <Plan>mobilePlan,
-      <Plan>driveInPlan,
-      <Plan>hybridPlan,
-    ]);
+    await subscription?.$add("plans", [<Plan>mobilePlan, <Plan>driveInPlan, <Plan>hybridPlan]);
   }
 
   private async getCategories() {

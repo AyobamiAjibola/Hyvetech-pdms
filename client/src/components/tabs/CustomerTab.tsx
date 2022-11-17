@@ -21,12 +21,7 @@ function CustomerTab(props: IProps) {
 
   return (
     <Box>
-      <Tabs
-        centered
-        value={tabValue}
-        onChange={handleChange}
-        aria-label="icon label tabs example"
-      >
+      <Tabs centered value={tabValue} onChange={handleChange} aria-label="icon label tabs example">
         {props.tabMenus.map((tab, index) => {
           return <Tab label={tab.name} key={index} {...a11yProps(index)} />;
         })}
@@ -34,12 +29,7 @@ function CustomerTab(props: IProps) {
 
       {props.tabMenus.map((tab, index) => {
         return (
-          <Slide
-            key={index}
-            direction="right"
-            in={tabValue === index}
-            container={containerRef.current}
-          >
+          <Slide key={index} direction="right" in={tabValue === index} container={containerRef.current}>
             <div>
               <TabPanel value={tabValue} index={index} dir={theme.direction}>
                 <Box sx={{ pt: 6 }}>

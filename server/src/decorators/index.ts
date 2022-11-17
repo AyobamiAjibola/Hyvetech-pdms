@@ -5,10 +5,7 @@ import "reflect-metadata";
 import CustomAPIError from "../exceptions/CustomAPIError";
 import HttpStatus from "../helpers/HttpStatus";
 
-const errorResponse = CustomAPIError.response(
-  HttpStatus.FORBIDDEN.value,
-  HttpStatus.FORBIDDEN.code
-);
+const errorResponse = CustomAPIError.response(HttpStatus.FORBIDDEN.value, HttpStatus.FORBIDDEN.code);
 
 /**
  * @description Specify role name to access resource
@@ -17,11 +14,7 @@ const errorResponse = CustomAPIError.response(
  * @param role
  */
 export function HasRole(role: string) {
-  return function (
-    target: object,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: object, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
 
     descriptor.value = function (request: Request) {
@@ -44,11 +37,7 @@ export function HasRole(role: string) {
  */
 
 export function HasAnyRole(roles: string[]) {
-  return function (
-    target: object,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: object, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
 
     descriptor.value = function (request: Request) {
@@ -74,11 +63,7 @@ export function HasAnyRole(roles: string[]) {
  * @param authority
  */
 export function HasAuthority(authority: string) {
-  return function (
-    target: object,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: object, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
 
     descriptor.value = function (request: Request) {
@@ -100,11 +85,7 @@ export function HasAuthority(authority: string) {
  * @param authorities {string[]}
  */
 export function HasAnyAuthority(authorities: string[]) {
-  return function (
-    target: object,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: object, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
 
     descriptor.value = function (request: Request) {
@@ -115,13 +96,23 @@ export function HasAnyAuthority(authorities: string[]) {
       if (_permissions.length === 0) return errorResponse;
 
       for (const authority of authorities) {
-        const match = _permissions.some(
-          (permission) => permission.name === authority
-        );
+        const match = _permissions.some((permission) => permission.name === authority);
         if (!match) return errorResponse;
       }
 
       return method.apply(this, arguments);
     };
+  };
+}
+
+export function TryCatch(target: object, propertyKey: string, descriptor: PropertyDescriptor) {
+  const method = descriptor.value;
+
+  descriptor.value = function (request: Request) {
+    try {
+      return method.apply(this, arguments);
+    } catch (e) {
+      return Promise.reject(e);
+    }
   };
 }

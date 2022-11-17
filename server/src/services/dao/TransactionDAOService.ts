@@ -30,10 +30,7 @@ export default class TransactionDAOService implements ICrudDAO<Transaction> {
   }
 
   create(
-    values: Optional<
-      InferCreationAttributes<Transaction>,
-      NullishPropertiesOf<InferCreationAttributes<Transaction>>
-    >,
+    values: Optional<InferCreationAttributes<Transaction>, NullishPropertiesOf<InferCreationAttributes<Transaction>>>,
     options?: CreateOptions<Attributes<Transaction>>
   ): Promise<Transaction> {
     return this.transactionRepository.save(values, options);
@@ -47,29 +44,19 @@ export default class TransactionDAOService implements ICrudDAO<Transaction> {
     return this.transactionRepository.updateOne(transaction, values, options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<InferAttributes<Transaction>>
-  ): Promise<Transaction | null> {
+  findById(id: number, options?: FindOptions<InferAttributes<Transaction>>): Promise<Transaction | null> {
     return this.transactionRepository.findById(id, options);
   }
 
-  deleteById(
-    id: number,
-    options?: DestroyOptions<InferAttributes<Transaction>>
-  ): Promise<void> {
+  deleteById(id: number, options?: DestroyOptions<InferAttributes<Transaction>>): Promise<void> {
     return this.transactionRepository.deleteById(id, options);
   }
 
-  findByAny(
-    options: FindOptions<InferAttributes<Transaction>>
-  ): Promise<Transaction | null> {
+  findByAny(options: FindOptions<InferAttributes<Transaction>>): Promise<Transaction | null> {
     return this.transactionRepository.findOne(options);
   }
 
-  findAll(
-    options?: FindOptions<InferAttributes<Transaction>>
-  ): Promise<Transaction[]> {
+  findAll(options?: FindOptions<InferAttributes<Transaction>>): Promise<Transaction[]> {
     return this.transactionRepository.findAll(options);
   }
 

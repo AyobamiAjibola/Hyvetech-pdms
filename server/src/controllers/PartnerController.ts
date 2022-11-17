@@ -92,6 +92,24 @@ export default class PartnerController {
     this.passwordEncoder = passwordEncoder;
   }
 
+  private static formatPartners(partners: Partner[]) {
+    return partners.map((partner) => this.formatPartner(partner));
+  }
+
+  private static formatPartner(partner: Partner) {
+    const workingHours = partner.workingHours;
+    const brands = partner.brands;
+
+    if (workingHours || brands) {
+      Object.assign(partner, {
+        workingHours: workingHours.map((workingHour) => JSON.parse(workingHour)),
+        brands: brands.map((brand) => JSON.parse(brand)),
+      });
+    }
+
+    return partner;
+  }
+
   /**
    * @name createPartner
    * @description Create partners
@@ -865,24 +883,6 @@ export default class PartnerController {
     const partnerId = req.params.partnerId as string;
 
     return JobController.jobs(+partnerId);
-  }
-
-  private static formatPartners(partners: Partner[]) {
-    return partners.map((partner) => this.formatPartner(partner));
-  }
-
-  private static formatPartner(partner: Partner) {
-    const workingHours = partner.workingHours;
-    const brands = partner.brands;
-
-    if (workingHours || brands) {
-      Object.assign(partner, {
-        workingHours: workingHours.map((workingHour) => JSON.parse(workingHour)),
-        brands: brands.map((brand) => JSON.parse(brand)),
-      });
-    }
-
-    return partner;
   }
 
   public async deletePlan(req: Request) {

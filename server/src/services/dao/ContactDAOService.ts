@@ -20,10 +20,7 @@ export default class ContactDAOService implements ICrudDAO<Contact> {
     this.contactRepository = contactRepository;
   }
 
-  create(
-    values: CreationAttributes<Contact>,
-    options?: CreateOptions<Attributes<Contact>>
-  ): Promise<Contact> {
+  create(values: CreationAttributes<Contact>, options?: CreateOptions<Attributes<Contact>>): Promise<Contact> {
     return this.contactRepository.save(values, options);
   }
 
@@ -35,16 +32,11 @@ export default class ContactDAOService implements ICrudDAO<Contact> {
     return this.contactRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Contact>>
-  ): Promise<Contact | null> {
+  findByAny(options: FindOptions<Attributes<Contact>>): Promise<Contact | null> {
     return this.contactRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Contact>>
-  ): Promise<Contact | null> {
+  findById(id: number, options?: FindOptions<Attributes<Contact>>): Promise<Contact | null> {
     return this.contactRepository.findById(id, options);
   }
 

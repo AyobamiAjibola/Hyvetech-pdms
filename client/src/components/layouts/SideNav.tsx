@@ -63,9 +63,7 @@ function SideNav() {
   const [navs, setNavs] = useState<ISideNav[]>([]);
 
   useState<any>();
-  const { openSideNav, setOpenSideNav } = useContext(
-    AppContext
-  ) as AppContextProps;
+  const { openSideNav, setOpenSideNav } = useContext(AppContext) as AppContextProps;
 
   const admin = useAdmin();
   const navigate = useNavigate();
@@ -78,19 +76,11 @@ function SideNav() {
       setNavs(
         sideNavs.filter(
           (value) =>
-            value.tag === "all" ||
-            value.tag === "super" ||
-            value.tag === "drivers"
+            value.tag === "all" || value.tag === "super" || value.tag === "drivers" || value.name === "Estimates"
         )
       );
-    if (admin.isTechAdmin)
-      setNavs(sideNavs.filter((value) => value.tag === "techs"));
-    if (admin.isDriverAdmin)
-      setNavs(
-        sideNavs.filter(
-          (value) => value.tag === "all" || value.tag === "drivers"
-        )
-      );
+    if (admin.isTechAdmin) setNavs(sideNavs.filter((value) => value.tag === "techs"));
+    if (admin.isDriverAdmin) setNavs(sideNavs.filter((value) => value.tag === "all" || value.tag === "drivers"));
   }, [admin.isDriverAdmin, admin.isSuperAdmin, admin.isTechAdmin]);
 
   const handleDrawerClose = () => {
@@ -101,11 +91,7 @@ function SideNav() {
     <Drawer variant="permanent" open={openSideNav}>
       <DrawerHeader>
         <IconButton onClick={handleDrawerClose}>
-          {theme.direction === "rtl" ? (
-            <ChevronRightIcon />
-          ) : (
-            <ChevronLeftIcon />
-          )}
+          {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
       </DrawerHeader>
       <Divider />
@@ -132,10 +118,7 @@ function SideNav() {
               >
                 <nav.Icon />
               </ListItemIcon>
-              <ListItemText
-                primary={nav.name}
-                sx={{ opacity: openSideNav ? 1 : 0 }}
-              />
+              <ListItemText primary={nav.name} sx={{ opacity: openSideNav ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -161,10 +144,7 @@ function SideNav() {
               >
                 <Logout />
               </ListItemIcon>
-              <ListItemText
-                primary={text}
-                sx={{ opacity: openSideNav ? 1 : 0 }}
-              />
+              <ListItemText primary={text} sx={{ opacity: openSideNav ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         ))}

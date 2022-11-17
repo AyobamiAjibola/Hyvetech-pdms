@@ -20,10 +20,7 @@ export default class CheckListDAOService implements ICrudDAO<CheckList> {
     this.checklistRepository = checklistRepository;
   }
 
-  create(
-    values: CreationAttributes<CheckList>,
-    options?: CreateOptions<Attributes<CheckList>>
-  ): Promise<CheckList> {
+  create(values: CreationAttributes<CheckList>, options?: CreateOptions<Attributes<CheckList>>): Promise<CheckList> {
     return this.checklistRepository.save(values, options);
   }
 
@@ -35,16 +32,11 @@ export default class CheckListDAOService implements ICrudDAO<CheckList> {
     return this.checklistRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<CheckList>>
-  ): Promise<CheckList | null> {
+  findByAny(options: FindOptions<Attributes<CheckList>>): Promise<CheckList | null> {
     return this.checklistRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<CheckList>>
-  ): Promise<CheckList | null> {
+  findById(id: number, options?: FindOptions<Attributes<CheckList>>): Promise<CheckList | null> {
     return this.checklistRepository.findById(id, options);
   }
 

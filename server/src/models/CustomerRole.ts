@@ -1,12 +1,4 @@
-import {
-  AutoIncrement,
-  Column,
-  DataType,
-  ForeignKey,
-  Model,
-  PrimaryKey,
-  Table,
-} from "sequelize-typescript";
+import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 
 import Role from "./Role";
 import Customer from "./Customer";
@@ -16,10 +8,7 @@ import { InferAttributes, InferCreationAttributes } from "sequelize";
   timestamps: false,
   tableName: "customer_roles",
 })
-export default class CustomerRole extends Model<
-  InferAttributes<CustomerRole>,
-  InferCreationAttributes<CustomerRole>
-> {
+export default class CustomerRole extends Model<InferAttributes<CustomerRole>, InferCreationAttributes<CustomerRole>> {
   @PrimaryKey
   @AutoIncrement
   @Column({ type: DataType.INTEGER, allowNull: false })

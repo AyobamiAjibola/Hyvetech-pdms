@@ -1,17 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { ITransaction } from "@app-models";
 import { useLocation } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-} from "@mui/material";
+import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
 import styles from "../appointment/appointmentPage.module.css";
 import moment from "moment";
 import { AppContext } from "../../context/AppContextProvider";
@@ -27,10 +17,7 @@ import {
   ONE_TIME_SUB,
   PICK_ME_UP_SUB,
 } from "../../config/constants";
-import {
-  getCustomerTransactionsAction,
-  getCustomerVehiclesAction,
-} from "../../store/actions/customerActions";
+import { getCustomerTransactionsAction, getCustomerVehiclesAction } from "../../store/actions/customerActions";
 import useAppDispatch from "../../hooks/useAppDispatch";
 import useAppSelector from "../../hooks/useAppSelector";
 import BookForCustomerForm from "../../components/forms/booking/BookForCustomerForm";
@@ -45,18 +32,12 @@ function TransactionPage() {
   const [transaction, setTransaction] = useState<ITransaction>();
   const [success, setSuccess] = useState<CustomHookMessage>();
 
-  const {
-    showBooking,
-    setShowBooking,
-    customer,
-    setVehicles,
-    setShowVehicles,
-  } = useContext(AppContext) as AppContextProps;
+  const { showBooking, setShowBooking, customer, setVehicles, setShowVehicles } = useContext(
+    AppContext
+  ) as AppContextProps;
 
   const customerReducer = useAppSelector((state) => state.customerReducer);
-  const appointmentReducer = useAppSelector(
-    (state) => state.appointmentReducer
-  );
+  const appointmentReducer = useAppSelector((state) => state.appointmentReducer);
   const dispatch = useAppDispatch();
 
   useTimeslot();
@@ -69,10 +50,7 @@ function TransactionPage() {
   }, [location.state]);
 
   useEffect(() => {
-    if (
-      appointmentReducer.createAppointmentStatus === "completed" &&
-      customer
-    ) {
+    if (appointmentReducer.createAppointmentStatus === "completed" && customer) {
       setSuccess({ message: "Successfully scheduled appointment" });
       dispatch(getCustomerTransactionsAction(customer.id));
     }
@@ -80,17 +58,11 @@ function TransactionPage() {
 
   useEffect(() => {
     if (customerReducer.getCustomerTransactionsStatus === "completed") {
-      const _transaction = customerReducer.transactions.find(
-        (value) => value.id === transaction?.id
-      );
+      const _transaction = customerReducer.transactions.find((value) => value.id === transaction?.id);
 
       if (_transaction) setTransaction(_transaction);
     }
-  }, [
-    customerReducer.getCustomerTransactionsStatus,
-    customerReducer.transactions,
-    transaction?.id,
-  ]);
+  }, [customerReducer.getCustomerTransactionsStatus, customerReducer.transactions, transaction?.id]);
 
   useEffect(() => {
     if (customer) {
@@ -102,11 +74,7 @@ function TransactionPage() {
     if (customerReducer.getCustomerVehiclesStatus === "completed") {
       setVehicles(customerReducer.vehicles);
     }
-  }, [
-    customerReducer.getCustomerVehiclesStatus,
-    customerReducer.vehicles,
-    setVehicles,
-  ]);
+  }, [customerReducer.getCustomerVehiclesStatus, customerReducer.vehicles, setVehicles]);
 
   const planCategory = useMemo(() => {
     let planCategory;
@@ -183,17 +151,11 @@ function TransactionPage() {
   const isProcessed = useMemo(() => {
     let result = true;
 
-    if (
-      transaction?.status === "success" &&
-      transaction?.serviceStatus === "unprocessed"
-    ) {
+    if (transaction?.status === "success" && transaction?.serviceStatus === "unprocessed") {
       result = false;
     }
 
-    if (
-      transaction?.status !== "success" &&
-      transaction?.serviceStatus === "unprocessed"
-    ) {
+    if (transaction?.status !== "success" && transaction?.serviceStatus === "unprocessed") {
       result = false;
     }
 
@@ -231,11 +193,7 @@ function TransactionPage() {
             </Grid>
           )}
         </Grid>
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 4, sm: 8, md: 12 }}
-        >
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
           <Grid item xs={12} md={6}>
             <TableContainer component={Paper}>
               <Table>
@@ -250,9 +208,7 @@ function TransactionPage() {
                     <TableCell component="th" scope="row">
                       Card Number
                     </TableCell>
-                    <TableCell align="left">
-                      ************{transaction?.last4}
-                    </TableCell>
+                    <TableCell align="left">************{transaction?.last4}</TableCell>
                   </TableRow>
 
                   <TableRow>

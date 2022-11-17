@@ -6,9 +6,7 @@ interface MailTextConfig {
   partnerType?: string;
 }
 
-export default function create_technician_success_email(
-  config: MailTextConfig
-) {
+export default function create_technician_success_email(config: MailTextConfig) {
   return `
       <p
       style="

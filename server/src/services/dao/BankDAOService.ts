@@ -20,10 +20,7 @@ export default class BankDAOService implements ICrudDAO<Bank> {
     this.bankRepository = bankRepository;
   }
 
-  create(
-    values: CreationAttributes<Bank>,
-    options?: CreateOptions<Attributes<Bank>>
-  ): Promise<Bank> {
+  create(values: CreationAttributes<Bank>, options?: CreateOptions<Attributes<Bank>>): Promise<Bank> {
     return this.bankRepository.save(values, options);
   }
 
@@ -39,18 +36,11 @@ export default class BankDAOService implements ICrudDAO<Bank> {
     return this.bankRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Bank>>
-  ): Promise<Bank | null> {
+  findById(id: number, options?: FindOptions<Attributes<Bank>>): Promise<Bank | null> {
     return this.bankRepository.findById(id, options);
   }
 
-  update(
-    bank: Bank,
-    values: InferAttributes<Bank>,
-    options: UpdateOptions<Attributes<Bank>>
-  ): Promise<Bank> {
+  update(bank: Bank, values: InferAttributes<Bank>, options: UpdateOptions<Attributes<Bank>>): Promise<Bank> {
     return this.bankRepository.updateOne(bank, values, options);
   }
 }

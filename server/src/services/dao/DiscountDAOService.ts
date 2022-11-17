@@ -20,10 +20,7 @@ export default class DiscountDAOService implements ICrudDAO<Discount> {
     this.discountRepository = discountRepository;
   }
 
-  create(
-    values: CreationAttributes<Discount>,
-    options?: CreateOptions<Attributes<Discount>>
-  ): Promise<Discount> {
+  create(values: CreationAttributes<Discount>, options?: CreateOptions<Attributes<Discount>>): Promise<Discount> {
     return this.discountRepository.save(values, options);
   }
 
@@ -35,16 +32,11 @@ export default class DiscountDAOService implements ICrudDAO<Discount> {
     return this.discountRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Discount>>
-  ): Promise<Discount | null> {
+  findByAny(options: FindOptions<Attributes<Discount>>): Promise<Discount | null> {
     return this.discountRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Discount>>
-  ): Promise<Discount | null> {
+  findById(id: number, options?: FindOptions<Attributes<Discount>>): Promise<Discount | null> {
     return this.discountRepository.findById(id, options);
   }
 

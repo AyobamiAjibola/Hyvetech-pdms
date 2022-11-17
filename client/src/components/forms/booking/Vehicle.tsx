@@ -1,9 +1,5 @@
 import React, { SyntheticEvent, useContext } from "react";
-import {
-  Autocomplete,
-  AutocompleteChangeReason,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, AutocompleteChangeReason, TextField } from "@mui/material";
 import { AppContext } from "../../../context/AppContextProvider";
 import { AppContextProps } from "@app-interfaces";
 import { useFormikContext } from "formik";
@@ -11,23 +7,15 @@ import bookingModel from "../models/bookingModel";
 import { filterOptions, IOptionType } from "./Location";
 
 function Vehicle() {
-  const { values, setFieldValue, handleBlur, errors, touched } =
-    useFormikContext<any>();
+  const { values, setFieldValue, handleBlur, errors, touched } = useFormikContext<any>();
 
   const { vehicles } = useContext(AppContext) as AppContextProps;
 
-  const _handleChange = (
-    event: SyntheticEvent,
-    value: any,
-    reason: AutocompleteChangeReason
-  ) => {
-    if (reason === "clear")
-      return setFieldValue(bookingModel.fields.vehicle.name, "");
-    if (typeof value === "string")
-      return setFieldValue(bookingModel.fields.vehicle.name, value);
+  const _handleChange = (event: SyntheticEvent, value: any, reason: AutocompleteChangeReason) => {
+    if (reason === "clear") return setFieldValue(bookingModel.fields.vehicle.name, "");
+    if (typeof value === "string") return setFieldValue(bookingModel.fields.vehicle.name, value);
 
-    if (value.inputValue)
-      return setFieldValue(bookingModel.fields.vehicle.name, value.inputValue);
+    if (value.inputValue) return setFieldValue(bookingModel.fields.vehicle.name, value.inputValue);
   };
 
   if (vehicles.length === 0) return null;
@@ -56,9 +44,7 @@ function Vehicle() {
 
           const { inputValue } = params;
           // Suggest the creation of a new value
-          const isExisting = options.some(
-            (option: { title: string }) => inputValue === option.title
-          );
+          const isExisting = options.some((option: { title: string }) => inputValue === option.title);
           if (inputValue !== "" && !isExisting) {
             filtered.push({
               inputValue,
@@ -74,22 +60,15 @@ function Vehicle() {
             name={bookingModel.fields.vehicle.name}
             label={bookingModel.fields.vehicle.label}
             fullWidth
-            error={
-              errors.vehicle !== undefined && touched.vehicle !== undefined
-            }
+            error={errors.vehicle !== undefined && touched.vehicle !== undefined}
             //@ts-ignore
             helperText={errors.vehicle && touched.vehicle && errors.vehicle}
           />
         )}
         options={vehicles
           .filter((value) => !value.isBooked)
-          .map(
-            (vehicle) =>
-              `(${vehicle.modelYear}) ${vehicle.make} ${vehicle.model}`
-          )}
-        isOptionEqualToValue={(option: any, value) =>
-          option.label === value.label
-        }
+          .map((vehicle) => `(${vehicle.modelYear}) ${vehicle.make} ${vehicle.model}`)}
+        isOptionEqualToValue={(option: any, value) => option.label === value.label}
       />
     );
 }

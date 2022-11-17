@@ -20,10 +20,7 @@ export default class EstimateDAOService implements ICrudDAO<Estimate> {
     this.estimateRepository = estimateRepository;
   }
 
-  create(
-    values: CreationAttributes<Estimate>,
-    options?: CreateOptions<Attributes<Estimate>>
-  ): Promise<Estimate> {
+  create(values: CreationAttributes<Estimate>, options?: CreateOptions<Attributes<Estimate>>): Promise<Estimate> {
     return this.estimateRepository.save(values, options);
   }
 
@@ -35,16 +32,11 @@ export default class EstimateDAOService implements ICrudDAO<Estimate> {
     return this.estimateRepository.findAll(options);
   }
 
-  findByAny(
-    options: FindOptions<Attributes<Estimate>>
-  ): Promise<Estimate | null> {
+  findByAny(options: FindOptions<Attributes<Estimate>>): Promise<Estimate | null> {
     return this.estimateRepository.findOne(options);
   }
 
-  findById(
-    id: number,
-    options?: FindOptions<Attributes<Estimate>>
-  ): Promise<Estimate | null> {
+  findById(id: number, options?: FindOptions<Attributes<Estimate>>): Promise<Estimate | null> {
     return this.estimateRepository.findById(id, options);
   }
 

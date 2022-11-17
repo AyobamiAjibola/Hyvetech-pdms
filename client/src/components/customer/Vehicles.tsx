@@ -15,9 +15,7 @@ import { useNavigate } from "react-router-dom";
 function Vehicles() {
   const [_vehicles, _setVehicles] = useState<IVehicle[]>([]);
 
-  const { customer } = useContext(
-    CustomerPageContext
-  ) as CustomerPageContextProps;
+  const { customer } = useContext(CustomerPageContext) as CustomerPageContextProps;
 
   const customerReducer = useAppSelector((state) => state.customerReducer);
 
