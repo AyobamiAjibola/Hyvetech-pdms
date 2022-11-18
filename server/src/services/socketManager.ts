@@ -99,7 +99,8 @@ export default function socketManager(io: Server) {
     (async () => {
       const [firstName, lastName] = job.vehicleOwner.split(' ');
 
-      let eventId = '';
+      let eventId = '',
+        id = 0;
 
       const customer = await dataSources.customerDAOService.findByAny({
         where: {
@@ -113,13 +114,19 @@ export default function socketManager(io: Server) {
         },
       });
 
-      if (driver) eventId = driver.eventId;
-      if (customer) eventId = customer.eventId;
+      if (driver) {
+        eventId = driver.eventId;
+        id = driver.id;
+      }
+      if (customer) {
+        eventId = customer.eventId;
+        id = customer.id;
+      }
 
       const notification = await NotificationModel.create({
         seen: false,
         from: `${job.partner.name}`,
-        to: `${job.vehicleOwner}_${job.id}`,
+        to: id,
         type: 'Job',
         subject: 'Approved Job',
         message: `Job on your vehicle ${job.vehicle.make} ${job.vehicle.model} has been approved`,
@@ -152,7 +159,7 @@ export default function socketManager(io: Server) {
       const notification = await NotificationModel.create({
         seen: false,
         from: `${estimate.partner.name}`,
-        to: `${customer.firstName}_${estimate.id}`,
+        to: customer.id,
         type: 'Estimate',
         subject: 'Estimate Created',
         message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,

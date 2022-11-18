@@ -12,6 +12,7 @@ import VehicleFault from '../models/VehicleFault';
 import { Request } from 'express';
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
+import { Op } from 'sequelize';
 
 const CUSTOMER_ID = 'Customer Id';
 
@@ -20,6 +21,9 @@ export default class CustomerController {
     try {
       const customers = await dataSources.customerDAOService.findAll({
         attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
+        where: {
+          [Op.not]: { firstName: 'Anonymous' },
+        },
       });
 
       const response: HttpResponse<Customer> = {

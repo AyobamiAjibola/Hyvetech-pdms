@@ -844,7 +844,11 @@ export default class PartnerController {
 
       switch (path) {
         case path.match('owners-filter-data')?.input:
-          drivers = await dataSources.customerDAOService.findAll();
+          drivers = await dataSources.customerDAOService.findAll({
+            where: {
+              [Op.not]: { firstName: 'Anonymous' },
+            },
+          });
           break;
         case path.match('drivers-filter-data')?.input:
           drivers = await dataSources.rideShareDriverDAOService.findAll();
