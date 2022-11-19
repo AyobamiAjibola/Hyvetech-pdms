@@ -27,7 +27,7 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   labours: Joi.array().required().label('Labours'),
   partsTotal: Joi.number().required().label('Parts Sub Total'),
   laboursTotal: Joi.number().required().label('Labours Sub Total'),
-  tax: Joi.number().required().label('Tax'),
+  tax: Joi.string().required().label('Tax'),
   grandTotal: Joi.number().required().label('Grand Total'),
   depositAmount: Joi.number().required().label('Deposit Amount'),
   jobDurationValue: Joi.number().required().label('Job Duration Value'),

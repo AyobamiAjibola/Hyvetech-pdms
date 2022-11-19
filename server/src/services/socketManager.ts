@@ -22,6 +22,7 @@ import Partner from '../models/Partner';
 import { Op } from 'sequelize';
 import Estimate from '../models/Estimate';
 import mongoose from 'mongoose';
+import Vehicle from '../models/Vehicle';
 
 interface AppointmentProps {
   appointment: Appointment;
@@ -42,6 +43,9 @@ export interface ApprovedJobProps {
 
 export interface ICreatedEstimateProps {
   estimate: Estimate;
+  customer: Customer;
+  vehicle: Vehicle;
+  partner: Partner;
 }
 
 export default function socketManager(io: Server) {
@@ -145,24 +149,16 @@ export default function socketManager(io: Server) {
   });
 
   appEventEmitter.on(CREATED_ESTIMATE, (props: ICreatedEstimateProps) => {
-    const { estimate } = props;
+    const { estimate, customer, partner, vehicle } = props;
 
     (async () => {
-      const customer = await estimate.$get('customer');
-      const partner = await estimate.$get('partner');
-      const vehicle = await estimate.$get('vehicle');
-
-      if (!customer) throw new Error('Estimate appears not to belong to a customer.');
-      if (!partner) throw new Error('Estimate appears not to belong to a partner.');
-      if (!vehicle) throw new Error('Estimate appears not to belong to a vehicle.');
-
       const notification = await NotificationModel.create({
         seen: false,
-        from: `${estimate.partner.name}`,
+        from: `${partner.name}`,
         to: customer.id,
         type: 'Estimate',
-        subject: 'Estimate Created',
-        message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
+        subject: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
+        message: estimate.toJSON(),
       });
 
       io.to(customer.eventId).emit(CREATED_ESTIMATE, {

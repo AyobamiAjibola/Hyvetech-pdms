@@ -99,7 +99,7 @@ export default class EstimateController {
 
       await customer.$add('estimates', [estimate]);
 
-      appEventEmitter.emit(CREATED_ESTIMATE, { estimate });
+      appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
 
       response.result = estimate;
 

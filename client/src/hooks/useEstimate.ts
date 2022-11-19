@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 import cookie from '../utils/cookie';
 import settings from '../config/settings';
 import { CustomJwtPayload } from '@app-interfaces';
+import { clearCreateEstimateStatus, clearGetEstimateStatus } from '../store/reducers/estimateReducer';
 
 export default function useEstimate() {
   const [driver, setDriver] = useState<IRideShareDriver | null>(null);
@@ -73,12 +74,19 @@ export default function useEstimate() {
     }
   }, [estimateReducer.getEstimatesError, estimateReducer.getEstimatesStatus]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearCreateEstimateStatus());
+      dispatch(clearGetEstimateStatus());
+    };
+  }, [dispatch]);
+
   const handleCreateEstimate = (values: IEstimateValues, options?: GenericObjectType) => {
     const data = {
       id: partnerId,
       parts: values.parts,
       labours: values.labours,
-      tax: +values.tax,
+      tax: values.tax,
       addressType: values.addressType,
       address: values.address,
       firstName: values.firstName,

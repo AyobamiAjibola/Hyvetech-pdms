@@ -6,15 +6,16 @@ import AppLogger from '../utils/AppLogger';
 import HttpStatus from '../helpers/HttpStatus';
 import CustomAPIError from '../exceptions/CustomAPIError';
 import settings from '../config/settings';
-import authorizeRoute from './authorizeRoute';
 import UserRepository from '../repositories/UserRepository';
 import Role from '../models/Role';
 import Partner from '../models/Partner';
+import TechnicianRepository from '../repositories/TechnicianRepository';
 import AsyncWrapper = appCommonTypes.AsyncWrapper;
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 
 const logger = AppLogger.init(authenticateRouteWrapper.name).logger;
-const userRepo = new UserRepository();
+const userRepository = new UserRepository();
+const technicianRepository = new TechnicianRepository();
 
 export default function authenticateRouteWrapper(handler: AsyncWrapper) {
   return async function (req: Request, res: Response, next: NextFunction) {
@@ -49,22 +50,40 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
 
     const { userId } = payload;
 
-    const user = await userRepo.findById(userId, {
+    const user = await userRepository.findById(userId, {
       include: [Role, Partner],
     });
 
-    if (!user) {
-      return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
+    if (user) {
+      req.permissions = payload.permissions;
+      req.user = user;
+      req.jwt = jwt;
+
+      return await handler(req, res, next);
     }
 
-    req.permissions = payload.permissions;
-    req.user = user;
-    req.jwt = jwt;
+    const customer = await technicianRepository.findById(userId, {
+      include: [Role, Partner],
+    });
 
-    const authorised = await authorizeRoute(req);
+    if (customer) {
+      req.permissions = payload.permissions;
+      req.jwt = jwt;
 
-    if (!authorised) return next(CustomAPIError.response(HttpStatus.FORBIDDEN.value, HttpStatus.FORBIDDEN.code));
+      return await handler(req, res, next);
+    }
 
-    await handler(req, res, next);
+    if (!user || !customer)
+      return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
+
+    // req.permissions = payload.permissions;
+    // req.user = user;
+    // req.jwt = jwt;
+    //
+    // const authorised = await authorizeRoute(req);
+    //
+    // if (!authorised) return next(CustomAPIError.response(HttpStatus.FORBIDDEN.value, HttpStatus.FORBIDDEN.code));
+    //
+    // await handler(req, res, next);
   };
 }

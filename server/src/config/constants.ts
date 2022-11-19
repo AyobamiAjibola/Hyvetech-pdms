@@ -8,6 +8,14 @@ export const PASSWORD_PATTERN = '^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&
 
 export const UPLOAD_BASE_PATH = 'uploads';
 
+export const TAGS = [
+  { name: '2/3-Wheeler', icon: 'fa-person-biking' },
+  { name: 'Sedan/SUV/CUV', icon: 'fa-car' },
+  { name: 'Buses/Mini-Van', icon: 'fa-van-shuttle' },
+  { name: 'Pickup Truck', icon: 'fa-truck-pickup' },
+  { name: 'Heavy Duty', icon: 'fa-tractor' },
+];
+
 export const VIN_FILTER_CONSTRAINTS = [
   'vin',
   'model',
