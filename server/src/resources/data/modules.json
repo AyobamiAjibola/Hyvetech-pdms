@@ -1,19 +1,129 @@
-[
-  {
-    "name": "System Administration",
-    "settings": [
-      {
-        "name": "User Management",
-        "id": "User"
-      },
-      {
-        "name": "Role Management",
-        "id": "Role"
-      },
-      {
-        "name": "Appointment Management",
-        "id": "Appointment"
-      }
-    ]
-  }
-]
+{
+  "id": 1,
+  "name": "Jiffix Hub CheckList",
+  "description": "Aesthetics, Body & Comfort",
+  "sections": [
+    {
+      "id": "ae076bb0-6394-47b0-b273-db501b283659",
+      "title": "Underhood",
+      "questions": [
+        {
+          "id": "1a6ea303-0410-4487-9838-270e9e84b9e0",
+          "answers": [
+            {
+              "id": "796d772d-51e7-4713-9c51-edd31c9b8b6e",
+              "answer": "Compliant",
+              "weight": "1",
+              "color": "#1fee0d",
+              "selected": true
+            },
+            {
+              "id": "15141ad4-e46e-40f0-b21c-f91ff0de65b1",
+              "answer": "Non-compliant",
+              "weight": "0",
+              "color": "#f51616",
+              "selected": false
+            }
+          ],
+          "media": false,
+          "note": false,
+          "question": "Engine oil level",
+          "images": []
+        },
+        {
+          "id": "50ed07ed-ff2a-4d7f-b984-544700da6cc4",
+          "answers": [
+            {
+              "id": "80152fea-bbef-4119-8c2f-069408971aa8",
+              "answer": "Pass",
+              "weight": "1",
+              "color": "#1fee0d",
+              "selected": true
+            },
+            {
+              "id": "47d4a935-b33b-456f-9b05-f44acad70a5d",
+              "answer": "Fail",
+              "weight": "0",
+              "color": "#f51616",
+              "selected": false
+            }
+          ],
+          "media": false,
+          "note": false,
+          "question": "Engine coolant level",
+          "images": []
+        }
+      ]
+    },
+    {
+      "id": "7c784889-eef4-4694-b2dc-fa0aa477c84d",
+      "title": "Exterior & Underbody",
+      "questions": [
+        {
+          "id": "ae868fdd-6823-4fc3-856f-bc0cdaa78f4e",
+          "answers": [
+            {
+              "id": "625a7bcf-6ad7-469f-b5ff-693e8b9e7065",
+              "answer": "Several",
+              "weight": "0",
+              "color": "#f51616",
+              "selected": true
+            },
+            {
+              "id": "03da4ed6-4f20-45cd-83cd-5f78c5280850",
+              "answer": "Few",
+              "weight": "0.5",
+              "color": "#e0ef33",
+              "selected": false
+            },
+            {
+              "id": "5a385d66-e9a0-4410-a688-6347e39a3313",
+              "answer": "None",
+              "weight": "1",
+              "color": "#1fee0d",
+              "selected": false
+            }
+          ],
+          "media": false,
+          "note": false,
+          "question": "Rusts",
+          "images": []
+        },
+        {
+          "id": "79f01b0f-c655-454d-af5f-4428decbd411",
+          "answers": [
+            {
+              "id": "f1d457dc-6a28-4a40-8f87-4e9c89bae48d",
+              "answer": "Serveral",
+              "weight": "0",
+              "color": "#f51616",
+              "selected": false
+            },
+            {
+              "id": "c32c4d96-bb7a-4ae4-9e6f-86c07fd54aae",
+              "answer": "Few",
+              "weight": "0.5",
+              "color": "#e0ef33",
+              "selected": true
+            },
+            {
+              "id": "f82686e3-328f-4e75-bdff-f5191c9c367e",
+              "answer": "None",
+              "weight": "1",
+              "color": "#1fee0d",
+              "selected": false
+            }
+          ],
+          "media": false,
+          "note": false,
+          "question": "Scratches",
+          "images": []
+        }
+      ]
+    }
+  ],
+  "approvedByGarageAdmin": false,
+  "isSubmitted": true,
+  "createdAt": "2022-11-17T09:42:44.304Z",
+  "updatedAt": "2022-11-17T09:45:00.513Z"
+}

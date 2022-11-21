@@ -104,7 +104,9 @@ function EstimatesPage() {
         align: 'center',
         width: 200,
         type: 'string',
-        valueGetter: ({ value }) => value && moment(value).format('LLL'),
+        valueGetter: ({ value }) => {
+          value ? moment(value).format('LLL') : '-';
+        },
         sortable: true,
       },
       {
@@ -114,7 +116,9 @@ function EstimatesPage() {
         align: 'center',
         width: 200,
         type: 'string',
-        valueGetter: ({ value }) => value && moment(value).format('LLL'),
+        valueGetter: ({ value }) => {
+          value ? moment(value).format('LLL') : '-';
+        },
         sortable: true,
       },
       {

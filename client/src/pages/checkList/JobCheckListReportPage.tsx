@@ -45,15 +45,20 @@ interface ILocationState {
 
 const computeScore = (sections: CheckListSectionType[]) => {
   let totalScore = 0;
+
   const _answers: CheckListAnswerType[] = [];
+
   for (const section of sections) {
     const questions = section.questions;
 
     for (const question of questions) {
       const answers = question.answers;
+
       for (const answer of answers) {
-        totalScore += +answer.weight;
-        _answers.push(answer);
+        if (answer.selected) {
+          totalScore += +answer.weight;
+          _answers.push(answer);
+        }
       }
     }
   }
@@ -441,6 +446,7 @@ function JobCheckListReportPage() {
         onClose={() => setError(undefined)}
       />
       <AppLoader show={jobReducer.approveJobCheckListStatus === 'loading'} />
+      <AppLoader show={jobReducer.getJobStatus === 'loading'} />
     </React.Fragment>
   );
 }

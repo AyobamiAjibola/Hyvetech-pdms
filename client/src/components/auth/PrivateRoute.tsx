@@ -6,7 +6,7 @@ import settings from '../../config/settings';
 const cookieName = settings.auth.admin;
 
 function PrivateRoute({ children }: any) {
-  const isSignedIn = cookie.exist(cookieName) && !cookie.isExpired(cookieName);
+  const isSignedIn = cookie.exist(cookieName);
 
   return isSignedIn ? children : <Navigate to="/" replace />;
 }
