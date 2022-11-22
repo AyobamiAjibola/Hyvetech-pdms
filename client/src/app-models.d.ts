@@ -207,6 +207,14 @@ declare module '@app-models' {
     checkList: CheckListType;
     checkLists: ICheckList[];
     technicianId: number;
+    mileageUnit: string;
+    mileageValue: string;
+    frontImageUrl: string;
+    rearImageUrl: string;
+    rightSideImageUrl: string;
+    leftSideImageUrl: string;
+    engineBayImageUrl: string;
+    instrumentClusterImageUrl: string;
     partner: IPartner;
     partnerId: number;
     createdAt: Date;

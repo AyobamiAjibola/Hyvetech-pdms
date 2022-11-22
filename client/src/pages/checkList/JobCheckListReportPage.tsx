@@ -289,11 +289,10 @@ function JobCheckListReportPage() {
                 {!job.vehicle ? null : (
                   <Grid item xs={12} container spacing={1}>
                     <Grid item xs={4}>
-                      <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`)}>
+                      <ButtonBase onClick={() => handleViewImage(`${settings.api.baseURL}/${job.frontImageUrl}`)}>
                         <img
                           alt="front"
-                          src={`${settings.api.baseURL}/${job.vehicle.frontImageUrl}`}
+                          src={`${settings.api.baseURL}/${job.frontImageUrl}`}
                           crossOrigin="anonymous"
                           width="100%"
                         />
@@ -301,11 +300,10 @@ function JobCheckListReportPage() {
                       <Typography variant="caption">Front</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`)}>
+                      <ButtonBase onClick={() => handleViewImage(`${settings.api.baseURL}/${job.rearImageUrl}`)}>
                         <img
                           alt="rear"
-                          src={`${settings.api.baseURL}/${job.vehicle.rearImageUrl}`}
+                          src={`${settings.api.baseURL}/${job.rearImageUrl}`}
                           crossOrigin="anonymous"
                           width="100%"
                         />
@@ -313,11 +311,10 @@ function JobCheckListReportPage() {
                       <Typography variant="caption">Rear</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`)}>
+                      <ButtonBase onClick={() => handleViewImage(`${settings.api.baseURL}/${job.rightSideImageUrl}`)}>
                         <img
                           alt="right"
-                          src={`${settings.api.baseURL}/${job.vehicle.rightSideImageUrl}`}
+                          src={`${settings.api.baseURL}/${job.rightSideImageUrl}`}
                           crossOrigin="anonymous"
                           width="100%"
                         />
@@ -325,11 +322,10 @@ function JobCheckListReportPage() {
                       <Typography variant="caption">Right</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`)}>
+                      <ButtonBase onClick={() => handleViewImage(`${settings.api.baseURL}/${job.leftSideImageUrl}`)}>
                         <img
                           alt="left"
-                          src={`${settings.api.baseURL}/${job.vehicle.leftSideImageUrl}`}
+                          src={`${settings.api.baseURL}/${job.leftSideImageUrl}`}
                           crossOrigin="anonymous"
                           width="100%"
                         />
@@ -337,11 +333,10 @@ function JobCheckListReportPage() {
                       <Typography variant="caption">Left</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <ButtonBase
-                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`)}>
+                      <ButtonBase onClick={() => handleViewImage(`${settings.api.baseURL}/${job.engineBayImageUrl}`)}>
                         <img
                           alt="engine bay"
-                          src={`${settings.api.baseURL}/${job.vehicle.engineBayImageUrl}`}
+                          src={`${settings.api.baseURL}/${job.engineBayImageUrl}`}
                           crossOrigin="anonymous"
                           width="100%"
                         />
@@ -350,12 +345,10 @@ function JobCheckListReportPage() {
                     </Grid>
                     <Grid item xs={4}>
                       <ButtonBase
-                        onClick={() =>
-                          handleViewImage(`${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`)
-                        }>
+                        onClick={() => handleViewImage(`${settings.api.baseURL}/${job.instrumentClusterImageUrl}`)}>
                         <img
                           alt="instrument cluster"
-                          src={`${settings.api.baseURL}/${job.vehicle.instrumentClusterImageUrl}`}
+                          src={`${settings.api.baseURL}/${job.instrumentClusterImageUrl}`}
                           crossOrigin="anonymous"
                           width="100%"
                         />

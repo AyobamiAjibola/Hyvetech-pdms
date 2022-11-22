@@ -29,6 +29,30 @@ export default class Job extends Model<InferAttributes<Job>, InferCreationAttrib
   @Column(DataType.STRING)
   declare vehicleOwner: string;
 
+  @Column(DataType.STRING)
+  declare mileageUnit: string;
+
+  @Column(DataType.STRING)
+  declare mileageValue: string;
+
+  @Column(DataType.STRING)
+  declare frontImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare rearImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare rightSideImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare leftSideImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare engineBayImageUrl: string;
+
+  @Column(DataType.STRING)
+  declare instrumentClusterImageUrl: string;
+
   @Column(DataType.DATE)
   declare jobDate: Date;
 

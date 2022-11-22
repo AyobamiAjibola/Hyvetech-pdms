@@ -29,8 +29,10 @@ import Contact from '../models/Contact';
 import formidable, { File } from 'formidable';
 import { appEventEmitter } from '../services/AppEventEmitter';
 import { AssignJobProps } from '../services/socketManager';
+import fs from 'fs/promises';
 import HttpResponse = appCommonTypes.HttpResponse;
 import CheckListType = appCommonTypes.CheckListType;
+import AnyObjectType = appCommonTypes.AnyObjectType;
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 
@@ -435,22 +437,29 @@ export default class JobController {
           const vehicleInfo = JSON.parse(value.vehicleInfo);
 
           const basePath = `${UPLOAD_BASE_PATH}/vehicles`;
-          const updateData: { [p: string]: any } = {
+          const vehicleUpdateData: AnyObjectType = {
             make: vehicleInfo.make,
             model: vehicleInfo.model,
             modelYear: vehicleInfo.modelYear,
             plateNumber: vehicleInfo.plateNumber,
             vin: vehicleInfo.vin,
-            mileageUnit: vehicleInfo.mileageUnit,
-            mileageValue: vehicleInfo.mileageValue,
             frontTireSpec: vehicleInfo.frontTireSpec,
             rearTireSpec: vehicleInfo.rearTireSpec,
           };
 
+          const jobUpdateData: AnyObjectType = {
+            mileageUnit: vehicleInfo.mileageUnit,
+            mileageValue: vehicleInfo.mileageValue,
+          };
+
+          for (const jobKey in job.toJSON()) {
+            if (await Generic.fileExist(jobKey)) await fs.rm(jobKey);
+          }
+
           for (const file of Object.keys(files)) {
             const { originalFilename, filepath } = files[file] as File;
 
-            Object.assign(updateData, {
+            Object.assign(jobUpdateData, {
               [file]: await Generic.getImagePath({
                 basePath,
                 tempPath: filepath,
@@ -459,7 +468,9 @@ export default class JobController {
             });
           }
 
-          const result = await vehicle.update(updateData);
+          await job.update(jobUpdateData);
+
+          const result = await vehicle.update(vehicleUpdateData);
 
           const response: HttpResponse<Vehicle> = {
             code: HttpStatus.OK.code,

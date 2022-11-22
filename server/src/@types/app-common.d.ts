@@ -10,8 +10,8 @@ import User from '../models/User';
 import CheckList from '../models/CheckList';
 
 export declare namespace appCommonTypes {
-    import IPermission = appModelTypes.IPermission;
-    type DatabaseEnv = 'development' | 'production' | 'test';
+  import IPermission = appModelTypes.IPermission;
+  type DatabaseEnv = 'development' | 'production' | 'test';
   type CheckListAnswerType = {
     id: string;
     answer: string;
@@ -103,6 +103,7 @@ export declare namespace appCommonTypes {
   };
 
   type QueueMailTypes = 'DEFAULT' | 'WEBSITE' | 'BOOKING' | 'CUSTOMER';
+  type AnyObjectType = { [p: string]: any };
 
   export type IPartWarranty = { warranty: string; interval: string };
   export type IPartQuantity = { quantity: string; unit: string };
