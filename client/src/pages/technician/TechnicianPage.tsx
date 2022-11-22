@@ -256,6 +256,7 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
               showInMenu={false}
             />,
             <GridActionsCellItem
+              hidden={job.status === JOB_STATUS.cancel}
               key={3}
               icon={
                 <Tooltip title="cancel job">
