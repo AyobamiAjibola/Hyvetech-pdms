@@ -271,7 +271,7 @@ function TechniciansPage() {
         fullWidth
         fullScreen
         show={technician.showView}
-        Content={<TechnicianPage />}
+        Content={<TechnicianPage setShow={technician.setShowView} />}
         onClose={() => technician.setShowView(false)}
       />
       <AppModal

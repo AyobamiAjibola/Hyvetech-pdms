@@ -2,8 +2,11 @@ import {
   approveJobCheckListHandler,
   assignCustomerJobHandler,
   assignDriverJobHandler,
+  assignJobHandler,
+  cancelJobHandler,
   getJobHandler,
   getJobsHandler,
+  reassignJobHandler,
   updateJobVehicleHandler,
 } from '../../routes/jobRoute';
 import { appCommonTypes } from '../../@types/app-common';
@@ -27,6 +30,24 @@ const jobEndpoints: RouteEndpoints = [
     method: 'post',
     path: '/jobs/:partnerId/driver-assign',
     handler: assignDriverJobHandler,
+  },
+  {
+    name: 'jobs',
+    method: 'post',
+    path: '/jobs/:partnerId/assign',
+    handler: assignJobHandler,
+  },
+  {
+    name: 'jobs',
+    method: 'post',
+    path: '/jobs/:partnerId/cancel',
+    handler: cancelJobHandler,
+  },
+  {
+    name: 'jobs',
+    method: 'post',
+    path: '/jobs/:partnerId/reassign',
+    handler: reassignJobHandler,
   },
   {
     name: 'jobs',

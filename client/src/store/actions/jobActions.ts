@@ -8,6 +8,8 @@ import { AxiosResponse } from 'axios';
 const GET_JOBS = 'jobs:GET_JOBS';
 const GET_JOB = 'jobs:GET_JOB';
 const ASSIGN_JOB = 'jobs:ASSIGN_JOB';
+const CANCEL_JOB = 'jobs:CANCEL_JOB';
+const REASSIGN_JOB = 'jobs:REASSIGN_JOB';
 const APPROVE_JOB_CHECK_LIST = 'check_list:APPROVE_JOB_CHECK_LIST';
 const API_ROOT = settings.api.rest;
 
@@ -29,7 +31,17 @@ export const getJobAction = asyncThunkWrapper<ApiResponseSuccess<IJob>, number>(
 });
 
 export const driverAssignJobAction = asyncThunkWrapper<ApiResponseSuccess<IJob>, any>(ASSIGN_JOB, async args => {
-  const response = await axiosClient.post(`${API_ROOT}/jobs/${args.partnerId}/driver-assign`, args);
+  const response = await axiosClient.post(`${API_ROOT}/jobs/${args.partnerId}/assign`, args);
+  return response.data;
+});
+
+export const cancelJobAction = asyncThunkWrapper<ApiResponseSuccess<IJob>, any>(CANCEL_JOB, async args => {
+  const response = await axiosClient.post(`${API_ROOT}/jobs/${args.partnerId}/cancel`, args.data);
+  return response.data;
+});
+
+export const reassignJobAction = asyncThunkWrapper<ApiResponseSuccess<IJob>, any>(REASSIGN_JOB, async args => {
+  const response = await axiosClient.post(`${API_ROOT}/jobs/${args.partnerId}/reassign`, args);
   return response.data;
 });
 

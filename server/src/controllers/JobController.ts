@@ -36,6 +36,10 @@ import AnyObjectType = appCommonTypes.AnyObjectType;
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 
+const SUBSCRIPTION_ID = 'Subscription Id';
+const TECHNICIAN_ID = 'Technician Id';
+const PARTNER_ID = 'Partner Id';
+const CHECKLIST_ID = 'Check List Id';
 export default class JobController {
   public static async jobs(partnerId?: number) {
     let jobs: Job[] = [];
@@ -87,10 +91,10 @@ export default class JobController {
       });
 
       if (job && typeof job.checkList !== 'object') {
-        const checkList = JSON.parse(job.checkList) as unknown as CheckListType;
+        const checkList = JSON.parse(job.checkList);
 
         if (checkList.sections) {
-          checkList.sections = checkList.sections.map(section => {
+          checkList.sections = checkList.sections.map((section: unknown) => {
             if (typeof section !== 'string') return section;
             else return JSON.parse(section as unknown as string);
           });
@@ -117,238 +121,343 @@ export default class JobController {
     }
   }
 
-  public static async assignDriverJob(req: Request) {
+  public static async assignJob(req: Request) {
     try {
-      const partnerId = req.params.partnerId as string;
-
       const { value, error } = Joi.object({
-        subscriptionId: Joi.number().required().label('Subscription Id'),
-        techId: Joi.number().required().label('Technician Id'),
-        partnerId: Joi.number().required().label('Partner Id'),
-        checkListId: Joi.number().required().label('Check List Id'),
+        subscriptionId: Joi.number().required().label(SUBSCRIPTION_ID),
+        techId: Joi.number().required().label(TECHNICIAN_ID),
+        partnerId: Joi.number().required().label(PARTNER_ID),
+        checkListId: Joi.number().required().label(CHECKLIST_ID),
+        jobId: Joi.number().allow().label('Job Id'),
+        client: Joi.string().allow('').label('Client'),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-      const partner = await dataSources.partnerDAOService.findById(+partnerId);
+      if (value.client === 'Driver') return this.assignDriverJob(req);
+      if (value.client === 'Customer') return this.assignCustomerJob(req);
 
-      if (!partner)
-        return Promise.reject(
-          CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
-        );
-
-      const checkList = await dataSources.checkListDAOService.findById(value.checkListId);
-
-      if (!checkList)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Check List does not exist. You need a check list to carry out inspection`,
-            HttpStatus.NOT_FOUND.code,
-          ),
-        );
-
-      const technician = await dataSources.technicianDAOService.findById(+value.techId);
-
-      if (!technician)
-        return Promise.reject(CustomAPIError.response(`Technician does not exist`, HttpStatus.NOT_FOUND.code));
-
-      const jobValues: any = {
-        status: JOB_STATUS.pending,
-        hasJob: true,
-      };
-
-      const rideShareSub = await dataSources.rideShareDriverSubscriptionDAOService.findById(+value.subscriptionId);
-
-      if (!rideShareSub)
-        return Promise.reject(CustomAPIError.response(`Subscription does not exist`, HttpStatus.NOT_FOUND.code));
-
-      const vehicle = await rideShareSub.$get('vehicles', {
-        include: [RideShareDriver],
-      });
-
-      if (!vehicle.length)
-        return Promise.reject(CustomAPIError.response(`Vehicle not subscribed to plan`, HttpStatus.NOT_FOUND.code));
-
-      const planLabel = Generic.generateSlug(`${rideShareSub.planType}`);
-
-      const plan = await dataSources.planDAOService.findByAny({
-        where: {
-          label: planLabel,
-        },
-      });
-
-      if (!plan)
-        return Promise.reject(CustomAPIError.response(`Plan: ${planLabel} does not exist`, HttpStatus.NOT_FOUND.code));
-
-      const owner = vehicle[0].rideShareDriver;
-
-      Object.assign(jobValues, {
-        type: rideShareSub.programme,
-        name: `${rideShareSub.planType} Job`,
-        vehicleOwner: `${owner.firstName} ${owner.lastName}`,
-      });
-
-      const job = await dataSources.jobDAOService.create(jobValues);
-
-      //associate job with vehicle
-      await vehicle[0].$add('jobs', [job]);
-
-      //associate job with subscription
-      await rideShareSub.$add('jobs', [job]);
-
-      //create job check list
-      await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
-
-      //associate partner with job
-      await partner.$add('jobs', [job]);
-
-      //associate technician with jobs
-      await technician.$add('jobs', [job]);
-
-      //update technician job status
-      await technician.update({ hasJob: true });
-
-      //update vehicle job status
-      if (rideShareSub.programme.match(new RegExp('inspection', 'i'))?.input)
-        await vehicle[0].update({ onInspection: true });
-
-      if (rideShareSub.programme.match(new RegExp('maintenance', 'i'))?.input)
-        await vehicle[0].update({ onMaintenance: true });
-
-      //increment mode of service count
-      await this.incrementServiceModeCount(plan, rideShareSub);
-
-      const jobs = await partner.$get('jobs');
-
-      appEventEmitter.emit(ASSIGN_DRIVER_JOB, {
-        techId: +value.techId,
-        partner,
-      } as AssignJobProps);
-
-      const response: HttpResponse<Job> = {
-        code: HttpStatus.OK.code,
-        message: HttpStatus.OK.value,
-        results: jobs,
-      };
-
-      return Promise.resolve(response);
+      return Promise.reject({
+        code: HttpStatus.BAD_REQUEST.code,
+        message: HttpStatus.BAD_REQUEST.value,
+      } as HttpResponse<void>);
     } catch (e) {
       return Promise.reject(e);
     }
   }
 
-  public static async assignCustomerJob(req: Request) {
-    try {
-      const partnerId = req.params.partnerId as string;
+  public static async assignDriverJob(req: Request) {
+    const partnerId = req.params.partnerId as string;
+    const value = req.body;
 
-      const { value, error } = Joi.object({
-        subscriptionId: Joi.number().required().label('Subscription Id'),
-        techId: Joi.number().required().label('Technician Id'),
-        partnerId: Joi.number().required().label('Partner Id'),
-        checkListId: Joi.number().required().label('Check List Id'),
+    const partner = await dataSources.partnerDAOService.findById(+partnerId);
+
+    if (!partner)
+      return Promise.reject(
+        CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
+      );
+
+    const checkList = await dataSources.checkListDAOService.findById(value.checkListId);
+
+    if (!checkList)
+      return Promise.reject(
+        CustomAPIError.response(
+          `Check List does not exist. You need a check list to carry out inspection`,
+          HttpStatus.NOT_FOUND.code,
+        ),
+      );
+
+    const technician = await dataSources.technicianDAOService.findById(+value.techId);
+
+    if (!technician)
+      return Promise.reject(CustomAPIError.response(`Technician does not exist`, HttpStatus.NOT_FOUND.code));
+
+    const jobValues: any = {
+      status: JOB_STATUS.pending,
+      hasJob: true,
+    };
+
+    const rideShareSub = await dataSources.rideShareDriverSubscriptionDAOService.findById(+value.subscriptionId);
+
+    if (!rideShareSub)
+      return Promise.reject(CustomAPIError.response(`Subscription does not exist`, HttpStatus.NOT_FOUND.code));
+
+    const vehicle = await rideShareSub.$get('vehicles', {
+      include: [RideShareDriver],
+    });
+
+    if (!vehicle.length)
+      return Promise.reject(CustomAPIError.response(`Vehicle not subscribed to plan`, HttpStatus.NOT_FOUND.code));
+
+    const planLabel = Generic.generateSlug(`${rideShareSub.planType}`);
+
+    const plan = await dataSources.planDAOService.findByAny({
+      where: {
+        label: planLabel,
+      },
+    });
+
+    if (!plan)
+      return Promise.reject(CustomAPIError.response(`Plan: ${planLabel} does not exist`, HttpStatus.NOT_FOUND.code));
+
+    const owner = vehicle[0].rideShareDriver;
+
+    Object.assign(jobValues, {
+      type: rideShareSub.programme,
+      name: `${rideShareSub.planType} Job`,
+      vehicleOwner: `${owner.firstName} ${owner.lastName}`,
+    });
+
+    const job = await dataSources.jobDAOService.create(jobValues);
+
+    //associate job with vehicle
+    await vehicle[0].$add('jobs', [job]);
+
+    //associate job with subscription
+    await rideShareSub.$add('jobs', [job]);
+
+    //create job check list
+    await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
+
+    //associate partner with job
+    await partner.$add('jobs', [job]);
+
+    //associate technician with jobs
+    await technician.$add('jobs', [job]);
+
+    //update technician job status
+    await technician.update({ hasJob: true });
+
+    //update vehicle job status
+    if (rideShareSub.programme.match(new RegExp('inspection', 'i'))?.input)
+      await vehicle[0].update({ onInspection: true });
+
+    if (rideShareSub.programme.match(new RegExp('maintenance', 'i'))?.input)
+      await vehicle[0].update({ onMaintenance: true });
+
+    //increment mode of service count
+    await this.incrementServiceModeCount(plan, rideShareSub);
+
+    const jobs = await partner.$get('jobs');
+
+    appEventEmitter.emit(ASSIGN_DRIVER_JOB, {
+      techId: +value.techId,
+      partner,
+    } as AssignJobProps);
+
+    const response: HttpResponse<Job> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      results: jobs,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  public static async assignCustomerJob(req: Request) {
+    const partnerId = req.params.partnerId as string;
+
+    const value = req.body;
+
+    const partner = await dataSources.partnerDAOService.findById(+partnerId);
+
+    if (!partner)
+      return Promise.reject(
+        CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
+      );
+
+    const checkList = await dataSources.checkListDAOService.findById(value.checkListId);
+
+    if (!checkList)
+      return Promise.reject(
+        CustomAPIError.response(
+          `Check List does not exist. You need a check list to carry out inspection`,
+          HttpStatus.NOT_FOUND.code,
+        ),
+      );
+
+    const technician = await dataSources.technicianDAOService.findById(+value.techId);
+
+    if (!technician)
+      return Promise.reject(CustomAPIError.response(`Technician does not exist`, HttpStatus.NOT_FOUND.code));
+
+    const jobValues: any = {
+      status: JOB_STATUS.pending,
+    };
+
+    const customerSub = await dataSources.customerSubscriptionDAOService.findById(+value.subscriptionId);
+
+    if (!customerSub)
+      return Promise.reject(CustomAPIError.response(`Subscription does not exist`, HttpStatus.NOT_FOUND.code));
+
+    const vehicle = await customerSub.$get('vehicles', {
+      include: [Customer],
+    });
+
+    if (!vehicle.length)
+      return Promise.reject(CustomAPIError.response(`Vehicle not subscribed to plan`, HttpStatus.NOT_FOUND.code));
+
+    const planLabel = Generic.generateSlug(`${customerSub.planType}`);
+
+    const plan = await dataSources.planDAOService.findByAny({
+      where: {
+        label: planLabel,
+      },
+    });
+
+    if (!plan)
+      return Promise.reject(CustomAPIError.response(`Plan: ${planLabel} does not exist`, HttpStatus.NOT_FOUND.code));
+
+    const owner = vehicle[0].customer;
+
+    Object.assign(jobValues, {
+      type: customerSub.programme,
+      name: `${customerSub.planType} Job`,
+      vehicleOwner: `${owner.firstName} ${owner.lastName}`,
+    });
+
+    const job = await dataSources.jobDAOService.create(jobValues);
+
+    //associate job with vehicle
+    await vehicle[0].$add('jobs', [job]);
+
+    //associate job with subscription
+    await customerSub.$add('jobs', [job]);
+
+    //associate job with check list
+    await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
+
+    //associate partner with job
+    await partner.$add('jobs', [job]);
+
+    //associate technician with jobs
+    await technician.$add('jobs', [job]);
+
+    //update technician job status
+    await technician.update({ hasJob: true });
+
+    //update vehicle job status
+    if (customerSub.programme.match(new RegExp('inspection', 'i'))?.input)
+      await vehicle[0].update({ onInspection: true });
+
+    if (customerSub.programme.match(new RegExp('maintenance', 'i'))?.input)
+      await vehicle[0].update({ onMaintenance: true });
+
+    //increment mode of service count
+    await this.incrementServiceModeCount(plan, customerSub);
+
+    const jobs = await partner.$get('jobs');
+
+    const response: HttpResponse<Job> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      results: jobs,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  public static async reassignJob(req: Request) {
+    try {
+      const { error } = Joi.object({
+        jobId: Joi.number().required().label('Job Id'),
+        client: Joi.string().required().label('Client'),
+        subscriptionId: Joi.number().required().label(SUBSCRIPTION_ID),
+        techId: Joi.number().required().label(TECHNICIAN_ID),
+        partnerId: Joi.number().required().label(PARTNER_ID),
+        checkListId: Joi.number().required().label(CHECKLIST_ID),
       }).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-      const partner = await dataSources.partnerDAOService.findById(+partnerId);
+      //cancel job
+      await this.doCancelJob(req);
 
-      if (!partner)
-        return Promise.reject(
-          CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
-        );
-
-      const checkList = await dataSources.checkListDAOService.findById(value.checkListId);
-
-      if (!checkList)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Check List does not exist. You need a check list to carry out inspection`,
-            HttpStatus.NOT_FOUND.code,
-          ),
-        );
-
-      const technician = await dataSources.technicianDAOService.findById(+value.techId);
-
-      if (!technician)
-        return Promise.reject(CustomAPIError.response(`Technician does not exist`, HttpStatus.NOT_FOUND.code));
-
-      const jobValues: any = {
-        status: JOB_STATUS.pending,
-      };
-
-      const customerSub = await dataSources.customerSubscriptionDAOService.findById(+value.subscriptionId);
-
-      if (!customerSub)
-        return Promise.reject(CustomAPIError.response(`Subscription does not exist`, HttpStatus.NOT_FOUND.code));
-
-      const vehicle = await customerSub.$get('vehicles', {
-        include: [Customer],
-      });
-
-      if (!vehicle.length)
-        return Promise.reject(CustomAPIError.response(`Vehicle not subscribed to plan`, HttpStatus.NOT_FOUND.code));
-
-      const planLabel = Generic.generateSlug(`${customerSub.planType}`);
-
-      const plan = await dataSources.planDAOService.findByAny({
-        where: {
-          label: planLabel,
-        },
-      });
-
-      if (!plan)
-        return Promise.reject(CustomAPIError.response(`Plan: ${planLabel} does not exist`, HttpStatus.NOT_FOUND.code));
-
-      const owner = vehicle[0].customer;
-
-      Object.assign(jobValues, {
-        type: customerSub.programme,
-        name: `${customerSub.planType} Job`,
-        vehicleOwner: `${owner.firstName} ${owner.lastName}`,
-      });
-
-      const job = await dataSources.jobDAOService.create(jobValues);
-
-      //associate job with vehicle
-      await vehicle[0].$add('jobs', [job]);
-
-      //associate job with subscription
-      await customerSub.$add('jobs', [job]);
-
-      //associate job with check list
-      await job.update({ checkList: JSON.stringify(checkList.toJSON()) });
-
-      //associate partner with job
-      await partner.$add('jobs', [job]);
-
-      //associate technician with jobs
-      await technician.$add('jobs', [job]);
-
-      //update technician job status
-      await technician.update({ hasJob: true });
-
-      //update vehicle job status
-      if (customerSub.programme.match(new RegExp('inspection', 'i'))?.input)
-        await vehicle[0].update({ onInspection: true });
-
-      if (customerSub.programme.match(new RegExp('maintenance', 'i'))?.input)
-        await vehicle[0].update({ onMaintenance: true });
-
-      //increment mode of service count
-      await this.incrementServiceModeCount(plan, customerSub);
-
-      const jobs = await partner.$get('jobs');
-
-      const response: HttpResponse<Job> = {
-        code: HttpStatus.OK.code,
-        message: HttpStatus.OK.value,
-        results: jobs,
-      };
-
-      return Promise.resolve(response);
+      //assign job
+      return this.assignJob(req);
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  public static async cancelJob(req: Request) {
+    try {
+      const { error } = Joi.object({
+        jobId: Joi.number().required().label('Job Id'),
+        client: Joi.string().required().label('Client'),
+      }).validate(req.body);
+
+      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+      //cancel job
+      await this.doCancelJob(req);
+
+      return Promise.resolve({
+        code: HttpStatus.OK.code,
+        message: 'Job canceled successfully.',
+      } as HttpResponse<void>);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  private static async doCancelJob(req: Request) {
+    const value = req.body;
+
+    const job = await dataSources.jobDAOService.findById(value.jobId);
+
+    if (!job) throw new Error(`Job does not exist`);
+
+    let driverSub: RideShareDriverSubscription | null = null;
+    let customerSub: CustomerSubscription | null = null;
+
+    const technician = await job.$get('technician');
+    const vehicle = await job.$get('vehicle');
+
+    if (!technician) throw new Error(`Technician does not exist`);
+    if (!vehicle) throw new Error(`Vehicle does not exist`);
+
+    if (value.client === 'Driver') driverSub = await job.$get('rideShareDriverSubscription');
+
+    if (value.client === 'Customer') customerSub = await job.$get('customerSubscription');
+
+    if (driverSub) {
+      await driverSub.$remove('jobs', [job]);
+      await driverSub.update({
+        driveInCount: driverSub.driveInCount--,
+        mobileCount: driverSub.mobileCount--,
+      });
+      //update vehicle job status
+      if (driverSub.programme.match(new RegExp('inspection', 'i'))?.input)
+        await vehicle.update({ onInspection: false });
+
+      if (driverSub.programme.match(new RegExp('maintenance', 'i'))?.input)
+        await vehicle.update({ onMaintenance: false });
+    }
+
+    if (customerSub) {
+      await customerSub.$remove('jobs', [job]);
+      await customerSub.update({
+        driveInCount: customerSub.driveInCount--,
+        mobileCount: customerSub.mobileCount--,
+      });
+      //update vehicle job status
+      if (customerSub.programme.match(new RegExp('inspection', 'i'))?.input)
+        await vehicle.update({ onInspection: false });
+
+      if (customerSub.programme.match(new RegExp('maintenance', 'i'))?.input)
+        await vehicle.update({ onMaintenance: false });
+    }
+
+    await technician.update({
+      hasJob: false,
+    });
+
+    await technician.$remove('jobs', [job]);
+    await vehicle.$remove('jobs', [job]);
+    await job.update({
+      status: JOB_STATUS.canceled,
+    });
   }
 
   public static async approveJobCheckList(req: Request) {

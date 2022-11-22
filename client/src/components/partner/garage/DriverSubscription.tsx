@@ -38,6 +38,8 @@ interface IAssignJob {
   subscriptionId?: number;
   techId?: number;
   checkListId?: number;
+  jobId?: number;
+  client?: string;
 }
 
 function DriverSubscription() {
@@ -152,6 +154,8 @@ function DriverSubscription() {
       techId: +value,
       subscriptionId: driverSub?.id,
       checkListId: checkList,
+      jobId: undefined,
+      client: 'Driver',
     };
 
     dispatch(driverAssignJobAction(data));

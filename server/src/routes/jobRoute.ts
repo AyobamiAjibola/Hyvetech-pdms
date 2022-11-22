@@ -21,6 +21,21 @@ export const assignCustomerJobHandler = authenticateRouteWrapper(async (req, res
   res.status(response.code).json(response);
 });
 
+export const assignJobHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.assignJob(req);
+  res.status(response.code).json(response);
+});
+
+export const reassignJobHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.reassignJob(req);
+  res.status(response.code).json(response);
+});
+
+export const cancelJobHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.cancelJob(req);
+  res.status(response.code).json(response);
+});
+
 export const approveJobCheckListHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await JobController.approveJobCheckList(req);
   res.status(response.code).json(response);

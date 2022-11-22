@@ -1,11 +1,14 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { Dispatch, FC, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { TechniciansPageContext } from './TechniciansPage';
 import { TechniciansPageContextProps } from '@app-interfaces';
 import {
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
+  DialogActions,
+  DialogContentText,
   Divider,
   Grid,
   LinearProgress,
@@ -16,26 +19,73 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { PlaylistAddCheck, Visibility } from '@mui/icons-material';
+import { AssignmentInd, Cancel, PlaylistAddCheck, Visibility } from '@mui/icons-material';
 import { IJob } from '@app-models';
 import useAdmin from '../../hooks/useAdmin';
-import { JOB_STATUS } from '../../config/constants';
+import { JOB_STATUS, MESSAGES } from '../../config/constants';
 import moment from 'moment';
 import AppModal from '../../components/modal/AppModal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import { cancelJobAction } from '../../store/actions/jobActions';
+import AppLoader from '../../components/loader/AppLoader';
+import useAppSelector from '../../hooks/useAppSelector';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../../components/alerts/AppAlert';
+import { getPartnerTechniciansAction, getTechniciansAction } from '../../store/actions/technicianActions';
 
-function TechnicianPage() {
+interface Props {
+  setShow?: Dispatch<SetStateAction<boolean>>;
+}
+
+const TechnicianPage: FC<Props> = ({ setShow }) => {
+  const [cancelJob, setCancelJob] = useState<boolean>(false);
+  const [jobId, setJobId] = useState<number>();
+  const [success, setSuccess] = useState<CustomHookMessage>();
+  const [error, setError] = useState<CustomHookMessage>();
+
   const admin = useAdmin();
 
   const { detail, setShowViewJob, showViewJob, job, setJob } = useContext(
     TechniciansPageContext,
   ) as TechniciansPageContextProps;
 
+  const params = useParams();
   const navigate = useNavigate();
+
+  const jobReducer = useAppSelector(state => state.jobReducer);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    let timer: NodeJS.Timer;
+
+    if (jobReducer.cancelJobStatus === 'completed') {
+      setSuccess({ message: jobReducer.cancelJobSuccess });
+
+      if (params.id) {
+        dispatch(getPartnerTechniciansAction(+params.id));
+      } else dispatch(getTechniciansAction());
+
+      timer = setTimeout(() => {
+        if (setShow) setShow(false);
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [dispatch, jobReducer.cancelJobStatus, jobReducer.cancelJobSuccess, params.id, setShow]);
+
+  useEffect(() => {
+    if (jobReducer.cancelJobStatus === 'failed') {
+      if (jobReducer.cancelJobError) setError({ message: jobReducer.cancelJobError });
+    }
+  }, [jobReducer.cancelJobError, jobReducer.cancelJobStatus]);
 
   const jobStatusCount = useMemo(() => {
     let pending = 0,
@@ -58,6 +108,30 @@ function TechnicianPage() {
     },
     [setJob, setShowViewJob],
   );
+
+  const onCancelJob = useCallback(
+    (job: IJob) => {
+      setJobId(job.id);
+      setJob(job);
+      setCancelJob(true);
+    },
+    [setJob],
+  );
+
+  const handleCancelJob = () => {
+    if (jobId && job) {
+      setCancelJob(false);
+      dispatch(
+        cancelJobAction({
+          partnerId: job.partnerId,
+          data: {
+            jobId,
+            client: 'Driver',
+          },
+        }),
+      );
+    }
+  };
 
   const handleViewJobCheckList = useCallback(
     (job: IJob) => navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
@@ -138,13 +212,18 @@ function TechnicianPage() {
         type: 'actions',
         headerAlign: 'center',
         align: 'center',
-        getActions: (params: any) => {
+        width: 200,
+        getActions: (params: { row: IJob }) => {
           const job = params.row;
 
           return [
             <GridActionsCellItem
               key={0}
-              icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+              icon={
+                <Tooltip title="view job">
+                  <Visibility sx={{ color: 'dodgerblue' }} />
+                </Tooltip>
+              }
               onClick={() => handleView(params.row)}
               label="View"
               showInMenu={false}
@@ -153,7 +232,11 @@ function TechnicianPage() {
             <GridActionsCellItem
               hidden={!admin.isTechAdmin}
               key={1}
-              icon={<PlaylistAddCheck sx={{ color: 'limegreen' }} />}
+              icon={
+                <Tooltip title="view report">
+                  <PlaylistAddCheck sx={{ color: 'limegreen' }} />
+                </Tooltip>
+              }
               onClick={() => handleViewJobCheckList(params.row)}
               label="Edit"
               showInMenu={false}
@@ -161,11 +244,33 @@ function TechnicianPage() {
                 display: job.status === JOB_STATUS.complete ? 'block' : 'none',
               }}
             />,
+            <GridActionsCellItem
+              key={2}
+              icon={
+                <Tooltip title="reassign job">
+                  <AssignmentInd sx={{ color: 'yellowgreen' }} />
+                </Tooltip>
+              }
+              onClick={console.log}
+              label="View"
+              showInMenu={false}
+            />,
+            <GridActionsCellItem
+              key={3}
+              icon={
+                <Tooltip title="cancel job">
+                  <Cancel sx={{ color: 'orangered' }} />
+                </Tooltip>
+              }
+              onClick={() => onCancelJob(job)}
+              label="View"
+              showInMenu={false}
+            />,
           ];
         },
       },
     ] as GridColDef<IJob>[];
-  }, [admin.isTechAdmin, handleView, handleViewJobCheckList]);
+  }, [admin.isTechAdmin, handleView, handleViewJobCheckList, onCancelJob]);
 
   return (
     <React.Fragment>
@@ -256,7 +361,7 @@ function TechnicianPage() {
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Date</TableCell>
-                    <TableCell component="td">{moment(job.jobDate).format('LLL')}</TableCell>
+                    <TableCell component="td">{job.jobDate ? moment(job.jobDate).format('LLL') : '-'}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell component="th">Client</TableCell>
@@ -275,8 +380,33 @@ function TechnicianPage() {
         }
         onClose={() => setShowViewJob(false)}
       />
+      <AppModal
+        fullWidth
+        show={cancelJob}
+        Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => setCancelJob(false)}>Disagree</Button>
+            <Button onClick={() => handleCancelJob()}>Agree</Button>
+          </DialogActions>
+        }
+        onClose={() => setCancelJob(false)}
+      />
+      <AppAlert
+        alertType="error"
+        show={undefined !== error}
+        message={error?.message}
+        onClose={() => setError(undefined)}
+      />
+      <AppAlert
+        alertType="success"
+        show={undefined !== success}
+        message={success?.message}
+        onClose={() => setSuccess(undefined)}
+      />
+      <AppLoader show={jobReducer.cancelJobStatus === 'loading'} />
     </React.Fragment>
   );
-}
+};
 
 export default TechnicianPage;

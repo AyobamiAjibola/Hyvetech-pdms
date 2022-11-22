@@ -94,6 +94,9 @@ export default class Vehicle extends Model<InferAttributes<Vehicle>, InferCreati
   declare thirdPartyInsuranceFileUrl: string;
 
   @Column(DataType.STRING)
+  declare hackneyFileUrl: string;
+
+  @Column(DataType.STRING)
   declare frontImageUrl: string;
 
   @Column(DataType.STRING)
