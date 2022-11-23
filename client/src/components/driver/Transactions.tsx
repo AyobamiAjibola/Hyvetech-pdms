@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Chip, Stack } from '@mui/material';
-import { DriverPageContext } from '../../pages/driver/DriverPage';
 import { DriverPageContextProps } from '@app-interfaces';
 import useAppSelector from '../../hooks/useAppSelector';
 import useAppDispatch from '../../hooks/useAppDispatch';
@@ -12,6 +11,7 @@ import moment from 'moment';
 import { Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { MESSAGES } from '../../config/constants';
+import DriverPageContext from '../../context/DriverPageContext';
 
 function Transactions() {
   const [_transactions, _setTransactions] = useState<ITransaction[]>([]);

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Chip, Stack } from '@mui/material';
-import { DriverPageContext } from '../../pages/driver/DriverPage';
 import { DriverPageContextProps } from '@app-interfaces';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
@@ -11,6 +10,7 @@ import AppDataGrid from '../tables/AppDataGrid';
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import DriverPageContext from '../../context/DriverPageContext';
 
 function Vehicles() {
   const [_vehicles, _setVehicles] = useState<IVehicle[]>([]);

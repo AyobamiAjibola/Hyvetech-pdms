@@ -7,7 +7,8 @@ import CustomerVehicles from '../components/customer/Vehicles';
 import DriverQuotes from '../components/driver/Quotes';
 import DriverTransactions from '../components/driver/Transactions';
 import DriverVehicles from '../components/driver/Vehicles';
-import DriverProfile from '../components/partner/garage/DriverProfile';
+import GarageDriverProfile from '../components/partner/garage/DriverProfile';
+import DriverProfile from '../components/driver/Profile';
 import GarageVehicles from '../components/partner/garage/DriverVehicles';
 import OwnerVehicles from '../components/partner/garage/CustomerVehicles';
 import GarageProfileAndSetting from '../components/partner/garage/GarageProfileAndSetting';
@@ -28,6 +29,7 @@ export const customerDetailTabs: ITab[] = [
 ];
 
 export const driverDetailTabs: ITab[] = [
+  { name: 'Profile', Element: DriverProfile },
   { name: 'Vehicles', Element: DriverVehicles },
   { name: 'Transactions', Element: DriverTransactions },
   { name: 'Estimates', Element: DriverQuotes },
@@ -68,12 +70,12 @@ export const partnerDetailTabs: ITab[] = [
 ];
 
 export const driverSearchResultTabs: ITab[] = [
-  { tag: 'driver', name: 'Driver Profile', Element: DriverProfile },
+  { tag: 'driver', name: 'Driver Profile', Element: GarageDriverProfile },
   { tag: 'driver', name: 'Vehicles', Element: GarageVehicles },
 ];
 
 export const customerSearchResultTabs: ITab[] = [
-  { tag: 'driver', name: 'Driver Profile', Element: DriverProfile },
+  { tag: 'driver', name: 'Driver Profile', Element: GarageDriverProfile },
   { tag: 'driver', name: 'Vehicles', Element: OwnerVehicles },
   { tag: 'driver', name: 'Create Estimate', Element: Estimate },
 ];

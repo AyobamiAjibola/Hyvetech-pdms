@@ -1,13 +1,12 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IRideShareDriver } from '@app-models';
 import { useLocation } from 'react-router-dom';
 import { Divider, Paper, Stack } from '@mui/material';
 import CustomerTab from '../../components/tabs/CustomerTab';
 import { driverDetailTabs } from '../../navigation/menus';
-import { DriverPageContextProps, ILocationState, ITab } from '@app-interfaces';
+import { ILocationState, ITab } from '@app-interfaces';
 import useAdmin from '../../hooks/useAdmin';
-
-export const DriverPageContext = createContext<DriverPageContextProps | null>(null);
+import DriverPageContext from '../../context/DriverPageContext';
 
 function DriverPage() {
   const [driver, setDriver] = useState<IRideShareDriver>();
