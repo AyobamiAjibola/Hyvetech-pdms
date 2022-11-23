@@ -262,6 +262,8 @@ export default class TechnicianController {
         });
       }
 
+      technicians = this.formatTechniciansQueryResult(technicians);
+
       const response: HttpResponse<Technician> = {
         code: HttpStatus.OK.code,
         message: HttpStatus.OK.value,
@@ -286,16 +288,29 @@ export default class TechnicianController {
         attributes: { exclude: ['password', 'loginToken', 'rawPassword'] },
         include: [{ model: Job, include: [Vehicle] }],
       });
-      const response: HttpResponse<Technician> = {
+
+      const result = this.formatTechniciansQueryResult(technicians);
+
+      const response: HttpResponse<any> = {
         code: HttpStatus.OK.code,
         message: HttpStatus.OK.value,
-        results: technicians,
+        results: result,
       };
 
       return Promise.resolve(response);
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  private formatTechniciansQueryResult(technicians: Technician[]) {
+    return technicians.map(technician => {
+      technician.jobs = technician.jobs.map(job => {
+        job.checkList = JSON.parse(job.checkList);
+        return job;
+      });
+      return technician;
+    });
   }
 
   public async signIn(req: Request) {

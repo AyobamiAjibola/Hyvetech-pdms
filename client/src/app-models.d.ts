@@ -203,6 +203,8 @@ declare module '@app-models' {
     vehicle: IVehicle;
     rideShareDriverSubscription: IRideShareDriverSubscription;
     customerSubscription: ICustomerSubscription;
+    rideShareDriverSubscriptionId: number;
+    customerSubscriptionId: number;
     technician: ITechnician;
     checkList: CheckListType;
     checkLists: ICheckList[];

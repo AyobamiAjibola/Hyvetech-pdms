@@ -247,7 +247,7 @@ export default class JobController {
 
     const response: HttpResponse<Job> = {
       code: HttpStatus.OK.code,
-      message: HttpStatus.OK.value,
+      message: `Assigned Job Successfully.`,
       results: jobs,
     };
 
@@ -350,7 +350,7 @@ export default class JobController {
 
     const response: HttpResponse<Job> = {
       code: HttpStatus.OK.code,
-      message: HttpStatus.OK.value,
+      message: `Assigned Job Successfully.`,
       results: jobs,
     };
 
@@ -424,8 +424,8 @@ export default class JobController {
     if (driverSub) {
       await driverSub.$remove('jobs', [job]);
       await driverSub.update({
-        driveInCount: driverSub.driveInCount--,
-        mobileCount: driverSub.mobileCount--,
+        driveInCount: --driverSub.driveInCount,
+        mobileCount: --driverSub.mobileCount,
       });
       //update vehicle job status
       if (driverSub.programme.match(new RegExp('inspection', 'i'))?.input)
@@ -438,8 +438,8 @@ export default class JobController {
     if (customerSub) {
       await customerSub.$remove('jobs', [job]);
       await customerSub.update({
-        driveInCount: customerSub.driveInCount--,
-        mobileCount: customerSub.mobileCount--,
+        driveInCount: --customerSub.driveInCount,
+        mobileCount: --customerSub.mobileCount,
       });
       //update vehicle job status
       if (customerSub.programme.match(new RegExp('inspection', 'i'))?.input)

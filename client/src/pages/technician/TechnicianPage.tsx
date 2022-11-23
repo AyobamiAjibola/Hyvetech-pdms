@@ -2,6 +2,7 @@ import React, { Dispatch, FC, SetStateAction, useCallback, useContext, useEffect
 import { TechniciansPageContext } from './TechniciansPage';
 import { TechniciansPageContextProps } from '@app-interfaces';
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -19,6 +20,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -32,12 +34,13 @@ import moment from 'moment';
 import AppModal from '../../components/modal/AppModal';
 import { useNavigate, useParams } from 'react-router-dom';
 import useAppDispatch from '../../hooks/useAppDispatch';
-import { cancelJobAction } from '../../store/actions/jobActions';
+import { cancelJobAction, reassignJobAction } from '../../store/actions/jobActions';
 import AppLoader from '../../components/loader/AppLoader';
 import useAppSelector from '../../hooks/useAppSelector';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../components/alerts/AppAlert';
 import { getPartnerTechniciansAction, getTechniciansAction } from '../../store/actions/technicianActions';
+import { ISelectData } from '../../components/forms/fields/SelectField';
 
 interface Props {
   setShow?: Dispatch<SetStateAction<boolean>>;
@@ -45,9 +48,11 @@ interface Props {
 
 const TechnicianPage: FC<Props> = ({ setShow }) => {
   const [cancelJob, setCancelJob] = useState<boolean>(false);
+  const [reassignJob, setReassignJob] = useState<boolean>(false);
   const [jobId, setJobId] = useState<number>();
   const [success, setSuccess] = useState<CustomHookMessage>();
   const [error, setError] = useState<CustomHookMessage>();
+  const [_technicians, _setTechnicians] = useState<ISelectData[]>([]);
 
   const admin = useAdmin();
 
@@ -59,7 +64,29 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
   const navigate = useNavigate();
 
   const jobReducer = useAppSelector(state => state.jobReducer);
+  const technicianReducer = useAppSelector(state => state.technicianReducer);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (technicianReducer.getTechniciansStatus === 'idle') {
+      if (params.id) {
+        dispatch(getPartnerTechniciansAction(+params.id));
+      } else dispatch(getTechniciansAction());
+    }
+  }, [dispatch, params.id, technicianReducer.getTechniciansStatus]);
+
+  useEffect(() => {
+    if (technicianReducer.getTechniciansStatus === 'completed') {
+      _setTechnicians(
+        technicianReducer.technicians
+          .filter(tech => !tech.hasJob && tech.active)
+          .map(tech => ({
+            label: `${tech.firstName} ${tech.lastName}`,
+            value: `${tech.id}`,
+          })),
+      );
+    }
+  }, [technicianReducer.getTechniciansStatus, technicianReducer.technicians]);
 
   useEffect(() => {
     let timer: NodeJS.Timer;
@@ -86,6 +113,32 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
       if (jobReducer.cancelJobError) setError({ message: jobReducer.cancelJobError });
     }
   }, [jobReducer.cancelJobError, jobReducer.cancelJobStatus]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timer;
+
+    if (jobReducer.reassignJobStatus === 'completed') {
+      setSuccess({ message: jobReducer.reassignJobSuccess });
+
+      if (params.id) {
+        dispatch(getPartnerTechniciansAction(+params.id));
+      } else dispatch(getTechniciansAction());
+
+      timer = setTimeout(() => {
+        if (setShow) setShow(false);
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [dispatch, jobReducer.reassignJobStatus, jobReducer.reassignJobSuccess, params.id, setShow]);
+
+  useEffect(() => {
+    if (jobReducer.reassignJobStatus === 'failed') {
+      if (jobReducer.reassignJobError) setError({ message: jobReducer.reassignJobError });
+    }
+  }, [jobReducer.reassignJobError, jobReducer.reassignJobStatus]);
 
   const jobStatusCount = useMemo(() => {
     let pending = 0,
@@ -118,6 +171,14 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
     [setJob],
   );
 
+  const onReassignJob = useCallback(
+    (job: IJob) => {
+      setJob(job);
+      setReassignJob(true);
+    },
+    [setJob],
+  );
+
   const handleCancelJob = () => {
     if (jobId && job) {
       setCancelJob(false);
@@ -137,6 +198,22 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
     (job: IJob) => navigate(`/job-check-list-report/${job.id}`, { state: { job } }),
     [navigate],
   );
+
+  const handleReassignJob = (value: string) => {
+    if (job && params.id) {
+      const data = {
+        partnerId: +params.id as unknown as string,
+        techId: +value,
+        subscriptionId: job.rideShareDriverSubscriptionId,
+        checkListId: job.checkList.id,
+        jobId: job.id,
+        client: 'Driver',
+      };
+
+      dispatch(reassignJobAction(data));
+    }
+    setReassignJob(false);
+  };
 
   const columns = useMemo(() => {
     return [
@@ -245,18 +322,19 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
               }}
             />,
             <GridActionsCellItem
+              sx={{ display: job.status === JOB_STATUS.complete ? 'none' : 'block' }}
               key={2}
               icon={
                 <Tooltip title="reassign job">
                   <AssignmentInd sx={{ color: 'yellowgreen' }} />
                 </Tooltip>
               }
-              onClick={console.log}
+              onClick={() => onReassignJob(job)}
               label="View"
               showInMenu={false}
             />,
             <GridActionsCellItem
-              hidden={job.status === JOB_STATUS.complete}
+              sx={{ display: job.status === JOB_STATUS.complete ? 'none' : 'block' }}
               key={3}
               icon={
                 <Tooltip title="cancel job">
@@ -271,7 +349,7 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
         },
       },
     ] as GridColDef<IJob>[];
-  }, [admin.isTechAdmin, handleView, handleViewJobCheckList, onCancelJob]);
+  }, [admin.isTechAdmin, handleView, handleViewJobCheckList, onCancelJob, onReassignJob]);
 
   return (
     <React.Fragment>
@@ -393,6 +471,23 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
         }
         onClose={() => setCancelJob(false)}
       />
+      <AppModal
+        fullWidth
+        size="sm"
+        show={reassignJob}
+        Content={
+          <Box sx={{ p: 1 }}>
+            <Autocomplete
+              options={_technicians}
+              onChange={(event, option) => {
+                if (option) handleReassignJob(option.value);
+              }}
+              renderInput={params => <TextField {...params} fullWidth label="Reassign To" />}
+            />
+          </Box>
+        }
+        onClose={() => setReassignJob(false)}
+      />
       <AppAlert
         alertType="error"
         show={undefined !== error}
@@ -406,6 +501,7 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
         onClose={() => setSuccess(undefined)}
       />
       <AppLoader show={jobReducer.cancelJobStatus === 'loading'} />
+      <AppLoader show={jobReducer.reassignJobStatus === 'loading'} />
     </React.Fragment>
   );
 };
