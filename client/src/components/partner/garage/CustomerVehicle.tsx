@@ -28,14 +28,14 @@ import { FaExpandAlt, FaGift } from 'react-icons/fa';
 import useAppSelector from '../../../hooks/useAppSelector';
 import useAppDispatch from '../../../hooks/useAppDispatch';
 import { getJobsAction } from '../../../store/actions/jobActions';
-import { getDriverVehicleSubscriptionAction } from '../../../store/actions/vehicleActions';
+import { getCustomerVehicleSubscriptionAction } from '../../../store/actions/vehicleActions';
 import settings from '../../../config/settings';
 import axiosClient from '../../../config/axiosClient';
 import AppModal from '../../modal/AppModal';
-import { DriverVehiclesContext } from './DriverVehicles';
-import { DriverVehiclesContextProps } from '@app-interfaces';
 import { APPOINTMENT_STATUS } from '../../../config/constants';
 import CustomerSubscription from './CustomerSubscription';
+import VehiclesContext from '../../../context/VehiclesContext';
+import { DriverVehiclesContextProps } from '@app-interfaces';
 
 interface ILocationState {
   vehicle?: IVehicle;
@@ -47,15 +47,15 @@ export default function CustomerVehicle(props: ILocationState) {
   const [viewImage, setViewImage] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>();
 
-  const { setCustomerSub, vehicle, setVehicle, viewSub, setViewSub } = useContext(
-    DriverVehiclesContext,
-  ) as DriverVehiclesContextProps;
-
   const params = useParams();
 
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
   const jobReducer = useAppSelector(state => state.jobReducer);
   const dispatch = useAppDispatch();
+
+  const { setCustomerSub, vehicle, setVehicle, setViewSub, viewSub } = useContext(
+    VehiclesContext,
+  ) as DriverVehiclesContextProps;
 
   const location = useLocation();
 
@@ -68,10 +68,10 @@ export default function CustomerVehicle(props: ILocationState) {
   }, [dispatch, jobReducer.getJobsStatus, params.id]);
 
   useEffect(() => {
-    if (vehicleReducer.getDriverVehicleSubscriptionStatus === 'completed') {
-      // console.log(vehicleReducer.driverSubscriptions);
+    if (vehicleReducer.getCustomerVehicleSubscriptionStatus === 'completed') {
+      //console.log(vehicleReducer.customerSubscriptions);
     }
-  }, [vehicleReducer.driverSubscriptions, vehicleReducer.getDriverVehicleSubscriptionStatus]);
+  }, [vehicleReducer.customerSubscriptions, vehicleReducer.getCustomerVehicleSubscriptionStatus]);
 
   useEffect(() => {
     if (location.state) {
@@ -79,14 +79,14 @@ export default function CustomerVehicle(props: ILocationState) {
 
       if (state.vehicle) {
         setVehicle(state.vehicle);
-        dispatch(getDriverVehicleSubscriptionAction(state.vehicle.id));
+        dispatch(getCustomerVehicleSubscriptionAction(state.vehicle.id));
       }
     }
 
     if (vehicle) {
-      dispatch(getDriverVehicleSubscriptionAction(vehicle.id));
+      dispatch(getCustomerVehicleSubscriptionAction(vehicle.id));
     }
-  }, [dispatch, location.state, props.isCustomer, props.isDriver, setVehicle, vehicle]);
+  }, [dispatch, location.state, setVehicle, vehicle]);
 
   const handleViewImage = async (file: string) => {
     file = `${settings.api.driverBaseURL}/${file}`;

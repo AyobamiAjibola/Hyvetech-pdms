@@ -33,9 +33,9 @@ import settings from '../../../config/settings';
 import axiosClient from '../../../config/axiosClient';
 import AppModal from '../../modal/AppModal';
 import DriverSubscription from './DriverSubscription';
-import { DriverVehiclesContext } from './DriverVehicles';
 import { DriverVehiclesContextProps } from '@app-interfaces';
 import { APPOINTMENT_STATUS } from '../../../config/constants';
+import VehiclesContext from '../../../context/VehiclesContext';
 
 interface ILocationState {
   vehicle?: IVehicle;
@@ -48,7 +48,7 @@ export default function DriverVehicle(props: ILocationState) {
   const [imageUrl, setImageUrl] = useState<string>();
 
   const { setDriverSub, vehicle, setVehicle, viewSub, setViewSub } = useContext(
-    DriverVehiclesContext,
+    VehiclesContext,
   ) as DriverVehiclesContextProps;
 
   const params = useParams();

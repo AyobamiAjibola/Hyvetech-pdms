@@ -24,6 +24,7 @@ import { customerSearchResultTabs } from '../../../navigation/menus';
 import { CustomerPageContext } from '../../../pages/customer/CustomerPage';
 import { clearGetOwnersFilterDataStatus } from '../../../store/reducers/partnerReducer';
 import { clearGetCustomersStatus } from '../../../store/reducers/customerReducer';
+import { reload } from '../../../utils/generic';
 
 const filterOptions = createFilterOptions({
   matchFrom: 'any',
@@ -101,7 +102,10 @@ export default function VehicleOwner() {
               }}
               onInputChange={(event, newInputValue, reason) => {
                 setInputValue(newInputValue);
-                if (reason === 'clear') setCustomer(undefined);
+                if (reason === 'clear') {
+                  setCustomer(undefined);
+                  reload();
+                }
               }}
               renderInput={props => (
                 <TextField

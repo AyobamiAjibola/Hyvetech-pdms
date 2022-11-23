@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import capitalize from 'capitalize';
 import { ICheckList, IJob } from '@app-models';
-import { DriverVehiclesContext } from './DriverVehicles';
 import useAppSelector from '../../../hooks/useAppSelector';
 import { formatNumberToIntl } from '../../../utils/generic';
 import useTechnician from '../../../hooks/useTechnician';
@@ -32,6 +31,7 @@ import { getTechniciansAction } from '../../../store/actions/technicianActions';
 import { getDriverVehicleSubscriptionAction } from '../../../store/actions/vehicleActions';
 import useAdmin from '../../../hooks/useAdmin';
 import { JOB_STATUS } from '../../../config/constants';
+import VehiclesContext from '../../../context/VehiclesContext';
 
 interface IAssignJob {
   partnerId?: number;
@@ -47,7 +47,7 @@ export default function CustomerSubscription() {
   const [checkLists, setCheckLists] = useState<ICheckList[]>([]);
   const [checkList, setCheckList] = useState<number>();
 
-  const { customerSub, vehicle, setViewSub } = useContext(DriverVehiclesContext) as DriverVehiclesContextProps;
+  const { customerSub, vehicle, setViewSub } = useContext(VehiclesContext) as DriverVehiclesContextProps;
 
   const navigate = useNavigate();
   useTechnician();

@@ -1,16 +1,14 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useAppSelector from '../../../hooks/useAppSelector';
 import { ICustomerSubscription, IRideShareDriverSubscription, IVehicle } from '@app-models';
 import { Avatar, Box, IconButton, LinearProgress, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { FaCarAlt, FaExpandAlt } from 'react-icons/fa';
 import AppModal from '../../modal/AppModal';
-import { DriverVehiclesContextProps } from '@app-interfaces';
 import { clearDriverAssignJobStatus, clearGetJobsStatus } from '../../../store/reducers/jobReducer';
 import useAppDispatch from '../../../hooks/useAppDispatch';
 import { getCheckListsAction } from '../../../store/actions/checkListActions';
 import CustomerVehicle from './CustomerVehicle';
-
-export const DriverVehiclesContext = createContext<DriverVehiclesContextProps | null>(null);
+import VehiclesContext from '../../../context/VehiclesContext';
 
 export default function CustomerVehicles() {
   const [vehicle, setVehicle] = useState<IVehicle | null>(null);
@@ -51,7 +49,7 @@ export default function CustomerVehicles() {
   };
 
   return (
-    <DriverVehiclesContext.Provider
+    <VehiclesContext.Provider
       value={{
         viewSub,
         setViewSub,
@@ -107,6 +105,6 @@ export default function CustomerVehicles() {
         Content={vehicle ? <CustomerVehicle /> : <LinearProgress />}
         onClose={() => setOpenViewVehicle(false)}
       />
-    </DriverVehiclesContext.Provider>
+    </VehiclesContext.Provider>
   );
 }

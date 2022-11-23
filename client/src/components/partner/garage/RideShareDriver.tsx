@@ -22,6 +22,7 @@ import AppLoader from '../../loader/AppLoader';
 import AppTab from '../../tabs/AppTab';
 import { driverSearchResultTabs } from '../../../navigation/menus';
 import useAdmin from '../../../hooks/useAdmin';
+import { reload } from '../../../utils/generic';
 
 const filterOptions = createFilterOptions({
   matchFrom: 'any',
@@ -102,7 +103,10 @@ function RideShareDriver() {
               }}
               onInputChange={(event, newInputValue, reason) => {
                 setInputValue(newInputValue);
-                if (reason === 'clear') setDriver(null);
+                if (reason === 'clear') {
+                  setDriver(null);
+                  reload();
+                }
               }}
               renderInput={props => (
                 <TextField

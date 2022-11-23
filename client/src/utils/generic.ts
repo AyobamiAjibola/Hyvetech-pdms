@@ -97,3 +97,7 @@ export function getImageUrl(imageUrl: any) {
 
   return `${settings.api.baseURL}/${imageUrl}`;
 }
+
+export function reload() {
+  window.location.reload();
+}
