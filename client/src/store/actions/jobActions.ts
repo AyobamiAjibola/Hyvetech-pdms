@@ -11,6 +11,7 @@ const ASSIGN_JOB = 'jobs:ASSIGN_JOB';
 const CANCEL_JOB = 'jobs:CANCEL_JOB';
 const REASSIGN_JOB = 'jobs:REASSIGN_JOB';
 const APPROVE_JOB_CHECK_LIST = 'check_list:APPROVE_JOB_CHECK_LIST';
+const UPLOAD_JOB_REPORT = 'check_list:UPLOAD_JOB_REPORT';
 const API_ROOT = settings.api.rest;
 
 export const getJobsAction = asyncThunkWrapper<ApiResponseSuccess<IJob>, any>(GET_JOBS, async partnerId => {
@@ -50,5 +51,23 @@ export const approveJobCheckListAction = asyncThunkWrapper<
   { jobId: number; approved: boolean }
 >(APPROVE_JOB_CHECK_LIST, async args => {
   const response = await axiosClient.patch(`${API_ROOT}/jobs/${args.jobId}/checkList`, args);
+  return response.data;
+});
+
+export const uploadJobReportAction = asyncThunkWrapper<
+  ApiResponseSuccess<void>,
+  {
+    file: any;
+    jobId?: number;
+  }
+>(UPLOAD_JOB_REPORT, async args => {
+  const formData = new FormData();
+
+  formData.append('reportFileUrl', args.file);
+
+  axiosClient.defaults.headers.post['Content-Type'] = args.file.type;
+
+  const response = await axiosClient.patch(`${API_ROOT}/jobs/${args.jobId}/upload-report`, formData);
+
   return response.data;
 });

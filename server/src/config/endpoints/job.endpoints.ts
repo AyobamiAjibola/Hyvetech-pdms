@@ -8,6 +8,7 @@ import {
   getJobsHandler,
   reassignJobHandler,
   updateJobVehicleHandler,
+  uploadJobReportHandler,
 } from '../../routes/jobRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -66,6 +67,12 @@ const jobEndpoints: RouteEndpoints = [
     method: 'patch',
     path: '/jobs/:jobId/vehicle',
     handler: updateJobVehicleHandler,
+  },
+  {
+    name: 'jobs',
+    method: 'patch',
+    path: '/jobs/:jobId/upload-report',
+    handler: uploadJobReportHandler,
   },
 ];
 

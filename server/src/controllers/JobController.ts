@@ -401,65 +401,6 @@ export default class JobController {
     }
   }
 
-  private static async doCancelJob(req: Request) {
-    const value = req.body;
-
-    const job = await dataSources.jobDAOService.findById(value.jobId);
-
-    if (!job) throw new Error(`Job does not exist`);
-
-    let driverSub: RideShareDriverSubscription | null = null;
-    let customerSub: CustomerSubscription | null = null;
-
-    const technician = await job.$get('technician');
-    const vehicle = await job.$get('vehicle');
-
-    if (!technician) throw new Error(`Technician does not exist`);
-    if (!vehicle) throw new Error(`Vehicle does not exist`);
-
-    if (value.client === 'Driver') driverSub = await job.$get('rideShareDriverSubscription');
-
-    if (value.client === 'Customer') customerSub = await job.$get('customerSubscription');
-
-    if (driverSub) {
-      await driverSub.$remove('jobs', [job]);
-      await driverSub.update({
-        driveInCount: --driverSub.driveInCount,
-        mobileCount: --driverSub.mobileCount,
-      });
-      //update vehicle job status
-      if (driverSub.programme.match(new RegExp('inspection', 'i'))?.input)
-        await vehicle.update({ onInspection: false });
-
-      if (driverSub.programme.match(new RegExp('maintenance', 'i'))?.input)
-        await vehicle.update({ onMaintenance: false });
-    }
-
-    if (customerSub) {
-      await customerSub.$remove('jobs', [job]);
-      await customerSub.update({
-        driveInCount: --customerSub.driveInCount,
-        mobileCount: --customerSub.mobileCount,
-      });
-      //update vehicle job status
-      if (customerSub.programme.match(new RegExp('inspection', 'i'))?.input)
-        await vehicle.update({ onInspection: false });
-
-      if (customerSub.programme.match(new RegExp('maintenance', 'i'))?.input)
-        await vehicle.update({ onMaintenance: false });
-    }
-
-    await technician.update({
-      hasJob: false,
-    });
-
-    await technician.$remove('jobs', [job]);
-    await vehicle.$remove('jobs', [job]);
-    await job.update({
-      status: JOB_STATUS.canceled,
-    });
-  }
-
   public static async approveJobCheckList(req: Request) {
     const jobId = req.params.jobId as string;
 
@@ -592,6 +533,107 @@ export default class JobController {
           return reject(e);
         }
       });
+    });
+  }
+
+  public static async uploadJobReport(req: Request): Promise<HttpResponse<void>> {
+    const jobId = req.params.jobId as string;
+
+    return new Promise((resolve, reject) => {
+      form.parse(req, async (err, fields, files) => {
+        try {
+          if (err) return reject(CustomAPIError.response(err, HttpStatus.BAD_REQUEST.code));
+
+          const job = await dataSources.jobDAOService.findById(+jobId);
+
+          if (!job) return reject(CustomAPIError.response(`Job does not exist`, HttpStatus.NOT_FOUND.code));
+
+          if (!job.reportFileUrl) {
+            const basePath = `${UPLOAD_BASE_PATH}/reports`;
+            const jobUpdateData = {};
+
+            for (const file of Object.keys(files)) {
+              const { originalFilename, filepath } = files[file] as File;
+
+              Object.assign(jobUpdateData, {
+                [file]: await Generic.getImagePath({
+                  basePath,
+                  tempPath: filepath,
+                  filename: <string>originalFilename,
+                }),
+              });
+            }
+
+            await job.update(jobUpdateData);
+          }
+
+          return resolve({
+            code: HttpStatus.OK.code,
+            message: HttpStatus.OK.value,
+          } as HttpResponse<void>);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
+
+  private static async doCancelJob(req: Request) {
+    const value = req.body;
+
+    const job = await dataSources.jobDAOService.findById(value.jobId);
+
+    if (!job) throw new Error(`Job does not exist`);
+
+    let driverSub: RideShareDriverSubscription | null = null;
+    let customerSub: CustomerSubscription | null = null;
+
+    const technician = await job.$get('technician');
+    const vehicle = await job.$get('vehicle');
+
+    if (!technician) throw new Error(`Technician does not exist`);
+    if (!vehicle) throw new Error(`Vehicle does not exist`);
+
+    if (value.client === 'Driver') driverSub = await job.$get('rideShareDriverSubscription');
+
+    if (value.client === 'Customer') customerSub = await job.$get('customerSubscription');
+
+    if (driverSub) {
+      await driverSub.$remove('jobs', [job]);
+      await driverSub.update({
+        driveInCount: --driverSub.driveInCount,
+        mobileCount: --driverSub.mobileCount,
+      });
+      //update vehicle job status
+      if (driverSub.programme.match(new RegExp('inspection', 'i'))?.input)
+        await vehicle.update({ onInspection: false });
+
+      if (driverSub.programme.match(new RegExp('maintenance', 'i'))?.input)
+        await vehicle.update({ onMaintenance: false });
+    }
+
+    if (customerSub) {
+      await customerSub.$remove('jobs', [job]);
+      await customerSub.update({
+        driveInCount: --customerSub.driveInCount,
+        mobileCount: --customerSub.mobileCount,
+      });
+      //update vehicle job status
+      if (customerSub.programme.match(new RegExp('inspection', 'i'))?.input)
+        await vehicle.update({ onInspection: false });
+
+      if (customerSub.programme.match(new RegExp('maintenance', 'i'))?.input)
+        await vehicle.update({ onMaintenance: false });
+    }
+
+    await technician.update({
+      hasJob: false,
+    });
+
+    await technician.$remove('jobs', [job]);
+    await vehicle.$remove('jobs', [job]);
+    await job.update({
+      status: JOB_STATUS.canceled,
     });
   }
 

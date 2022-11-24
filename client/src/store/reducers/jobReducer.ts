@@ -8,6 +8,7 @@ import {
   getJobAction,
   getJobsAction,
   reassignJobAction,
+  uploadJobReportAction,
 } from '../actions/jobActions';
 
 interface IJobState {
@@ -22,6 +23,10 @@ interface IJobState {
   driverAssignJobStatus: IThunkAPIStatus;
   driverAssignJobSuccess: string;
   driverAssignJobError?: string;
+
+  uploadJobReportStatus: IThunkAPIStatus;
+  uploadJobReportSuccess: string;
+  uploadJobReportError?: string;
 
   reassignJobStatus: IThunkAPIStatus;
   reassignJobSuccess: string;
@@ -43,6 +48,10 @@ const initialState: IJobState = {
   driverAssignJobError: '',
   driverAssignJobStatus: 'idle',
   driverAssignJobSuccess: '',
+
+  uploadJobReportError: '',
+  uploadJobReportStatus: 'idle',
+  uploadJobReportSuccess: '',
 
   cancelJobError: '',
   cancelJobStatus: 'idle',
@@ -100,6 +109,11 @@ const jobSlice = createSlice({
       state.approveJobCheckListStatus = 'idle';
       state.approveJobCheckListSuccess = '';
       state.approveJobCheckListError = '';
+    },
+    clearUploadJobReportStatus(state: IJobState) {
+      state.uploadJobReportStatus = 'idle';
+      state.uploadJobReportSuccess = '';
+      state.uploadJobReportError = '';
     },
   },
   extraReducers: builder => {
@@ -204,6 +218,22 @@ const jobSlice = createSlice({
           state.approveJobCheckListError = action.payload.message;
         } else state.approveJobCheckListError = action.error.message;
       });
+
+    builder
+      .addCase(uploadJobReportAction.pending, state => {
+        state.uploadJobReportStatus = 'loading';
+      })
+      .addCase(uploadJobReportAction.fulfilled, (state, action) => {
+        state.uploadJobReportStatus = 'completed';
+        state.uploadJobReportSuccess = action.payload.message;
+      })
+      .addCase(uploadJobReportAction.rejected, (state, action) => {
+        state.uploadJobReportStatus = 'failed';
+
+        if (action.payload) {
+          state.uploadJobReportError = action.payload.message;
+        } else state.uploadJobReportError = action.error.message;
+      });
   },
 });
 
@@ -214,5 +244,6 @@ export const {
   clearApproveJobCheckListStatus,
   clearCancelJobStatus,
   clearReassignJobStatus,
+  clearUploadJobReportStatus,
 } = jobSlice.actions;
 export default jobSlice.reducer;

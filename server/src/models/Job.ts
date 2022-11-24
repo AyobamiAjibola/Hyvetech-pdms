@@ -59,6 +59,9 @@ export default class Job extends Model<InferAttributes<Job>, InferCreationAttrib
   @Column(DataType.STRING(50000))
   declare checkList: string;
 
+  @Column(DataType.STRING)
+  declare reportFileUrl: string;
+
   @BelongsTo(() => Technician, { onDelete: 'cascade' })
   declare technician: NonAttribute<Technician>;
 

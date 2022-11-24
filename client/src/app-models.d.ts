@@ -130,6 +130,7 @@ declare module '@app-models' {
     appointmentId: number;
     subscription: ICustomerSubscription;
     customerSubscriptionId: number;
+    jobs: IJob[];
     tags: ITag;
     createdAt: Date;
     updatedAt: Date;
@@ -217,6 +218,7 @@ declare module '@app-models' {
     leftSideImageUrl: string;
     engineBayImageUrl: string;
     instrumentClusterImageUrl: string;
+    reportFileUrl: string;
     partner: IPartner;
     partnerId: number;
     createdAt: Date;

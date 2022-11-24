@@ -45,3 +45,8 @@ export const updateJobVehicleHandler = authenticateRouteWrapper(async (req, res)
   const response = await JobController.updateJobVehicle(req);
   res.status(response.code).json(response);
 });
+
+export const uploadJobReportHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await JobController.uploadJobReport(req);
+  res.status(response.code).json(response);
+});

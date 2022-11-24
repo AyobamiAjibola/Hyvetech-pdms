@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import useAppSelector from '../../hooks/useAppSelector';
 import useAppDispatch from '../../hooks/useAppDispatch';
-import { approveJobCheckListAction, getJobAction } from '../../store/actions/jobActions';
+import { approveJobCheckListAction, getJobAction, uploadJobReportAction } from '../../store/actions/jobActions';
 import { IJob } from '@app-models';
 import { useLocation } from 'react-router-dom';
 import {
@@ -30,7 +30,7 @@ import settings from '../../config/settings';
 import { CheckListAnswerType, CheckListQuestionType, CheckListSectionType, CustomHookMessage } from '@app-types';
 import checkListVectorImg from '../../assets/images/check-list-vector.png';
 import { AccessTime, LocationOn, Print, Today } from '@mui/icons-material';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { useReactToPrint } from 'react-to-print';
 import useAdmin from '../../hooks/useAdmin';
 import AppLoader from '../../components/loader/AppLoader';
@@ -38,6 +38,9 @@ import AppAlert from '../../components/alerts/AppAlert';
 import { clearApproveJobCheckListStatus } from '../../store/reducers/jobReducer';
 import AppModal from '../../components/modal/AppModal';
 import axiosClient from '../../config/axiosClient';
+import html2canvas from 'html2canvas';
+import DownloadableReport from '../../components/checkList/DownloadableReport';
+import { dataURItoBlob } from '../../utils/generic';
 
 interface ILocationState {
   job: IJob;
@@ -155,6 +158,48 @@ function JobCheckListReportPage() {
     setTimeout(() => setViewImage(true), 500);
   };
 
+  const uploadReport = useCallback(async () => {
+    const input = document.getElementById('_report');
+
+    if (input) {
+      input.style.display = 'block';
+
+      let d: Moment = moment().utc(false);
+      let filename = 'report';
+
+      const canvas = await html2canvas(input as HTMLElement, {
+        allowTaint: true,
+        useCORS: true,
+      });
+
+      input.style.display = 'none';
+
+      const imgData = canvas.toDataURL('image/png', 1.0);
+
+      if (job && job.createdAt) {
+        d = moment(job.createdAt).utc(false);
+
+        filename = `job_${job.id}_${d.year()}${d.month() + 1}${d.date()}${d.hours()}${d.minutes()}.png`;
+      }
+
+      const blob = dataURItoBlob(imgData);
+
+      const file = new File([blob], filename, { type: 'image/png' });
+
+      dispatch(uploadJobReportAction({ file, jobId: job?.id }));
+    }
+  }, [dispatch, job]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (job && !job.reportFileUrl) void uploadReport();
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [job, uploadReport]);
+
   return (
     <React.Fragment>
       {!job ? null : (
@@ -167,9 +212,12 @@ function JobCheckListReportPage() {
             justifyContent="space-between"
             alignItems="center">
             <Grid item hidden={!isSuperAdmin}>
-              <Button onClick={handlePrint} variant="outlined" color="error" endIcon={<Print />}>
+              <Button onClick={() => handlePrint()} variant="outlined" color="error" endIcon={<Print />}>
                 Print
               </Button>
+              {/*<Button onClick={() => uploadReport()} variant="outlined" color="info" endIcon={<Report />}>*/}
+              {/*  Generate Report*/}
+              {/*</Button>*/}
             </Grid>
             <Grid item hidden={isTechAdmin && job.checkList.approvedByGarageAdmin}>
               <FormControlLabel
@@ -206,7 +254,7 @@ function JobCheckListReportPage() {
                       License Plate: {job.vehicle.plateNumber}
                     </Typography>
                     <Typography variant="caption" component="div" gutterBottom>
-                      Mileage: {job.vehicle.mileageValue}/{job.vehicle.mileageUnit}
+                      Mileage: {job.mileageValue}/{job.mileageUnit}
                     </Typography>
                   </Grid>
                   <Grid item xs>
@@ -416,6 +464,8 @@ function JobCheckListReportPage() {
               })}
             </Grid>
           </Grid>
+
+          <DownloadableReport job={job} computeScore={computeScore} getQuestionAnswer={getQuestionAnswer} hidden />
         </React.Fragment>
       )}
       <AppModal
