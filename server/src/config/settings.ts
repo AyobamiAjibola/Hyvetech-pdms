@@ -86,7 +86,8 @@ const settings: AppSettings = {
     { name: 'Sedan/SUV/CUV' },
     { name: 'Buses/Mini-Van' },
     { name: 'Pickup Truck' },
-    { name: 'Heavy Duty' },
+    { name: '0.5 - 3 Ton Truck' },
+    { name: 'Heavy Duty Truck' },
   ],
   client: {
     host: <string>process.env.CLIENT_HOST,

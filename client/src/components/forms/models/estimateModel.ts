@@ -8,6 +8,7 @@ export interface IPart {
   warranty: IPartWarranty;
   quantity: IPartQuantity;
   price: string;
+  amount: string;
 }
 
 export interface ILabour {
@@ -191,8 +192,9 @@ const initialValues: IEstimateValues = {
     {
       name: '',
       warranty: { warranty: '', interval: '' },
-      quantity: { quantity: '', unit: '' },
+      quantity: { quantity: '0', unit: '' },
       price: '0',
+      amount: '0',
     },
   ],
   labours: [{ title: '', cost: '0' }],

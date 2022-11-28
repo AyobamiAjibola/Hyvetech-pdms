@@ -113,7 +113,7 @@ function AdminDashboard() {
               <Paper>
                 <AppPieChart
                   title={`Customers, ${moment().format('MMM YYYY')}.`}
-                  series={dashboardReducer.analytics?.monthlyData.customers}
+                  series={dashboardReducer.analytics?.monthlyData?.customers}
                 />
               </Paper>
             </Grid>
@@ -121,7 +121,7 @@ function AdminDashboard() {
               <Paper>
                 <AppPieChart
                   title={`Appointments, ${moment().format('MMM YYYY')}.`}
-                  series={dashboardReducer.analytics?.monthlyData.appointments}
+                  series={dashboardReducer.analytics?.monthlyData?.appointments}
                 />
               </Paper>
             </Grid>
@@ -129,7 +129,7 @@ function AdminDashboard() {
               <Paper>
                 <AppPieChart
                   title={`Vehicles, ${moment().format('MMM YYYY')}.`}
-                  series={dashboardReducer.analytics?.monthlyData.vehicles}
+                  series={dashboardReducer.analytics?.monthlyData?.vehicles}
                 />
               </Paper>
             </Grid>
@@ -137,7 +137,7 @@ function AdminDashboard() {
               <Paper>
                 <AppPieChart
                   title={`Transactions, ${moment().format('MMM YYYY')}.`}
-                  series={dashboardReducer.analytics?.monthlyData.transactions}
+                  series={dashboardReducer.analytics?.monthlyData?.transactions}
                 />
               </Paper>
             </Grid>

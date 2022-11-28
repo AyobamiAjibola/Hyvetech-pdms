@@ -11,18 +11,18 @@ function AppRoutes() {
         {routes.map((route, index) => {
           if (route.isPublic) {
             return <Route key={index} path={route.path} element={<route.Element />} />;
-          }
-          return (
-            <Route
-              key={index}
-              path={route.path}
-              element={
-                <PrivateRoute>
-                  <route.Element />
-                </PrivateRoute>
-              }
-            />
-          );
+          } else
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <PrivateRoute>
+                    <route.Element />
+                  </PrivateRoute>
+                }
+              />
+            );
         })}
         <Route path="/error" element={<ErrorPage />} />
       </Routes>

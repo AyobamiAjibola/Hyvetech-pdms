@@ -403,6 +403,23 @@ export declare namespace appModelTypes {
     jobDuration: { count: string; interval: string };
   }
 
+  interface IPayStackBank {
+    id: number;
+    name: string;
+    slug: string;
+    code: string;
+    longcode: string;
+    gateway: string;
+    pay_with_bank: boolean;
+    active: boolean;
+    country: string;
+    currency: string;
+    type: string;
+    is_deleted: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }
+
   type DomainClass<M> = new () => M;
 
   abstract class AbstractCrudRepository<M extends Model = Model, Id extends number = number> {

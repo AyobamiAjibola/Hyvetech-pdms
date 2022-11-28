@@ -8,3 +8,9 @@ export const statesAndDistrictsHandler = authenticateRouteWrapper(async (req: Re
 
   res.status(result.code).json(result);
 });
+
+export const payStackBanksHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
+  const result = await MiscellaneousController.getPayStackBanks(req);
+
+  res.status(result.code).json(result);
+});

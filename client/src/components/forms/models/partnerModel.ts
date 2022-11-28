@@ -82,7 +82,7 @@ const fields = {
   },
   workshopAddress: {
     name: 'workshopAddress',
-    label: 'Workshop Address',
+    label: 'Workshop Address*',
     error: {
       invalid: `Workshop Address is invalid`,
       required: 'Workshop Address is required',
@@ -130,7 +130,7 @@ const fields = {
   },
   nameOfDirector: {
     name: 'nameOfDirector',
-    label: 'Name of Director',
+    label: 'Name of Director*',
     error: {
       invalid: 'Name of Director is invalid',
       required: 'Please provide Name of Director.',
@@ -138,7 +138,7 @@ const fields = {
   },
   nameOfManager: {
     name: 'nameOfManager',
-    label: 'Name of Manager',
+    label: 'Name of Manager*',
     error: {
       invalid: 'Name of Manager is invalid',
       required: 'Please provide Name of Manager.',
@@ -147,7 +147,7 @@ const fields = {
 
   totalStaff: {
     name: 'totalStaff',
-    label: 'Total Staff',
+    label: 'Total Staff*',
     error: {
       invalid: 'Total Staff is invalid',
       required: 'Total Staff is required',
@@ -156,7 +156,7 @@ const fields = {
 
   totalTechnicians: {
     name: 'totalTechnicians',
-    label: 'Total Technicians',
+    label: 'Total Technicians*',
     error: {
       invalid: 'Total Technicians is invalid',
       required: 'Total Technicians is required',
@@ -165,7 +165,7 @@ const fields = {
 
   logo: {
     name: 'logo',
-    label: 'Company Logo',
+    label: 'Company Logo*',
     error: {
       invalid: 'Company Logo is invalid',
       required: 'Company Logo is required',
@@ -173,7 +173,7 @@ const fields = {
   },
   googleMap: {
     name: 'googleMap',
-    label: 'Google map link',
+    label: 'Google map link*',
     error: {
       invalid: 'Google map link is invalid',
       required: 'Google map link is required',
@@ -182,7 +182,7 @@ const fields = {
 
   brands: {
     name: 'brands',
-    label: 'Brands',
+    label: 'Brands*',
     error: {
       invalid: 'Brands is invalid',
       required: 'Brands is required',
@@ -198,7 +198,7 @@ const fields = {
   },
   workingHours: {
     name: 'workingHours',
-    label: 'Working Hours',
+    label: 'Working Hours*',
     error: {
       invalid: 'Working Hours is invalid',
       required: 'Working Hours is required',
@@ -207,7 +207,7 @@ const fields = {
 
   bankName: {
     name: 'bankName',
-    label: 'Bank Name',
+    label: 'Bank Name*',
     error: {
       invalid: 'Bank Name is invalid',
       required: 'Bank Name is required',
@@ -216,7 +216,7 @@ const fields = {
 
   accountName: {
     name: 'accountName',
-    label: 'Account Name',
+    label: 'Account Name*',
     error: {
       invalid: 'Account Name is invalid',
       required: 'Account Name is required',
@@ -225,7 +225,7 @@ const fields = {
 
   accountNumber: {
     name: 'accountNumber',
-    label: 'Account Number',
+    label: 'Account Number*',
     error: {
       invalid: 'Account Number is invalid',
       required: 'Account Number is required',
@@ -242,14 +242,60 @@ const initialValues: ICreatePartnerModel = {
   logo: '',
 };
 
-const schema = Yup.object().shape({
-  name: Yup.string().required(fields.name.error.required).label(fields.name.label),
-  phone: Yup.string().max(11).required(fields.phone.error.required).label(fields.phone.label),
-  email: Yup.string().email().required(fields.email.error.required).label(fields.email.label),
-  category: Yup.string().required(fields.category.error.required).label(fields.category.label),
-  state: Yup.string().required(fields.state.error.required).label(fields.state.label),
-  logo: Yup.mixed().nullable().label(fields.logo.label),
-});
+const schema = [
+  Yup.object().shape({
+    name: Yup.string().required(fields.name.error.required).label(fields.name.label),
+    phone: Yup.string().max(11).required(fields.phone.error.required).label(fields.phone.label),
+    email: Yup.string().email().required(fields.email.error.required).label(fields.email.label),
+    category: Yup.string().required(fields.category.error.required).label(fields.category.label),
+    state: Yup.string().required(fields.state.error.required).label(fields.state.label),
+    logo: Yup.mixed().nullable().label(fields.logo.label),
+  }),
+  Yup.object().shape({
+    [fields.name.name]: Yup.string().required(fields.name.error.required).label(fields.name.label),
+    [fields.nameOfDirector.name]: Yup.string()
+      .required(fields.nameOfDirector.error.required)
+      .label(fields.nameOfDirector.label),
+    [fields.nameOfManager.name]: Yup.string()
+      .required(fields.nameOfManager.error.required)
+      .label(fields.nameOfManager.label),
+    [fields.cac.name]: Yup.string().required(fields.cac.error.required).label(fields.cac.label),
+    [fields.vatNumber.name]: Yup.string().nullable().label(fields.vatNumber.label),
+    [fields.workshopAddress.name]: Yup.string().required().label(fields.workshopAddress.label),
+  }),
+  Yup.object().shape({
+    [fields.accountName.name]: Yup.string().required(fields.accountName.error.required).label(fields.accountName.label),
+    [fields.accountNumber.name]: Yup.string()
+      .length(10, fields.accountNumber.error.invalid)
+      .required(fields.accountNumber.error.required)
+      .label(fields.accountNumber.label),
+    [fields.bankName.name]: Yup.string().required(fields.bankName.error.required).label(fields.bankName.label),
+    [fields.googleMap.name]: Yup.string().required(fields.googleMap.error.required).label(fields.googleMap.label),
+    [fields.logo.name]: Yup.string().required(fields.logo.error.required).label(fields.logo.label),
+    [fields.phone.name]: Yup.string().required(fields.phone.error.required).label(fields.phone.label),
+    [fields.totalStaff.name]: Yup.string().required(fields.totalStaff.error.required).label(fields.totalStaff.label),
+    [fields.totalTechnicians.name]: Yup.string()
+      .required(fields.totalTechnicians.error.required)
+      .label(fields.totalTechnicians.label),
+    brands: Yup.array()
+      .of(
+        Yup.object().shape({
+          name: Yup.string().nullable(),
+          description: Yup.string().nullable(),
+        }),
+      )
+      .nullable(),
+    workingHours: Yup.array().of(
+      Yup.object()
+        .shape({
+          days: Yup.array().of(Yup.string()),
+          from: Yup.date().nullable(),
+          to: Yup.date().nullable(),
+        })
+        .nullable(),
+    ),
+  }),
+];
 
 const partnerModel = {
   fields,

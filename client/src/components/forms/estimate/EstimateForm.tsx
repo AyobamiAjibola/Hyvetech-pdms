@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Divider, Grid, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -35,7 +35,7 @@ interface IProps {
 const { fields } = estimateModel;
 
 export type PartArgs = IPart & {
-  handleChange: any;
+  handleChange: (e: any) => void;
   index: number;
   values: IEstimateValues;
 };
@@ -72,8 +72,8 @@ function EstimateForm(props: IProps) {
     let total = 0;
 
     for (let i = 0; i < values.parts.length; i++) {
-      if (values.parts[i].price) {
-        total += parseInt(values.parts[i].price);
+      if (values.parts[i].amount) {
+        total += parseInt(values.parts[i].amount);
       }
     }
     setPartTotal(total);
@@ -102,21 +102,6 @@ function EstimateForm(props: IProps) {
     setGrandTotal(vat + partTotal + labourTotal);
   }, [vat, partTotal, labourTotal, setGrandTotal]);
 
-  const _handleChangeVIN = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const vin = e.target.value;
-
-      setTimer(
-        setTimeout(() => {
-          dispatch(getVehicleVINAction(vin));
-        }, 2000),
-      );
-
-      setFieldValue('vin', vin);
-    },
-    [dispatch, setFieldValue],
-  );
-
   useEffect(() => {
     if (vehicleReducer.getVehicleVINStatus === 'completed') {
       const tempVehicleDetails = vehicleReducer.vehicleVINDetails;
@@ -137,6 +122,50 @@ function EstimateForm(props: IProps) {
       if (vehicleReducer.getVehicleVINError) setError({ message: vehicleReducer.getVehicleVINError });
     }
   }, [vehicleReducer.getVehicleVINError, vehicleReducer.getVehicleVINStatus]);
+
+  const _handleChangeVIN = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const vin = e.target.value;
+
+      setTimer(
+        setTimeout(() => {
+          dispatch(getVehicleVINAction(vin));
+        }, 2000),
+      );
+
+      setFieldValue('vin', vin);
+    },
+    [dispatch, setFieldValue],
+  );
+
+  const handleChangeQtyAndPrice = useCallback(
+    (e: ChangeEvent<any>, index: number) => {
+      const quantityName = `parts.${index}.quantity.quantity`;
+      const priceName = `parts.${index}.price`;
+      const amountName = `parts.${index}.amount`;
+
+      const isQuantity = quantityName === e.target.name;
+      const isPrice = priceName === e.target.name;
+
+      if (isQuantity) {
+        const part = values.parts[index];
+
+        const amount = +part.price * +e.target.value;
+
+        setFieldValue(quantityName, e.target.value);
+        setFieldValue(amountName, `${amount}`);
+      }
+
+      if (isPrice) {
+        const part = values.parts[index];
+        const amount = +part.quantity.quantity * +e.target.value;
+
+        setFieldValue(priceName, e.target.value);
+        setFieldValue(amountName, `${amount}`);
+      }
+    },
+    [setFieldValue, values.parts],
+  );
 
   useEffect(() => {
     return () => {
@@ -230,7 +259,6 @@ function EstimateForm(props: IProps) {
                                         variant="outlined"
                                         name={`parts.${index}.${value}`}
                                         label={value}
-                                        //@ts-ignore
                                         value={part[value]}
                                         onChange={handleChange}
                                       />
@@ -247,7 +275,7 @@ function EstimateForm(props: IProps) {
                                   {value === 'quantity' && (
                                     <QuantityFields
                                       {...part}
-                                      handleChange={handleChange}
+                                      handleChange={e => handleChangeQtyAndPrice(e, index)}
                                       index={index}
                                       values={values}
                                     />
@@ -259,13 +287,27 @@ function EstimateForm(props: IProps) {
                                         variant="outlined"
                                         name={`parts.${index}.${value}`}
                                         label={value}
-                                        //@ts-ignore
                                         value={part[value]}
-                                        onChange={handleChange}
+                                        onChange={e => handleChangeQtyAndPrice(e, index)}
                                         type="number"
                                         inputProps={{
                                           min: '0',
                                         }}
+                                      />
+                                    </Grid>
+                                  )}
+
+                                  {value === 'amount' && (
+                                    <Grid item xs={2}>
+                                      <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        name={`parts.${index}.${value}`}
+                                        label={value}
+                                        value={part[value]}
+                                        onChange={handleChange}
+                                        type="number"
+                                        disabled
                                       />
                                     </Grid>
                                   )}
@@ -286,8 +328,9 @@ function EstimateForm(props: IProps) {
                           partsProps.push({
                             name: '',
                             warranty: { warranty: '', interval: '' },
-                            quantity: { quantity: '', unit: '' },
+                            quantity: { quantity: '0', unit: '' },
                             price: '0',
+                            amount: '0',
                           })
                         }>
                         <Add />
@@ -331,7 +374,6 @@ function EstimateForm(props: IProps) {
                                         variant="outlined"
                                         name={`labours.${index}.${value}`}
                                         label={value}
-                                        //@ts-ignore
                                         value={labour[value]}
                                         onChange={handleChange}
                                       />
@@ -344,7 +386,6 @@ function EstimateForm(props: IProps) {
                                         variant="outlined"
                                         name={`labours.${index}.${value}`}
                                         label={value}
-                                        //@ts-ignore
                                         value={labour[value]}
                                         onChange={handleChange}
                                         type="number"

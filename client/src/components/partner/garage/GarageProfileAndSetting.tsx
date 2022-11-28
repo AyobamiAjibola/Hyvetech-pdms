@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import { Box, Divider, Stack, Typography } from '@mui/material';
-import { IBrands, IGarageSettings, IKycValues, IWorkingHours } from '../../forms/models/partnerModel';
+import partnerModel, { IBrands, IGarageSettings, IKycValues, IWorkingHours } from '../../forms/models/partnerModel';
 import GarageKycForm from '../../forms/partner/GarageKYCForm';
 import { PartnerPageContext } from '../../../pages/partner/PartnerPage';
 import { PartnerPageContextProps } from '@app-interfaces';
@@ -13,6 +13,8 @@ import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import GarageSettingsForm from '../../forms/partner/GarageSettingsForm';
 import { clearCreatePartnerKycStatus, clearCreatePartnerSettingsStatus } from '../../../store/reducers/partnerReducer';
+
+const { schema } = partnerModel;
 
 function GarageProfileAndSetting() {
   const [success, setSuccess] = useState<CustomHookMessage>();
@@ -128,12 +130,16 @@ function GarageProfileAndSetting() {
         <Box>
           <Typography variant="h6">KYC</Typography>
           <Box sx={{ my: 1 }} />
-          <Formik onSubmit={handleSubmitKyc} initialValues={kycValues} enableReinitialize>
+          <Formik onSubmit={handleSubmitKyc} initialValues={kycValues} validationSchema={schema[1]} enableReinitialize>
             <GarageKycForm isSubmitting={partnerReducer.createPartnerKycStatus === 'loading'} />
           </Formik>
         </Box>
         <Box>
-          <Formik onSubmit={handleSubmitSettings} initialValues={settingsValues} enableReinitialize>
+          <Formik
+            onSubmit={handleSubmitSettings}
+            initialValues={settingsValues}
+            validationSchema={schema[2]}
+            enableReinitialize>
             <GarageSettingsForm isSubmitting={partnerReducer.createPartnerKycStatus === 'loading'} />
           </Formik>
         </Box>

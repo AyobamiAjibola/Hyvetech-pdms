@@ -1,4 +1,15 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import {
+  AutoIncrement,
+  BelongsTo,
+  BelongsToMany,
+  Column,
+  DataType,
+  ForeignKey,
+  HasOne,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
 import { InferAttributes } from 'sequelize/types';
 import { Attributes, CreationOptional, InferCreationAttributes, NonAttribute } from 'sequelize';
 import Joi from 'joi';
@@ -6,6 +17,9 @@ import RideShareDriver from './RideShareDriver';
 import Vehicle from './Vehicle';
 import Customer from './Customer';
 import Partner from './Partner';
+import BillingInformation from './BillingInformation';
+import Invoice from './Invoice';
+import EstimateBillingInformation from './EstimateBillingInformation';
 
 export type CreateEstimateType = Attributes<Estimate & RideShareDriver & Vehicle & Partner>;
 
@@ -86,6 +100,14 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
 
   @Column(DataType.STRING)
   declare url: string;
+
+  @HasOne(() => Invoice)
+  declare invoice: NonAttribute<Invoice>;
+
+  @BelongsToMany(() => BillingInformation, () => EstimateBillingInformation)
+  declare billingInformation: NonAttribute<
+    Array<BillingInformation & { EstimateBillingInformation: EstimateBillingInformation }>
+  >;
 
   @BelongsTo(() => Customer)
   declare customer: NonAttribute<Customer>;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Autocomplete, Button, Grid, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
@@ -10,6 +10,10 @@ import TextInputField from '../fields/TextInputField';
 import { DAYS } from '../../../config/constants';
 import TimePickerField from '../fields/TimePickerField';
 import { getImageUrl } from '../../../utils/generic';
+import { getPayStackBanksAction } from '../../../store/actions/miscellaneousActions';
+import useAppSelector from '../../../hooks/useAppSelector';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { ISelectData } from '../fields/SelectField';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -18,7 +22,31 @@ interface IProps {
 const { fields } = partnerModel;
 
 function GarageSettingsForm(props: IProps) {
-  const { values, handleChange, setFieldValue } = useFormikContext<IGarageSettings>();
+  const [banks, setBanks] = useState<ISelectData[]>([]);
+
+  const { values, handleChange, setFieldValue, errors, touched } = useFormikContext<IGarageSettings>();
+
+  const miscellaneousReducer = useAppSelector(state => state.miscellaneousReducer);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (miscellaneousReducer.getBanksStatus === 'idle') {
+      void dispatch(getPayStackBanksAction());
+    }
+  }, [dispatch, miscellaneousReducer.getBanksStatus]);
+
+  useEffect(() => {
+    if (miscellaneousReducer.getBanksStatus === 'completed') {
+      setBanks(
+        miscellaneousReducer.banks
+          .filter(value => value.active && value.country === 'Nigeria')
+          .map(bank => ({
+            label: bank.name,
+            value: bank.code,
+          })),
+      );
+    }
+  }, [miscellaneousReducer.banks, miscellaneousReducer.getBanksStatus]);
 
   return (
     <Form>
@@ -85,11 +113,22 @@ function GarageSettingsForm(props: IProps) {
           <Typography variant="h6">Bank Account</Typography>
         </Grid>
         <Grid item xs={12} md={4}>
-          <TextInputField
-            onChange={handleChange}
-            value={values.bankName}
-            name={fields.bankName.name}
-            label={fields.bankName.label}
+          <Autocomplete
+            options={banks}
+            value={{ label: values.bankName, value: values.bankName }}
+            isOptionEqualToValue={(option, value) => option.label === value.label}
+            onChange={(event, value) => {
+              if (value) setFieldValue(fields.bankName.name, value.label);
+            }}
+            renderInput={params => (
+              <TextInputField
+                {...params}
+                name={fields.bankName.name}
+                label={fields.bankName.label}
+                onChange={handleChange}
+                value={values.bankName}
+              />
+            )}
           />
         </Grid>
         <Grid item xs={12} md={4}>
@@ -106,6 +145,10 @@ function GarageSettingsForm(props: IProps) {
             value={values.accountNumber}
             name={fields.accountNumber.name}
             label={fields.accountNumber.label}
+            type="number"
+            inputProps={{
+              min: '0',
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -133,6 +176,7 @@ function GarageSettingsForm(props: IProps) {
                                     //@ts-ignore
                                     value={brand[value]}
                                     onChange={handleChange}
+                                    error={undefined !== errors.brands && undefined !== touched.brands}
                                   />
                                 </Grid>
                               </React.Fragment>

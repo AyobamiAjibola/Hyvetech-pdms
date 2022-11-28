@@ -143,7 +143,7 @@ export default function PartnersPage() {
           <Formik
             initialValues={partnerModel.initialValues}
             onSubmit={handleSubmit}
-            validationSchema={partnerModel.schema}>
+            validationSchema={partnerModel.schema[0]}>
             <CreatePartnerForm createPartner={createPartner} />
           </Formik>
         }

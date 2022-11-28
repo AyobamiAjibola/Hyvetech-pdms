@@ -13,7 +13,8 @@ export const TAGS = [
   { name: 'Sedan/SUV/CUV', icon: 'fa-car' },
   { name: 'Buses/Mini-Van', icon: 'fa-van-shuttle' },
   { name: 'Pickup Truck', icon: 'fa-truck-pickup' },
-  { name: 'Heavy Duty', icon: 'fa-tractor' },
+  { name: '0.5 - 3 Ton Truck', icon: 'fa-tractor' },
+  { name: 'Heavy Duty Truck', icon: 'fa-tractor' },
 ];
 
 export const VIN_FILTER_CONSTRAINTS = [
@@ -441,6 +442,7 @@ export const INITIAL_PARTS_VALUE = {
   warranty: { warranty: '', interval: '' },
   quantity: { quantity: '', unit: '' },
   price: '0',
+  amount: '0',
 };
 
 export const INITIAL_LABOURS_VALUE = { title: '', cost: '0' };
