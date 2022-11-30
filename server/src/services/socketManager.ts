@@ -8,10 +8,12 @@ import {
   APPROVE_JOB,
   ASSIGN_DRIVER_JOB,
   CREATED_ESTIMATE,
+  INIT_TRANSACTION,
   NOTIFICATION_SEEN,
   RESCHEDULE_APPOINTMENT,
   TXN_CANCELLED,
   TXN_REFERENCE,
+  VERIFY_TRANSACTION,
 } from '../config/constants';
 import Appointment from '../models/Appointment';
 import Customer from '../models/Customer';
@@ -23,6 +25,7 @@ import { Op } from 'sequelize';
 import Estimate from '../models/Estimate';
 import mongoose from 'mongoose';
 import Vehicle from '../models/Vehicle';
+import Transaction from '../models/Transaction';
 
 interface AppointmentProps {
   appointment: Appointment;
@@ -46,6 +49,19 @@ export interface ICreatedEstimateProps {
   customer: Customer;
   vehicle: Vehicle;
   partner: Partner;
+}
+
+interface IInitTransactionResponse {
+  authorization_url: string;
+  access_code: string;
+  reference: string;
+}
+
+interface INotificationProps {
+  customer: Customer;
+  transaction: Transaction;
+  response: IInitTransactionResponse;
+  message: string;
 }
 
 export default function socketManager(io: Server) {
@@ -178,6 +194,44 @@ export default function socketManager(io: Server) {
   io.on(NOTIFICATION_SEEN, (id: mongoose.Types.ObjectId) => {
     (async () => {
       await NotificationModel.findByIdAndUpdate(id, { seen: true });
+    })();
+  });
+
+  appEventEmitter.on(INIT_TRANSACTION, (props: INotificationProps) => {
+    const { customer, response } = props;
+
+    (async () => {
+      const notification = await NotificationModel.create({
+        seen: false,
+        from: `System`,
+        to: customer.id,
+        type: 'Transaction',
+        subject: 'Transaction Initialized',
+        message: response,
+      });
+
+      io.to(customer.eventId).emit(INIT_TRANSACTION, {
+        notification: notification.toJSON({ flattenMaps: true }),
+      });
+    })();
+  });
+
+  appEventEmitter.on(VERIFY_TRANSACTION, (props: INotificationProps) => {
+    const { customer, transaction } = props;
+
+    (async () => {
+      const notification = await NotificationModel.create({
+        seen: false,
+        from: `System`,
+        to: customer.id,
+        type: 'Transaction',
+        subject: 'Transaction Verified',
+        message: transaction,
+      });
+
+      io.to(customer.eventId).emit(VERIFY_TRANSACTION, {
+        notification: notification.toJSON({ flattenMaps: true }),
+      });
     })();
   });
 }

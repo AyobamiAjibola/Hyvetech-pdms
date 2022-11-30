@@ -1,7 +1,6 @@
 import {
   AutoIncrement,
   BelongsTo,
-  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -17,9 +16,7 @@ import RideShareDriver from './RideShareDriver';
 import Vehicle from './Vehicle';
 import Customer from './Customer';
 import Partner from './Partner';
-import BillingInformation from './BillingInformation';
 import Invoice from './Invoice';
-import EstimateBillingInformation from './EstimateBillingInformation';
 
 export type CreateEstimateType = Attributes<Estimate & RideShareDriver & Vehicle & Partner>;
 
@@ -103,11 +100,6 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
 
   @HasOne(() => Invoice)
   declare invoice: NonAttribute<Invoice>;
-
-  @BelongsToMany(() => BillingInformation, () => EstimateBillingInformation)
-  declare billingInformation: NonAttribute<
-    Array<BillingInformation & { EstimateBillingInformation: EstimateBillingInformation }>
-  >;
 
   @BelongsTo(() => Customer)
   declare customer: NonAttribute<Customer>;

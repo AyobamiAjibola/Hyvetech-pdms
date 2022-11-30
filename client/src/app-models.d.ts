@@ -422,6 +422,7 @@ declare module '@app-models' {
     appointments: IAppointment[];
     subscriptions: ICustomerSubscription[];
     estimates: IEstimate[];
+    billingInformation: IBillingInformation;
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
@@ -592,6 +593,19 @@ declare module '@app-models' {
     currency: string;
     type: string;
     is_deleted: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  interface IBillingInformation {
+    id: number;
+    title: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    state: string;
+    district: string;
+    address: string;
     createdAt: string;
     updatedAt: string;
   }

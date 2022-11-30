@@ -413,6 +413,9 @@ export const TXN_CANCELLED = 'event:TXN_CANCELLED';
 export const TXN_REFERENCE = 'event:TXN_REFERENCE';
 export const CREATED_ESTIMATE = 'event:CREATED_ESTIMATE';
 export const NOTIFICATION_SEEN = 'event:NOTIFICATION_SEEN';
+export const INIT_TRANSACTION = 'event:INIT_TRANSACTION';
+export const VERIFY_TRANSACTION = 'event:VERIFY_TRANSACTION';
+export const VERIFY_TRANSACTION_ERROR = 'event:VERIFY_TRANSACTION_ERROR';
 
 export const AGENDA_COLLECTION_NAME = 'appointment_jobs';
 
@@ -421,6 +424,11 @@ export const JOB_STATUS = {
   pending: 'Pending',
   inProgress: 'In-Progress',
   canceled: 'Canceled',
+};
+
+export const INVOICE_STATUS = {
+  paid: 'PAID',
+  balance: 'DUE BALANCE',
 };
 
 export const INITIAL_CHECK_LIST_VALUES: CheckListSectionType = {

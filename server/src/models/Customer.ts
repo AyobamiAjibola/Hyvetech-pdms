@@ -4,6 +4,7 @@ import {
   Column,
   DataType,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -22,6 +23,7 @@ import Transaction from './Transaction';
 import CustomerSubscription from './CustomerSubscription';
 import CustomerPlanSubscription from './CustomerPlanSubscription';
 import Estimate from './Estimate';
+import BillingInformation from './BillingInformation';
 
 export const $customerSchema = {
   firstName: Joi.string().required().label('First Name'),
@@ -119,6 +121,9 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
 
   @Column(DataType.DATE)
   declare loginDate: Date;
+
+  @HasOne(() => BillingInformation)
+  declare billingInformation: NonAttribute<BillingInformation>;
 
   @HasMany(() => Estimate, { onDelete: 'cascade' })
   declare estimates: NonAttribute<Estimate[]>;

@@ -349,6 +349,7 @@ export declare namespace appModelTypes {
     transactions: ITransaction[];
     appointments: IAppointment[];
     subscriptions: ICustomerSubscription[];
+    billingInformation: IBillingInformation;
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
@@ -416,6 +417,19 @@ export declare namespace appModelTypes {
     currency: string;
     type: string;
     is_deleted: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  interface IBillingInformation {
+    id: number;
+    title: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    state: string;
+    district: string;
+    address: string;
     createdAt: string;
     updatedAt: string;
   }

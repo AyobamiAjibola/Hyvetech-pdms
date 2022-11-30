@@ -1,9 +1,8 @@
-import { AutoIncrement, BelongsToMany, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
 import { InferAttributes } from 'sequelize/types';
 import { CreationOptional, InferCreationAttributes, NonAttribute } from 'sequelize';
-import Estimate from './Estimate';
 import Joi from 'joi';
-import EstimateBillingInformation from './EstimateBillingInformation';
+import Customer from './Customer';
 
 export interface IBillingInfoSchema {
   id: number;
@@ -58,6 +57,10 @@ export default class BillingInformation extends Model<
   @Column(DataType.STRING)
   declare address: string;
 
-  @BelongsToMany(() => Estimate, () => EstimateBillingInformation)
-  declare estimates: NonAttribute<Array<Estimate & { EstimateBillingInformation: EstimateBillingInformation }>>;
+  @BelongsTo(() => Customer)
+  declare customer:NonAttribute<Customer>
+
+  @ForeignKey(() => Customer)
+  @Column(DataType.INTEGER)
+  declare customerId:NonAttribute<number>
 }

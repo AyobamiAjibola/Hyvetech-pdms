@@ -4,6 +4,7 @@ import Customer from './Customer';
 import RideShareDriver from './RideShareDriver';
 import CustomerSubscription from './CustomerSubscription';
 import RideShareDriverSubscription from './RideShareDriverSubscription';
+import Invoice from './Invoice';
 
 @Table({
   timestamps: true,
@@ -26,6 +27,9 @@ export default class Transaction extends Model<InferAttributes<Transaction>, Inf
 
   @Column(DataType.STRING)
   declare status: string;
+
+  @Column(DataType.STRING)
+  declare type: string;
 
   @Column({ type: DataType.STRING, defaultValue: 'unprocessed' })
   declare serviceStatus: string;
@@ -99,4 +103,11 @@ export default class Transaction extends Model<InferAttributes<Transaction>, Inf
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
+
+  @BelongsTo(() => Invoice, { onDelete: 'cascade' })
+  declare invoice: NonAttribute<Invoice>;
+
+  @ForeignKey(() => Invoice)
+  @Column(DataType.INTEGER)
+  declare invoiceId: NonAttribute<number>;
 }
