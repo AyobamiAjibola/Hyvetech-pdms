@@ -58,4 +58,8 @@ export default class VehicleDAOService implements ICrudDAO<Vehicle> {
   findByPlateNumber(plateNumber: string, options?: FindOptions<Attributes<Vehicle>>): Promise<Vehicle | null> {
     return this.vehicleRepository.findOne({ where: { plateNumber }, ...options });
   }
+
+  findByVIN(vin: string, options?: FindOptions<Attributes<Vehicle>>): Promise<Vehicle | null> {
+    return this.vehicleRepository.findOne({ where: { vin }, ...options });
+  }
 }

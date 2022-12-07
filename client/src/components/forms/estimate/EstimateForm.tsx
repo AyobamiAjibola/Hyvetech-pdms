@@ -139,20 +139,22 @@ function EstimateForm(props: IProps) {
   );
 
   const handleChangeQtyAndPrice = useCallback(
-    (e: ChangeEvent<any>, index: number) => {
-      const quantityName = `parts.${index}.quantity.quantity`;
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number) => {
+      const quantityValue = `parts.${index}.quantity.quantity`;
+      const quantityUnit = `parts.${index}.quantity.unit`;
       const priceName = `parts.${index}.price`;
       const amountName = `parts.${index}.amount`;
 
-      const isQuantity = quantityName === e.target.name;
+      const isQuantityValue = quantityValue === e.target.name;
       const isPrice = priceName === e.target.name;
+      const isQuantityUnit = quantityUnit === e.target.name;
 
-      if (isQuantity) {
+      if (isQuantityValue) {
         const part = values.parts[index];
 
         const amount = +part.price * +e.target.value;
 
-        setFieldValue(quantityName, e.target.value);
+        setFieldValue(quantityValue, e.target.value);
         setFieldValue(amountName, `${amount}`);
       }
 
@@ -163,6 +165,8 @@ function EstimateForm(props: IProps) {
         setFieldValue(priceName, e.target.value);
         setFieldValue(amountName, `${amount}`);
       }
+
+      if (isQuantityUnit) setFieldValue(quantityUnit, e.target.value);
     },
     [setFieldValue, values.parts],
   );

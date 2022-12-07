@@ -38,4 +38,7 @@ export default class VIN extends Model<InferAttributes<VIN>, InferCreationAttrib
 
   @Column(DataType.STRING)
   declare plantCountry: string;
+
+  @Column(DataType.STRING)
+  declare plateNumber: string;
 }

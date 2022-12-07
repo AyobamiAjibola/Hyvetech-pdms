@@ -5,11 +5,9 @@ import { appCommonTypes } from '../@types/app-common';
 import State from '../models/State';
 import { TryCatch } from '../decorators';
 import { Request } from 'express';
-import dataStore from '../config/dataStore';
-import { PAY_STACK_BANKS } from '../config/constants';
 import { appModelTypes } from '../@types/app-model';
+import Bank from '../models/Bank';
 import HttpResponse = appCommonTypes.HttpResponse;
-import IPayStackBank = appModelTypes.IPayStackBank;
 
 export default class MiscellaneousController {
   public static async getStatesAndDistricts() {
@@ -32,20 +30,12 @@ export default class MiscellaneousController {
 
   @TryCatch
   public static async getPayStackBanks(req: Request) {
-    const banks = await dataStore.get(PAY_STACK_BANKS);
-
-    if (banks) {
-      return Promise.resolve({
-        code: HttpStatus.OK.code,
-        message: HttpStatus.OK.value,
-        results: JSON.parse(banks),
-      } as HttpResponse<IPayStackBank>);
-    }
+    const banks = await dataSources.bankDAOService.findAll();
 
     return Promise.resolve({
       code: HttpStatus.OK.code,
       message: HttpStatus.OK.value,
-      results: [],
-    } as HttpResponse<IPayStackBank>);
+      results: banks,
+    } as HttpResponse<Bank>);
   }
 }

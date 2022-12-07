@@ -1,13 +1,6 @@
 import { Request } from 'express';
 import { appEventEmitter } from '../services/AppEventEmitter';
-import {
-  INIT_TRANSACTION,
-  INVOICE_STATUS,
-  PAY_STACK_BANKS,
-  TXN_CANCELLED,
-  TXN_REFERENCE,
-  VERIFY_TRANSACTION,
-} from '../config/constants';
+import { INIT_TRANSACTION, TXN_CANCELLED, TXN_REFERENCE, VERIFY_TRANSACTION } from '../config/constants';
 import { appCommonTypes } from '../@types/app-common';
 import HttpStatus from '../helpers/HttpStatus';
 import { TryCatch } from '../decorators';
@@ -17,29 +10,14 @@ import dataSources from '../services/dao';
 import axiosClient from '../services/api/axiosClient';
 import Transaction from '../models/Transaction';
 import { CreationAttributes } from 'sequelize/types';
-import Invoice from '../models/Invoice';
-import Generic from '../utils/Generic';
-import { Attributes } from 'sequelize';
-import dataStore from '../config/dataStore';
-import { appModelTypes } from '../@types/app-model';
+import AppLogger from '../utils/AppLogger';
 import HttpResponse = appCommonTypes.HttpResponse;
-import IPayStackBank = appModelTypes.IPayStackBank;
+import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 
-interface IDepositForEstimate {
-  customerId: number;
-  estimateId: number;
-  partnerId: number;
-  vin: string;
-  depositAmount: number;
-  grandTotal: number;
-}
-
-interface IGenerateInvoice {
-  txnRef: string;
-  estimateId: number;
-}
-
+const transactionDoesNotExist = 'Transaction Does not exist.';
 export default class TransactionController {
+  private static LOG = AppLogger.init(TransactionController.name).logger;
+
   public static async subscriptionsTransactionStatus(req: Request) {
     try {
       const query = req.query;
@@ -69,7 +47,14 @@ export default class TransactionController {
    * @description via a payment gateway (paystack). Here we initialize a transaction, send the response via socket.io to the customer mobile app.
    * @description The callback response from the payment gateway, is sent back to the server, the {@method initTransactionCallback }
    * @description verifies the transaction, and sends a response via socket.io to the customer mobile app to close the transaction.
-   * @param req
+   * @param req {
+       @field customerId:number,
+       @field estimateId: number,
+       @field partnerId: number,
+       @field vin: string,
+       @field depositAmount: number,
+       @field grandTotal: number,
+   * }
    */
   @TryCatch
   public static async depositForEstimate(req: Request) {
@@ -94,6 +79,10 @@ export default class TransactionController {
     if (!estimate)
       return Promise.reject(CustomAPIError.response(`Estimate does not exist.`, HttpStatus.NOT_FOUND.code));
 
+    const partner = await estimate.$get('partner');
+
+    if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist`, HttpStatus.NOT_FOUND.code));
+
     const customer = await dataSources.customerDAOService.findById(value.customerId);
 
     if (!customer)
@@ -117,6 +106,9 @@ export default class TransactionController {
       return Promise.reject(CustomAPIError.response(`No payment gateway found`, HttpStatus.NOT_FOUND.code));
 
     //initialize payment
+    const metadata = {
+      cancel_action: `${process.env.PAYMENT_GW_CB_URL}/transactions?status=cancelled`,
+    };
     axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
     axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
 
@@ -129,6 +121,7 @@ export default class TransactionController {
       email: customer.email,
       amount,
       callback_url: callbackUrl,
+      metadata,
     });
 
     const data = initResponse.data.data;
@@ -137,7 +130,9 @@ export default class TransactionController {
       reference: data.reference,
       authorizationUrl: data.authorization_url,
       type: 'Deposit',
-      purpose: `Estimate-${estimate.code}`,
+      purpose: `${partner.name}: Estimate-${estimate.code}${
+        value.grandTotal === value.depositAmount ? ' Payment' : ' Deposit Payment'
+      }`,
       status: initResponse.data.message,
       amount,
     };
@@ -170,17 +165,13 @@ export default class TransactionController {
     });
 
     if (!transaction) {
-      const message = 'Transaction Does not exist.';
-
-      return Promise.reject(CustomAPIError.response(message, HttpStatus.NOT_FOUND.code));
+      return Promise.reject(CustomAPIError.response(transactionDoesNotExist, HttpStatus.NOT_FOUND.code));
     }
 
     const customer = await transaction.$get('customer');
 
     if (!customer) {
-      const message = 'Customer Does not exist.';
-
-      return Promise.reject(CustomAPIError.response(message, HttpStatus.NOT_FOUND.code));
+      return Promise.reject(CustomAPIError.response('Customer Does not exist.', HttpStatus.NOT_FOUND.code));
     }
 
     //get default payment gateway
@@ -191,7 +182,7 @@ export default class TransactionController {
     if (!paymentGateway)
       return Promise.reject(CustomAPIError.response(`No payment gateway found`, HttpStatus.NOT_FOUND.code));
 
-    //initialize payment
+    //verify payment
     axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
     axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
 
@@ -201,7 +192,8 @@ export default class TransactionController {
 
     const data = axiosResponse.data.data;
 
-    await transaction.update({
+    const $transaction = {
+      reference: data.reference,
       channel: data.authorization.channel,
       cardType: data.authorization.card_type,
       bank: data.authorization.bank,
@@ -213,9 +205,10 @@ export default class TransactionController {
       currency: data.currency,
       status: data.status,
       paidAt: data.paid_at,
-    });
+      type: transaction.type,
+    };
 
-    appEventEmitter.emit(VERIFY_TRANSACTION, { customer, transaction });
+    appEventEmitter.emit(VERIFY_TRANSACTION, { customer, transaction: $transaction });
 
     const response: HttpResponse<void> = {
       code: HttpStatus.OK.code,
@@ -226,110 +219,35 @@ export default class TransactionController {
   }
 
   @TryCatch
-  public static async generateInvoice(req: Request) {
-    const { error, value } = Joi.object<IGenerateInvoice>({
-      estimateId: Joi.number().required().label('Estimate Id'),
-      txnRef: Joi.string().required().label('Transaction Reference'),
-    }).validate(req.body);
-
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-
-    if (!value)
-      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+  public static async updateTransaction(req: Request) {
+    const value = req.body;
 
     const transaction = await dataSources.transactionDAOService.findByAny({
-      where: {
-        reference: value.txnRef,
-      },
+      where: { reference: value.reference },
     });
 
-    if (!transaction)
-      return Promise.reject(CustomAPIError.response('Transaction Does not exist.', HttpStatus.NOT_FOUND.code));
+    if (!transaction) {
+      return Promise.reject(CustomAPIError.response(transactionDoesNotExist, HttpStatus.NOT_FOUND.code));
+    }
 
-    const estimate = await dataSources.estimateDAOService.findById(value.estimateId);
-
-    if (!estimate)
-      return Promise.reject(CustomAPIError.response(`Estimate does not exist.`, HttpStatus.NOT_FOUND.code));
-
-    const partner = await estimate.$get('partner');
-
-    if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist.`, HttpStatus.NOT_FOUND.code));
-
-    const findBanks = await dataStore.get(PAY_STACK_BANKS);
-
-    if (!findBanks)
-      return Promise.reject(CustomAPIError.response(`No banks Please contact support`, HttpStatus.NOT_FOUND.code));
-
-    const banks = JSON.parse(findBanks) as IPayStackBank[];
-
-    const bank = banks.find(bank => bank.name === partner.bankName);
-
-    if (!bank)
-      return Promise.reject(
-        CustomAPIError.response(
-          `Bank ${partner.bankName} does not exist. Please contact support`,
-          HttpStatus.NOT_FOUND.code,
-        ),
-      );
-
-    const recipient = {
-      name: partner.name,
-      account_number: partner.accountNumber,
-      bank_code: bank.code,
-      currency: bank.currency,
-    };
-
-    const dueAmount = estimate.grandTotal - estimate.depositAmount;
-    const systemFee = estimate.depositAmount * 0.035;
-    const partnerFee = estimate.depositAmount - systemFee;
-
-    //get default payment gateway
-    const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
-      where: { default: true },
+    await transaction.update({
+      channel: value.channel,
+      cardType: value.cardType,
+      bank: value.bank,
+      last4: value.last4,
+      expMonth: value.expMonth,
+      expYear: value.expYear,
+      countryCode: value.countryCode,
+      brand: value.brand,
+      currency: value.currency,
+      status: value.status,
+      paidAt: value.paidAt,
     });
 
-    if (!paymentGateway)
-      return Promise.reject(CustomAPIError.response(`No payment gateway found`, HttpStatus.NOT_FOUND.code));
-
-    let endpoint = '/transferrecipient';
-
-    axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
-    axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
-
-    const recipientResponse = await axiosClient.post(endpoint, recipient);
-
-    const recipientCode = recipientResponse.data.data.recipient_code;
-
-    endpoint = '/transfer';
-
-    const transfer = {
-      source: 'balance',
-      recipient: recipientCode,
-      reason: `Estimate-${estimate.code} Deposit`,
-      amount: partnerFee * 100,
-    };
-
-    const transferResponse = await axiosClient.post(endpoint, transfer);
-
-    console.log(transferResponse.data);
-
-    const invoiceValues: Partial<Attributes<Invoice>> = {
-      code: Generic.randomize({ number: true, count: 6 }),
-      depositAmount: estimate.depositAmount,
-      dueAmount,
-      grandTotal: estimate.grandTotal,
-      status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.balance,
-    };
-
-    const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
-
-    await invoice.$set('transactions', [transaction]);
-
-    const response: HttpResponse<Invoice> = {
+    return Promise.resolve({
       code: HttpStatus.OK.code,
-      message: 'Invoice successfully created',
-    };
-
-    return Promise.resolve(response);
+      message: 'Transaction updated successfully',
+      result: transaction,
+    } as HttpResponse<Transaction>);
   }
 }

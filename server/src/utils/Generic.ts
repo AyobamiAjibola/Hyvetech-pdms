@@ -32,7 +32,51 @@ interface IRandomize {
   count?: number;
 }
 
+interface IFuncIntervalCallerConfig {
+  //call your functions here
+  onTick: (args: this) => void | Promise<void>;
+  // Number of times the function 'onTick' should run
+  attempts: number;
+  //Call interval. Should be in milliseconds e.g 60 * 1000
+  interval: number;
+  // reset the interval, until a condition is met
+  reset?: boolean;
+  //stop the interval
+  stop?: boolean;
+
+  //log the interval count
+  log?: (args: { count: number; options: IFuncIntervalCallerConfig }) => void;
+}
+
 export default class Generic {
+  public static functionIntervalCaller(config: IFuncIntervalCallerConfig) {
+    const start = config.interval;
+    const stop = config.attempts * start;
+    const cycle = stop / start;
+    let count = 0;
+
+    const run = () => {
+      const interval = setInterval(() => {
+        if (config.reset) {
+          clearInterval(interval);
+          run();
+        }
+
+        count++;
+
+        if (config.stop) clearInterval(interval);
+
+        if (count >= cycle) clearInterval(interval);
+
+        config.onTick(config);
+
+        if (config.log) config.log({ count, options: config });
+      }, start);
+    };
+
+    run();
+  }
+
   public static async fileExist(path: string) {
     try {
       await fs.access(path);
@@ -162,7 +206,7 @@ export default class Generic {
       const firstDay = moment(datetime).startOf('month').toDate();
       const lastDay = moment(datetime).endOf('month').toDate();
 
-      const customers = await repository.findAll({
+      const _repository = await repository.findAll({
         where: {
           createdAt: {
             [Op.between]: [firstDay, lastDay],
@@ -170,7 +214,7 @@ export default class Generic {
         },
       });
 
-      dataObject = { ...dataObject, y: customers.length, name: months[i] };
+      dataObject = { ...dataObject, y: _repository.length, name: months[i] };
 
       result.push(dataObject);
     }

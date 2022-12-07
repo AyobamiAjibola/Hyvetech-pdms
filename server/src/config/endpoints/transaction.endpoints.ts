@@ -1,8 +1,8 @@
 import {
   depositForEstimateHandler,
-  generateInvoiceHandler,
   initTransactionCallbackHandler,
   txnStatusHandler,
+  updateTransactionHandler,
 } from '../../routes/transactionRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -20,17 +20,19 @@ const transactionEndpoints: RouteEndpoints = [
     path: '/transactions/deposit-for-estimate',
     handler: depositForEstimateHandler,
   },
+
   {
     name: 'paystack init transaction callback',
     method: 'get',
     path: '/transaction/initialize',
     handler: initTransactionCallbackHandler,
   },
+
   {
-    name: 'generate invoice',
-    method: 'post',
-    path: '/transactions/generate-invoice',
-    handler: generateInvoiceHandler,
+    name: 'update transaction',
+    method: 'patch',
+    path: '/transactions',
+    handler: updateTransactionHandler,
   },
 ];
 

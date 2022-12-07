@@ -145,10 +145,6 @@ function GarageSettingsForm(props: IProps) {
             value={values.accountNumber}
             name={fields.accountNumber.name}
             label={fields.accountNumber.label}
-            type="number"
-            inputProps={{
-              min: '0',
-            }}
           />
         </Grid>
         <Grid item xs={12}>

@@ -609,4 +609,18 @@ declare module '@app-models' {
     createdAt: string;
     updatedAt: string;
   }
+
+  interface IInvoice {
+    id: number;
+    code: string;
+    status: string;
+    grandTotal: number;
+    depositAmount: number;
+    dueAmount: number;
+    transactions: ITransaction[];
+    estimate: IEstimate;
+    estimateId: number;
+    createdAt: string;
+    updatedAt: string;
+  }
 }

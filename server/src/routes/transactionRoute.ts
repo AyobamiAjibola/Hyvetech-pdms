@@ -17,8 +17,8 @@ export const initTransactionCallbackHandler = async (req: Request, res: Response
   res.status(response.code).json(response);
 };
 
-export const generateInvoiceHandler = authenticateRouteWrapper(async (req, res) => {
-  const response = await TransactionController.generateInvoice(req);
+export const updateTransactionHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await TransactionController.updateTransaction(req);
 
   res.status(response.code).json(response);
 });

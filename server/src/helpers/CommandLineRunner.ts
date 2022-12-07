@@ -42,7 +42,6 @@ import {
   ONE_TIME_DRIVE_IN_PLAN,
   ONE_TIME_MOBILE_PLAN,
   ONE_TIME_SUBSCRIPTION,
-  PAY_STACK_BANKS,
   PAY_STACK_PLANS,
   PAYMENT_PLANS,
   PAYMENT_TERMS,
@@ -71,7 +70,10 @@ import Role from '../models/Role';
 import Permission from '../models/Permission';
 import Generic from '../utils/Generic';
 import fs from 'fs/promises';
+import Bank from '../models/Bank';
+import BankRepository from '../repositories/BankRepository';
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
+import IPayStackBank = appModelTypes.IPayStackBank;
 
 export default class CommandLineRunner {
   public static singleton: CommandLineRunner = new CommandLineRunner();
@@ -152,6 +154,8 @@ export default class CommandLineRunner {
   }
 
   async loadPayStackBanks() {
+    await Bank.sync({ force: true });
+
     const paymentGateway = (await this.paymentGatewayRepository.findOne({
       where: { default: true },
     })) as PaymentGateway;
@@ -161,9 +165,25 @@ export default class CommandLineRunner {
 
     const response = await axiosClient.get('/bank');
 
-    await dataStore.setEx(PAY_STACK_BANKS, JSON.stringify(response.data.data), {
-      PX: TWENTY_FOUR_HOUR_EXPIRY,
-    });
+    const banks = response.data.data as IPayStackBank[];
+
+    const bankRepository = new BankRepository();
+
+    const bankValues = banks.map(bank => ({
+      name: bank.name,
+      slug: bank.slug,
+      code: bank.code,
+      longCode: bank.longcode,
+      gateway: bank.gateway,
+      payWithBank: bank.pay_with_bank,
+      active: bank.active,
+      country: bank.country,
+      currency: bank.currency,
+      type: bank.type,
+      isDeleted: bank.is_deleted,
+    }));
+
+    await bankRepository.bulkCreate(bankValues);
   }
 
   async loadDefaultAdmin() {

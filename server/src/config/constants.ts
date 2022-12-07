@@ -28,6 +28,7 @@ export const VIN_FILTER_CONSTRAINTS = [
   'fuelTypePrimary',
   'engineDisplacementCcm',
   'displacementCc',
+  'plateNumber',
 ];
 
 export const APPOINTMENT_STATUS = {

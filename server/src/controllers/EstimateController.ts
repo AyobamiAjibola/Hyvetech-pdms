@@ -44,7 +44,7 @@ export default class EstimateController {
           CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code),
         );
 
-      const findVehicle = await dataSources.vehicleDAOService.findByPlateNumber(value.plateNumber);
+      const findVehicle = await dataSources.vehicleDAOService.findByVIN(value.vin);
 
       let vehicle: Vehicle, customer: Customer;
 
@@ -59,17 +59,39 @@ export default class EstimateController {
           mileageUnit: value.mileageUnit,
         };
 
+        const vin = await dataSources.vinDAOService.findByAny({
+          where: { vin: value.vin },
+        });
+
+        if (!vin)
+          return Promise.reject(
+            CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+          );
+
+        await vin.update({
+          plateNumber: value.plateNumber,
+        });
+
         vehicle = await dataSources.vehicleDAOService.create(data);
       } else {
         vehicle = await findVehicle.update({
-          vin: value.vin,
-          make: value.make,
-          model: value.model,
-          modelYear: value.modelYear,
-          mileageValue: value.mileageValue,
-          mileageUnit: value.mileageUnit,
-          plateNumber: value.plateNumber,
+          vin: value.vin.length ? value.vin : findVehicle.vin,
+          make: value.make.length ? value.make : findVehicle.make,
+          model: value.model.length ? value.model : findVehicle.model,
+          modelYear: value.modelYear.length ? value.modelYear : findVehicle.modelYear,
+          mileageValue: value.mileageValue.length ? value.mileageValue : findVehicle.mileageValue,
+          mileageUnit: value.mileageUnit.length ? value.mileageUnit : findVehicle.mileageUnit,
+          plateNumber: value.plateNumber.length ? value.plateNumber : findVehicle.plateNumber,
         });
+      }
+
+      if (vehicle.onMaintenance || vehicle.onInspection || vehicle.isBooked) {
+        return Promise.reject(
+          CustomAPIError.response(
+            `This vehicle is currently scheduled for a Repairs/Inspection.`,
+            HttpStatus.BAD_REQUEST.code,
+          ),
+        );
       }
 
       const findCustomer = await dataSources.customerDAOService.findByAny({

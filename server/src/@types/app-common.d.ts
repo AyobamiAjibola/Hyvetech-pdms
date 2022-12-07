@@ -8,6 +8,7 @@ import IncomingForm from 'formidable/Formidable';
 import User from '../models/User';
 
 import CheckList from '../models/CheckList';
+import Transaction from '../models/Transaction';
 
 export declare namespace appCommonTypes {
   import IPermission = appModelTypes.IPermission;
@@ -90,6 +91,7 @@ export declare namespace appCommonTypes {
     permissions: IPermission[];
     userId: number;
     partnerId?: number;
+    rideShareDriverId?: number;
     customer?: number;
     pass?: string;
   };
@@ -295,6 +297,23 @@ export declare namespace appCommonTypes {
     width: string;
     questionId?: any;
     file?: any;
+  }
+
+  interface IDepositForEstimate {
+    customerId: number;
+    invoiceId: number;
+    estimateId: number;
+    partnerId: number;
+    vin: string;
+    depositAmount: number;
+    dueAmount: number;
+    grandTotal: number;
+  }
+
+  interface IGenerateInvoice {
+    txnRef: string;
+    estimateId: number;
+    transaction: Transaction;
   }
 }
 

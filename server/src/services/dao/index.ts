@@ -67,6 +67,9 @@ import BillingInformationRepository from '../../repositories/BillingInformationR
 import BillingInformationDAOService from './BillingInformationDAOService';
 import InvoiceRepository from '../../repositories/InvoiceRepository';
 import InvoiceDAOService from './InvoiceDAOService';
+import VINDAOService from './VINDAOService';
+import CustomerWorkShopRepository from '../../repositories/CustomerWorkShopRepository';
+import CustomerWorkShopDAOService from './CustomerWorkShopDAOService';
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -103,6 +106,7 @@ const checkListRepository = new CheckListRepository();
 const estimateRepository = new EstimateRepository();
 const billingInformationRepository = new BillingInformationRepository();
 const invoiceRepository = new InvoiceRepository();
+const customerWorkShopRepository = new CustomerWorkShopRepository();
 
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
@@ -120,7 +124,7 @@ const planDAOService = new PlanDAOService(planRepository);
 const timeSlotDAOService = new TimeSlotDAOService(timeSlotRepository);
 const discountDAOService = new DiscountDAOService(discountRepository);
 const stateDAOService = new StateDAOService(stateRepository);
-
+const vinDAOService = new VINDAOService(vinRepository);
 const customerSubscriptionDAOService = new CustomerSubscriptionDAOService(customerSubscriptionRepository);
 const bankDAOService = new BankDAOService(bankRepository);
 const tagDAOService = new TagDAOService(tagRepository);
@@ -140,6 +144,7 @@ const checkListDAOService = new CheckListDAOService(checkListRepository);
 const estimateDAOService = new EstimateDAOService(estimateRepository);
 const billingInformationDAOService = new BillingInformationDAOService(billingInformationRepository);
 const invoiceDAOService = new InvoiceDAOService(invoiceRepository);
+const customerWorkShopDAOService = new CustomerWorkShopDAOService(customerWorkShopRepository);
 
 export default {
   customerDAOService,
@@ -175,4 +180,6 @@ export default {
   estimateDAOService,
   billingInformationDAOService,
   invoiceDAOService,
+  vinDAOService,
+  customerWorkShopDAOService,
 };

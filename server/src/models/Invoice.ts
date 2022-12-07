@@ -37,7 +37,7 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
   declare dueAmount: number;
 
   @HasMany(() => Transaction)
-  declare transactions: NonAttribute<Transaction>;
+  declare transactions: NonAttribute<Transaction[]>;
 
   @BelongsTo(() => Estimate, { onDelete: 'cascade' })
   declare estimate: NonAttribute<Estimate>;

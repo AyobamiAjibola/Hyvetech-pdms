@@ -10,12 +10,16 @@ import UserRepository from '../repositories/UserRepository';
 import Role from '../models/Role';
 import Partner from '../models/Partner';
 import TechnicianRepository from '../repositories/TechnicianRepository';
+import CustomerRepository from '../repositories/CustomerRepository';
+import RideShareDriverRepository from '../repositories/RideShareDriverRepository';
 import AsyncWrapper = appCommonTypes.AsyncWrapper;
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 
 const logger = AppLogger.init(authenticateRouteWrapper.name).logger;
 const userRepository = new UserRepository();
 const technicianRepository = new TechnicianRepository();
+const customerRepository = new CustomerRepository();
+const rideShareDriverRepository = new RideShareDriverRepository();
 
 export default function authenticateRouteWrapper(handler: AsyncWrapper) {
   return async function (req: Request, res: Response, next: NextFunction) {
@@ -48,42 +52,59 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
 
     const payload = verify(jwt, key) as CustomJwtPayload;
 
-    const { userId } = payload;
+    if (payload.rideShareDriverId) {
+      const { rideShareDriverId } = payload;
 
-    const user = await userRepository.findById(userId, {
-      include: [Role, Partner],
-    });
+      const rideShareDriver = await rideShareDriverRepository.findById(rideShareDriverId, {
+        include: [Role, Partner],
+      });
 
-    if (user) {
-      req.permissions = payload.permissions;
-      req.user = user;
-      req.jwt = jwt;
+      if (rideShareDriver) {
+        req.permissions = payload.permissions;
+        req.jwt = jwt;
 
-      return await handler(req, res, next);
+        return await handler(req, res, next);
+      }
     }
 
-    const customer = await technicianRepository.findById(userId, {
-      include: [Role, Partner],
-    });
+    if (payload.userId) {
+      const { userId } = payload;
 
-    if (customer) {
-      req.permissions = payload.permissions;
-      req.jwt = jwt;
+      const user = await userRepository.findById(userId, {
+        include: [Role, Partner],
+      });
 
-      return await handler(req, res, next);
+      if (user) {
+        req.permissions = payload.permissions;
+        req.user = user;
+        req.jwt = jwt;
+
+        return await handler(req, res, next);
+      }
+
+      const technician = await technicianRepository.findById(userId, {
+        include: [Role, Partner],
+      });
+
+      if (technician) {
+        req.permissions = payload.permissions;
+        req.jwt = jwt;
+
+        return await handler(req, res, next);
+      }
+
+      const customer = await customerRepository.findById(userId, {
+        include: [Role],
+      });
+
+      if (customer) {
+        req.permissions = payload.permissions;
+        req.jwt = jwt;
+
+        return await handler(req, res, next);
+      }
     }
 
-    if (!user || !customer)
-      return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
-
-    // req.permissions = payload.permissions;
-    // req.user = user;
-    // req.jwt = jwt;
-    //
-    // const authorised = await authorizeRoute(req);
-    //
-    // if (!authorised) return next(CustomAPIError.response(HttpStatus.FORBIDDEN.value, HttpStatus.FORBIDDEN.code));
-    //
-    // await handler(req, res, next);
+    return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
   };
 }

@@ -201,13 +201,19 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
 
   const handleReassignJob = (value: string) => {
     if (job && params.id) {
+      const subscriptionId = job.rideShareDriverSubscriptionId
+        ? job.rideShareDriverSubscriptionId
+        : job.customerSubscriptionId;
+
+      const client = job.rideShareDriverSubscriptionId ? 'Driver' : 'Customer';
+
       const data = {
         partnerId: +params.id as unknown as string,
         techId: +value,
-        subscriptionId: job.rideShareDriverSubscriptionId,
+        subscriptionId,
         checkListId: job.checkList.id,
         jobId: job.id,
-        client: 'Driver',
+        client,
       };
 
       dispatch(reassignJobAction(data));

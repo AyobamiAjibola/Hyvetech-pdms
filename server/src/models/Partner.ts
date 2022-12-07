@@ -24,6 +24,7 @@ import PartnerTechnician from './PartnerTechnician';
 import CheckList from './CheckList';
 import PartnerCheckList from './PartnerCheckList';
 import Estimate from './Estimate';
+import Transaction from './Transaction';
 
 @Table({
   timestamps: true,
@@ -118,4 +119,7 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
 
   @BelongsToMany(() => Category, () => PartnerCategory)
   declare categories: NonAttribute<Array<Category & { PartnerCategory: PartnerCategory }>>;
+
+  @HasMany(() => Transaction)
+  declare transactions: NonAttribute<Transaction[]>;
 }

@@ -30,7 +30,7 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   parts: Joi.array().required().label('Parts'),
   vin: Joi.string().required().label('VIN'),
   model: Joi.string().required().label('Vehicle Model'),
-  modelYear: Joi.string().required().label('Vehicle Model Year'),
+  modelYear: Joi.any().required().label('Vehicle Model Year'),
   make: Joi.string().required().label('Vehicle Make'),
   plateNumber: Joi.string().allow('').label('Plate Number'),
   mileageValue: Joi.string().allow('').label('Mileage Value'),

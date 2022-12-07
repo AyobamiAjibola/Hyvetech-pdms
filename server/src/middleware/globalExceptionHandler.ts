@@ -9,7 +9,8 @@ import HttpResponse = appCommonTypes.HttpResponse;
 const logger = AppLogger.init(globalExceptionHandler.name).logger;
 
 export default function globalExceptionHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-  logger.error(err);
+  if (process.env.NODE_ENV === 'production') logger.error(err);
+  else console.log(err);
 
   if (res.headersSent) return next(err);
 

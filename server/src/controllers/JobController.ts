@@ -124,7 +124,7 @@ export default class JobController {
   public static async assignJob(req: Request) {
     try {
       const { value, error } = Joi.object({
-        subscriptionId: Joi.number().required().label(SUBSCRIPTION_ID),
+        subscriptionId: Joi.any().required().label(SUBSCRIPTION_ID),
         techId: Joi.number().required().label(TECHNICIAN_ID),
         partnerId: Joi.number().required().label(PARTNER_ID),
         checkListId: Joi.number().required().label(CHECKLIST_ID),
@@ -305,9 +305,6 @@ export default class JobController {
       },
     });
 
-    if (!plan)
-      return Promise.reject(CustomAPIError.response(`Plan: ${planLabel} does not exist`, HttpStatus.NOT_FOUND.code));
-
     const owner = vehicle[0].customer;
 
     Object.assign(jobValues, {
@@ -343,10 +340,20 @@ export default class JobController {
     if (customerSub.programme.match(new RegExp('maintenance', 'i'))?.input)
       await vehicle[0].update({ onMaintenance: true });
 
-    //increment mode of service count
-    await this.incrementServiceModeCount(plan, customerSub);
-
     const jobs = await partner.$get('jobs');
+
+    if (!plan) {
+      if (planLabel.search(/estimate/i) !== -1) {
+        const response: HttpResponse<Job> = {
+          code: HttpStatus.OK.code,
+          message: `Assigned Job Successfully.`,
+          results: jobs,
+        };
+
+        return Promise.resolve(response);
+      } else
+        return Promise.reject(CustomAPIError.response(`Plan: ${planLabel} does not exist`, HttpStatus.NOT_FOUND.code));
+    } else await this.incrementServiceModeCount(plan, customerSub);
 
     const response: HttpResponse<Job> = {
       code: HttpStatus.OK.code,
@@ -370,11 +377,8 @@ export default class JobController {
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-      //cancel job
-      await this.doCancelJob(req);
-
-      //assign job
-      return this.assignJob(req);
+      //reassign job
+      return this.doReassignJob(req);
     } catch (e) {
       return Promise.reject(e);
     }
@@ -576,6 +580,80 @@ export default class JobController {
         }
       });
     });
+  }
+
+  private static async doReassignJob(req: Request) {
+    const partnerId = req.params.partnerId as string;
+
+    const value = req.body;
+
+    const partner = await dataSources.partnerDAOService.findById(+partnerId);
+
+    if (!partner)
+      return Promise.reject(
+        CustomAPIError.response(`Partner with Id: ${partnerId} does not exist`, HttpStatus.NOT_FOUND.code),
+      );
+
+    const job = await dataSources.jobDAOService.findById(value.jobId);
+
+    if (!job) throw new Error(`Job does not exist`);
+
+    let driverSub: RideShareDriverSubscription | null = null;
+    let customerSub: CustomerSubscription | null = null;
+    let vehicle: Vehicle[] | null = null;
+
+    const prevTechnician = await job.$get('technician');
+
+    if (!prevTechnician) throw new Error(`Assigned Technician does not exist`);
+
+    await prevTechnician.$remove('jobs', [job]);
+
+    await prevTechnician.update({ hasJob: false });
+
+    const technician = await dataSources.technicianDAOService.findById(value.techId);
+
+    if (!technician) throw new Error(`Reassigned Technician does not exist`);
+
+    if (value.client === 'Driver') driverSub = await job.$get('rideShareDriverSubscription');
+
+    if (value.client === 'Customer') customerSub = await job.$get('customerSubscription');
+
+    if (driverSub) {
+      vehicle = await driverSub.$get('vehicles');
+      //associate job with subscription
+      await driverSub.$add('jobs', [job]);
+    }
+
+    if (customerSub) {
+      vehicle = await customerSub.$get('vehicles');
+      await customerSub.$add('jobs', [job]);
+    }
+
+    if (!vehicle) throw new Error(`Vehicle does not exist`);
+
+    //associate job with vehicle
+    await vehicle[0].$add('jobs', [job]);
+
+    //associate technician with jobs
+    await technician.$add('jobs', [job]);
+
+    //update technician job status
+    await technician.update({ hasJob: true });
+
+    const jobs = await partner.$get('jobs');
+
+    appEventEmitter.emit(ASSIGN_DRIVER_JOB, {
+      techId: +value.techId,
+      partner,
+    } as AssignJobProps);
+
+    const response: HttpResponse<Job> = {
+      code: HttpStatus.OK.code,
+      message: `Reassigned Job Successfully.`,
+      results: jobs,
+    };
+
+    return Promise.resolve(response);
   }
 
   private static async doCancelJob(req: Request) {

@@ -27,3 +27,8 @@ export const getCustomerTransactionsHandler = authenticateRouteWrapper(async (re
   const response = await CustomerController.customerTransactions(req);
   res.status(response.code).json(response);
 });
+
+export const suggestWorkshopHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await CustomerController.suggestWorkshop(req);
+  res.status(response.code).json(response);
+});

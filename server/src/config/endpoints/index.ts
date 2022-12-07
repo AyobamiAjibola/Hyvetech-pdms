@@ -13,6 +13,7 @@ import userEndpoints from './user.endpoints';
 import checkListEndpoints from './check-list.endpoints';
 import transactionEndpoints from './transaction.endpoints';
 import estimateEndpoints from './estimate.endpoints';
+import invoiceEndpoints from './invoice.endpoints';
 
 const endpoints = authEndpoints
   .concat(appointmentEndpoints)
@@ -28,6 +29,7 @@ const endpoints = authEndpoints
   .concat(userEndpoints)
   .concat(checkListEndpoints)
   .concat(transactionEndpoints)
-  .concat(estimateEndpoints);
+  .concat(estimateEndpoints)
+  .concat(invoiceEndpoints);
 
 export default endpoints;
