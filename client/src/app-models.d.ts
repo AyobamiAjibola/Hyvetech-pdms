@@ -578,6 +578,8 @@ declare module '@app-models' {
     partnerId: number;
     tax: number;
     expiresIn: number;
+    createdAt: string;
+    updatedAt: string;
   }
 
   interface IPayStackBank {

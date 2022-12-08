@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IEstimate } from '@app-models';
+import { IBillingInformation, IEstimate } from '@app-models';
 import { useLocation } from 'react-router-dom';
 import { Alert, Avatar, Divider, Grid, Stack, Typography } from '@mui/material';
 import capitalize from 'capitalize';
@@ -16,6 +16,7 @@ function EstimatePage() {
   const [estimate, setEstimate] = useState<IEstimate>();
   const [owner, setOwner] = useState<string>('');
   const [parts, setParts] = useState<IPart[]>([]);
+  const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   const location = useLocation();
 
   useEffect(() => {
@@ -34,7 +35,7 @@ function EstimatePage() {
 
       const _owner = driver ? `${driver.firstName} ${driver.lastName}` : `${customer.firstName} ${customer.lastName}`;
       setOwner(capitalize.words(_owner));
-
+      setBillingInformation(customer.billingInformation);
       setParts(_parts);
     }
   }, [estimate]);
@@ -64,9 +65,20 @@ function EstimatePage() {
               <Typography variant="body1" gutterBottom>
                 {owner}
               </Typography>
-              <Typography variant="body1" gutterBottom>
-                {estimate.address}
-              </Typography>
+              {billingInformation ? (
+                <Typography variant="body1" gutterBottom>
+                  <Typography variant="body2" gutterBottom>
+                    {billingInformation.address} {billingInformation.district} {billingInformation.state}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    {billingInformation.phone}
+                  </Typography>
+                </Typography>
+              ) : (
+                <Typography variant="body1" gutterBottom>
+                  {estimate.address}
+                </Typography>
+              )}
             </Stack>
           </Grid>
           <Grid item xs>

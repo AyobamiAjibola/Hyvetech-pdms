@@ -24,6 +24,8 @@ import { appEventEmitter } from '../services/AppEventEmitter';
 import { AssignJobProps } from '../services/socketManager';
 import { appCommonTypes } from '../@types/app-common';
 import CustomerSubscription from '../models/CustomerSubscription';
+import Customer from '../models/Customer';
+import Vehicle from '../models/Vehicle';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
@@ -95,7 +97,7 @@ export default class InvoiceController {
 
     const dueAmount = estimate.grandTotal - estimate.depositAmount;
     const systemFee = estimate.depositAmount * 0.035;
-    const partnerFee = estimate.depositAmount - systemFee;
+    const partnerFee = Math.round((estimate.depositAmount - systemFee) * 100);
 
     //get default payment gateway
     const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
@@ -120,7 +122,7 @@ export default class InvoiceController {
       source: 'balance',
       recipient: recipientCode,
       reason: `Estimate-${estimate.code} Deposit`,
-      amount: partnerFee * 100,
+      amount: partnerFee,
     };
 
     const transferResponse = await axiosClient.post(endpoint, transfer);
@@ -128,7 +130,7 @@ export default class InvoiceController {
     const transferData = transferResponse.data.data;
 
     const transferTransactionValues: Partial<Attributes<Transaction>> = {
-      amount: partnerFee * 100,
+      amount: partnerFee,
       type: 'Transfer',
       reference: `${transferData.reference}:${transaction.reference}`,
       status: transferData.status,
@@ -213,6 +215,25 @@ export default class InvoiceController {
     return Promise.resolve(response);
   }
 
+  @TryCatch
+  public static async invoices(req: Request) {
+    const invoices = await dataSources.invoiceDAOService.findAll({
+      include: [
+        {
+          model: Estimate,
+          include: [Customer, Vehicle],
+        },
+        Transaction,
+      ],
+    });
+
+    return Promise.resolve({
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      results: invoices,
+    } as HttpResponse<Invoice>);
+  }
+
   /**
    * @name completeEstimateDeposit
    * @description The method a customer calls when they are ready to pay for outstanding deposit for an estimate.
@@ -279,7 +300,7 @@ export default class InvoiceController {
     const endpoint = '/transaction/initialize';
 
     const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}/${endpoint}`;
-    const amount = value.dueAmount * 100;
+    const amount = Math.round(value.dueAmount * 100);
 
     const initResponse = await axiosClient.post(`${endpoint}`, {
       email: customer.email,

@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import jwt from 'jsonwebtoken';
 
 import { IThunkAPIStatus } from '@app-types';
-import { signInAction, signOutAction } from '../actions/authenicationActions';
+import { garageSignUpAction, signInAction, signOutAction } from '../actions/authenicationActions';
 import { IPermission } from '@app-models';
 import { LOCAL_STORAGE } from '../../config/constants';
 import { CustomJwtPayload } from '@app-interfaces';
@@ -11,6 +11,10 @@ interface IAuthenticationState {
   signingInStatus: IThunkAPIStatus;
   signingInSuccess: string;
   signingInError?: string;
+
+  garageSignUpStatus: IThunkAPIStatus;
+  garageSignUpSuccess: string;
+  garageSignUpError: string;
 
   signOutStatus: IThunkAPIStatus;
   signOutSuccess: string;
@@ -28,6 +32,11 @@ const initialState: IAuthenticationState = {
   signingInError: '',
   signingInSuccess: '',
   signingInStatus: 'idle',
+
+  garageSignUpStatus: 'idle',
+  garageSignUpSuccess: '',
+  garageSignUpError: '',
+
   permissions: [],
 };
 
@@ -40,7 +49,11 @@ const authenticationSlice = createSlice({
       state.signingInSuccess = '';
       state.signingInError = '';
     },
-
+    clearGarageSignUpStatus(state: IAuthenticationState) {
+      state.garageSignUpStatus = 'idle';
+      state.garageSignUpSuccess = '';
+      state.garageSignUpError = '';
+    },
     clearLogoutStatus(state: IAuthenticationState) {
       state.signOutStatus = 'idle';
       state.signOutSuccess = '';
@@ -86,9 +99,25 @@ const authenticationSlice = createSlice({
           state.signOutError = action.payload.message;
         } else state.signOutError = action.error.message;
       });
+
+    builder
+      .addCase(garageSignUpAction.pending, state => {
+        state.garageSignUpStatus = 'loading';
+      })
+      .addCase(garageSignUpAction.fulfilled, (state, action) => {
+        state.garageSignUpStatus = 'completed';
+        state.garageSignUpSuccess = action.payload.message;
+      })
+      .addCase(garageSignUpAction.rejected, (state, action) => {
+        state.garageSignUpStatus = 'failed';
+
+        if (action.payload) {
+          state.garageSignUpError = action.payload.message;
+        } else state.garageSignUpError = action.error.message as string;
+      });
   },
 });
 
-export const { clearLoginStatus, clearLogoutStatus } = authenticationSlice.actions;
+export const { clearLoginStatus, clearLogoutStatus, clearGarageSignUpStatus } = authenticationSlice.actions;
 
 export default authenticationSlice.reducer;

@@ -18,6 +18,7 @@ import Partner from '../models/Partner';
 import Customer from '../models/Customer';
 import RideShareDriver from '../models/RideShareDriver';
 import { appEventEmitter } from '../services/AppEventEmitter';
+import BillingInformation from '../models/BillingInformation';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class EstimateController {
@@ -140,11 +141,21 @@ export default class EstimateController {
       //Super Admin should see all estimates
       if (!partner) {
         estimates = await dataSources.estimateDAOService.findAll({
-          include: [Vehicle, Customer, RideShareDriver, { model: Partner, include: [Contact] }],
+          include: [
+            Vehicle,
+            { model: Customer, include: [BillingInformation] },
+            RideShareDriver,
+            { model: Partner, include: [Contact] },
+          ],
         });
       } else {
         estimates = await partner.$get('estimates', {
-          include: [Vehicle, Customer, RideShareDriver, { model: Partner, include: [Contact] }],
+          include: [
+            Vehicle,
+            { model: Customer, include: [BillingInformation] },
+            RideShareDriver,
+            { model: Partner, include: [Contact] },
+          ],
         });
       }
 

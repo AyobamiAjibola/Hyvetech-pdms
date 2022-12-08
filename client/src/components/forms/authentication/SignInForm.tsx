@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, useFormikContext } from 'formik';
-import { Grid, InputAdornment, Typography } from '@mui/material';
+import { Grid, InputAdornment, Link } from '@mui/material';
 import TextInputField from '../fields/TextInputField';
 import { VerifiedUser, Visibility, VisibilityOff } from '@mui/icons-material';
 
@@ -65,10 +65,12 @@ function SignInForm() {
               ),
             }}
           />
-
-          <Typography textAlign="center" variant="h4" className="forgotPasswordText">
-            Forgot my password
-          </Typography>
+        </Grid>
+        <Grid item container my={2} justifyContent="space-between" alignItems="center" xs>
+          <Grid item />
+          <Grid item>
+            <Link>Forgot my password</Link>
+          </Grid>
         </Grid>
         <Grid item xs={12} md={6} sx={{ mt: 2 }}>
           <LoadingButton

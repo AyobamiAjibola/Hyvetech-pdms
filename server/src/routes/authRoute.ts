@@ -91,3 +91,9 @@ export const signOutHandler = authenticateRouteWrapper(async (req: Request, res:
 
   res.status(response.code).json(response);
 });
+
+export const garageSignUpHandler = async (req: Request, res: Response) => {
+  const response = await authenticationController.garageSignup(req);
+
+  res.status(response.code).json(response);
+};

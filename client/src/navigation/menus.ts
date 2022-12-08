@@ -75,7 +75,7 @@ export const driverSearchResultTabs: ITab[] = [
 ];
 
 export const customerSearchResultTabs: ITab[] = [
-  { tag: 'driver', name: 'Driver Profile', Element: GarageDriverProfile },
-  { tag: 'driver', name: 'Vehicles', Element: OwnerVehicles },
-  { tag: 'driver', name: 'Create Estimate', Element: Estimate },
+  { tag: 'profile', name: 'Driver Profile', Element: GarageDriverProfile },
+  { tag: 'vehicles', name: 'Vehicles', Element: OwnerVehicles },
+  { tag: 'estimate', name: 'Create Estimate', Element: Estimate },
 ];

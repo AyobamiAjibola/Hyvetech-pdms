@@ -1,6 +1,7 @@
 import {
   completeEstimateDepositHandler,
   generateInvoiceHandler,
+  getInvoicesHandler,
   updateCompletedInvoicePaymentHandler,
 } from '../../routes/invoiceRoute';
 import { appCommonTypes } from '../../@types/app-common';
@@ -24,6 +25,12 @@ const invoiceEndpoints: RouteEndpoints = [
     method: 'patch',
     path: '/transactions/update-completed-invoice-payment',
     handler: updateCompletedInvoicePaymentHandler,
+  },
+  {
+    name: 'get invoices',
+    method: 'get',
+    path: '/invoices',
+    handler: getInvoicesHandler,
   },
 ];
 

@@ -82,33 +82,36 @@ export default function useEstimate() {
   }, [dispatch]);
 
   const handleCreateEstimate = (values: IEstimateValues, options?: GenericObjectType) => {
-    const data = {
-      id: partnerId,
-      parts: values.parts,
-      labours: values.labours,
-      tax: values.tax,
-      addressType: values.addressType,
-      address: values.address,
-      firstName: values.firstName,
-      lastName: values.lastName,
-      phone: values.phone,
-      depositAmount: values.depositAmount,
-      jobDurationValue: values.jobDuration.count,
-      jobDurationUnit: values.jobDuration.interval,
-      vin: values.vin,
-      make: values.make,
-      model: values.model,
-      plateNumber: values.plateNumber,
-      modelYear: values.modelYear,
-      mileageValue: values.mileage.count,
-      mileageUnit: values.mileage.unit,
-      partsTotal: partTotal,
-      laboursTotal: labourTotal,
-      grandTotal,
-      url: options?.url,
-    };
+    if (+values.depositAmount <= grandTotal) {
+      const data = {
+        id: partnerId,
+        parts: values.parts,
+        labours: values.labours,
+        tax: values.tax,
+        addressType: values.addressType,
+        address: values.address,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        phone: values.phone,
+        depositAmount: values.depositAmount,
+        jobDurationValue: values.jobDuration.count,
+        jobDurationUnit: values.jobDuration.interval,
+        vin: values.vin,
+        make: values.make,
+        model: values.model,
+        plateNumber: values.plateNumber,
+        modelYear: values.modelYear,
+        mileageValue: values.mileage.count,
+        mileageUnit: values.mileage.unit,
+        partsTotal: partTotal,
+        laboursTotal: labourTotal,
+        grandTotal,
+        url: options?.url,
+      };
 
-    dispatch(createEstimateAction(data));
+      dispatch(createEstimateAction(data));
+    } else
+      setError({ message: `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${grandTotal}` });
   };
 
   const onEdit = (estimateId: number) => {

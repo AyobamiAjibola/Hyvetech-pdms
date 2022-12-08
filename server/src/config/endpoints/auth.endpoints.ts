@@ -1,4 +1,10 @@
-import { bootstrapHandler, signInHandler, signOutHandler, signupHandler } from '../../routes/authRoute';
+import {
+  bootstrapHandler,
+  garageSignUpHandler,
+  signInHandler,
+  signOutHandler,
+  signupHandler,
+} from '../../routes/authRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 
@@ -14,6 +20,12 @@ const authEndpoints: RouteEndpoints = [
     method: 'post',
     path: '/sign-up',
     handler: signupHandler,
+  },
+  {
+    name: 'Garage signUp',
+    method: 'post',
+    path: '/garage-sign-up',
+    handler: garageSignUpHandler,
   },
   {
     name: 'signOut',

@@ -34,8 +34,10 @@ import CheckListsPage from '../../pages/checkList/CheckListsPage';
 import CheckListPage from '../../pages/checkList/CheckListPage';
 import JobCheckListPage from '../../pages/checkList/JobCheckListPage';
 import JobCheckListReportPage from '../../pages/checkList/JobCheckListReportPage';
-import EstimatesPage from '../../pages/estimates/EstimatesPage';
-import EstimatePage from '../../pages/estimates/EstimatePage';
+import EstimatesPage from '../../pages/estimate/EstimatesPage';
+import EstimatePage from '../../pages/estimate/EstimatePage';
+import InvoicesPage from '../../pages/invoice/InvoicesPage';
+import InvoicePage from '../../pages/invoice/InvoicePage';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -94,6 +96,8 @@ function PrivateLayout() {
             <Route path="/job-check-list/:id" element={<JobCheckListPage />} />
             <Route path="/estimates" element={<EstimatesPage />} />
             <Route path="/estimates/:id" element={<EstimatePage />} />
+            <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />
           </Routes>
         </Box>

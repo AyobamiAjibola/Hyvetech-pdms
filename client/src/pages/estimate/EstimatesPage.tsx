@@ -104,8 +104,8 @@ function EstimatesPage() {
         align: 'center',
         width: 200,
         type: 'string',
-        valueGetter: ({ value }) => {
-          value ? moment(value).format('LLL') : '-';
+        valueFormatter: ({ value }) => {
+          return value ? moment(value).utc(false).format('LLL') : '-';
         },
         sortable: true,
       },
@@ -116,8 +116,8 @@ function EstimatesPage() {
         align: 'center',
         width: 200,
         type: 'string',
-        valueGetter: ({ value }) => {
-          value ? moment(value).format('LLL') : '-';
+        valueFormatter: ({ value }) => {
+          return value ? moment(value).utc(false).format('LLL') : '-';
         },
         sortable: true,
       },

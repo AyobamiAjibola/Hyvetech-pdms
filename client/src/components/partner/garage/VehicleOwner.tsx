@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import _ from 'lodash';
 import useAppSelector from '../../../hooks/useAppSelector';
 import useAppDispatch from '../../../hooks/useAppDispatch';
-import { getOwnersFilterDataAction } from '../../../store/actions/partnerActions';
+import { getOwnersFilterDataAction, getPartnerAction } from '../../../store/actions/partnerActions';
 import { useParams } from 'react-router-dom';
 import {
   Autocomplete,
@@ -14,7 +15,7 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
-import { IDriversFilterData } from '@app-interfaces';
+import { IDriversFilterData, ITab, PartnerPageContextProps } from '@app-interfaces';
 import { ICustomer } from '@app-models';
 import AppLoader from '../../loader/AppLoader';
 import { getCustomerAction } from '../../../store/actions/customerActions';
@@ -25,6 +26,8 @@ import { CustomerPageContext } from '../../../pages/customer/CustomerPage';
 import { clearGetOwnersFilterDataStatus } from '../../../store/reducers/partnerReducer';
 import { clearGetCustomersStatus } from '../../../store/reducers/customerReducer';
 import { reload } from '../../../utils/generic';
+import { PartnerPageContext } from '../../../pages/partner/PartnerPage';
+import { REQUIRED_PARTNER_SETTINGS } from '../../../config/constants';
 
 const filterOptions = createFilterOptions({
   matchFrom: 'any',
@@ -36,13 +39,16 @@ export default function VehicleOwner() {
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
   const [customer, setCustomer] = useState<ICustomer>();
+  const [tabs, setTabs] = useState<ITab[]>(customerSearchResultTabs);
+
+  const params = useParams();
+  const admin = useAdmin();
+
+  const { partner } = useContext(PartnerPageContext) as PartnerPageContextProps;
 
   const partnerReducer = useAppSelector(state => state.partnerReducer);
   const customerReducer = useAppSelector(state => state.customerReducer);
   const dispatch = useAppDispatch();
-
-  const params = useParams();
-  const admin = useAdmin();
 
   const partnerId = useMemo(() => {
     if (admin.isTechAdmin && admin.user) {
@@ -55,7 +61,31 @@ export default function VehicleOwner() {
   }, [admin.isTechAdmin, admin.user, params.id]);
 
   useEffect(() => {
-    if (partnerId) dispatch(getOwnersFilterDataAction(+partnerId));
+    if (partner) {
+      const requiredPartnerFields = _.pick(partner, Object.keys(REQUIRED_PARTNER_SETTINGS));
+
+      const hasError = Object.values(requiredPartnerFields).some(item => item === null);
+
+      const _tabs = [...tabs];
+
+      if (hasError) {
+        const tab = _tabs.find(_tab => _tab.tag === 'estimate');
+
+        if (tab) {
+          const index = _tabs.indexOf(tab);
+          _tabs[index].disableTab = true;
+          _tabs[index].name = 'Create Estimate (Disabled)';
+          setTabs(_tabs);
+        }
+      }
+    }
+  }, [partner, tabs]);
+
+  useEffect(() => {
+    if (partnerId) {
+      dispatch(getOwnersFilterDataAction(+partnerId));
+      dispatch(getPartnerAction(partnerId));
+    }
   }, [dispatch, partnerId]);
 
   useEffect(() => {
@@ -131,7 +161,7 @@ export default function VehicleOwner() {
         <Box hidden={customer === undefined}>
           <Divider orientation="horizontal" />
           <Paper sx={{ p: 3 }}>
-            <AppTab slideDirection="left" tabMenus={customerSearchResultTabs} />
+            <AppTab slideDirection="left" tabMenus={tabs} />
           </Paper>
         </Box>
       </Stack>

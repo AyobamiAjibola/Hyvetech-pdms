@@ -24,7 +24,7 @@ export default function AppTab(props: IProps) {
     <Box>
       <Tabs centered value={tabValue} onChange={handleChange} aria-label="icon label tabs example">
         {props.tabMenus.map((tab, index) => {
-          return <Tab label={tab.name} key={index} {...a11yProps(index)} />;
+          return <Tab disabled={tab.disableTab} label={tab.name} key={index} {...a11yProps(index)} />;
         })}
       </Tabs>
 

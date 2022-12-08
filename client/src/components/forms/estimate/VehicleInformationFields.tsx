@@ -83,8 +83,8 @@ function VehicleInformationFields(props: IProps) {
         <Grid item xs>
           <SelectField
             data={[
-              { label: 'mph', value: 'mph' },
-              { label: 'kmph', value: 'kmph' },
+              { label: 'miles', value: 'miles' },
+              { label: 'km', value: 'km' },
             ]}
             onChange={props.handleChange}
             value={props.values.mileage.unit}

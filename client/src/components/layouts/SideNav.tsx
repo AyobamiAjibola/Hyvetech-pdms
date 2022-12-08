@@ -76,7 +76,11 @@ function SideNav() {
       setNavs(
         sideNavs.filter(
           value =>
-            value.tag === 'all' || value.tag === 'super' || value.tag === 'drivers' || value.name === 'Estimates',
+            value.tag === 'all' ||
+            value.tag === 'super' ||
+            value.tag === 'drivers' ||
+            value.name === 'Estimates' ||
+            value.name === 'Invoices',
         ),
       );
     if (admin.isTechAdmin) setNavs(sideNavs.filter(value => value.tag === 'techs'));

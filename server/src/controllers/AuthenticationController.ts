@@ -8,17 +8,33 @@ import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
 import Generic from '../utils/Generic';
 import { InferAttributes } from 'sequelize/types';
-import QueueManager from '../services/QueueManager';
+import { QueueManager } from 'rabbitmq-email-manager';
 import email_content from '../resources/templates/email/email_content';
 import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
-import { QUEUE_EVENTS } from '../config/constants';
+import { CATEGORIES, QUEUE_EVENTS } from '../config/constants';
 import dataSources from '../services/dao';
 import settings from '../config/settings';
-import { Op } from 'sequelize';
+import { CreationAttributes, Op } from 'sequelize';
 import Permission from '../models/Permission';
 import Partner from '../models/Partner';
+import { TryCatch } from '../decorators';
+import Contact from '../models/Contact';
+import PartnerController from './PartnerController';
+import garage_partner_welcome_email from '../resources/templates/email/garage_partner_welcome_email';
+import capitalize from 'capitalize';
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
+
+export interface IGarageSignupModel {
+  firstName: string;
+  lastName: string;
+  name: string;
+  email: string;
+  phone: string;
+  dialCode: string;
+  state: string;
+  isRegistered: boolean;
+}
 
 export default class AuthenticationController {
   private declare readonly passwordEncoder: BcryptPasswordEncoder;
@@ -86,7 +102,7 @@ export default class AuthenticationController {
       });
 
       //todo: Send email with credentials
-      await QueueManager.dispatch({
+      await QueueManager.publish({
         queue: QUEUE_EVENTS.name,
         data: {
           to: user.email,
@@ -313,5 +329,132 @@ export default class AuthenticationController {
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  @TryCatch
+  public async garageSignup(req: Request) {
+    const { error, value } = Joi.object<IGarageSignupModel>({
+      firstName: Joi.string().max(80).label('First Name').required(),
+      lastName: Joi.string().max(80).label('Last Name').required(),
+      name: Joi.string().required().label('Workshop/Business Name'),
+      email: Joi.string().email().label('Email Address').required(),
+      phone: Joi.string().length(11).required().label('Phone Number'),
+      dialCode: Joi.string().required().label('Dial Code'),
+      state: Joi.string().label('State').required(),
+      isRegistered: Joi.boolean().truthy().label('Legally Registered').required(),
+    }).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    if (!value)
+      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+
+    //check if partner with email or name already exist
+    const partnerExist = await dataSources.partnerDAOService.findByAny({
+      where: {
+        [Op.or]: [{ name: value.name }, { email: value.email }],
+      },
+    });
+
+    if (partnerExist)
+      return Promise.reject(
+        CustomAPIError.response(`Partner with name or email already exist`, HttpStatus.BAD_REQUEST.code),
+      );
+
+    const state = await dataSources.stateDAOService.findByAny({
+      where: {
+        name: value.state,
+      },
+    });
+
+    if (!state) return Promise.reject(CustomAPIError.response(`State does not exist`, HttpStatus.NOT_FOUND.code));
+
+    const password = <string>process.env.PARTNER_PASS;
+
+    const partnerValues: Partial<Partner> = {
+      email: value.email,
+      name: value.name,
+      phone: value.phone,
+      slug: Generic.generateSlug(value.name),
+      totalStaff: 0,
+      totalTechnicians: 0,
+      yearOfIncorporation: 0,
+    };
+
+    const userValues: Partial<User> = {
+      username: value.email,
+      email: value.email,
+      firstName: value.firstName,
+      lastName: value.lastName,
+      active: true,
+      password,
+      rawPassword: password,
+    };
+
+    const contactValues: Partial<Contact> = {
+      state: state.name,
+      country: 'Nigeria',
+    };
+
+    //find garage category
+    const category = await dataSources.categoryDAOService.findByAny({
+      where: {
+        name: CATEGORIES[3].name,
+      },
+    });
+
+    //find garage admin role
+    const role = await dataSources.roleDAOService.findByAny({
+      where: { slug: settings.roles[4] },
+    });
+
+    if (!category)
+      return Promise.reject(CustomAPIError.response(`Category does not exist`, HttpStatus.BAD_REQUEST.code));
+
+    if (!role) return Promise.reject(CustomAPIError.response(`Role does not exist`, HttpStatus.NOT_FOUND.code));
+
+    //create partner
+    const partner = await dataSources.partnerDAOService.create(<CreationAttributes<Partner>>partnerValues);
+
+    //create default admin user
+    const user = await dataSources.userDAOService.create(<CreationAttributes<User>>userValues);
+
+    const contact = await dataSources.contactDAOService.create(<CreationAttributes<Contact>>contactValues);
+
+    await user.$add('roles', [role]);
+    await partner.$add('categories', [category]);
+    await partner.$set('contact', contact);
+    await partner.$set('users', user);
+
+    const result = PartnerController.formatPartner(partner);
+
+    const mailSubject = `Welcome to AutoHyve!`;
+
+    const mailText = garage_partner_welcome_email({
+      partnerName: capitalize(partnerValues.name as string),
+      password: userValues.rawPassword as string,
+      appUrl: <string>process.env.CLIENT_HOST,
+    });
+
+    await QueueManager.publish({
+      queue: QUEUE_EVENTS.name,
+      data: {
+        to: user.email,
+        from: {
+          name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+          address: <string>process.env.SMTP_EMAIL_FROM,
+        },
+        subject: mailSubject,
+        html: mailText,
+        bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      },
+    });
+
+    const response: HttpResponse<Partner> = {
+      message: `Account successfully created.`,
+      code: HttpStatus.OK.code,
+      result,
+    };
+
+    return Promise.resolve(response);
   }
 }

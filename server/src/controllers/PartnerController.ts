@@ -92,11 +92,11 @@ export default class PartnerController {
     this.passwordEncoder = passwordEncoder;
   }
 
-  private static formatPartners(partners: Partner[]) {
+  public static formatPartners(partners: Partner[]) {
     return partners.map(partner => this.formatPartner(partner));
   }
 
-  private static formatPartner(partner: Partner) {
+  public static formatPartner(partner: Partner) {
     const workingHours = partner.workingHours;
     const brands = partner.brands;
 

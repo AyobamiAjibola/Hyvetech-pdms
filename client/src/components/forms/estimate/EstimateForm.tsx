@@ -478,6 +478,7 @@ function EstimateForm(props: IProps) {
             <Grid item xs>
               <SelectField
                 data={[
+                  { label: 'day', value: 'day' },
                   { label: 'week', value: 'week' },
                   { label: 'month', value: 'month' },
                   { label: 'year', value: 'year' },

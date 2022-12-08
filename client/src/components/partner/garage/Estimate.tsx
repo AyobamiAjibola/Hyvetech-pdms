@@ -8,9 +8,12 @@ import useAppSelector from '../../../hooks/useAppSelector';
 import AppAlert from '../../alerts/AppAlert';
 import useEstimate from '../../../hooks/useEstimate';
 import { CustomerPageContext } from '../../../pages/customer/CustomerPage';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { clearCreateEstimateStatus } from '../../../store/reducers/estimateReducer';
 
 export default function Estimate() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
+  const dispatch = useAppDispatch();
 
   const { customer } = useContext(CustomerPageContext) as CustomerPageContextProps;
 
@@ -29,6 +32,10 @@ export default function Estimate() {
     }
     // eslint-disable-next-line
   }, [customer]);
+
+  useEffect(() => {
+    dispatch(clearCreateEstimateStatus());
+  }, [dispatch]);
 
   return (
     <React.Fragment>

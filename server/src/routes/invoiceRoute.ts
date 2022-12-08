@@ -17,3 +17,9 @@ export const updateCompletedInvoicePaymentHandler = authenticateRouteWrapper(asy
 
   res.status(response.code).json(response);
 });
+
+export const getInvoicesHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await InvoiceController.invoices(req);
+
+  res.status(response.code).json(response);
+});

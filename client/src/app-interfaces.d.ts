@@ -79,6 +79,7 @@ declare module '@app-interfaces' {
     tag?: string;
     name: string;
     Element: ReturnType<JSX.Element>;
+    disableTab?: boolean;
   }
 
   interface AppContextProps {

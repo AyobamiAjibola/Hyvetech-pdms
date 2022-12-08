@@ -7,6 +7,7 @@ import {
   HomeRepairService,
   Payments,
   PlaylistAddCheck,
+  Receipt,
   RequestQuote,
   SvgIconComponent,
   TaxiAlert,
@@ -22,7 +23,8 @@ export interface ISideNav {
 }
 
 const SignInPage = React.lazy(() => import('../pages/authentication/SignInPage'));
-
+const GarageSignInPage = React.lazy(() => import('../pages/authentication/GarageSignInPage'));
+const GarageSignUpPage = React.lazy(() => import('../pages/authentication/GarageSignUpPage'));
 const HomePage = React.lazy(() => import('../context/AppContextProvider'));
 
 export const sideNavs: ISideNav[] = [
@@ -39,6 +41,12 @@ export const sideNavs: ISideNav[] = [
     name: 'Estimates',
     path: '/estimates',
     Icon: RequestQuote,
+  },
+  {
+    tag: 'super',
+    name: 'Invoices',
+    path: '/invoices',
+    Icon: Receipt,
   },
   { tag: 'drivers', name: 'Drivers', path: '/drivers', Icon: TaxiAlert },
   {
@@ -66,6 +74,8 @@ export const sideNavs: ISideNav[] = [
 
 export const routes = [
   { name: 'Sign in', path: '/', Element: SignInPage, isPublic: true },
+  { name: 'Workshop Login', path: '/garage/login', Element: GarageSignInPage, isPublic: true },
+  { name: 'Workshop Register', path: '/garage/register', Element: GarageSignUpPage, isPublic: true },
   {
     name: 'Home',
     path: '*',
