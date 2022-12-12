@@ -1,8 +1,8 @@
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Divider, Grid, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Save } from '@mui/icons-material';
+import { Add, Remove, Save, Send, Update } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -19,6 +19,7 @@ import { IVINDecoderSchema } from '@app-interfaces';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
+import { ESTIMATE_STATUS } from '../../../config/constants';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -30,6 +31,7 @@ interface IProps {
   grandTotal: number;
   showCreate?: boolean;
   showEdit?: boolean;
+  setSave: Dispatch<SetStateAction<boolean>>;
 }
 
 const { fields } = estimateModel;
@@ -492,16 +494,28 @@ function EstimateForm(props: IProps) {
             </Grid>
           </Grid>
           <Grid item xs={12}>
-            <Divider sx={{ mb: 1 }} flexItem orientation="horizontal" />
+            <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
             <LoadingButton
               type="submit"
               loading={isSubmitting}
               disabled={isSubmitting}
               variant="contained"
               color="secondary"
-              endIcon={<Save />}
+              endIcon={props.showEdit ? <Update /> : <Save />}
+              onClick={() => props.setSave(true)}
               size="large">
-              Save
+              {props.showEdit ? 'Update' : 'Save'}
+            </LoadingButton>
+            <LoadingButton
+              sx={{ ml: 2 }}
+              type="submit"
+              loading={isSubmitting}
+              disabled={isSubmitting || (props.showEdit && values.status !== ESTIMATE_STATUS.draft)}
+              variant="contained"
+              color="success"
+              endIcon={<Send />}
+              size="large">
+              Send
             </LoadingButton>
           </Grid>
         </Grid>

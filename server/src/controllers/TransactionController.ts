@@ -114,8 +114,8 @@ export default class TransactionController {
 
     const endpoint = '/transaction/initialize';
 
-    const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}/${endpoint}`;
-    const amount = value.depositAmount * 100;
+    const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}${endpoint}`;
+    const amount = Math.round(value.depositAmount * 100);
 
     const initResponse = await axiosClient.post(`${endpoint}`, {
       email: customer.email,

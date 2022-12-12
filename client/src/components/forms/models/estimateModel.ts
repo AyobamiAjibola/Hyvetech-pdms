@@ -33,6 +33,7 @@ export interface IEstimateValues {
   phone: string;
   depositAmount: string;
   jobDuration: { count: string; interval: string };
+  status?: string;
 }
 
 const fields = {
@@ -213,7 +214,7 @@ const schema = Yup.object().shape({
   modelYear: Yup.string().required(fields.modelYear.error.required).label(fields.modelYear.label),
   plateNumber: Yup.string().required(fields.plateNumber.error.required).label(fields.plateNumber.label),
   tax: Yup.string().nullable().label(fields.tax.label),
-  depositAmount: Yup.string().nullable().label(fields.depositAmount.label),
+  depositAmount: Yup.string().required().label(fields.depositAmount.label),
 });
 
 const estimateModel = {

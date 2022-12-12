@@ -427,11 +427,6 @@ export const JOB_STATUS = {
   canceled: 'Canceled',
 };
 
-export const INVOICE_STATUS = {
-  paid: 'PAID',
-  balance: 'DUE BALANCE',
-};
-
 export const INITIAL_CHECK_LIST_VALUES: CheckListSectionType = {
   id: v4(),
   title: '',
@@ -456,3 +451,15 @@ export const INITIAL_PARTS_VALUE = {
 
 export const INITIAL_LABOURS_VALUE = { title: '', cost: '0' };
 export const ESTIMATE_EXPIRY_DAYS = 7;
+
+export const ESTIMATE_STATUS = {
+  sent: 'Sent',
+  invoiced: 'Invoiced',
+  draft: 'Draft',
+};
+
+export const INVOICE_STATUS = {
+  paid: 'Paid',
+  overDue: 'Overdue',
+  dueSoon: 'Due soon',
+};

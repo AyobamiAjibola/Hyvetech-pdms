@@ -8,6 +8,21 @@ export const createEstimateHandler = authenticateRouteWrapper(async (req, res) =
   res.status(response.code).json(response);
 });
 
+export const saveEstimateHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await estimateController.save(req);
+  res.status(response.code).json(response);
+});
+
+export const updateEstimateHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await estimateController.update(req);
+  res.status(response.code).json(response);
+});
+
+export const sendDraftEstimateHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await estimateController.sendDraft(req);
+  res.status(response.code).json(response);
+});
+
 export const getEstimatesHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await estimateController.estimates(req);
   res.status(response.code).json(response);

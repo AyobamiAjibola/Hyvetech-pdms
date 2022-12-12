@@ -1,7 +1,7 @@
-import React, { createContext, useMemo } from 'react';
+import React, { createContext, useEffect, useMemo } from 'react';
 import { EstimatePageContextProps } from '@app-interfaces';
 import { IEstimate } from '@app-models';
-import { Button, Grid, Typography } from '@mui/material';
+import { Button, Chip, Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
@@ -15,11 +15,21 @@ import EstimateForm from '../../components/forms/estimate/EstimateForm';
 import useEstimate from '../../hooks/useEstimate';
 import { useNavigate } from 'react-router-dom';
 import useAdmin from '../../hooks/useAdmin';
+import { ESTIMATE_STATUS } from '../../config/constants';
+import {
+  clearCreateEstimateStatus,
+  clearGetEstimateStatus,
+  clearSaveEstimateStatus,
+  clearSendDraftEstimateStatus,
+  clearUpdateEstimateStatus,
+} from '../../store/reducers/estimateReducer';
+import useAppDispatch from '../../hooks/useAppDispatch';
 
 export const EstimatePageContext = createContext<EstimatePageContextProps | null>(null);
 
 function EstimatesPage() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
+  const dispatch = useAppDispatch();
 
   const estimate = useEstimate();
   const { isTechAdmin } = useAdmin();
@@ -34,6 +44,32 @@ function EstimatesPage() {
         align: 'center',
         sortable: true,
         type: 'number',
+      },
+      {
+        field: 'code',
+        headerName: 'Code',
+        headerAlign: 'center',
+        align: 'center',
+        sortable: true,
+        type: 'string',
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 100,
+        sortable: true,
+        renderCell: params => {
+          return params.row.status === ESTIMATE_STATUS.sent ? (
+            <Chip label={ESTIMATE_STATUS.sent} size="small" color="info" />
+          ) : params.row.status === ESTIMATE_STATUS.draft ? (
+            <Chip label={ESTIMATE_STATUS.draft} size="small" color="warning" />
+          ) : params.row.status === ESTIMATE_STATUS.invoiced ? (
+            <Chip label={ESTIMATE_STATUS.invoiced} size="small" color="success" />
+          ) : null;
+        },
       },
       {
         field: 'fullName',
@@ -105,7 +141,7 @@ function EstimatesPage() {
         width: 200,
         type: 'string',
         valueFormatter: ({ value }) => {
-          return value ? moment(value).utc(false).format('LLL') : '-';
+          return value ? moment(value).format('LLL') : '-';
         },
         sortable: true,
       },
@@ -117,7 +153,7 @@ function EstimatesPage() {
         width: 200,
         type: 'string',
         valueFormatter: ({ value }) => {
-          return value ? moment(value).utc(false).format('LLL') : '-';
+          return value ? moment(value).format('LLL') : '-';
         },
         sortable: true,
       },
@@ -163,6 +199,16 @@ function EstimatesPage() {
       },
     ] as GridColDef<IEstimate>[];
   }, [estimate, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearCreateEstimateStatus());
+      dispatch(clearSaveEstimateStatus());
+      dispatch(clearUpdateEstimateStatus());
+      dispatch(clearSendDraftEstimateStatus());
+      dispatch(clearGetEstimateStatus());
+    };
+  }, [dispatch]);
 
   return (
     <EstimatePageContext.Provider
@@ -218,8 +264,10 @@ function EstimatesPage() {
           <Formik
             initialValues={estimate.initialValues}
             validationSchema={estimateModel.schema}
-            onSubmit={values => {
-              estimate.handleCreateEstimate(values, { url: 'yes' });
+            onSubmit={(values, formikHelpers) => {
+              if (estimate.save) {
+                estimate.handleSaveEstimate(values, formikHelpers);
+              } else estimate.handleCreateEstimate(values, formikHelpers);
             }}>
             <EstimateForm
               showCreate={estimate.showCreate}
@@ -229,6 +277,10 @@ function EstimatesPage() {
               labourTotal={estimate.labourTotal}
               partTotal={estimate.partTotal}
               grandTotal={estimate.grandTotal}
+              isSubmitting={
+                estimateReducer.createEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading'
+              }
+              setSave={estimate.setSave}
             />
           </Formik>
         }
@@ -242,7 +294,11 @@ function EstimatesPage() {
           <Formik
             initialValues={estimate.initialValues}
             validationSchema={estimateModel.schema}
-            onSubmit={estimate.handleCreateEstimate}
+            onSubmit={(values, formikHelpers) => {
+              if (estimate.save) {
+                estimate.handleUpdateEstimate(values, formikHelpers);
+              } else estimate.handleSendDraftEstimate(values, formikHelpers);
+            }}
             enableReinitialize>
             <EstimateForm
               showEdit={estimate.showEdit}
@@ -252,6 +308,11 @@ function EstimatesPage() {
               labourTotal={estimate.labourTotal}
               partTotal={estimate.partTotal}
               grandTotal={estimate.grandTotal}
+              isSubmitting={
+                estimateReducer.updateEstimateStatus === 'loading' ||
+                estimateReducer.sendDraftEstimateStatus === 'loading'
+              }
+              setSave={estimate.setSave}
             />
           </Formik>
         }

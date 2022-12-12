@@ -558,6 +558,7 @@ declare module '@app-models' {
   interface IEstimate {
     id: number;
     code: string;
+    status: string;
     parts: string[];
     labours: string[];
     partsTotal: number;
@@ -575,6 +576,7 @@ declare module '@app-models' {
     vehicle: IVehicle;
     vehicleId: number;
     partner: IPartner;
+    invoice: IInvoice;
     partnerId: number;
     tax: number;
     expiresIn: number;
@@ -616,12 +618,24 @@ declare module '@app-models' {
     id: number;
     code: string;
     status: string;
+    purpose: string;
     grandTotal: number;
     depositAmount: number;
     dueAmount: number;
-    transactions: ITransaction[];
+    dueDate: Date;
+    parts: string[];
+    labours: string[];
+    partsTotal: number;
+    laboursTotal: number;
+    tax: string;
+    jobDurationValue: number;
+    jobDurationUnit: string;
+    address: string;
+    addressType: string;
+    expiresIn: number;
+    url: string;
     estimate: IEstimate;
-    estimateId: number;
+    transactions: ITransaction[];
     createdAt: string;
     updatedAt: string;
   }

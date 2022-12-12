@@ -27,6 +27,9 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
   @Column(DataType.STRING)
   declare status: string;
 
+  @Column(DataType.STRING)
+  declare purpose: string;
+
   @Column(DataType.DOUBLE)
   declare grandTotal: number;
 
@@ -35,6 +38,42 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
 
   @Column(DataType.DOUBLE)
   declare dueAmount: number;
+
+  @Column(DataType.DATE)
+  declare dueDate: Date;
+
+  @Column(DataType.ARRAY(DataType.JSONB))
+  declare parts: string[];
+
+  @Column(DataType.ARRAY(DataType.JSONB))
+  declare labours: string[];
+
+  @Column(DataType.DOUBLE)
+  declare partsTotal: number;
+
+  @Column(DataType.DOUBLE)
+  declare laboursTotal: number;
+
+  @Column(DataType.STRING)
+  declare tax: string;
+
+  @Column(DataType.INTEGER)
+  declare jobDurationValue: number;
+
+  @Column(DataType.STRING)
+  declare jobDurationUnit: string;
+
+  @Column(DataType.STRING)
+  declare address: string;
+
+  @Column(DataType.STRING)
+  declare addressType: string;
+
+  @Column({ type: DataType.INTEGER })
+  declare expiresIn: number;
+
+  @Column(DataType.STRING)
+  declare url: string;
 
   @HasMany(() => Transaction)
   declare transactions: NonAttribute<Transaction[]>;

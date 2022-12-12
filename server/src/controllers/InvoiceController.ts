@@ -4,15 +4,7 @@ import Joi from 'joi';
 import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
 import dataSources from '../services/dao';
-import {
-  ASSIGN_DRIVER_JOB,
-  DRIVE_IN_CATEGORY,
-  INIT_TRANSACTION,
-  INVOICE_STATUS,
-  JOB_STATUS,
-  ONE_TIME_DRIVE_IN_PLAN,
-  SERVICES,
-} from '../config/constants';
+import { INIT_TRANSACTION, INVOICE_STATUS, JOB_STATUS } from '../config/constants';
 import axiosClient from '../services/api/axiosClient';
 import { Attributes, CreationAttributes } from 'sequelize';
 import Transaction from '../models/Transaction';
@@ -21,11 +13,10 @@ import Generic from '../utils/Generic';
 import Estimate from '../models/Estimate';
 import Job from '../models/Job';
 import { appEventEmitter } from '../services/AppEventEmitter';
-import { AssignJobProps } from '../services/socketManager';
 import { appCommonTypes } from '../@types/app-common';
-import CustomerSubscription from '../models/CustomerSubscription';
 import Customer from '../models/Customer';
 import Vehicle from '../models/Vehicle';
+import moment from 'moment';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
@@ -150,42 +141,15 @@ export default class InvoiceController {
       depositAmount: estimate.depositAmount,
       dueAmount,
       grandTotal: estimate.grandTotal,
-      status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.balance,
+      status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.dueSoon,
+      dueDate: moment().days(estimate.expiresIn).toDate(),
     };
-
-    //create customer subscription
-    const customerSubscriptionValues: Partial<CustomerSubscription> = {
-      amount: `${estimate.grandTotal}`,
-      planCategory: DRIVE_IN_CATEGORY,
-      paymentPlan: ONE_TIME_DRIVE_IN_PLAN,
-      subscriber: `${customer.firstName} ${customer.lastName}`,
-      planType: `${partner.name}: Estimate-${estimate.code}`,
-      status: 'Active',
-      inspections: 0,
-      vehicleCount: 1,
-      minVehicle: 1,
-      maxVehicle: 1,
-      maxMobile: 0,
-      maxDriveIn: 1,
-      subscriptionDate: new Date(),
-      isHybrid: false,
-      programme: SERVICES[0].name,
-      modeOfService: DRIVE_IN_CATEGORY,
-    };
-
-    const customerSubscription = await dataSources.customerSubscriptionDAOService.create(
-      customerSubscriptionValues as CreationAttributes<CustomerSubscription>,
-    );
-
-    await customer.$add('subscriptions', [customerSubscription]);
 
     const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
 
     await estimate.$set('invoice', invoice);
     await invoice.$set('transactions', [transaction]);
     await partner.$set('transactions', [transferTransaction]);
-    await customerSubscription.$add('vehicles', [vehicle]);
-    await customerSubscription.$set('transaction', transaction);
 
     //Update Initial Deposit Transaction
     await transaction.update({
@@ -205,7 +169,6 @@ export default class InvoiceController {
     const job = await this.doAssignJob(estimate);
 
     await partner.$add('jobs', [job]);
-    await customerSubscription.$add('jobs', [job]);
 
     const response: HttpResponse<Invoice> = {
       code: HttpStatus.OK.code,
@@ -299,7 +262,7 @@ export default class InvoiceController {
 
     const endpoint = '/transaction/initialize';
 
-    const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}/${endpoint}`;
+    const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}${endpoint}`;
     const amount = Math.round(value.dueAmount * 100);
 
     const initResponse = await axiosClient.post(`${endpoint}`, {
@@ -396,14 +359,6 @@ export default class InvoiceController {
 
     if (!customer) throw new Error('Vehicle does not exist');
 
-    const checkLists = await partner.$get('checkLists');
-
-    if (!checkLists.length) throw new Error('Partner does not have a job checklist');
-
-    const technicians = await partner.$get('technicians');
-
-    if (!technicians.length) throw new Error('Partner does not have technicians to handle jobs');
-
     const jobValues: Partial<Job> = {
       status: JOB_STATUS.pending,
       type: `Inspection`,
@@ -412,9 +367,6 @@ export default class InvoiceController {
     };
 
     const job = await dataSources.jobDAOService.create(jobValues as CreationAttributes<Job>);
-
-    //create job check list
-    await job.update({ checkList: JSON.stringify(checkLists[0].toJSON()) });
 
     //associate partner with job
     await partner.$add('jobs', [job]);
@@ -427,16 +379,6 @@ export default class InvoiceController {
     });
 
     await vehicle.$add('jobs', [job]);
-
-    await technicians[0].update({ hasJob: true });
-
-    //associate technician with jobs
-    await technicians[0].$add('jobs', [job]);
-
-    appEventEmitter.emit(ASSIGN_DRIVER_JOB, {
-      techId: technicians[0].id,
-      partner,
-    } as AssignJobProps);
 
     return job;
   }

@@ -5014,3 +5014,15 @@ export const DIAL_CODES = [
     emoji: '🇿🇼',
   },
 ];
+
+export const ESTIMATE_STATUS = {
+  sent: 'Sent',
+  invoiced: 'Invoiced',
+  draft: 'Draft',
+};
+
+export const INVOICE_STATUS = {
+  paid: 'Paid',
+  overDue: 'Overdue',
+  dueSoon: 'Due soon',
+};

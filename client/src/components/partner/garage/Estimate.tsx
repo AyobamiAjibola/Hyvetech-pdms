@@ -9,7 +9,7 @@ import AppAlert from '../../alerts/AppAlert';
 import useEstimate from '../../../hooks/useEstimate';
 import { CustomerPageContext } from '../../../pages/customer/CustomerPage';
 import useAppDispatch from '../../../hooks/useAppDispatch';
-import { clearCreateEstimateStatus } from '../../../store/reducers/estimateReducer';
+import { clearCreateEstimateStatus, clearSaveEstimateStatus } from '../../../store/reducers/estimateReducer';
 
 export default function Estimate() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
@@ -35,7 +35,9 @@ export default function Estimate() {
 
   useEffect(() => {
     dispatch(clearCreateEstimateStatus());
-  }, [dispatch]);
+    dispatch(clearSaveEstimateStatus());
+    estimate.setSave(false);
+  }, [dispatch, estimate]);
 
   return (
     <React.Fragment>
@@ -47,18 +49,25 @@ export default function Estimate() {
         }}>
         <Box sx={{ minWidth: '100%' }}>
           <Formik
-            onSubmit={estimate.handleCreateEstimate}
+            onSubmit={(values, formikHelpers) => {
+              if (estimate.save) {
+                estimate.handleSaveEstimate(values, formikHelpers);
+              } else estimate.handleCreateEstimate(values, formikHelpers);
+            }}
             initialValues={estimate.initialValues}
             validationSchema={estimateModel.schema}
             enableReinitialize>
             <EstimateForm
-              isSubmitting={estimateReducer.createEstimateStatus === 'loading'}
+              isSubmitting={
+                estimateReducer.createEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading'
+              }
               setGrandTotal={estimate.setGrandTotal}
               setPartTotal={estimate.setPartTotal}
               setLabourTotal={estimate.setLabourTotal}
               grandTotal={estimate.grandTotal}
               labourTotal={estimate.labourTotal}
               partTotal={estimate.partTotal}
+              setSave={estimate.setSave}
             />
           </Formik>
         </Box>

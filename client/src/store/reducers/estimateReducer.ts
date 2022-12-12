@@ -1,12 +1,30 @@
 import { IThunkAPIStatus } from '@app-types';
 import { createSlice } from '@reduxjs/toolkit';
-import { createEstimateAction, getEstimatesAction } from '../actions/estimateActions';
+import {
+  createEstimateAction,
+  getEstimatesAction,
+  saveEstimateAction,
+  sendDraftEstimateAction,
+  updateEstimateAction,
+} from '../actions/estimateActions';
 import { IEstimate } from '@app-models';
 
 interface IEstimateState {
   createEstimateStatus: IThunkAPIStatus;
   createEstimateSuccess: string;
   createEstimateError?: string;
+
+  saveEstimateStatus: IThunkAPIStatus;
+  saveEstimateSuccess: string;
+  saveEstimateError?: string;
+
+  updateEstimateStatus: IThunkAPIStatus;
+  updateEstimateSuccess: string;
+  updateEstimateError?: string;
+
+  sendDraftEstimateStatus: IThunkAPIStatus;
+  sendDraftEstimateSuccess: string;
+  sendDraftEstimateError?: string;
 
   getEstimatesStatus: IThunkAPIStatus;
   getEstimatesSuccess: string;
@@ -20,6 +38,19 @@ const initialState: IEstimateState = {
   createEstimateError: '',
   createEstimateStatus: 'idle',
   createEstimateSuccess: '',
+
+  saveEstimateError: '',
+  saveEstimateStatus: 'idle',
+  saveEstimateSuccess: '',
+
+  updateEstimateError: '',
+  updateEstimateStatus: 'idle',
+  updateEstimateSuccess: '',
+
+  sendDraftEstimateError: '',
+  sendDraftEstimateStatus: 'idle',
+  sendDraftEstimateSuccess: '',
+
   getEstimatesError: '',
   getEstimatesStatus: 'idle',
   getEstimatesSuccess: '',
@@ -37,6 +68,24 @@ const estimateSlice = createSlice({
       state.createEstimateSuccess = '';
       state.createEstimateError = '';
     },
+
+    clearSaveEstimateStatus(state: IEstimateState) {
+      state.saveEstimateStatus = 'idle';
+      state.saveEstimateSuccess = '';
+      state.saveEstimateError = '';
+    },
+
+    clearUpdateEstimateStatus(state: IEstimateState) {
+      state.updateEstimateStatus = 'idle';
+      state.updateEstimateSuccess = '';
+      state.updateEstimateError = '';
+    },
+
+    clearSendDraftEstimateStatus(state: IEstimateState) {
+      state.sendDraftEstimateStatus = 'idle';
+      state.sendDraftEstimateSuccess = '';
+      state.sendDraftEstimateError = '';
+    },
     clearGetEstimateStatus(state: IEstimateState) {
       state.getEstimatesStatus = 'idle';
       state.getEstimatesSuccess = '';
@@ -53,9 +102,7 @@ const estimateSlice = createSlice({
         state.createEstimateStatus = 'completed';
         state.createEstimateSuccess = action.payload.message;
 
-        const newEstimate = action.payload.result as IEstimate;
-
-        state.estimates.push(newEstimate);
+        state.estimate = action.payload.result as IEstimate;
       })
       .addCase(createEstimateAction.rejected, (state, action) => {
         state.createEstimateStatus = 'failed';
@@ -63,6 +110,57 @@ const estimateSlice = createSlice({
         if (action.payload) {
           state.createEstimateError = action.payload.message;
         } else state.createEstimateError = action.error.message;
+      });
+
+    builder
+      .addCase(saveEstimateAction.pending, state => {
+        state.saveEstimateStatus = 'loading';
+      })
+      .addCase(saveEstimateAction.fulfilled, (state, action) => {
+        state.saveEstimateStatus = 'completed';
+        state.saveEstimateSuccess = action.payload.message;
+        state.estimate = action.payload.result as IEstimate;
+      })
+      .addCase(saveEstimateAction.rejected, (state, action) => {
+        state.saveEstimateStatus = 'failed';
+
+        if (action.payload) {
+          state.saveEstimateError = action.payload.message;
+        } else state.saveEstimateError = action.error.message;
+      });
+
+    builder
+      .addCase(updateEstimateAction.pending, state => {
+        state.updateEstimateStatus = 'loading';
+      })
+      .addCase(updateEstimateAction.fulfilled, (state, action) => {
+        state.updateEstimateStatus = 'completed';
+        state.updateEstimateSuccess = action.payload.message;
+        state.estimate = action.payload.result as IEstimate;
+      })
+      .addCase(updateEstimateAction.rejected, (state, action) => {
+        state.updateEstimateStatus = 'failed';
+
+        if (action.payload) {
+          state.updateEstimateError = action.payload.message;
+        } else state.updateEstimateError = action.error.message;
+      });
+
+    builder
+      .addCase(sendDraftEstimateAction.pending, state => {
+        state.sendDraftEstimateStatus = 'loading';
+      })
+      .addCase(sendDraftEstimateAction.fulfilled, (state, action) => {
+        state.sendDraftEstimateStatus = 'completed';
+        state.sendDraftEstimateSuccess = action.payload.message;
+        state.estimate = action.payload.result as IEstimate;
+      })
+      .addCase(sendDraftEstimateAction.rejected, (state, action) => {
+        state.sendDraftEstimateStatus = 'failed';
+
+        if (action.payload) {
+          state.sendDraftEstimateError = action.payload.message;
+        } else state.sendDraftEstimateError = action.error.message;
       });
 
     builder
@@ -84,6 +182,12 @@ const estimateSlice = createSlice({
   },
 });
 
-export const { clearCreateEstimateStatus, clearGetEstimateStatus } = estimateSlice.actions;
+export const {
+  clearCreateEstimateStatus,
+  clearGetEstimateStatus,
+  clearSaveEstimateStatus,
+  clearSendDraftEstimateStatus,
+  clearUpdateEstimateStatus,
+} = estimateSlice.actions;
 
 export default estimateSlice.reducer;

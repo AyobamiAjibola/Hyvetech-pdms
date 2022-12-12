@@ -43,7 +43,31 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   depositAmount: Joi.number().required().label('Deposit Amount'),
   jobDurationValue: Joi.number().required().label('Job Duration Value'),
   jobDurationUnit: Joi.string().required().label('Job Duration Unit'),
-  url: Joi.string().allow('').label('Estimate URL'),
+};
+
+export const $updateEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
+  id: Joi.number().required().label('Estimate Id'),
+  firstName: Joi.string().required().label('First Name'),
+  lastName: Joi.string().required().label('Last Name'),
+  phone: Joi.string().required().label('Phone'),
+  address: Joi.string().required().label('Address'),
+  addressType: Joi.string().required().label('Address Type'),
+  parts: Joi.array().required().label('Parts'),
+  vin: Joi.string().required().label('VIN'),
+  model: Joi.string().required().label('Vehicle Model'),
+  modelYear: Joi.any().required().label('Vehicle Model Year'),
+  make: Joi.string().required().label('Vehicle Make'),
+  plateNumber: Joi.string().allow('').label('Plate Number'),
+  mileageValue: Joi.string().allow('').label('Mileage Value'),
+  mileageUnit: Joi.string().allow('').label('Mileage Unit'),
+  labours: Joi.array().required().label('Labours'),
+  partsTotal: Joi.number().required().label('Parts Sub Total'),
+  laboursTotal: Joi.number().required().label('Labours Sub Total'),
+  tax: Joi.string().required().label('Tax'),
+  grandTotal: Joi.number().required().label('Grand Total'),
+  depositAmount: Joi.number().required().label('Deposit Amount'),
+  jobDurationValue: Joi.number().required().label('Job Duration Value'),
+  jobDurationUnit: Joi.string().required().label('Job Duration Unit'),
 };
 
 @Table({
@@ -58,6 +82,9 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
 
   @Column(DataType.STRING)
   declare code: string;
+
+  @Column(DataType.STRING)
+  declare status: string;
 
   @Column(DataType.ARRAY(DataType.JSONB))
   declare parts: string[];
