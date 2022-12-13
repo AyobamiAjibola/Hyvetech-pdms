@@ -345,7 +345,7 @@ function EstimateForm(props: IProps) {
                     <Grid item xs={12} container spacing={2} columns={13}>
                       <Grid item xs={8} />
                       <Grid item xs={4}>
-                        Sub Total: ₦{formatNumberToIntl(partTotal)}
+                        Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
                       <Grid item />
                     </Grid>
@@ -439,7 +439,7 @@ function EstimateForm(props: IProps) {
                 fullWidth
                 sx={{ mb: 2 }}
               />
-              <Typography> Sub Total: ₦{formatNumberToIntl(labourTotal)}</Typography>
+              <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
             <Grid item />
           </Grid>
@@ -450,7 +450,7 @@ function EstimateForm(props: IProps) {
             <Divider flexItem orientation="horizontal" />
           </Grid>
           <Grid item xs={4} alignSelf="center">
-            <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(grandTotal)}</Typography>
+            <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
           </Grid>
           <Grid item xs={4}>
             <TextInputField

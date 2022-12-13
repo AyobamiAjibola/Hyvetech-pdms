@@ -159,9 +159,9 @@ export default function useEstimate() {
         modelYear: values.modelYear,
         mileageValue: values.mileage.count,
         mileageUnit: values.mileage.unit,
-        partsTotal: partTotal,
-        laboursTotal: labourTotal,
-        grandTotal,
+        partsTotal: Math.round(partTotal),
+        laboursTotal: Math.round(labourTotal),
+        grandTotal: Math.round(grandTotal),
       };
 
       dispatch(createEstimateAction(data));
@@ -169,7 +169,7 @@ export default function useEstimate() {
     } else
       options?.setFieldError(
         'depositAmount',
-        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${grandTotal}`,
+        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
       );
   };
 
@@ -195,9 +195,9 @@ export default function useEstimate() {
         modelYear: values.modelYear,
         mileageValue: values.mileage.count,
         mileageUnit: values.mileage.unit,
-        partsTotal: partTotal,
-        laboursTotal: labourTotal,
-        grandTotal,
+        partsTotal: Math.round(partTotal),
+        laboursTotal: Math.round(labourTotal),
+        grandTotal: Math.round(grandTotal),
       };
 
       dispatch(saveEstimateAction(data));
@@ -205,7 +205,7 @@ export default function useEstimate() {
     } else
       options?.setFieldError(
         'depositAmount',
-        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${grandTotal}`,
+        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
       );
   };
 
@@ -231,16 +231,16 @@ export default function useEstimate() {
         modelYear: values.modelYear,
         mileageValue: values.mileage.count,
         mileageUnit: values.mileage.unit,
-        partsTotal: partTotal,
-        laboursTotal: labourTotal,
-        grandTotal,
+        partsTotal: Math.round(partTotal),
+        laboursTotal: Math.round(labourTotal),
+        grandTotal: Math.round(grandTotal),
       };
 
       void dispatch(updateEstimateAction(data));
     } else
       options?.setFieldError(
         'depositAmount',
-        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${grandTotal}`,
+        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
       );
   };
 
@@ -266,16 +266,16 @@ export default function useEstimate() {
         modelYear: values.modelYear,
         mileageValue: values.mileage.count,
         mileageUnit: values.mileage.unit,
-        partsTotal: partTotal,
-        laboursTotal: labourTotal,
-        grandTotal,
+        partsTotal: Math.round(partTotal),
+        laboursTotal: Math.round(labourTotal),
+        grandTotal: Math.round(grandTotal),
       };
 
       void dispatch(sendDraftEstimateAction(data));
     } else
       options?.setFieldError(
         'depositAmount',
-        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${grandTotal}`,
+        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
       );
   };
 
