@@ -213,15 +213,6 @@ export default class EstimateController {
       });
     }
 
-    if (vehicle.onMaintenance || vehicle.onInspection || vehicle.isBooked) {
-      return Promise.reject(
-        CustomAPIError.response(
-          `This vehicle is currently scheduled for a Repairs/Inspection.`,
-          HttpStatus.BAD_REQUEST.code,
-        ),
-      );
-    }
-
     const findCustomer = await dataSources.customerDAOService.findByAny({
       where: { phone: value.phone },
       include: [Contact],

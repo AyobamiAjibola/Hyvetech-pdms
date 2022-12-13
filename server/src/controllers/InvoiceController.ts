@@ -4,7 +4,7 @@ import Joi from 'joi';
 import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
 import dataSources from '../services/dao';
-import { INIT_TRANSACTION, INVOICE_STATUS, JOB_STATUS } from '../config/constants';
+import { ESTIMATE_STATUS, INIT_TRANSACTION, INVOICE_STATUS, JOB_STATUS } from '../config/constants';
 import axiosClient from '../services/api/axiosClient';
 import { Attributes, CreationAttributes } from 'sequelize';
 import Transaction from '../models/Transaction';
@@ -147,6 +147,7 @@ export default class InvoiceController {
 
     const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
 
+    await estimate.update({ status: ESTIMATE_STATUS.invoiced });
     await estimate.$set('invoice', invoice);
     await invoice.$set('transactions', [transaction]);
     await partner.$set('transactions', [transferTransaction]);
