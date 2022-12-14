@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Alert, Avatar, Divider, Grid, Stack, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
-import { IPart } from '../../components/forms/models/estimateModel';
+import { ILabour, IPart } from '../../components/forms/models/estimateModel';
 import { formatNumberToIntl } from '../../utils/generic';
 import settings from '../../config/settings';
 
@@ -16,6 +16,7 @@ function EstimatePage() {
   const [estimate, setEstimate] = useState<IEstimate>();
   const [owner, setOwner] = useState<string>('');
   const [parts, setParts] = useState<IPart[]>([]);
+  const [labours, setLabours] = useState<ILabour[]>([]);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   const location = useLocation();
 
@@ -32,11 +33,13 @@ function EstimatePage() {
       const driver = estimate.rideShareDriver;
       const customer = estimate.customer;
       const _parts = estimate.parts as unknown as IPart[];
+      const _labours = estimate.labours as unknown as ILabour[];
 
       const _owner = driver ? `${driver.firstName} ${driver.lastName}` : `${customer.firstName} ${customer.lastName}`;
       setOwner(capitalize.words(_owner));
       setBillingInformation(customer.billingInformation);
       setParts(_parts);
+      setLabours(_labours);
     }
   }, [estimate]);
 
@@ -168,7 +171,7 @@ function EstimatePage() {
         </Grid>
         <Grid container>
           {parts.map((part, idx1) => {
-            const amount = formatNumberToIntl(parseInt(part.price));
+            const amount = formatNumberToIntl(parseInt(part.amount));
 
             return (
               <Grid
@@ -189,10 +192,38 @@ function EstimatePage() {
                   {part.warranty.warranty} {part.warranty.interval}
                 </Grid>
                 <Grid item xs={3}>
-                  {part.price} x {part.quantity.quantity} {part.quantity.unit}
+                  {formatNumberToIntl(+part.price)} x {part.quantity.quantity} {part.quantity.unit}
                 </Grid>
                 <Grid item xs={3}>
                   {amount}
+                </Grid>
+              </Grid>
+            );
+          })}
+          {labours.map((labour, idx1) => {
+            return (
+              <Grid
+                key={idx1}
+                item
+                container
+                justifyContent="center"
+                alignItems="center"
+                columns={14}
+                sx={{ pb: 2.5 }}
+                borderBottom="0.01px solid"
+                borderColor="#676767">
+                <Grid item xs={2} />
+                <Grid item xs={3}>
+                  {labour.title}
+                </Grid>
+                <Grid item xs={3}>
+                  -
+                </Grid>
+                <Grid item xs={3}>
+                  {formatNumberToIntl(+labour.cost)} x 1
+                </Grid>
+                <Grid item xs={3}>
+                  {formatNumberToIntl(+labour.cost)}
                 </Grid>
               </Grid>
             );
@@ -201,14 +232,14 @@ function EstimatePage() {
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>Subtotal: {estimate.partsTotal}</Typography>
+            <Typography gutterBottom>Subtotal: {formatNumberToIntl(estimate.partsTotal)}</Typography>
             <Typography gutterBottom>VAT(7.5%): {estimate.tax}</Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>TOTAL: {estimate.grandTotal}</Typography>
+            <Typography gutterBottom>TOTAL: {formatNumberToIntl(estimate.grandTotal)}</Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>

@@ -1,6 +1,6 @@
 import React, { createContext, useMemo } from 'react';
 import { EstimatePageContextProps } from '@app-interfaces';
-import { IEstimate, IInvoice } from '@app-models';
+import { IInvoice } from '@app-models';
 import { Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAppSelector from '../../hooks/useAppSelector';
@@ -145,9 +145,10 @@ function InvoicesPage() {
             key={0}
             icon={<Visibility sx={{ color: 'dodgerblue' }} />}
             onClick={() => {
-              const row = params.row as IEstimate;
+              const invoice = params.row as IInvoice;
+              const estimate = invoice.estimate;
 
-              navigate(`/invoices/${row.id}`, { state: { invoice: row } });
+              navigate(`/invoices/${invoice.id}`, { state: { invoice, estimate } });
             }}
             label="View"
             showInMenu={false}

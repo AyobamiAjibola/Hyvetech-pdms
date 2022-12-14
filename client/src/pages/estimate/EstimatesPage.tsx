@@ -1,5 +1,4 @@
-import React, { createContext, useEffect, useMemo } from 'react';
-import { EstimatePageContextProps } from '@app-interfaces';
+import React, { useEffect, useMemo } from 'react';
 import { IEstimate } from '@app-models';
 import { Button, Chip, Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
@@ -24,8 +23,7 @@ import {
   clearUpdateEstimateStatus,
 } from '../../store/reducers/estimateReducer';
 import useAppDispatch from '../../hooks/useAppDispatch';
-
-export const EstimatePageContext = createContext<EstimatePageContextProps | null>(null);
+import EstimatePageContext from '../../context/EstimatePageContext';
 
 function EstimatesPage() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);

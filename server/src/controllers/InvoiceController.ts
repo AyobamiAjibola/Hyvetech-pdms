@@ -4,7 +4,14 @@ import Joi from 'joi';
 import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
 import dataSources from '../services/dao';
-import { ESTIMATE_STATUS, INIT_TRANSACTION, INVOICE_STATUS, JOB_STATUS } from '../config/constants';
+import {
+  ESTIMATE_STATUS,
+  INIT_TRANSACTION,
+  INITIAL_LABOURS_VALUE,
+  INITIAL_PARTS_VALUE,
+  INVOICE_STATUS,
+  JOB_STATUS,
+} from '../config/constants';
 import axiosClient from '../services/api/axiosClient';
 import { Attributes, CreationAttributes } from 'sequelize';
 import Transaction from '../models/Transaction';
@@ -17,6 +24,9 @@ import { appCommonTypes } from '../@types/app-common';
 import Customer from '../models/Customer';
 import Vehicle from '../models/Vehicle';
 import moment from 'moment';
+import Partner from '../models/Partner';
+import Contact from '../models/Contact';
+import BillingInformation from '../models/BillingInformation';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
@@ -181,14 +191,31 @@ export default class InvoiceController {
 
   @TryCatch
   public static async invoices(req: Request) {
-    const invoices = await dataSources.invoiceDAOService.findAll({
+    let invoices = await dataSources.invoiceDAOService.findAll({
       include: [
         {
           model: Estimate,
-          include: [Customer, Vehicle],
+          include: [
+            { model: Customer, include: [BillingInformation] },
+            Vehicle,
+            {
+              model: Partner,
+              include: [Contact],
+            },
+          ],
         },
         Transaction,
       ],
+    });
+
+    invoices = invoices.map(invoice => {
+      const parts = invoice.estimate.parts;
+      const labours = invoice.estimate.labours;
+
+      invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+      invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+
+      return invoice;
     });
 
     return Promise.resolve({
