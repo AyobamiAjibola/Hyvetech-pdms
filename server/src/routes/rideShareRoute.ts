@@ -15,12 +15,7 @@ export const getRideShareDriversHandler = authenticateRouteWrapper(async (req, r
   res.status(response.code).json(response);
 });
 
-export const getRideShareDriverHandler = authenticateRouteWrapper(async (req, res) => {
-  const driverId = req.params.driverId as string;
-
-  const response = await RideShareDriverController.driver(+driverId);
-  res.status(response.code).json(response);
-});
+export const getRideShareDriverHandler = getDriverHandler;
 
 export const getRideShareDriverVehiclesHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await RideShareDriverController.driverVehicles(req);

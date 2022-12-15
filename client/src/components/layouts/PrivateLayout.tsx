@@ -32,7 +32,6 @@ import DrawerHeader from './DrawerHeader';
 import withErrorBoundary from '../../hoc/withErrorBoundary';
 import CheckListsPage from '../../pages/checkList/CheckListsPage';
 import CheckListPage from '../../pages/checkList/CheckListPage';
-import JobCheckListPage from '../../pages/checkList/JobCheckListPage';
 import JobCheckListReportPage from '../../pages/checkList/JobCheckListReportPage';
 import EstimatesPage from '../../pages/estimate/EstimatesPage';
 import EstimatePage from '../../pages/estimate/EstimatePage';
@@ -93,7 +92,6 @@ function PrivateLayout() {
             <Route path="/ride-share" element={<PartnerPage />} />
             <Route path="/checkLists" element={<CheckListsPage />} />
             <Route path="/checkLists/:id" element={<CheckListPage />} />
-            <Route path="/job-check-list/:id" element={<JobCheckListPage />} />
             <Route path="/estimates" element={<EstimatesPage />} />
             <Route path="/estimates/:id" element={<EstimatePage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
