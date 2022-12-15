@@ -9,7 +9,6 @@ import moment from 'moment';
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { Cancel, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import useAdmin from '../../hooks/useAdmin';
 import useInvoice from '../../hooks/useInvoice';
 
 export const EstimatePageContext = createContext<EstimatePageContextProps | null>(null);
@@ -18,7 +17,6 @@ function InvoicesPage() {
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
 
   const invoice = useInvoice();
-  const { isTechAdmin } = useAdmin();
   const navigate = useNavigate();
 
   const columns = useMemo(() => {

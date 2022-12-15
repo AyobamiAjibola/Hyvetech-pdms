@@ -32,7 +32,7 @@ export default function AppCreatableAutocomplete(props: IProps) {
     <FormGroup>
       <Autocomplete
         value={props.value}
-        onChange={(event, newValue) => {
+        onChange={(_, newValue) => {
           if (typeof newValue === 'string') {
             handleChange(newValue);
           } else if (newValue && newValue.inputValue) {

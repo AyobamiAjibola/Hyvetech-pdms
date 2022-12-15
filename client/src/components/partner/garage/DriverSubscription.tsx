@@ -249,7 +249,7 @@ function DriverSubscription() {
             disabled={vehicleIsBusy}
             options={checkLists}
             getOptionLabel={option => option.name}
-            onChange={(event, option) => {
+            onChange={(_, option) => {
               if (option) setCheckList(option.id);
             }}
             renderInput={params => <TextField {...params} fullWidth label="Check List" />}
@@ -263,7 +263,7 @@ function DriverSubscription() {
                   <Autocomplete
                     disabled={vehicleIsBusy}
                     options={_technicians}
-                    onChange={(event, option) => {
+                    onChange={(_, option) => {
                       if (option) {
                         handleAssignJob(option.value);
                       }

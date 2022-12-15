@@ -43,7 +43,7 @@ interface ILocationState {
   isCustomer?: boolean;
 }
 
-export default function CustomerVehicle(props: ILocationState) {
+export default function CustomerVehicle() {
   const [viewImage, setViewImage] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>();
 

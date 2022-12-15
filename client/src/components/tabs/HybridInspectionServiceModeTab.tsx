@@ -28,7 +28,7 @@ export default function HybridInspectionServiceModeTab() {
     setShowBookingBtn,
   } = useContext(AppContext) as AppContextProps;
 
-  const _handleChange = (event: any, newValue: number) => {
+  const _handleChange = (_: any, newValue: number) => {
     setPlanTab(newValue);
     if (showBookingBtn) setShowBookingBtn(!showBookingBtn);
     if (mobileDate) setMobileDate(!mobileDate);

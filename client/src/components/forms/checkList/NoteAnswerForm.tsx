@@ -71,6 +71,7 @@ export default function NoteAnswerForm(props: FormProps) {
               return (
                 <Sheet key={idx2} sx={{ p: 2, borderRadius: 'md' }}>
                   <Radio
+                    component={props1 => <Button {...props1} />}
                     label={answer.answer}
                     overlay
                     disableIcon
@@ -79,14 +80,14 @@ export default function NoteAnswerForm(props: FormProps) {
                     checked={answer.selected}
                     onChange={props.onChangeRadioBtn}
                     componentsProps={{
-                      label: ({ checked }) => ({
+                      label: (checked: boolean) => ({
                         sx: {
                           fontWeight: 'lg',
                           fontSize: 'md',
                           color: checked ? 'text.primary' : 'text.secondary',
                         },
                       }),
-                      action: ({ checked }) => ({
+                      action: (checked: any) => ({
                         sx: () => ({
                           ...(checked && {
                             '--variant-borderWidth': '1px',

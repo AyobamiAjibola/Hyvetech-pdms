@@ -39,7 +39,10 @@ const sequelize = new Sequelize({
 
 const database = {
   init: async () => sequelize.authenticate(),
-  mongodb: async () => mongoose.connect(mongoUrl),
+  mongodb: async () => {
+    mongoose.set('strictQuery', true);
+    return mongoose.connect(mongoUrl);
+  },
   sequelize,
 };
 

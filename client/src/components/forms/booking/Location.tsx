@@ -18,7 +18,7 @@ function Location() {
 
   const customerReducer = useAppSelector(state => state.customerReducer);
 
-  const _handleChange = (event: SyntheticEvent, value: any, reason: AutocompleteChangeReason) => {
+  const _handleChange = (_: SyntheticEvent, value: any, reason: AutocompleteChangeReason) => {
     if (reason === 'clear') return setFieldValue(bookingModel.fields.location.name, '');
     if (typeof value === 'string') return setFieldValue(bookingModel.fields.location.name, value);
 

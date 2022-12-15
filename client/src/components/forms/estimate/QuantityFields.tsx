@@ -34,10 +34,13 @@ function QuantityFields(props: PartArgs) {
               <Grid item xs>
                 <SelectField
                   data={[
-                    { label: 'litre', value: 'litre' },
-                    { label: 'cm', value: 'cm' },
+                    { label: 'pcs', value: 'pcs' },
+                    { label: 'pair', value: 'pair' },
+                    { label: 'litres', value: 'litres' },
+                    { label: 'set', value: 'set' },
                     { label: 'kg', value: 'kg' },
-                    { label: 'm', value: 'm' },
+                    { label: 'hrs', value: 'hrs' },
+                    { label: 'kit', value: 'kit' },
                   ]}
                   fullWidth
                   label={value}

@@ -117,7 +117,7 @@ function GarageSettingsForm(props: IProps) {
             options={banks}
             value={{ label: values.bankName, value: values.bankName }}
             isOptionEqualToValue={(option, value) => option.label === value.label}
-            onChange={(event, value) => {
+            onChange={(_, value) => {
               if (value) setFieldValue(fields.bankName.name, value.label);
             }}
             renderInput={params => (
@@ -224,10 +224,10 @@ function GarageSettingsForm(props: IProps) {
                                       multiple
                                       options={DAYS}
                                       value={workingHour.days}
-                                      onChange={(event, newValue) => {
+                                      onChange={(_, newValue) => {
                                         setFieldValue(`workingHours.${index}.${value}`, newValue);
                                       }}
-                                      onInputChange={(event, newValue) => {
+                                      onInputChange={(_, newValue) => {
                                         setFieldValue(`workingHours.${index}.${value}`, newValue);
                                       }}
                                       renderInput={params => (

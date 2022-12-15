@@ -16,7 +16,7 @@ export default function AppTab(props: IProps) {
 
   const theme = useTheme();
 
-  const handleChange = (event: SyntheticEvent, newValue: number) => {
+  const handleChange = (_: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 

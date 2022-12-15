@@ -57,7 +57,7 @@ export default function PartnerTab(props: IProps) {
 
   const dispatch = useAppDispatch();
 
-  const handleChange = (event: SyntheticEvent, newValue: number) => {
+  const handleChange = (_: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
     dispatch(clearGetAppointmentsStatus());
     dispatch(clearUpdateAppointmentsStatus());

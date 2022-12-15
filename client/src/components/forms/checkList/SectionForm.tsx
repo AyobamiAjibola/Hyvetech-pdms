@@ -24,7 +24,7 @@ export default function SectionForm(props: IProps) {
     sectionProps.push(initialValues.sections[0]);
   };
 
-  const handleAddQuestion = (questionIndex: number, sectionIndex: number) => {
+  const handleAddQuestion = (_: number, sectionIndex: number) => {
     const tempSections = [...values.sections];
 
     const questions = tempSections[sectionIndex].questions;
@@ -48,7 +48,7 @@ export default function SectionForm(props: IProps) {
     setFieldValue(fields.sections.name, tempSections);
   };
 
-  const handleAddAnswer = (answerIndex: number, questionIndex: number, sectionIndex: number) => {
+  const handleAddAnswer = (_: number, questionIndex: number, sectionIndex: number) => {
     const tempSections = [...values.sections];
 
     tempSections[sectionIndex].questions[questionIndex].answers.push({
@@ -169,7 +169,7 @@ export default function SectionForm(props: IProps) {
                             </ButtonGroup>
                           </Grid>
                           {question.answers &&
-                            question.answers.map((answer, idx3) => {
+                            question.answers.map((_, idx3) => {
                               return (
                                 <React.Fragment key={idx3}>
                                   <Grid item xs={2} />

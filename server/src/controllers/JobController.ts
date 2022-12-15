@@ -28,7 +28,7 @@ import Partner from '../models/Partner';
 import Contact from '../models/Contact';
 import formidable, { File } from 'formidable';
 import { appEventEmitter } from '../services/AppEventEmitter';
-import { AssignJobProps } from '../services/socketManager';
+import { AssignJobProps } from '../services/eventManager';
 import fs from 'fs/promises';
 import HttpResponse = appCommonTypes.HttpResponse;
 import CheckListType = appCommonTypes.CheckListType;

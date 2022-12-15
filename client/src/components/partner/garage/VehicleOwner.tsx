@@ -126,11 +126,11 @@ export default function VehicleOwner() {
               loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
               getOptionLabel={option => option.fullName}
               isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
-              onChange={(event: any, newValue: IDriversFilterData | null) => {
+              onChange={(_: any, newValue: IDriversFilterData | null) => {
                 setValue(newValue);
                 handleGetDriverInfo(newValue?.id);
               }}
-              onInputChange={(event, newInputValue, reason) => {
+              onInputChange={(_, newInputValue, reason) => {
                 setInputValue(newInputValue);
                 if (reason === 'clear') {
                   setCustomer(undefined);

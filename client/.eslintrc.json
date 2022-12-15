@@ -8,7 +8,6 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    //    "plugin:import/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
     "plugin:jsx-a11y/recommended"
@@ -27,13 +26,7 @@
     },
     "ecmaVersion": 12
   },
-  "plugins": [
-    "react",
-    "@typescript-eslint",
-    //    "import",
-    "react-hooks",
-    "jsx-a11y"
-  ],
+  "plugins": ["react", "@typescript-eslint", "react-hooks", "jsx-a11y"],
   "settings": {
     "import/resolver": {
       "node": {

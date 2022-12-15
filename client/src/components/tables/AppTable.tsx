@@ -63,7 +63,7 @@ export default function AppTable(props: IAppTableProps) {
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleRequestSort = (event: MouseEvent<unknown>, property: keyof Data) => {
+  const handleRequestSort = (_: MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -78,7 +78,7 @@ export default function AppTable(props: IAppTableProps) {
     setSelected([]);
   };
 
-  const handleClick = (event: MouseEvent<unknown>, name: string) => {
+  const handleClick = (_: MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
 
@@ -95,7 +95,7 @@ export default function AppTable(props: IAppTableProps) {
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
 

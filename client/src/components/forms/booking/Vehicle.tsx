@@ -11,7 +11,7 @@ function Vehicle() {
 
   const { vehicles } = useContext(AppContext) as AppContextProps;
 
-  const _handleChange = (event: SyntheticEvent, value: any, reason: AutocompleteChangeReason) => {
+  const _handleChange = (_: SyntheticEvent, value: any, reason: AutocompleteChangeReason) => {
     if (reason === 'clear') return setFieldValue(bookingModel.fields.vehicle.name, '');
     if (typeof value === 'string') return setFieldValue(bookingModel.fields.vehicle.name, value);
 

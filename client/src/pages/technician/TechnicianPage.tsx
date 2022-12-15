@@ -485,7 +485,7 @@ const TechnicianPage: FC<Props> = ({ setShow }) => {
           <Box sx={{ p: 1 }}>
             <Autocomplete
               options={_technicians}
-              onChange={(event, option) => {
+              onChange={(_, option) => {
                 if (option) handleReassignJob(option.value);
               }}
               renderInput={params => <TextField {...params} fullWidth label="Reassign To" />}

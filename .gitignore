@@ -67,3 +67,4 @@ yarn.lock
 *.sh
 docs
 public
+*sdk*

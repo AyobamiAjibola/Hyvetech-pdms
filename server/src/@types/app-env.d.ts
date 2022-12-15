@@ -82,5 +82,6 @@ declare namespace NodeJS {
     ADMIN_PASS: string;
     WHATSAPP_URL: string;
     TECHNICIAN_APP_URL: string;
+    GOOGLE_APPLICATION_CREDENTIALS: string;
   }
 }

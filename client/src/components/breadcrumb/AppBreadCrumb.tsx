@@ -1,14 +1,8 @@
 import * as React from 'react';
 import Link, { LinkProps } from '@mui/material/Link';
-import { ListItemProps } from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-
-interface ListItemLinkProps extends ListItemProps {
-  to: string;
-  open?: boolean;
-}
 
 const breadcrumbNameMap: { [key: string]: string } = {
   '/inbox': 'Inbox',
@@ -34,7 +28,7 @@ export default function AppBreadCrumb() {
       <LinkRouter underline="hover" color="inherit" to="/">
         Home
       </LinkRouter>
-      {pathNames.map((value, index) => {
+      {pathNames.map((_, index) => {
         const last = index === pathNames.length - 1;
         const to = `/${pathNames.slice(0, index + 1).join('/')}`;
 

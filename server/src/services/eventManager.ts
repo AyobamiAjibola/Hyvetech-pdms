@@ -26,6 +26,7 @@ import Estimate from '../models/Estimate';
 import mongoose from 'mongoose';
 import Vehicle from '../models/Vehicle';
 import Transaction from '../models/Transaction';
+import firebaseMessaging from '../helpers/firebaseMessaging';
 
 interface AppointmentProps {
   appointment: Appointment;
@@ -64,7 +65,21 @@ interface INotificationProps {
   message: string;
 }
 
-export default function socketManager(io: Server) {
+interface IServiceAccount {
+  client_email: string;
+  private_key: string;
+  project_id: string;
+}
+
+export default function eventManager(io: Server, serviceAccount: IServiceAccount) {
+  const fcm = firebaseMessaging({
+    serviceAccount: {
+      clientEmail: serviceAccount.client_email,
+      privateKey: serviceAccount.private_key,
+      projectId: serviceAccount.project_id,
+    },
+  });
+
   appEventEmitter.on(RESCHEDULE_APPOINTMENT, (props: AppointmentProps) => {
     const { appointment, customer, user } = props;
 
@@ -153,12 +168,13 @@ export default function socketManager(io: Server) {
       });
 
       if (eventId.length) {
-        io.to(eventId).emit(APPROVE_JOB, {
-          notification,
-        });
-      } else {
-        io.emit(APPROVE_JOB, {
-          notification,
+        await fcm.sendToOne({
+          token: eventId,
+          data: notification,
+          notification: {
+            title: `${job.partner.name} Approved Job`,
+            body: `Job on your vehicle ${job.vehicle.make} ${job.vehicle.model} has been approved`,
+          },
         });
       }
     })();
@@ -177,8 +193,13 @@ export default function socketManager(io: Server) {
         message: estimate.toJSON(),
       });
 
-      io.to(customer.eventId).emit(CREATED_ESTIMATE, {
-        notification,
+      await fcm.sendToOne({
+        token: customer.eventId,
+        data: notification,
+        notification: {
+          title: `${partner.name} Estimate`,
+          body: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
+        },
       });
     })();
   });

@@ -221,9 +221,7 @@ function JobCheckListReportPage() {
             </Grid>
             <Grid item hidden={isTechAdmin && job.checkList.approvedByGarageAdmin}>
               <FormControlLabel
-                control={
-                  <Switch checked={approved} onChange={(event, checked) => handleApproveReport(job.id, checked)} />
-                }
+                control={<Switch checked={approved} onChange={(_, checked) => handleApproveReport(job.id, checked)} />}
                 label="Approve"
               />
             </Grid>
