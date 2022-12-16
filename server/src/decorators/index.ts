@@ -112,6 +112,7 @@ export function TryCatch(target: object, propertyKey: string, descriptor: Proper
     try {
       return method.apply(this, arguments);
     } catch (e) {
+      console.log(e);
       return Promise.reject(e);
     }
   };
