@@ -463,3 +463,5 @@ export const INVOICE_STATUS = {
   overDue: 'Overdue',
   dueSoon: 'Due soon',
 };
+
+export const PAYMENT_CHANNELS = ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer', 'eft'];

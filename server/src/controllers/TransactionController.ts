@@ -1,6 +1,12 @@
 import { Request } from 'express';
 import { appEventEmitter } from '../services/AppEventEmitter';
-import { INIT_TRANSACTION, TXN_CANCELLED, TXN_REFERENCE, VERIFY_TRANSACTION } from '../config/constants';
+import {
+  INIT_TRANSACTION,
+  PAYMENT_CHANNELS,
+  TXN_CANCELLED,
+  TXN_REFERENCE,
+  VERIFY_TRANSACTION,
+} from '../config/constants';
 import { appCommonTypes } from '../@types/app-common';
 import HttpStatus from '../helpers/HttpStatus';
 import { TryCatch } from '../decorators';
@@ -15,6 +21,7 @@ import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
+
 export default class TransactionController {
   private static LOG = AppLogger.init(TransactionController.name).logger;
 
@@ -122,6 +129,7 @@ export default class TransactionController {
       amount,
       callback_url: callbackUrl,
       metadata,
+      channels: PAYMENT_CHANNELS,
     });
 
     const data = initResponse.data.data;

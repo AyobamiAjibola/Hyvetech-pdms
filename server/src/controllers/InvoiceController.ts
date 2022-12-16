@@ -11,6 +11,7 @@ import {
   INITIAL_PARTS_VALUE,
   INVOICE_STATUS,
   JOB_STATUS,
+  PAYMENT_CHANNELS,
 } from '../config/constants';
 import axiosClient from '../services/api/axiosClient';
 import { Attributes, CreationAttributes } from 'sequelize';
@@ -304,6 +305,7 @@ export default class InvoiceController {
       amount,
       callback_url: callbackUrl,
       metadata,
+      channels: PAYMENT_CHANNELS,
     });
 
     const data = initResponse.data.data;
