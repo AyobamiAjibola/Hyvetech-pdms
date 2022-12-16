@@ -134,7 +134,7 @@ export default class TransactionController {
         value.grandTotal === value.depositAmount ? ' Payment' : ' Deposit Payment'
       }`,
       status: initResponse.data.message,
-      amount,
+      amount: value.depositAmount,
     };
 
     const transaction = await dataSources.transactionDAOService.create(txnValues as CreationAttributes<Transaction>);

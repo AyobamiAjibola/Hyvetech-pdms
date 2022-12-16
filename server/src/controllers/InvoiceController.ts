@@ -308,7 +308,7 @@ export default class InvoiceController {
       type: 'Payment',
       purpose: `${partner.name}: Estimate-${estimate.code} Complete Payment`,
       status: initResponse.data.message,
-      amount,
+      amount: value.dueAmount,
     };
 
     const $transaction = await dataSources.transactionDAOService.create(txnValues as CreationAttributes<Transaction>);
