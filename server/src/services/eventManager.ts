@@ -170,18 +170,18 @@ export default function eventManager(io: Server, serviceAccount: IServiceAccount
       await NotificationModel.create(notification);
 
       if (eventId.length) {
-        await fcm.sendToOne({
-          token: eventId,
-          data: {
-            seen: false,
-            from: `${job.partner.name}`,
-            to: id,
-          },
-          notification: {
-            title: `${job.partner.name} Approved Job`,
-            body: `Job on your vehicle ${job.vehicle.make} ${job.vehicle.model} has been approved`,
-          },
-        });
+        // await fcm.sendToOne({
+        //   token: eventId,
+        //   data: {
+        //     seen: false,
+        //     from: `${job.partner.name}`,
+        //     to: id,
+        //   },
+        //   notification: {
+        //     title: `${job.partner.name} Approved Job`,
+        //     body: `Job on your vehicle ${job.vehicle.make} ${job.vehicle.model} has been approved`,
+        //   },
+        // });
       }
     })();
   });
@@ -201,18 +201,18 @@ export default function eventManager(io: Server, serviceAccount: IServiceAccount
 
       await NotificationModel.create(notification);
 
-      await fcm.sendToOne({
-        token: customer.eventId,
-        data: {
-          seen: false,
-          from: `${partner.name}`,
-          to: customer.id,
-        },
-        notification: {
-          title: `${partner.name} Estimate`,
-          body: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
-        },
-      });
+      // await fcm.sendToOne({
+      //   token: customer.eventId,
+      //   data: {
+      //     seen: false,
+      //     from: `${partner.name}`,
+      //     to: customer.id,
+      //   },
+      //   notification: {
+      //     title: `${partner.name} Estimate`,
+      //     body: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
+      //   },
+      // });
     })();
   });
 
