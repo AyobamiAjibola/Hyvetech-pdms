@@ -100,7 +100,7 @@ export default class InvoiceController {
 
       const dueAmount = estimate.grandTotal - estimate.depositAmount;
       const systemFee = estimate.depositAmount * 0.035;
-      const partnerFee = Math.round((estimate.depositAmount - systemFee) * 100);
+      const partnerFee = Math.round(estimate.depositAmount - systemFee);
 
       //get default payment gateway
       const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
@@ -110,43 +110,43 @@ export default class InvoiceController {
       if (!paymentGateway)
         return Promise.reject(CustomAPIError.response(`No payment gateway found`, HttpStatus.NOT_FOUND.code));
 
-      let endpoint = '/transferrecipient';
+      //let endpoint = '/transferrecipient';
 
       axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
       axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
 
-      const recipientResponse = await axiosClient.post(endpoint, recipient);
-
-      const recipientCode = recipientResponse.data.data.recipient_code;
-
-      endpoint = '/transfer';
-
-      const transfer = {
-        source: 'balance',
-        recipient: recipientCode,
-        reason: `Estimate-${estimate.code} Deposit`,
-        amount: partnerFee,
-      };
-
-      const transferResponse = await axiosClient.post(endpoint, transfer);
-
-      const transferData = transferResponse.data.data;
-
-      const transferTransactionValues: Partial<Attributes<Transaction>> = {
-        amount: partnerFee,
-        type: 'Transfer',
-        reference: `${transferData.reference}:${transaction.reference}`,
-        status: transferData.status,
-        bank: partner.bankName,
-        purpose: `${partner.name}: Estimate-${estimate.code}`,
-        channel: 'bank',
-        currency: bank.currency,
-        paidAt: new Date(),
-      };
-
-      const transferTransaction = await dataSources.transactionDAOService.create(
-        transferTransactionValues as CreationAttributes<Transaction>,
-      );
+      // const recipientResponse = await axiosClient.post(endpoint, recipient);
+      //
+      // const recipientCode = recipientResponse.data.data.recipient_code;
+      //
+      // endpoint = '/transfer';
+      //
+      // const transfer = {
+      //   source: 'balance',
+      //   recipient: recipientCode,
+      //   reason: `Estimate-${estimate.code} Deposit`,
+      //   amount: partnerFee * 100,
+      // };
+      //
+      // const transferResponse = await axiosClient.post(endpoint, transfer);
+      //
+      // const transferData = transferResponse.data.data;
+      //
+      // const transferTransactionValues: Partial<Attributes<Transaction>> = {
+      //   amount: partnerFee,
+      //   type: 'Transfer',
+      //   reference: `${transferData.reference}:${transaction.reference}`,
+      //   status: transferData.status,
+      //   bank: partner.bankName,
+      //   purpose: `${partner.name}: Estimate-${estimate.code}`,
+      //   channel: 'bank',
+      //   currency: bank.currency,
+      //   paidAt: new Date(),
+      // };
+      //
+      // const transferTransaction = await dataSources.transactionDAOService.create(
+      //   transferTransactionValues as CreationAttributes<Transaction>,
+      // );
 
       const invoiceValues: Partial<Attributes<Invoice>> = {
         code: Generic.randomize({ number: true, count: 6 }),
@@ -162,7 +162,7 @@ export default class InvoiceController {
       await estimate.update({ status: ESTIMATE_STATUS.invoiced });
       await estimate.$set('invoice', invoice);
       await invoice.$set('transactions', [transaction]);
-      await partner.$set('transactions', [transferTransaction]);
+      //await partner.$set('transactions', [transferTransaction]);
 
       //Update Initial Deposit Transaction
       await transaction.update({
