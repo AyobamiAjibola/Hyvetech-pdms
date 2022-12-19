@@ -28,7 +28,6 @@ import Vehicle from '../models/Vehicle';
 import Transaction from '../models/Transaction';
 import axios from 'axios';
 import { appCommonTypes } from '../@types/app-common';
-import AppLogger from '../utils/AppLogger';
 import IFirebaseData = appCommonTypes.IFirebaseData;
 
 interface AppointmentProps {
@@ -78,8 +77,6 @@ export default function eventManager(io: Server) {
   axios.defaults.baseURL = process.env.GOOGLE_FCM_HOST;
   axios.defaults.headers.post['Content-Type'] = 'application/json';
   axios.defaults.headers.common['Authorization'] = `key=${process.env.AUTOHYVE_FCM_SERVER_KEY}`;
-
-  const LOG = AppLogger.init(eventManager.name).logger;
 
   appEventEmitter.on(RESCHEDULE_APPOINTMENT, (props: AppointmentProps) => {
     const { appointment, customer, user } = props;
@@ -190,7 +187,7 @@ export default function eventManager(io: Server) {
 
         const response = await axios.post('/send', data);
 
-        LOG.info(response.data);
+        console.log(response.data);
       }
     })();
   });
@@ -226,7 +223,7 @@ export default function eventManager(io: Server) {
 
       const response = await axios.post('/send', data);
 
-      LOG.info(response.data);
+      console.log(response.data);
     })();
   });
 
