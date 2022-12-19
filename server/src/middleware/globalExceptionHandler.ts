@@ -4,27 +4,68 @@ import HttpStatus from '../helpers/HttpStatus';
 import { MESSAGES } from '../config/constants';
 import AppLogger from '../utils/AppLogger';
 import { appCommonTypes } from '../@types/app-common';
+import { AxiosError } from 'axios';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 const logger = AppLogger.init(globalExceptionHandler.name).logger;
 
 export default function globalExceptionHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-  if (process.env.NODE_ENV === 'production') logger.error(err);
-  else console.log(err);
-
   if (res.headersSent) return next(err);
 
+  const response: HttpResponse<null> = {
+    code: HttpStatus.INTERNAL_SERVER_ERROR.code,
+    message: MESSAGES.http['500'],
+  };
+
   if (err instanceof CustomAPIError) {
-    const response: HttpResponse<any> = {
-      code: err.code,
-      message: err.message,
-    };
+    logger.error(err.message);
+    logger.error(err.stack);
+
+    response.code = err.code;
+    response.message = err.message;
 
     return res.status(err.code).json(response);
   }
 
-  return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code).json({
-    message: MESSAGES.http['500'],
-    code: HttpStatus.INTERNAL_SERVER_ERROR.code,
+  if (err instanceof AxiosError) {
+    if (err.response) {
+      logger.error(err.message);
+      logger.error(err.response.data);
+
+      response.code = err.response.status;
+      response.message = err.message;
+
+      return res.status(response.code).json(response);
+    }
+
+    if (err.request) {
+      logger.error(err.message);
+      logger.error(err.request);
+
+      response.message = err.message;
+
+      return res.status(response.code).json(response);
+    }
+  }
+
+  process.on('uncaughtException', error => {
+    logger.error(error.message);
+    logger.error(error.stack);
+
+    response.message = error.message;
+    return res.status(response.code).json(response);
   });
+
+  process.on('unhandledRejection', reason => {
+    logger.error(reason);
+
+    response.message = reason as unknown as string;
+
+    return res.status(response.code).json(response);
+  });
+
+  logger.error(err.message);
+  logger.error(err.stack);
+
+  return res.status(response.code).json(response);
 }
