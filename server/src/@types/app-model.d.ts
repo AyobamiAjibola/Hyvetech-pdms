@@ -3,7 +3,6 @@ import {
   Attributes,
   CreateOptions,
   CreationAttributes,
-  CreationOptional,
   DestroyOptions,
   FindOptions,
   SyncOptions,
@@ -104,7 +103,7 @@ export declare namespace appModelTypes {
   }
 
   interface IPartner {
-    id: CreationOptional<number>;
+    id: number;
     name: string;
     slug: string;
     phone: string;
@@ -342,6 +341,8 @@ export declare namespace appModelTypes {
     enabled: boolean;
     loginToken: string;
     gatewayId: string;
+    eventId: string;
+    pushToken: string;
     loginDate: Date;
     contacts: IContact[];
     paymentDetails: IPaymentDetail[];

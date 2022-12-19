@@ -97,6 +97,12 @@ export default class RideShareDriver extends Model<
   @Column(DataType.STRING)
   declare eventId: string;
 
+  @Column(DataType.STRING(3000))
+  declare pushToken: string;
+
+  @Column(DataType.STRING(3000))
+  declare expoSlug: string;
+
   @Column(DataType.STRING)
   declare category: string;
 

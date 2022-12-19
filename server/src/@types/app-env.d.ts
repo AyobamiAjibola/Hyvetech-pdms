@@ -83,5 +83,7 @@ declare namespace NodeJS {
     WHATSAPP_URL: string;
     TECHNICIAN_APP_URL: string;
     GOOGLE_APPLICATION_CREDENTIALS: string;
+    GOOGLE_FCM_HOST: string;
+    AUTOHYVE_FCM_SERVER_KEY: string;
   }
 }

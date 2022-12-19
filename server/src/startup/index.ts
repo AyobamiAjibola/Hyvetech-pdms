@@ -15,10 +15,7 @@ import eventManager from '../services/eventManager';
 
 export default async function startup(server: HttpServer, io: SocketServer) {
   const port = process.env.PORT || 5050;
-  const googleApplicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
   const logger = AppLogger.init(startup.name).logger;
-  const promise = import(googleApplicationCredentials as string);
-  const serviceAccount = await promise;
 
   dataStore.init();
   await database.init();
@@ -37,7 +34,7 @@ export default async function startup(server: HttpServer, io: SocketServer) {
   });
 
   agendaManager(appEventEmitter);
-  eventManager(io, serviceAccount);
+  eventManager(io);
 
   server.listen(port, () => logger.info(`Server running on port: ${port}`));
 }

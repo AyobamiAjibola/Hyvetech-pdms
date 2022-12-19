@@ -90,6 +90,21 @@ export default class TransactionController {
 
     if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist`, HttpStatus.NOT_FOUND.code));
 
+    const banks = await dataSources.bankDAOService.findAll();
+
+    if (!banks.length)
+      return Promise.reject(CustomAPIError.response(`No banks Please contact support`, HttpStatus.NOT_FOUND.code));
+
+    const bank = banks.find(bank => bank.name === partner.bankName);
+
+    if (!bank)
+      return Promise.reject(
+        CustomAPIError.response(
+          `Bank ${partner.bankName} does not exist. Please contact support`,
+          HttpStatus.NOT_FOUND.code,
+        ),
+      );
+
     const customer = await dataSources.customerDAOService.findById(value.customerId);
 
     if (!customer)

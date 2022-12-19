@@ -315,6 +315,16 @@ export declare namespace appCommonTypes {
     estimateId: number;
     transaction: Transaction;
   }
+
+  interface IFirebaseData {
+    title?: string;
+    message?: string;
+    subtitle?: string;
+    sound?: boolean | string;
+    vibrate?: boolean | number[];
+    priority?: 'min' | 'low' | 'default' | 'high' | 'max';
+    badge?: number;
+  }
 }
 
 declare global {

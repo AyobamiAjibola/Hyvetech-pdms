@@ -114,11 +114,17 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
   @Column(DataType.STRING(3000))
   declare loginToken: string;
 
+  @Column(DataType.STRING(3000))
+  declare expoSlug: string;
+
   @Column(DataType.STRING)
   declare gatewayId: string;
 
   @Column(DataType.STRING)
   declare eventId: string;
+
+  @Column(DataType.STRING)
+  declare pushToken: string;
 
   @Column(DataType.DATE)
   declare loginDate: Date;

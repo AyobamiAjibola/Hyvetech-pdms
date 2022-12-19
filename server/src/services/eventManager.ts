@@ -26,7 +26,10 @@ import Estimate from '../models/Estimate';
 import mongoose from 'mongoose';
 import Vehicle from '../models/Vehicle';
 import Transaction from '../models/Transaction';
-import firebaseMessaging from '../helpers/firebaseMessaging';
+import axios from 'axios';
+import { appCommonTypes } from '../@types/app-common';
+import AppLogger from '../utils/AppLogger';
+import IFirebaseData = appCommonTypes.IFirebaseData;
 
 interface AppointmentProps {
   appointment: Appointment;
@@ -71,14 +74,12 @@ interface IServiceAccount {
   project_id: string;
 }
 
-export default function eventManager(io: Server, serviceAccount: IServiceAccount) {
-  const fcm = firebaseMessaging({
-    serviceAccount: {
-      clientEmail: serviceAccount.client_email,
-      privateKey: serviceAccount.private_key,
-      projectId: serviceAccount.project_id,
-    },
-  });
+export default function eventManager(io: Server) {
+  axios.defaults.baseURL = process.env.GOOGLE_FCM_HOST;
+  axios.defaults.headers.post['Content-Type'] = 'application/json';
+  axios.defaults.headers.common['Authorization'] = `key=${process.env.AUTOHYVE_FCM_SERVER_KEY}`;
+
+  const LOG = AppLogger.init(eventManager.name).logger;
 
   appEventEmitter.on(RESCHEDULE_APPOINTMENT, (props: AppointmentProps) => {
     const { appointment, customer, user } = props;
@@ -134,8 +135,9 @@ export default function eventManager(io: Server, serviceAccount: IServiceAccount
     (async () => {
       const [firstName, lastName] = job.vehicleOwner.split(' ');
 
-      let eventId = '',
-        id = 0;
+      let eventId = '';
+      let id = 0;
+      let expoSlug = '';
 
       const customer = await dataSources.customerDAOService.findByAny({
         where: {
@@ -150,12 +152,14 @@ export default function eventManager(io: Server, serviceAccount: IServiceAccount
       });
 
       if (driver) {
-        eventId = driver.eventId;
+        eventId = driver.pushToken;
         id = driver.id;
+        expoSlug = driver.expoSlug;
       }
       if (customer) {
-        eventId = customer.eventId;
+        eventId = customer.pushToken;
         id = customer.id;
+        expoSlug = customer.expoSlug;
       }
 
       const notification = {
@@ -170,18 +174,23 @@ export default function eventManager(io: Server, serviceAccount: IServiceAccount
       await NotificationModel.create(notification);
 
       if (eventId.length) {
-        // await fcm.sendToOne({
-        //   token: eventId,
-        //   data: {
-        //     seen: false,
-        //     from: `${job.partner.name}`,
-        //     to: id,
-        //   },
-        //   notification: {
-        //     title: `${job.partner.name} Approved Job`,
-        //     body: `Job on your vehicle ${job.vehicle.make} ${job.vehicle.model} has been approved`,
-        //   },
-        // });
+        const data = JSON.stringify({
+          to: eventId,
+          priority: 'normal',
+          data: {
+            experienceId: `@jiffixproductmanager/${expoSlug}`,
+            scopeKey: `@jiffixproductmanager/${expoSlug}`,
+            title: `${job.partner.name} Approved Job`,
+            message: `Job on your vehicle ${job.vehicle.make} ${job.vehicle.model} has been approved`,
+            sound: true,
+            vibrate: true,
+            priority: 'max',
+          } as IFirebaseData,
+        });
+
+        const response = await axios.post('/send', data);
+
+        LOG.info(response.data);
       }
     })();
   });
@@ -201,18 +210,23 @@ export default function eventManager(io: Server, serviceAccount: IServiceAccount
 
       await NotificationModel.create(notification);
 
-      // await fcm.sendToOne({
-      //   token: customer.eventId,
-      //   data: {
-      //     seen: false,
-      //     from: `${partner.name}`,
-      //     to: customer.id,
-      //   },
-      //   notification: {
-      //     title: `${partner.name} Estimate`,
-      //     body: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
-      //   },
-      // });
+      const data = JSON.stringify({
+        to: customer.pushToken,
+        priority: 'normal',
+        data: {
+          experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
+          scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
+          title: `${partner.name} Estimate`,
+          message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
+          sound: true,
+          vibrate: true,
+          priority: 'max',
+        } as IFirebaseData,
+      });
+
+      const response = await axios.post('/send', data);
+
+      LOG.info(response.data);
     })();
   });
 
