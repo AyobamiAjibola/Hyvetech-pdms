@@ -84,7 +84,7 @@ export default class EstimateController {
 
     const customer = await estimate.$get('customer');
     const vehicle = await estimate.$get('vehicle');
-    const partner = await estimate.$get('partner');
+    const partner = await estimate.$get('partner', { include: [Contact] });
 
     appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
 
@@ -153,7 +153,7 @@ export default class EstimateController {
         CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
       );
 
-    const partner = await dataSources.partnerDAOService.findById(value.id);
+    const partner = await dataSources.partnerDAOService.findById(value.id, { include: [Contact] });
 
     if (!partner)
       return Promise.reject(
