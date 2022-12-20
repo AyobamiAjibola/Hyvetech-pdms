@@ -74,10 +74,6 @@ interface IServiceAccount {
 }
 
 export default function eventManager(io: Server) {
-  axios.defaults.baseURL = process.env.GOOGLE_FCM_HOST;
-  axios.defaults.headers.post['Content-Type'] = 'application/json';
-  axios.defaults.headers.common['Authorization'] = `key=${process.env.AUTOHYVE_FCM_SERVER_KEY}`;
-
   appEventEmitter.on(RESCHEDULE_APPOINTMENT, (props: AppointmentProps) => {
     const { appointment, customer, user } = props;
 
@@ -127,6 +123,10 @@ export default function eventManager(io: Server) {
   });
 
   appEventEmitter.on(APPROVE_JOB, (props: ApprovedJobProps) => {
+    axios.defaults.baseURL = process.env.GOOGLE_FCM_HOST;
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
+    axios.defaults.headers.common['Authorization'] = `key=${process.env.AUTOHYVE_FCM_SERVER_KEY}`;
+
     const { job } = props;
 
     (async () => {
@@ -193,6 +193,10 @@ export default function eventManager(io: Server) {
   });
 
   appEventEmitter.on(CREATED_ESTIMATE, (props: ICreatedEstimateProps) => {
+    axios.defaults.baseURL = process.env.GOOGLE_FCM_HOST;
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
+    axios.defaults.headers.common['Authorization'] = `key=${process.env.AUTOHYVE_FCM_SERVER_KEY}`;
+
     const { estimate, customer, partner, vehicle } = props;
 
     const partnerContact = partner.contact.address;
@@ -281,68 +285,3 @@ export default function eventManager(io: Server) {
     })();
   });
 }
-
-/**
- * const settings = {
-  api: {
-    root: '/api/v1',
-    baseURL: 'https://autohyve.jiffixtech.com',
-    basePDMSURL: 'https://pdms.jiffixtech.com',
-    customerBaseURL: 'https://app.jiffixtech.com',
-    // baseURL: 'http://192.168.43.133:5006',
-    // basePDMSURL: 'http://192.168.43.133:5003',
-    // customerBaseURL: 'http://192.168.43.133:5001',
-  },
-  authKey: 'JIFFIX_HYVE_AUTH_TOKEN',
-  customer: 'JIFFIX_HYVE_CUSTOMER',
-  permissionKey: 'JIFFIX_HYVE_PERMISSION',
-  guestKey: 'JIFFIX_HYVE_GUEST_TOKEN',
-  onboardKey: 'JIFFIX_HYVE_ONBOARD_TOKEN',
-  roles: ['ADMIN_ROLE', 'CUSTOMER_ROLE', 'GUEST_ROLE', 'USER_ROLE', 'RIDE_SHARE_DRIVER_ROLE'],
-  env: 'development',
-  permissions: [
-    'manage_all',
-
-    'create_booking',
-    'read_booking',
-    'update_booking',
-    'delete_booking',
-
-    'create_user',
-    'read_user',
-    'update_user',
-    'delete_user',
-
-    'create_customer',
-    'read_customer',
-    'update_customer',
-    'delete_customer',
-
-    'create_role',
-    'read_role',
-    'update_role',
-    'delete_role',
-
-    'create_plan',
-    'read_plan',
-    'update_plan',
-    'delete_plan',
-  ],
-  office: {
-    primary: 'Jiffix Hub',
-    secondary: 'No. 10, 45 Road, off 1st Avenue Gwarimpa',
-  },
-  error: {
-    message: 'Something went wrong. Please try again or contact support',
-  },
-  slots: [
-    { id: 1, time: '9am - 11am', available: true, label: 'Morning' },
-    { id: 2, time: '11am - 1pm', available: true, label: 'Late Morning' },
-    { id: 3, time: '1pm - 3pm', available: true, label: 'Afternoon' },
-    { id: 4, time: '3pm - 5pm', available: true, label: 'Late Afternoon' },
-  ],
-};
-
- export default settings;
-
- */
