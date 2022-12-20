@@ -290,4 +290,16 @@ export default class Generic {
       }
     }
   }
+
+  public static whichPushToken(token: string) {
+    const hexPattern = /[0-9A-Fa-f]{6}/g;
+
+    let which = '';
+
+    if (token.match(hexPattern) && token.length === 64) which = 'ios';
+
+    if (!token.match(hexPattern) && token.length === 163) which = 'android';
+
+    return which;
+  }
 }

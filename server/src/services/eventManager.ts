@@ -27,8 +27,8 @@ import mongoose from 'mongoose';
 import Vehicle from '../models/Vehicle';
 import Transaction from '../models/Transaction';
 import axios from 'axios';
-import { appCommonTypes } from '../@types/app-common';
-import IFirebaseData = appCommonTypes.IFirebaseData;
+import PushNotificationService from './PushNotificationService';
+import Generic from '../utils/Generic';
 
 interface AppointmentProps {
   appointment: Appointment;
@@ -65,12 +65,6 @@ interface INotificationProps {
   transaction: Transaction;
   response: IInitTransactionResponse;
   message: string;
-}
-
-interface IServiceAccount {
-  client_email: string;
-  private_key: string;
-  project_id: string;
 }
 
 export default function eventManager(io: Server) {
@@ -134,7 +128,6 @@ export default function eventManager(io: Server) {
 
       let eventId = '';
       let id = 0;
-      let expoSlug = '';
 
       const customer = await dataSources.customerDAOService.findByAny({
         where: {
@@ -151,12 +144,10 @@ export default function eventManager(io: Server) {
       if (driver) {
         eventId = driver.pushToken;
         id = driver.id;
-        expoSlug = driver.expoSlug;
       }
       if (customer) {
         eventId = customer.pushToken;
         id = customer.id;
-        expoSlug = customer.expoSlug;
       }
 
       const notification = {
@@ -171,32 +162,12 @@ export default function eventManager(io: Server) {
       await NotificationModel.create(notification);
 
       if (eventId.length) {
-        const data = JSON.stringify({
-          to: eventId,
-          priority: 'normal',
-          data: {
-            experienceId: `@jiffixproductmanager/${expoSlug}`,
-            scopeKey: `@jiffixproductmanager/${expoSlug}`,
-            title: `${job.partner.name} Approved Job`,
-            message: `Job on your vehicle ${job.vehicle.make} ${job.vehicle.model} has been approved`,
-            sound: true,
-            vibrate: true,
-            priority: 'max',
-          } as IFirebaseData,
-        });
-
-        const response = await axios.post('/send', data);
-
-        console.log(response.data);
+        io.to(eventId).emit(APPROVE_JOB, { notification });
       }
     })();
   });
 
   appEventEmitter.on(CREATED_ESTIMATE, (props: ICreatedEstimateProps) => {
-    axios.defaults.baseURL = process.env.GOOGLE_FCM_HOST;
-    axios.defaults.headers.post['Content-Type'] = 'application/json';
-    axios.defaults.headers.common['Authorization'] = `key=${process.env.AUTOHYVE_FCM_SERVER_KEY}`;
-
     const { estimate, customer, partner, vehicle } = props;
 
     const partnerContact = partner.contact.address;
@@ -213,23 +184,42 @@ export default function eventManager(io: Server) {
 
       await NotificationModel.create(notification);
 
-      const data = JSON.stringify({
-        to: customer.pushToken,
-        priority: 'normal',
-        data: {
+      const whichPushToken = Generic.whichPushToken(customer.pushToken);
+
+      if (whichPushToken === 'android') {
+        const fcm = PushNotificationService.fcmMessaging.config({
+          baseURL: process.env.GOOGLE_FCM_HOST as string,
           experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
           scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
+          serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY as string,
+          pushToken: customer.pushToken,
+        });
+
+        const response = await fcm.sendToOne({
           title: `${partner.name} Estimate`,
           message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
           sound: true,
           vibrate: true,
           priority: 'max',
-        } as IFirebaseData,
-      });
+        });
 
-      const response = await axios.post('/send', data);
+        console.log(response.data);
+      }
 
-      console.log(response.data);
+      if (whichPushToken === 'ios') {
+        // const apns = PushNotificationService.apnMessaging.config({
+        //   production: process.env.NODE_ENV === 'production',
+        //   pushToken: customer.pushToken,
+        //   token: { key: '123456', keyId: '567890', teamId: 'myteamid' },
+        //   topic: 'mytopic',
+        // });
+        //
+        // const responses = await apns.sendToOne({
+        //   alert: `${partner.name} Estimate`,
+        //   payload: { message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created` },
+        // });
+        // console.log(responses);
+      }
     })();
   });
 

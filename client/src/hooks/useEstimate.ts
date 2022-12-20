@@ -142,7 +142,7 @@ export default function useEstimate() {
   }, [estimateReducer.sendDraftEstimateStatus, estimateReducer.sendDraftEstimateSuccess, handleReset]);
 
   const handleCreateEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
-    if (+values.depositAmount <= grandTotal) {
+    if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {
       const data = {
         id: partnerId,
         parts: values.parts,
@@ -178,7 +178,7 @@ export default function useEstimate() {
   };
 
   const handleSaveEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
-    if (+values.depositAmount <= grandTotal) {
+    if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {
       const data = {
         id: partnerId,
         parts: values.parts,
@@ -214,7 +214,7 @@ export default function useEstimate() {
   };
 
   const handleUpdateEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
-    if (+values.depositAmount <= grandTotal) {
+    if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {
       const data = {
         id: estimateId,
         parts: values.parts,
@@ -249,7 +249,7 @@ export default function useEstimate() {
   };
 
   const handleSendDraftEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
-    if (+values.depositAmount <= grandTotal) {
+    if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {
       const data = {
         id: estimateId,
         parts: values.parts,

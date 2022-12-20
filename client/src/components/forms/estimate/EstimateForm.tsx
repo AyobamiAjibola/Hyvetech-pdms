@@ -473,7 +473,7 @@ function EstimateForm(props: IProps) {
                 label={fields.jobDuration.label}
                 type="number"
                 inputProps={{
-                  min: '0',
+                  min: '1',
                 }}
               />
             </Grid>
