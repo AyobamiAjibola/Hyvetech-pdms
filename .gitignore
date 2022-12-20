@@ -68,3 +68,4 @@ yarn.lock
 docs
 public
 *sdk*
+**.p8*

@@ -207,18 +207,25 @@ export default function eventManager(io: Server) {
       }
 
       if (whichPushToken === 'ios') {
-        // const apns = PushNotificationService.apnMessaging.config({
-        //   production: process.env.NODE_ENV === 'production',
-        //   pushToken: customer.pushToken,
-        //   token: { key: '123456', keyId: '567890', teamId: 'myteamid' },
-        //   topic: 'mytopic',
-        // });
-        //
-        // const responses = await apns.sendToOne({
-        //   alert: `${partner.name} Estimate`,
-        //   payload: { message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created` },
-        // });
-        // console.log(responses);
+        const appleKey = process.env.APPLE_KEY as string;
+        const appleKeyId = process.env.APPLE_KEY_ID as string;
+        const appleTeamId = process.env.APPLE_TEAM_ID as string;
+
+        const apns = PushNotificationService.apnMessaging.config({
+          production: process.env.NODE_ENV === 'production',
+          pushToken: customer.pushToken,
+          token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
+          topic: 'com.jiffixproductmanager.autohyve',
+        });
+
+        const responses = await apns.sendToOne({
+          alert: `${partner.name} Estimate`,
+          payload: { message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created` },
+        });
+
+        if (responses.failed.length) {
+          console.log(responses.failed);
+        } else console.log(responses.sent);
       }
     })();
   });
