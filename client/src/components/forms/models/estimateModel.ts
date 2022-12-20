@@ -178,8 +178,8 @@ const fields = {
 const initialValues: IEstimateValues = {
   mileage: { count: '', unit: '' },
   plateNumber: '',
-  depositAmount: '',
-  jobDuration: { count: '', interval: '' },
+  depositAmount: '0',
+  jobDuration: { count: '0', interval: '' },
   firstName: '',
   lastName: '',
   make: '',
@@ -203,18 +203,18 @@ const initialValues: IEstimateValues = {
 };
 
 const schema = Yup.object().shape({
-  firstName: Yup.string().required(fields.firstName.error.required).label(fields.firstName.label),
-  lastName: Yup.string().required(fields.lastName.error.required).label(fields.lastName.label),
-  address: Yup.string().required().label(fields.address.label),
-  addressType: Yup.string().required().label(fields.addressType.label),
-  phone: Yup.string().required(fields.phone.error.required).label(fields.phone.label),
-  vin: Yup.string().required(fields.vin.error.required).label(fields.vin.label),
-  make: Yup.string().required(fields.make.error.required).label(fields.make.label),
-  model: Yup.string().required(fields.model.error.required).label(fields.model.label),
-  modelYear: Yup.string().required(fields.modelYear.error.required).label(fields.modelYear.label),
-  plateNumber: Yup.string().required(fields.plateNumber.error.required).label(fields.plateNumber.label),
+  firstName: Yup.string().nullable().label(fields.firstName.label),
+  lastName: Yup.string().nullable().label(fields.lastName.label),
+  address: Yup.string().nullable().label(fields.address.label),
+  addressType: Yup.string().nullable().label(fields.addressType.label),
+  phone: Yup.string().nullable().label(fields.phone.label),
+  vin: Yup.string().nullable().label(fields.vin.label),
+  make: Yup.string().nullable().label(fields.make.label),
+  model: Yup.string().nullable().label(fields.model.label),
+  modelYear: Yup.string().nullable().label(fields.modelYear.label),
+  plateNumber: Yup.string().nullable().label(fields.plateNumber.label),
   tax: Yup.string().nullable().label(fields.tax.label),
-  depositAmount: Yup.string().required().label(fields.depositAmount.label),
+  depositAmount: Yup.string().nullable().label(fields.depositAmount.label),
 });
 
 const estimateModel = {

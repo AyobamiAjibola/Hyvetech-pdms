@@ -117,28 +117,34 @@ function EstimatePage() {
             <Divider orientation="horizontal" flexItem />
           </Grid>
         </Grid>
-        <Grid container my={3}>
-          <Grid item xs>
-            <Typography gutterBottom>Vehicle</Typography>
-            <Typography>
-              {estimate?.vehicle.modelYear} {estimate?.vehicle.make} {estimate?.vehicle.model}
-            </Typography>
+        {!estimate.vehicle ? (
+          <Grid container my={3}>
+            <Typography gutterBottom>No Vehicle Info.</Typography>
           </Grid>
-          <Grid item xs>
-            <Typography gutterBottom>Reg. No</Typography>
-            <Typography>{estimate?.vehicle.plateNumber}</Typography>
+        ) : (
+          <Grid container my={3}>
+            <Grid item xs>
+              <Typography gutterBottom>Vehicle</Typography>
+              <Typography>
+                {estimate?.vehicle.modelYear} {estimate?.vehicle.make} {estimate?.vehicle.model}
+              </Typography>
+            </Grid>
+            <Grid item xs>
+              <Typography gutterBottom>Reg. No</Typography>
+              <Typography>{estimate?.vehicle.plateNumber}</Typography>
+            </Grid>
+            <Grid item xs>
+              <Typography gutterBottom>Mileage</Typography>
+              <Typography>
+                {estimate?.vehicle.mileageValue} {estimate?.vehicle.mileageUnit}
+              </Typography>
+            </Grid>
+            <Grid item xs>
+              <Typography gutterBottom>VIN</Typography>
+              <Typography>{estimate?.vehicle.vin}</Typography>
+            </Grid>
           </Grid>
-          <Grid item xs>
-            <Typography gutterBottom>Mileage</Typography>
-            <Typography>
-              {estimate?.vehicle.mileageValue} {estimate?.vehicle.mileageUnit}
-            </Typography>
-          </Grid>
-          <Grid item xs>
-            <Typography gutterBottom>VIN</Typography>
-            <Typography>{estimate?.vehicle.vin}</Typography>
-          </Grid>
-        </Grid>
+        )}
         <Grid container>
           <Grid item xs>
             <Divider orientation="horizontal" flexItem />

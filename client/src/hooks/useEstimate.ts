@@ -20,7 +20,6 @@ import settings from '../config/settings';
 import { CustomJwtPayload } from '@app-interfaces';
 import {
   clearCreateEstimateStatus,
-  clearGetEstimateStatus,
   clearSaveEstimateStatus,
   clearSendDraftEstimateStatus,
   clearUpdateEstimateStatus,
@@ -47,6 +46,14 @@ export default function useEstimate() {
   const dispatch = useAppDispatch();
 
   const params = useParams();
+
+  const handleReset = useCallback(() => {
+    dispatch(clearCreateEstimateStatus());
+    dispatch(clearSaveEstimateStatus());
+    dispatch(clearUpdateEstimateStatus());
+    dispatch(clearSendDraftEstimateStatus());
+    setSave(false);
+  }, [dispatch]);
 
   useEffect(() => {
     const auth = jwt.decode(cookie.get(settings.auth.admin)) as CustomJwtPayload;
@@ -81,61 +88,58 @@ export default function useEstimate() {
   useEffect(() => {
     if (estimateReducer.createEstimateStatus === 'failed') {
       if (estimateReducer.createEstimateError) setError({ message: estimateReducer.createEstimateError });
+      handleReset();
     }
-  }, [estimateReducer.createEstimateError, estimateReducer.createEstimateStatus]);
+  }, [estimateReducer.createEstimateError, estimateReducer.createEstimateStatus, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.createEstimateStatus === 'completed') {
       setSuccess({ message: estimateReducer.createEstimateSuccess });
+      handleReset();
     }
-  }, [estimateReducer.createEstimateStatus, estimateReducer.createEstimateSuccess]);
+  }, [estimateReducer.createEstimateStatus, estimateReducer.createEstimateSuccess, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.saveEstimateStatus === 'failed') {
       if (estimateReducer.saveEstimateError) setError({ message: estimateReducer.saveEstimateError });
+      handleReset();
     }
-  }, [estimateReducer.saveEstimateError, estimateReducer.saveEstimateStatus]);
+  }, [estimateReducer.saveEstimateError, estimateReducer.saveEstimateStatus, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.saveEstimateStatus === 'completed') {
       setSuccess({ message: estimateReducer.saveEstimateSuccess });
+      handleReset();
     }
-  }, [estimateReducer.saveEstimateStatus, estimateReducer.saveEstimateSuccess]);
+  }, [estimateReducer.saveEstimateStatus, estimateReducer.saveEstimateSuccess, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.updateEstimateStatus === 'failed') {
       if (estimateReducer.updateEstimateError) setError({ message: estimateReducer.updateEstimateError });
+      handleReset();
     }
-  }, [estimateReducer.updateEstimateError, estimateReducer.updateEstimateStatus]);
+  }, [estimateReducer.updateEstimateError, estimateReducer.updateEstimateStatus, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.updateEstimateStatus === 'completed') {
       setSuccess({ message: estimateReducer.updateEstimateSuccess });
+      handleReset();
     }
-  }, [estimateReducer.updateEstimateStatus, estimateReducer.updateEstimateSuccess]);
+  }, [estimateReducer.updateEstimateStatus, estimateReducer.updateEstimateSuccess, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.sendDraftEstimateStatus === 'failed') {
       if (estimateReducer.sendDraftEstimateError) setError({ message: estimateReducer.sendDraftEstimateError });
+      handleReset();
     }
-  }, [estimateReducer.sendDraftEstimateError, estimateReducer.sendDraftEstimateStatus]);
+  }, [estimateReducer.sendDraftEstimateError, estimateReducer.sendDraftEstimateStatus, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.sendDraftEstimateStatus === 'completed') {
       setSuccess({ message: estimateReducer.sendDraftEstimateSuccess });
+      handleReset();
     }
-  }, [estimateReducer.sendDraftEstimateStatus, estimateReducer.sendDraftEstimateSuccess]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(clearCreateEstimateStatus());
-      dispatch(clearSaveEstimateStatus());
-      dispatch(clearUpdateEstimateStatus());
-      dispatch(clearSendDraftEstimateStatus());
-      dispatch(clearGetEstimateStatus());
-      setSave(false);
-    };
-  }, [dispatch]);
+  }, [estimateReducer.sendDraftEstimateStatus, estimateReducer.sendDraftEstimateSuccess, handleReset]);
 
   const handleCreateEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
     if (+values.depositAmount <= grandTotal) {
@@ -296,19 +300,19 @@ export default function useEstimate() {
           firstName: driver ? driver.firstName : customer.firstName,
           lastName: driver ? driver.lastName : customer.lastName,
           phone: driver ? driver.phone : customer.phone,
-          make: vehicle.make,
-          model: vehicle.model,
-          plateNumber: vehicle.plateNumber,
-          vin: vehicle.vin ? vehicle.vin : '',
-          modelYear: vehicle.modelYear,
+          make: vehicle && vehicle.make ? vehicle.make : '',
+          model: vehicle && vehicle.model ? vehicle.model : '',
+          plateNumber: vehicle && vehicle.plateNumber ? vehicle.plateNumber : '',
+          vin: vehicle && vehicle.vin ? vehicle.vin : '',
+          modelYear: vehicle && vehicle.modelYear ? vehicle.modelYear : '',
           address: estimate.address ? estimate.address : '',
           addressType: estimate.addressType ? estimate.addressType : '',
           jobDuration: { count: `${estimate.jobDurationValue}`, interval: estimate.jobDurationUnit },
           depositAmount: `${estimate.depositAmount}`,
           tax: `${estimate.tax}`,
           mileage: {
-            count: vehicle.mileageValue ? vehicle.mileageValue : '',
-            unit: vehicle.mileageUnit ? vehicle.mileageUnit : '',
+            count: vehicle && vehicle.mileageValue ? vehicle.mileageValue : '',
+            unit: vehicle && vehicle.mileageUnit ? vehicle.mileageUnit : '',
           },
           parts,
           labours,

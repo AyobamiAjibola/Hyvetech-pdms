@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Divider, Grid, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -48,21 +48,13 @@ function EstimateForm(props: IProps) {
   const [error, setError] = useState<CustomHookMessage>();
 
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
+  const estimateReducer = useAppSelector(state => state.estimateReducer);
   const dispatch = useAppDispatch();
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
 
-  const {
-    setGrandTotal,
-    setPartTotal,
-    setLabourTotal,
-    showCreate,
-    showEdit,
-    isSubmitting,
-    grandTotal,
-    labourTotal,
-    partTotal,
-  } = props;
+  const { setGrandTotal, setPartTotal, setLabourTotal, showCreate, showEdit, grandTotal, labourTotal, partTotal } =
+    props;
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -172,6 +164,14 @@ function EstimateForm(props: IProps) {
     },
     [setFieldValue, values.parts],
   );
+
+  const sendStatus = useMemo(() => {
+    return estimateReducer.sendDraftEstimateStatus === 'loading' || estimateReducer.createEstimateStatus === 'loading';
+  }, [estimateReducer.createEstimateStatus, estimateReducer.sendDraftEstimateStatus]);
+
+  const saveStatus = useMemo(() => {
+    return estimateReducer.updateEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading';
+  }, [estimateReducer.saveEstimateStatus, estimateReducer.updateEstimateStatus]);
 
   useEffect(() => {
     return () => {
@@ -497,8 +497,8 @@ function EstimateForm(props: IProps) {
             <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
             <LoadingButton
               type="submit"
-              loading={isSubmitting}
-              disabled={isSubmitting}
+              loading={saveStatus}
+              disabled={saveStatus}
               variant="contained"
               color="secondary"
               endIcon={props.showEdit ? <Update /> : <Save />}
@@ -509,8 +509,9 @@ function EstimateForm(props: IProps) {
             <LoadingButton
               sx={{ ml: 2 }}
               type="submit"
-              loading={isSubmitting}
-              disabled={isSubmitting || (props.showEdit && values.status !== ESTIMATE_STATUS.draft)}
+              loading={sendStatus}
+              onClick={() => props.setSave(false)}
+              disabled={sendStatus || (props.showEdit && values.status !== ESTIMATE_STATUS.draft)}
               variant="contained"
               color="success"
               endIcon={<Send />}
@@ -530,4 +531,4 @@ function EstimateForm(props: IProps) {
   );
 }
 
-export default EstimateForm;
+export default memo(EstimateForm);

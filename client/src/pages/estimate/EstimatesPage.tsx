@@ -110,7 +110,7 @@ function EstimatesPage() {
         valueGetter: param => {
           const vehicle = param.row.vehicle;
 
-          return `${vehicle.modelYear} ${vehicle.make} ${vehicle.model} (${vehicle.plateNumber})`;
+          return vehicle ? `${vehicle?.modelYear} ${vehicle?.make} ${vehicle?.model} (${vehicle.plateNumber})` : '-';
         },
       },
       {
@@ -293,9 +293,8 @@ function EstimatesPage() {
             initialValues={estimate.initialValues}
             validationSchema={estimateModel.schema}
             onSubmit={(values, formikHelpers) => {
-              if (estimate.save) {
-                estimate.handleUpdateEstimate(values, formikHelpers);
-              } else estimate.handleSendDraftEstimate(values, formikHelpers);
+              if (estimate.save) estimate.handleUpdateEstimate(values, formikHelpers);
+              if (!estimate.save) estimate.handleSendDraftEstimate(values, formikHelpers);
             }}
             enableReinitialize>
             <EstimateForm

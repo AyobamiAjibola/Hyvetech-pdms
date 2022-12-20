@@ -1,6 +1,11 @@
 import { Request } from 'express';
 import Joi from 'joi';
-import Estimate, { $createEstimateSchema, $updateEstimateSchema, CreateEstimateType } from '../models/Estimate';
+import Estimate, {
+  $createEstimateSchema,
+  $saveEstimateSchema,
+  $updateEstimateSchema,
+  CreateEstimateType,
+} from '../models/Estimate';
 import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
 import dataSources from '../services/dao';
@@ -46,7 +51,7 @@ export default class EstimateController {
 
   @TryCatch
   public async save(req: Request) {
-    const { estimate } = await this.doCreateEstimate(req);
+    const { estimate } = await this.doSaveEstimate(req);
 
     await estimate.update({
       status: ESTIMATE_STATUS.draft,
@@ -76,7 +81,15 @@ export default class EstimateController {
 
   @TryCatch
   public async sendDraft(req: Request) {
-    const { estimate } = await this.doUpdateEstimate(req);
+    const estimateId = req.params.estimateId as string;
+
+    const estimate = await dataSources.estimateDAOService.findById(+estimateId);
+
+    if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found`, HttpStatus.NOT_FOUND.code));
+
+    const { error } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     await estimate.update({
       status: ESTIMATE_STATUS.sent,
@@ -236,9 +249,9 @@ export default class EstimateController {
       jobDurationUnit: value.jobDurationUnit,
       labours: value.labours.map(value => JSON.stringify(value)),
       parts: value.parts.map(value => JSON.stringify(value)),
-      depositAmount: value.depositAmount,
+      depositAmount: parseInt(`${value.depositAmount}`),
       grandTotal: value.grandTotal,
-      jobDurationValue: value.jobDurationValue,
+      jobDurationValue: parseInt(`${value.jobDurationValue}`),
       laboursTotal: value.laboursTotal,
       partsTotal: value.partsTotal,
       address: value.address,
@@ -253,6 +266,127 @@ export default class EstimateController {
     await partner.$add('estimates', [estimate]);
 
     await vehicle.$add('estimates', [estimate]);
+
+    await customer.$add('estimates', [estimate]);
+
+    return { estimate, customer, vehicle, partner };
+  }
+
+  private async doSaveEstimate(req: Request) {
+    const { error, value } = Joi.object<CreateEstimateType>($saveEstimateSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    if (!value)
+      return Promise.reject(
+        CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
+      );
+
+    const partner = await dataSources.partnerDAOService.findById(value.id, { include: [Contact] });
+
+    if (!partner)
+      return Promise.reject(
+        CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code),
+      );
+
+    const checkLists = await partner.$get('checkLists');
+
+    if (!checkLists.length)
+      return Promise.reject(
+        CustomAPIError.response('Partner does not have a job checklist', HttpStatus.NOT_FOUND.code),
+      );
+
+    const technicians = await partner.$get('technicians');
+
+    if (!technicians.length)
+      return Promise.reject(
+        CustomAPIError.response('Partner does not have technicians to handle jobs', HttpStatus.NOT_FOUND.code),
+      );
+
+    let vehicle: Vehicle | null = null,
+      customer: Customer;
+
+    if (value.vin) {
+      const findVehicle = await dataSources.vehicleDAOService.findByVIN(value.vin);
+
+      if (!findVehicle) {
+        const data: any = {
+          vin: value.vin,
+          make: value.make,
+          model: value.model,
+          modelYear: value.modelYear,
+          plateNumber: value.plateNumber,
+          mileageValue: value.mileageValue,
+          mileageUnit: value.mileageUnit,
+        };
+
+        const vin = await dataSources.vinDAOService.findByAny({
+          where: { vin: value.vin },
+        });
+
+        if (!vin)
+          return Promise.reject(
+            CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+          );
+
+        await vin.update({
+          plateNumber: value.plateNumber,
+        });
+
+        vehicle = await dataSources.vehicleDAOService.create(data);
+      } else {
+        vehicle = await findVehicle.update({
+          vin: value.vin.length ? value.vin : findVehicle.vin,
+          make: value.make.length ? value.make : findVehicle.make,
+          model: value.model.length ? value.model : findVehicle.model,
+          modelYear: value.modelYear.length ? value.modelYear : findVehicle.modelYear,
+          mileageValue: value.mileageValue.length ? value.mileageValue : findVehicle.mileageValue,
+          mileageUnit: value.mileageUnit.length ? value.mileageUnit : findVehicle.mileageUnit,
+          plateNumber: value.plateNumber.length ? value.plateNumber : findVehicle.plateNumber,
+        });
+      }
+    }
+
+    const findCustomer = await dataSources.customerDAOService.findByAny({
+      where: { phone: value.phone },
+      include: [Contact],
+    });
+
+    if (!findCustomer) {
+      const data: any = {
+        firstName: value.firstName,
+        lastName: value.lastName,
+        phone: value.phone,
+      };
+
+      customer = await dataSources.customerDAOService.create(data);
+      if (vehicle) await customer.$set('vehicles', [vehicle]);
+    } else {
+      if (vehicle) await findCustomer.$add('vehicles', [vehicle]);
+      customer = findCustomer;
+    }
+
+    const estimateValues: Partial<Estimate> = {
+      jobDurationUnit: value.jobDurationUnit,
+      labours: value.labours.map(value => JSON.stringify(value)),
+      parts: value.parts.map(value => JSON.stringify(value)),
+      depositAmount: parseInt(`${value.depositAmount}`),
+      jobDurationValue: parseInt(`${value.jobDurationValue}`),
+      grandTotal: value.grandTotal,
+      laboursTotal: value.laboursTotal,
+      partsTotal: value.partsTotal,
+      address: value.address,
+      addressType: value.addressType,
+      tax: value.tax,
+      code: Generic.randomize({ count: 6, number: true }),
+      expiresIn: ESTIMATE_EXPIRY_DAYS,
+    };
+
+    const estimate = await dataSources.estimateDAOService.create(estimateValues as CreationAttributes<Estimate>);
+
+    await partner.$add('estimates', [estimate]);
+
+    if (vehicle) await vehicle.$add('estimates', [estimate]);
 
     await customer.$add('estimates', [estimate]);
 
@@ -279,9 +413,9 @@ export default class EstimateController {
       jobDurationUnit: value.jobDurationUnit,
       labours: value.labours.map(value => JSON.stringify(value)),
       parts: value.parts.map(value => JSON.stringify(value)),
-      depositAmount: value.depositAmount,
       grandTotal: value.grandTotal,
-      jobDurationValue: value.jobDurationValue,
+      depositAmount: parseInt(`${value.depositAmount}`),
+      jobDurationValue: parseInt(`${value.jobDurationValue}`),
       laboursTotal: value.laboursTotal,
       partsTotal: value.partsTotal,
       address: value.address,
