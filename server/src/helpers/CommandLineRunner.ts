@@ -129,8 +129,8 @@ export default class CommandLineRunner {
     await this.singleton.loadDefaultVINProvider();
     await this.singleton.loadDefaultTags();
     await this.singleton.loadDefaultAdmin();
-    // await this.singleton.loadPayStackPlans();
-    // await this.singleton.loadPayStackBanks();
+    await this.singleton.loadPayStackPlans();
+    await this.singleton.loadPayStackBanks();
   }
 
   async createUploadDirectory() {

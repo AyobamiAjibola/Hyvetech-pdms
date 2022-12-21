@@ -185,6 +185,8 @@ export default function eventManager(io: Server) {
       await NotificationModel.create(notification);
 
       const whichPushToken = Generic.whichPushToken(customer.pushToken);
+      const title = `${partner.name} Estimate`;
+      const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
 
       if (whichPushToken === 'android') {
         const pushToken = customer.pushToken.replace('[android]-', '');
@@ -198,8 +200,8 @@ export default function eventManager(io: Server) {
         });
 
         const response = await fcm.sendToOne({
-          title: `${partner.name} Estimate`,
-          message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
+          title,
+          message,
           sound: true,
           vibrate: true,
           priority: 'max',
@@ -222,14 +224,16 @@ export default function eventManager(io: Server) {
         });
 
         const responses = await apns.sendToOne({
-          alert: `${partner.name} Estimate`,
-          payload: { message: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created` },
+          alert: title,
+          payload: { message },
         });
 
         if (responses.failed.length) {
           console.log(responses.failed);
         } else console.log(responses.sent);
       }
+
+      io.to(customer.eventId).emit(CREATED_ESTIMATE, { title, message });
     })();
   });
 
