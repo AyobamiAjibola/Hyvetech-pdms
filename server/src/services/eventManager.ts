@@ -187,12 +187,14 @@ export default function eventManager(io: Server) {
       const whichPushToken = Generic.whichPushToken(customer.pushToken);
 
       if (whichPushToken === 'android') {
+        const pushToken = customer.pushToken.replace('[android]-', '');
+
         const fcm = PushNotificationService.fcmMessaging.config({
           baseURL: process.env.GOOGLE_FCM_HOST as string,
           experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
           scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
           serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY as string,
-          pushToken: customer.pushToken,
+          pushToken,
         });
 
         const response = await fcm.sendToOne({
@@ -207,13 +209,14 @@ export default function eventManager(io: Server) {
       }
 
       if (whichPushToken === 'ios') {
+        const pushToken = customer.pushToken.replace('[ios]-', '');
         const appleKey = process.env.APPLE_KEY as string;
         const appleKeyId = process.env.APPLE_KEY_ID as string;
         const appleTeamId = process.env.APPLE_TEAM_ID as string;
 
         const apns = PushNotificationService.apnMessaging.config({
           production: process.env.NODE_ENV === 'production',
-          pushToken: customer.pushToken,
+          pushToken,
           token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
           topic: 'com.jiffixproductmanager.autohyve',
         });

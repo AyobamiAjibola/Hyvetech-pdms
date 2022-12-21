@@ -292,13 +292,14 @@ export default class Generic {
   }
 
   public static whichPushToken(token: string) {
-    const hexPattern = /[0-9A-Fa-f]{6}/g;
+    const iosSearch = '[ios]';
+    const androidSearch = '[android]';
 
     let which = '';
 
-    if (token.match(hexPattern) && token.length === 64) which = 'ios';
+    if (token.match(iosSearch)?.input) which = 'ios';
 
-    if (!token.match(hexPattern) && token.length === 163) which = 'android';
+    if (token.match(androidSearch)?.input) which = 'android';
 
     return which;
   }
