@@ -32,19 +32,19 @@ function InvoicePage() {
   }, [location]);
 
   useEffect(() => {
-    if (estimate) {
+    if (estimate && invoice) {
       const driver = estimate.rideShareDriver;
       const customer = estimate.customer;
-      const _parts = estimate.parts as unknown as IPart[];
-      const _labours = estimate.labours as unknown as ILabour[];
+      const _parts = invoice.edited ? invoice.parts : estimate.parts;
+      const _labours = invoice.edited ? invoice.labours : estimate.labours;
 
       const _owner = driver ? `${driver.firstName} ${driver.lastName}` : `${customer.firstName} ${customer.lastName}`;
       setOwner(capitalize.words(_owner));
       setBillingInformation(customer.billingInformation);
-      setParts(_parts);
-      setLabours(_labours);
+      setParts(_parts as unknown as IPart[]);
+      setLabours(_labours as unknown as ILabour[]);
     }
-  }, [estimate]);
+  }, [estimate, invoice]);
 
   if (!estimate || !invoice)
     return (

@@ -198,22 +198,48 @@ export default class InvoiceController {
 
   @TryCatch
   public static async invoices(req: Request) {
-    let invoices = await dataSources.invoiceDAOService.findAll({
-      include: [
-        {
-          model: Estimate,
-          include: [
-            { model: Customer, include: [BillingInformation] },
-            Vehicle,
-            {
-              model: Partner,
-              include: [Contact],
-            },
-          ],
-        },
-        Transaction,
-      ],
-    });
+    const partner = req.user.partner;
+
+    let estimates: Estimate[];
+    let invoices: Invoice[];
+
+    //Super Admin should see all invoices
+    if (!partner) {
+      invoices = await dataSources.invoiceDAOService.findAll({
+        include: [
+          {
+            model: Estimate,
+            include: [
+              { model: Customer, include: [BillingInformation] },
+              Vehicle,
+              {
+                model: Partner,
+                include: [Contact],
+              },
+            ],
+          },
+          Transaction,
+        ],
+      });
+    } else {
+      invoices = await dataSources.invoiceDAOService.findAll({
+        include: [
+          {
+            model: Estimate,
+            where: { partnerId: partner.id },
+            include: [
+              { model: Customer, include: [BillingInformation] },
+              Vehicle,
+              {
+                model: Partner,
+                include: [Contact],
+              },
+            ],
+          },
+          Transaction,
+        ],
+      });
+    }
 
     invoices = invoices.map(invoice => {
       const parts = invoice.estimate.parts;

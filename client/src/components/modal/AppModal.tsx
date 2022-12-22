@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import { AppBar, Dialog, DialogContent, DialogTitle, IconButton, Toolbar } from '@mui/material';
 import TransitionUp from '../transitions/TransitionUp';
 import CloseIcon from '@mui/icons-material/Close';
@@ -12,9 +12,11 @@ interface IProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   fullWidth?: boolean;
   fullScreen?: boolean;
+  contentHeight?: number;
 }
 
 function AppModal(props: IProps) {
+  const ref = useRef<HTMLElement>(null);
   return (
     <div>
       <Dialog
@@ -25,7 +27,8 @@ function AppModal(props: IProps) {
         aria-describedby="app-modal"
         maxWidth={props.size}
         fullWidth={props.fullWidth}
-        fullScreen={props.fullScreen}>
+        fullScreen={props.fullScreen}
+        scroll="paper">
         <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
             <IconButton edge="start" color="inherit" onClick={props.onClose} aria-label="close">
@@ -34,7 +37,9 @@ function AppModal(props: IProps) {
           </Toolbar>
         </AppBar>
         <DialogTitle>{props.title}</DialogTitle>
-        <DialogContent>{props.Content}</DialogContent>
+        <DialogContent ref={ref} sx={{ height: props.contentHeight }}>
+          {props.Content}
+        </DialogContent>
         {props.ActionComponent && props.ActionComponent}
       </Dialog>
     </div>

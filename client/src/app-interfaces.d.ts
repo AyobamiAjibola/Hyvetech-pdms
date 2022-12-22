@@ -1,6 +1,6 @@
 declare module '@app-interfaces' {
   import React from 'react';
-  import { GenericObjectType } from '@app-types';
+  import { AnyObjectType } from '@app-types';
   import {
     ICheckList,
     ICustomer,
@@ -17,10 +17,10 @@ declare module '@app-interfaces' {
   import { JwtPayload } from 'jsonwebtoken';
 
   interface IModule {
-    customers: { name: string; data: GenericObjectType[] };
-    appointments: { name: string; data: GenericObjectType[] };
-    vehicles: { name: string; data: GenericObjectType[] };
-    transactions: { name: string; data: GenericObjectType[] };
+    customers: { name: string; data: AnyObjectType[] };
+    appointments: { name: string; data: AnyObjectType[] };
+    vehicles: { name: string; data: AnyObjectType[] };
+    transactions: { name: string; data: AnyObjectType[] };
   }
 
   interface ITableColumnOptions {
@@ -239,5 +239,11 @@ declare module '@app-interfaces' {
     customer?: ICustomer;
     driverId?: number;
     driver?: IRideShareDriver;
+  }
+
+  interface IInitTransaction {
+    authorizationUrl: string;
+    accessCode?: string;
+    reference: string;
   }
 }

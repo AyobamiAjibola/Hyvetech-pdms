@@ -8,5 +8,6 @@ declare namespace NodeJS {
     REACT_APP_SERVER_BASE_URL: string;
     REACT_APP_DRIVER_SERVER_BASE_URL: string;
     REACT_APP_CUSTOMER_BASE_URL: string;
+    REACT_APP_ADMIN_BASE_URL: string;
   }
 }
