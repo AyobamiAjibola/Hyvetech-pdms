@@ -411,14 +411,11 @@ export default class TransactionController {
 
     await transaction.update($transaction);
 
-    const newDueAmount = invoice.grandTotal === invoice.refundable ? 0 : invoice.dueAmount;
-
     await invoice.update({
       edited: true,
       updateStatus: INVOICE_STATUS.update.refund,
       refundable: 0,
       depositAmount: 0,
-      dueAmount: newDueAmount,
     });
 
     await invoice.$add('transactions', [transaction]);
