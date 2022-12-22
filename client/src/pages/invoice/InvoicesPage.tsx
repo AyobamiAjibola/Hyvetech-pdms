@@ -25,6 +25,7 @@ import useAppDispatch from '../../hooks/useAppDispatch';
 import useRouterQuery from '../../hooks/useRouterQuery';
 import { LOCAL_STORAGE } from '../../config/constants';
 import { verifyRefundCustomerAction } from '../../store/actions/transactionActions';
+import useAdmin from '../../hooks/useAdmin';
 
 function InvoicesPage() {
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
@@ -33,7 +34,7 @@ function InvoicesPage() {
 
   const invoice = useInvoice();
   const navigate = useNavigate();
-
+  const { isTechAdmin } = useAdmin();
   const routerQuery = useRouterQuery();
 
   useEffect(() => {
@@ -218,7 +219,8 @@ function InvoicesPage() {
           />,
           <GridActionsCellItem
             key={2}
-            icon={<Edit sx={{ color: 'limegreen' }} />}
+            icon={<Edit sx={{ display: isTechAdmin ? 'block' : 'none', color: 'limegreen' }} />}
+            disabled={!isTechAdmin}
             onClick={() => {
               const _invoice = params.row as IInvoice;
 
