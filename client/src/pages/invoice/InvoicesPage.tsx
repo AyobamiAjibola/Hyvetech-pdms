@@ -241,7 +241,7 @@ function InvoicesPage() {
         ],
       },
     ] as GridColDef<IInvoice>[];
-  }, [invoice, navigate]);
+  }, [invoice, isTechAdmin, navigate]);
 
   return (
     <React.Fragment>
