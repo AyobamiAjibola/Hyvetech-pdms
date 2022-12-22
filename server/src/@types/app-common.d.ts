@@ -330,6 +330,7 @@ export declare namespace appCommonTypes {
     authorizationUrl: string;
     accessCode?: string;
     reference: string;
+    invoiceId?: number;
   }
 }
 

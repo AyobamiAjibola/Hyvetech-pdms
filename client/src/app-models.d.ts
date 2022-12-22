@@ -622,6 +622,7 @@ declare module '@app-models' {
     grandTotal: number;
     depositAmount: number;
     dueAmount: number;
+    refundable: number;
     dueDate: Date;
     parts: string[];
     labours: string[];
@@ -635,6 +636,7 @@ declare module '@app-models' {
     expiresIn: number;
     url: string;
     edited: boolean;
+    updateStatus: string;
     estimate: IEstimate;
     transactions: ITransaction[];
     createdAt: string;

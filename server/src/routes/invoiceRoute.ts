@@ -23,3 +23,15 @@ export const getInvoicesHandler = authenticateRouteWrapper(async (req, res) => {
 
   res.status(response.code).json(response);
 });
+
+export const saveInvoiceHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await InvoiceController.saveInvoice(req);
+
+  res.status(response.code).json(response);
+});
+
+export const sendInvoiceHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await InvoiceController.sendInvoice(req);
+
+  res.status(response.code).json(response);
+});

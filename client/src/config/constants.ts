@@ -5025,4 +5025,9 @@ export const INVOICE_STATUS = {
   paid: 'Paid',
   overDue: 'Overdue',
   dueSoon: 'Due soon',
+  update: {
+    draft: 'Draft',
+    sent: 'Sent',
+    refund: 'Refunded',
+  },
 };

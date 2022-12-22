@@ -175,12 +175,13 @@ function EstimatesPage() {
 
           <GridActionsCellItem
             key={1}
-            icon={<Edit sx={{ color: 'limegreen' }} />}
+            icon={<Edit sx={{ color: 'limegreen', display: isTechAdmin ? 'block' : 'none' }} />}
             onClick={() => {
               const row = params.row as IEstimate;
 
               estimate.onEdit(row.id);
             }}
+            disabled={!isTechAdmin}
             label="Edit"
             showInMenu={false}
           />,
@@ -196,7 +197,7 @@ function EstimatesPage() {
         ],
       },
     ] as GridColDef<IEstimate>[];
-  }, [estimate, navigate]);
+  }, [estimate, navigate, isTechAdmin]);
 
   useEffect(() => {
     return () => {

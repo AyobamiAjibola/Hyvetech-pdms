@@ -1,8 +1,8 @@
 import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import { Button, Divider, Grid, Typography } from '@mui/material';
+import { Divider, Grid, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Update } from '@mui/icons-material';
+import { Add, Remove, Save, Send } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -19,7 +19,6 @@ import { IVINDecoderSchema } from '@app-interfaces';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
-import { initRefundCustomerAction } from '../../../store/actions/transactionActions';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -38,6 +37,7 @@ interface IProps {
   showRefund?: boolean;
   setShowRefund?: (refund: boolean) => void;
   setSave?: Dispatch<SetStateAction<boolean>>;
+  onInitiateRefund: () => void;
 }
 
 const { fields } = estimateModel;
@@ -48,14 +48,13 @@ export type PartArgs = IPart & {
   values: IEstimateValues;
 };
 
-const callbackUrl = `${process.env.REACT_APP_ADMIN_BASE_URL}/invoices`;
-
 function InvoiceForm(props: IProps) {
   const [vat, setVat] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
+  const invoiceReducer = useAppSelector(state => state.invoiceReducer);
 
   const dispatch = useAppDispatch();
 
@@ -74,6 +73,8 @@ function InvoiceForm(props: IProps) {
     setDueBalance,
     setRefundable,
     refundable,
+    onInitiateRefund,
+    setSave,
   } = props;
 
   useEffect(() => {
@@ -124,6 +125,8 @@ function InvoiceForm(props: IProps) {
     if (_depositAmount > _grandTotal) {
       setRefundable(_depositAmount - _grandTotal);
       setDueBalance(0);
+    } else {
+      setRefundable(0);
     }
   }, [vat, partTotal, labourTotal, setGrandTotal, setDueBalance, grandTotal, values.depositAmount, setRefundable]);
 
@@ -203,6 +206,14 @@ function InvoiceForm(props: IProps) {
     };
   }, [timer, dispatch]);
 
+  const onSave = useCallback(() => {
+    if (setSave) setSave(true);
+  }, [setSave]);
+
+  const onSend = useCallback(() => {
+    if (setSave) setSave(false);
+  }, [setSave]);
+
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
@@ -216,6 +227,7 @@ function InvoiceForm(props: IProps) {
           <Grid item xs={3}>
             <TextInputField
               onChange={handleChange}
+              disabled
               label={fields.firstName.label}
               value={values.firstName}
               name={fields.firstName.name}
@@ -224,6 +236,7 @@ function InvoiceForm(props: IProps) {
           <Grid item xs={3}>
             <TextInputField
               onChange={handleChange}
+              disabled
               label={fields.lastName.label}
               value={values.lastName}
               name={fields.lastName.name}
@@ -233,6 +246,7 @@ function InvoiceForm(props: IProps) {
             <TextInputField
               type="tel"
               onChange={handleChange}
+              disabled
               label={fields.phone.label}
               value={values.phone}
               name={fields.phone.name}
@@ -246,6 +260,7 @@ function InvoiceForm(props: IProps) {
                   { label: 'Office', value: 'Office' },
                 ]}
                 onChange={handleChange}
+                disabled
                 value={values.addressType}
                 name={fields.addressType.name}
                 label={fields.addressType.label}
@@ -255,13 +270,19 @@ function InvoiceForm(props: IProps) {
             <Grid item xs={9}>
               <TextInputField
                 onChange={handleChange}
+                disabled
                 value={values.address}
                 name={fields.address.name}
                 label={fields.address.label}
               />
             </Grid>
           </Grid>
-          <VehicleInformationFields values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
+          <VehicleInformationFields
+            disabled
+            values={values}
+            handleChange={handleChange}
+            handleChangeVIN={_handleChangeVIN}
+          />
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               {fields.parts.label}
@@ -478,26 +499,13 @@ function InvoiceForm(props: IProps) {
           <Grid item xs={2} alignSelf="center">
             <Typography variant="h6">Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
           </Grid>
-          <Grid item xs={3} container justifyContent="space-around" alignItems="center">
+          <Grid item xs={2} container justifyContent="space-around" alignItems="center">
             <Typography variant="h6">Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
-            <Button
-              color="success"
-              variant="outlined"
-              onClick={() =>
-                void dispatch(
-                  initRefundCustomerAction({
-                    callbackUrl,
-                    amount: refundable,
-                  }),
-                )
-              }
-              sx={{ display: refundable === 0 ? 'none' : 'block' }}>
-              Refund
-            </Button>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             <TextInputField
               onChange={handleChange}
+              disabled={parseInt(values.depositAmount) !== 0}
               value={values.depositAmount}
               name={fields.depositAmount.name}
               label={fields.depositAmount.label}
@@ -536,18 +544,42 @@ function InvoiceForm(props: IProps) {
               />
             </Grid>
           </Grid>
+
           <Grid item xs={12}>
             <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
-            <LoadingButton
-              sx={{ ml: 2 }}
-              type="submit"
-              variant="contained"
-              color="success"
-              endIcon={<Update />}
-              size="large">
-              Update
-            </LoadingButton>
           </Grid>
+          <Grid item xs={6}>
+            <Stack direction="row" spacing={2}>
+              <LoadingButton
+                onClick={onSave}
+                sx={{ ml: 2 }}
+                type="submit"
+                variant="contained"
+                color="info"
+                loading={invoiceReducer.saveInvoiceStatus === 'loading'}
+                endIcon={<Save />}>
+                Save
+              </LoadingButton>
+              <LoadingButton
+                onClick={onSend}
+                sx={{ ml: 2 }}
+                type="submit"
+                variant="contained"
+                color="success"
+                loading={invoiceReducer.sendInvoiceStatus === 'loading'}
+                endIcon={<Send />}>
+                Send
+              </LoadingButton>
+              <LoadingButton
+                color="error"
+                variant="contained"
+                onClick={onInitiateRefund}
+                sx={{ display: refundable <= 0 ? 'none' : 'block' }}>
+                Initiate Refund
+              </LoadingButton>
+            </Stack>
+          </Grid>
+          <Grid item xs />
         </Grid>
       </Form>
       <AppAlert

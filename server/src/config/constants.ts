@@ -462,6 +462,17 @@ export const INVOICE_STATUS = {
   paid: 'Paid',
   overDue: 'Overdue',
   dueSoon: 'Due soon',
+  update: {
+    draft: 'Draft',
+    sent: 'Sent',
+    refund: 'Refunded',
+  },
+};
+
+export const TRANSACTION_TYPE = {
+  deposit: 'Deposit',
+  transfer: 'Transfer',
+  refund: 'Refund',
 };
 
 export const PAYMENT_CHANNELS = ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer', 'eft'];

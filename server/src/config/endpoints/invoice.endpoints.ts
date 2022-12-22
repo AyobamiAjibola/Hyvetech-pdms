@@ -2,6 +2,8 @@ import {
   completeEstimateDepositHandler,
   generateInvoiceHandler,
   getInvoicesHandler,
+  saveInvoiceHandler,
+  sendInvoiceHandler,
   updateCompletedInvoicePaymentHandler,
 } from '../../routes/invoiceRoute';
 import { appCommonTypes } from '../../@types/app-common';
@@ -31,6 +33,20 @@ const invoiceEndpoints: RouteEndpoints = [
     method: 'get',
     path: '/invoices',
     handler: getInvoicesHandler,
+  },
+
+  {
+    name: 'save invoice',
+    method: 'patch',
+    path: '/invoices/save',
+    handler: saveInvoiceHandler,
+  },
+
+  {
+    name: 'send invoice',
+    method: 'patch',
+    path: '/invoices/send',
+    handler: sendInvoiceHandler,
   },
 ];
 

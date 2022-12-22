@@ -11,6 +11,7 @@ interface IProps {
   values: IEstimateValues;
   handleChange: any;
   handleChangeVIN: any;
+  disabled?: boolean;
 }
 
 function VehicleInformationFields(props: IProps) {
@@ -27,6 +28,7 @@ function VehicleInformationFields(props: IProps) {
       <Grid item xs={4}>
         <TextInputField
           label={fields.vin.label}
+          disabled={props.disabled}
           name={fields.vin.name}
           value={props.values.vin}
           onChange={props.handleChangeVIN}
@@ -42,6 +44,7 @@ function VehicleInformationFields(props: IProps) {
       <Grid item xs={4}>
         <TextInputField
           onChange={props.handleChange}
+          disabled={props.disabled}
           label={fields.modelYear.label}
           value={props.values.modelYear}
           name={fields.modelYear.name}
@@ -50,6 +53,7 @@ function VehicleInformationFields(props: IProps) {
       <Grid item xs={4}>
         <TextInputField
           onChange={props.handleChange}
+          disabled={props.disabled}
           label={fields.make.label}
           value={props.values.make}
           name={fields.make.name}
@@ -58,6 +62,7 @@ function VehicleInformationFields(props: IProps) {
       <Grid item xs={4}>
         <TextInputField
           onChange={props.handleChange}
+          disabled={props.disabled}
           value={props.values.model}
           name={fields.model.name}
           label={fields.model.label}
@@ -66,6 +71,7 @@ function VehicleInformationFields(props: IProps) {
       <Grid item xs={4}>
         <TextInputField
           onChange={props.handleChange}
+          disabled={props.disabled}
           value={props.values.plateNumber}
           name={fields.plateNumber.name}
           label={fields.plateNumber.label}
@@ -75,6 +81,7 @@ function VehicleInformationFields(props: IProps) {
         <Grid item xs={8}>
           <TextInputField
             onChange={props.handleChange}
+            disabled={props.disabled}
             value={props.values.mileage.count}
             name="mileage.count"
             label={fields.mileage.label}
@@ -87,6 +94,7 @@ function VehicleInformationFields(props: IProps) {
               { label: 'km', value: 'km' },
             ]}
             onChange={props.handleChange}
+            disabled={props.disabled}
             value={props.values.mileage.unit}
             name="mileage.unit"
             label="Unit"

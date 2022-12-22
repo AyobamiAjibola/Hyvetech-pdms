@@ -1,3 +1,5 @@
+// noinspection JSUnfilteredForInLoop
+
 import { Request } from 'express';
 import Joi from 'joi';
 import Estimate, {
@@ -87,9 +89,47 @@ export default class EstimateController {
 
     if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found`, HttpStatus.NOT_FOUND.code));
 
-    const { error } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
+    const { error, value } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    for (const valueKey in value) {
+      const key = valueKey as keyof CreateEstimateType;
+
+      if (key === 'id') continue;
+
+      if (key === 'parts') {
+        await estimate.update({
+          [key]: value.parts.map(value => JSON.stringify(value)),
+        });
+        continue;
+      }
+
+      if (key === 'labours') {
+        await estimate.update({
+          [key]: value.labours.map(value => JSON.stringify(value)),
+        });
+        continue;
+      }
+
+      if (key === 'depositAmount') {
+        await estimate.update({
+          [key]: parseInt(`${value.depositAmount}`),
+        });
+        continue;
+      }
+
+      if (key === 'jobDurationValue') {
+        await estimate.update({
+          [key]: parseInt(`${value.jobDurationValue}`),
+        });
+        continue;
+      }
+
+      await estimate.update({
+        [key]: value[key],
+      });
+    }
 
     await estimate.update({
       status: ESTIMATE_STATUS.sent,
@@ -171,20 +211,6 @@ export default class EstimateController {
     if (!partner)
       return Promise.reject(
         CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code),
-      );
-
-    const checkLists = await partner.$get('checkLists');
-
-    if (!checkLists.length)
-      return Promise.reject(
-        CustomAPIError.response('Partner does not have a job checklist', HttpStatus.NOT_FOUND.code),
-      );
-
-    const technicians = await partner.$get('technicians');
-
-    if (!technicians.length)
-      return Promise.reject(
-        CustomAPIError.response('Partner does not have technicians to handle jobs', HttpStatus.NOT_FOUND.code),
       );
 
     const findVehicle = await dataSources.vehicleDAOService.findByVIN(value.vin);
@@ -287,20 +313,6 @@ export default class EstimateController {
     if (!partner)
       return Promise.reject(
         CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code),
-      );
-
-    const checkLists = await partner.$get('checkLists');
-
-    if (!checkLists.length)
-      return Promise.reject(
-        CustomAPIError.response('Partner does not have a job checklist', HttpStatus.NOT_FOUND.code),
-      );
-
-    const technicians = await partner.$get('technicians');
-
-    if (!technicians.length)
-      return Promise.reject(
-        CustomAPIError.response('Partner does not have technicians to handle jobs', HttpStatus.NOT_FOUND.code),
       );
 
     let vehicle: Vehicle | null = null,

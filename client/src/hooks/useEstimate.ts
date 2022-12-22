@@ -110,8 +110,9 @@ export default function useEstimate() {
     if (estimateReducer.saveEstimateStatus === 'completed') {
       setSuccess({ message: estimateReducer.saveEstimateSuccess });
       handleReset();
+      dispatch(getEstimatesAction());
     }
-  }, [estimateReducer.saveEstimateStatus, estimateReducer.saveEstimateSuccess, handleReset]);
+  }, [dispatch, estimateReducer.saveEstimateStatus, estimateReducer.saveEstimateSuccess, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.updateEstimateStatus === 'failed') {
@@ -124,8 +125,9 @@ export default function useEstimate() {
     if (estimateReducer.updateEstimateStatus === 'completed') {
       setSuccess({ message: estimateReducer.updateEstimateSuccess });
       handleReset();
+      dispatch(getEstimatesAction());
     }
-  }, [estimateReducer.updateEstimateStatus, estimateReducer.updateEstimateSuccess, handleReset]);
+  }, [dispatch, estimateReducer.updateEstimateStatus, estimateReducer.updateEstimateSuccess, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.sendDraftEstimateStatus === 'failed') {
@@ -138,8 +140,9 @@ export default function useEstimate() {
     if (estimateReducer.sendDraftEstimateStatus === 'completed') {
       setSuccess({ message: estimateReducer.sendDraftEstimateSuccess });
       handleReset();
+      dispatch(getEstimatesAction());
     }
-  }, [estimateReducer.sendDraftEstimateStatus, estimateReducer.sendDraftEstimateSuccess, handleReset]);
+  }, [dispatch, estimateReducer.sendDraftEstimateStatus, estimateReducer.sendDraftEstimateSuccess, handleReset]);
 
   const handleCreateEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
     if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {

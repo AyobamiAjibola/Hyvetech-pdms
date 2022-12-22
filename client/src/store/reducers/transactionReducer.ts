@@ -15,6 +15,8 @@ interface ITransactionState {
   openTransactionPopup: boolean;
   transactionRef: string;
   authorizationUrl: string;
+
+  invoiceId?: number;
 }
 
 const initialState: ITransactionState = {
@@ -26,6 +28,7 @@ const initialState: ITransactionState = {
   verifyRefundCustomerSuccess: '',
   verifyRefundCustomerError: '',
 
+  invoiceId: undefined,
   openTransactionPopup: false,
   transactionRef: '',
   authorizationUrl: '',
@@ -39,11 +42,13 @@ const transactionSlice = createSlice({
       state.initRefundCustomerStatus = 'idle';
       state.initRefundCustomerSuccess = '';
       state.initRefundCustomerError = '';
+      state.invoiceId = undefined;
     },
     resetVerifyRefundCustomerStatus(state: ITransactionState) {
       state.verifyRefundCustomerStatus = 'idle';
       state.verifyRefundCustomerSuccess = '';
       state.verifyRefundCustomerError = '';
+      state.invoiceId = undefined;
     },
     setOpenTransactionPopup(state: ITransactionState, action: PayloadAction<boolean>) {
       state.openTransactionPopup = action.payload;
@@ -67,6 +72,7 @@ const transactionSlice = createSlice({
         state.openTransactionPopup = true;
         const payload = action.payload.result as IInitTransaction;
         state.authorizationUrl = payload.authorizationUrl;
+        state.invoiceId = payload.invoiceId;
       })
       .addCase(initRefundCustomerAction.rejected, (state, action) => {
         state.initRefundCustomerStatus = 'failed';
