@@ -11,6 +11,16 @@ export const depositForEstimateHandler = authenticateRouteWrapper(async (req, re
   res.status(response.code).json(response);
 });
 
+export const initRefundCustomerHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await TransactionController.initRefundCustomer(req);
+  res.status(response.code).json(response);
+});
+
+export const verifyRefundCustomerHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await TransactionController.verifyRefundCustomer(req);
+  res.status(response.code).json(response);
+});
+
 export const initTransactionCallbackHandler = async (req: Request, res: Response) => {
   const response = await TransactionController.initTransactionCallback(req);
 

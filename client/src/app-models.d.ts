@@ -634,6 +634,7 @@ declare module '@app-models' {
     addressType: string;
     expiresIn: number;
     url: string;
+    edited: boolean;
     estimate: IEstimate;
     transactions: ITransaction[];
     createdAt: string;

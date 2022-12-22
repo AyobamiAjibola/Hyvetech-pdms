@@ -19,6 +19,8 @@ import { CreationAttributes } from 'sequelize/types';
 import AppLogger from '../utils/AppLogger';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
+import AnyObjectType = appCommonTypes.AnyObjectType;
+import IInitTransaction = appCommonTypes.IInitTransaction;
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
@@ -272,5 +274,131 @@ export default class TransactionController {
       message: 'Transaction updated successfully',
       result: transaction,
     } as HttpResponse<Transaction>);
+  }
+
+  @TryCatch
+  public static async initRefundCustomer(req: Request) {
+    const partner = req.user.partner;
+
+    //validate request body
+    const { error, value } = Joi.object<AnyObjectType>({
+      callbackUrl: Joi.string().required().label('Customer Id'),
+      amount: Joi.number().required().label('Estimate Id'),
+    }).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    if (!value)
+      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+
+    //get default payment gateway
+    const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
+      where: { default: true },
+    });
+
+    if (!paymentGateway)
+      return Promise.reject(CustomAPIError.response(`No payment gateway found`, HttpStatus.NOT_FOUND.code));
+
+    //initialize payment
+    const metadata = {
+      cancel_action: `${process.env.PAYMENT_GW_CB_URL}/transactions?status=cancelled`,
+    };
+    axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
+    axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
+
+    const endpoint = '/transaction/initialize';
+
+    const callbackUrl = value.callbackUrl;
+    const amount = Math.round(value.amount * 100);
+
+    const initResponse = await axiosClient.post(`${endpoint}`, {
+      email: partner.email,
+      amount,
+      callback_url: callbackUrl,
+      metadata,
+      channels: PAYMENT_CHANNELS,
+    });
+
+    const data = initResponse.data.data;
+
+    const txnValues: Partial<Transaction> = {
+      reference: data.reference,
+      authorizationUrl: data.authorization_url,
+      type: 'Deposit',
+      purpose: ``,
+      status: initResponse.data.message,
+      amount: value.amount,
+    };
+
+    const transaction = await dataSources.transactionDAOService.create(txnValues as CreationAttributes<Transaction>);
+
+    await partner.$add('transactions', [transaction]);
+
+    const response: HttpResponse<IInitTransaction> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      result: {
+        reference: data.reference,
+        authorizationUrl: data.authorization_url,
+      },
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  public static async verifyRefundCustomer(req: Request) {
+    const { reference } = req.query as unknown as { reference: string };
+
+    const transaction = await dataSources.transactionDAOService.findByAny({
+      where: { reference },
+    });
+
+    if (!transaction) {
+      return Promise.reject(CustomAPIError.response(transactionDoesNotExist, HttpStatus.NOT_FOUND.code));
+    }
+
+    //get default payment gateway
+    const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
+      where: { default: true },
+    });
+
+    if (!paymentGateway)
+      return Promise.reject(CustomAPIError.response(`No payment gateway found`, HttpStatus.NOT_FOUND.code));
+
+    //verify payment
+    axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
+    axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
+
+    const endpoint = `/transaction/verify/${reference}`;
+
+    const axiosResponse = await axiosClient.get(endpoint);
+
+    const data = axiosResponse.data.data;
+
+    const $transaction = {
+      reference: data.reference,
+      channel: data.authorization.channel,
+      cardType: data.authorization.card_type,
+      bank: data.authorization.bank,
+      last4: data.authorization.last4,
+      expMonth: data.authorization.exp_month,
+      expYear: data.authorization.exp_year,
+      countryCode: data.authorization.country_code,
+      brand: data.authorization.brand,
+      currency: data.currency,
+      status: data.status,
+      paidAt: data.paid_at,
+      type: transaction.type,
+    };
+
+    await transaction.update($transaction);
+
+    const response: HttpResponse<void> = {
+      code: HttpStatus.OK.code,
+      message: 'Refund Successful!',
+    };
+
+    return Promise.resolve(response);
   }
 }

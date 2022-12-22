@@ -2,12 +2,12 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { Timelapse } from '@mui/icons-material';
 import moment from 'moment';
-import { GenericObjectType } from '@app-types';
+import { AnyObjectType } from '@app-types';
 
 interface IProps {
   bgColor?: any;
   title?: string;
-  data?: GenericObjectType;
+  data?: AnyObjectType;
   timestamp?: string;
 }
 

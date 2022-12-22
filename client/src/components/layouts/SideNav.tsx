@@ -83,7 +83,7 @@ function SideNav() {
             value.name === 'Invoices',
         ),
       );
-    if (admin.isTechAdmin) setNavs(sideNavs.filter(value => value.tag === 'techs'));
+    if (admin.isTechAdmin) setNavs(sideNavs.filter(value => value.tag === 'techs' || value.name === 'Invoices'));
     if (admin.isDriverAdmin) setNavs(sideNavs.filter(value => value.tag === 'all' || value.tag === 'drivers'));
   }, [admin.isDriverAdmin, admin.isSuperAdmin, admin.isTechAdmin]);
 

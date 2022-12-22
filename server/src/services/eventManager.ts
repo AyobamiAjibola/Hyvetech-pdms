@@ -188,6 +188,8 @@ export default function eventManager(io: Server) {
       const title = `${partner.name} Estimate`;
       const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
 
+      io.to(customer.eventId).emit(CREATED_ESTIMATE, { title, message });
+
       if (whichPushToken === 'android') {
         const pushToken = customer.pushToken.replace('[android]-', '');
 
@@ -232,8 +234,6 @@ export default function eventManager(io: Server) {
           console.log(responses.failed);
         } else console.log(responses.sent);
       }
-
-      io.to(customer.eventId).emit(CREATED_ESTIMATE, { title, message });
     })();
   });
 

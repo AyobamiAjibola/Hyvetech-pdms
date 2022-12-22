@@ -14,6 +14,7 @@ import userReducer from './userReducer';
 import checkListReducer from './checkListReducer';
 import estimateReducer from './estimateReducer';
 import invoiceReducer from './invoiceReducer';
+import transactionReducer from './transactionReducer';
 
 const rootReducer = combineReducers({
   appointmentReducer,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   checkListReducer,
   estimateReducer,
   invoiceReducer,
+  transactionReducer,
 });
 
 export default rootReducer;

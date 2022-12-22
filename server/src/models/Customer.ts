@@ -38,7 +38,7 @@ export const $customerSchema = {
 export const $initTransactionSchema = {
   email: $customerSchema.email,
   phone: $customerSchema.phone,
-  callbackUrl: Joi.string().allow('Payment Callback URL'),
+  callbackUrl: Joi.string().allow('Payment CallbackPage URL'),
   subscriptionName: Joi.string().label('Subscription Name'),
   planCategory: Joi.string().label('Plans Category'),
   paymentPlan: Joi.string().label('Payment Plans'),

@@ -75,6 +75,9 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
   @Column(DataType.STRING)
   declare url: string;
 
+  @Column(DataType.BOOLEAN)
+  declare edited: boolean;
+
   @HasMany(() => Transaction)
   declare transactions: NonAttribute<Transaction[]>;
 

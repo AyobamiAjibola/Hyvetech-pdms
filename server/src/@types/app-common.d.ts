@@ -325,6 +325,12 @@ export declare namespace appCommonTypes {
     priority?: 'min' | 'low' | 'default' | 'high' | 'max';
     badge?: number;
   }
+
+  interface IInitTransaction {
+    authorizationUrl: string;
+    accessCode?: string;
+    reference: string;
+  }
 }
 
 declare global {
