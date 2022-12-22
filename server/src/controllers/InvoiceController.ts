@@ -1,3 +1,5 @@
+// noinspection JSUnfilteredForInLoop
+
 import { TryCatch } from '../decorators';
 import { Request } from 'express';
 import Joi from 'joi';
@@ -16,7 +18,7 @@ import {
 import axiosClient from '../services/api/axiosClient';
 import { Attributes, CreationAttributes } from 'sequelize';
 import Transaction from '../models/Transaction';
-import Invoice from '../models/Invoice';
+import Invoice, { $saveInvoiceSchema, $sendInvoiceSchema, InvoiceSchemaType } from '../models/Invoice';
 import Generic from '../utils/Generic';
 import Estimate from '../models/Estimate';
 import Job from '../models/Job';
@@ -402,6 +404,78 @@ export default class InvoiceController {
       code: HttpStatus.OK.code,
       message: 'Payment complete',
     } as HttpResponse<void>);
+  }
+
+  @TryCatch
+  public static async saveInvoice(req: Request) {
+    const invoice = await this.doSave(req);
+
+    await invoice.update({
+      updateStatus: INVOICE_STATUS.update.draft,
+      edited: true,
+    });
+
+    return Promise.resolve({
+      code: HttpStatus.OK.code,
+      message: `Invoice saved successfully.`,
+      result: invoice,
+    } as HttpResponse<Invoice>);
+  }
+
+  @TryCatch
+  public static async sendInvoice(req: Request) {
+    const invoice = await this.doSend(req);
+
+    await invoice.update({
+      updateStatus: INVOICE_STATUS.update.sent,
+      edited: true,
+    });
+
+    return Promise.resolve({
+      code: HttpStatus.OK.code,
+      message: `Invoice sent successfully.`,
+      result: invoice,
+    } as HttpResponse<Invoice>);
+  }
+
+  private static async doSave(req: Request) {
+    const { error, value } = Joi.object<InvoiceSchemaType>($saveInvoiceSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    if (!value)
+      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+
+    const invoice = await dataSources.invoiceDAOService.findById(value.id);
+
+    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
+
+    for (const valueKey in value) {
+      const key = valueKey as keyof InvoiceSchemaType;
+
+      if (value[key]) {
+        await invoice.update({
+          [key]: value[key],
+        });
+      }
+    }
+
+    return invoice;
+  }
+
+  private static async doSend(req: Request) {
+    const { error, value } = Joi.object<InvoiceSchemaType>($sendInvoiceSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    if (!value)
+      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+
+    const invoice = await dataSources.invoiceDAOService.findById(value.id);
+
+    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
+
+    return invoice;
   }
 
   private static async doAssignJob(estimate: Estimate) {

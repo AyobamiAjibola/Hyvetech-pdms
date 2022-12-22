@@ -17,10 +17,18 @@ export const initRefundCustomerAction = asyncThunkWrapper<ApiResponseSuccess<IIn
   },
 );
 
-export const verifyRefundCustomerAction = asyncThunkWrapper<ApiResponseSuccess<IInitTransaction>, string>(
+type VerifyRefundType = {
+  reference: string;
+  invoiceId: number;
+};
+export const verifyRefundCustomerAction = asyncThunkWrapper<ApiResponseSuccess<IInitTransaction>, VerifyRefundType>(
   VERIFY_REFUND_CUSTOMER,
   async args => {
-    const response = await axiosClient.get(`${API_ROOT}/transactions/verify-refund-customer/?reference=${args}`);
+    const { invoiceId, reference } = args;
+
+    const response = await axiosClient.get(
+      `${API_ROOT}/transactions/verify-refund-customer/?reference=${reference}&invoiceId=${invoiceId}`,
+    );
 
     return response.data;
   },

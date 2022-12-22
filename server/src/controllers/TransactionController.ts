@@ -2,7 +2,9 @@ import { Request } from 'express';
 import { appEventEmitter } from '../services/AppEventEmitter';
 import {
   INIT_TRANSACTION,
+  INVOICE_STATUS,
   PAYMENT_CHANNELS,
+  TRANSACTION_TYPE,
   TXN_CANCELLED,
   TXN_REFERENCE,
   VERIFY_TRANSACTION,
@@ -16,7 +18,6 @@ import dataSources from '../services/dao';
 import axiosClient from '../services/api/axiosClient';
 import Transaction from '../models/Transaction';
 import { CreationAttributes } from 'sequelize/types';
-import AppLogger from '../utils/AppLogger';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import AnyObjectType = appCommonTypes.AnyObjectType;
@@ -25,8 +26,6 @@ import IInitTransaction = appCommonTypes.IInitTransaction;
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
 export default class TransactionController {
-  private static LOG = AppLogger.init(TransactionController.name).logger;
-
   public static async subscriptionsTransactionStatus(req: Request) {
     try {
       const query = req.query;
@@ -282,14 +281,27 @@ export default class TransactionController {
 
     //validate request body
     const { error, value } = Joi.object<AnyObjectType>({
-      callbackUrl: Joi.string().required().label('Customer Id'),
-      amount: Joi.number().required().label('Estimate Id'),
+      callbackUrl: Joi.string().required().label('Callback URL'),
+      amount: Joi.number().required().label('Refund Amount'),
+      invoiceId: Joi.number().required().label('Invoice Id'),
     }).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     if (!value)
       return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+
+    const invoice = await dataSources.invoiceDAOService.findById(value.invoiceId);
+
+    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
+
+    const estimate = await invoice.$get('estimate');
+
+    if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found.`, HttpStatus.NOT_FOUND.code));
+
+    const customer = await estimate.$get('customer');
+
+    if (!customer) return Promise.reject(CustomAPIError.response(`Customer not found.`, HttpStatus.NOT_FOUND.code));
 
     //get default payment gateway
     const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
@@ -324,8 +336,8 @@ export default class TransactionController {
     const txnValues: Partial<Transaction> = {
       reference: data.reference,
       authorizationUrl: data.authorization_url,
-      type: 'Deposit',
-      purpose: ``,
+      type: TRANSACTION_TYPE.refund,
+      purpose: `Customer ${customer.firstName} ${customer.lastName} ${value.amount} Refund.`,
       status: initResponse.data.message,
       amount: value.amount,
     };
@@ -340,6 +352,7 @@ export default class TransactionController {
       result: {
         reference: data.reference,
         authorizationUrl: data.authorization_url,
+        invoiceId: invoice.id,
       },
     };
 
@@ -348,7 +361,7 @@ export default class TransactionController {
 
   @TryCatch
   public static async verifyRefundCustomer(req: Request) {
-    const { reference } = req.query as unknown as { reference: string };
+    const { reference, invoiceId } = req.query as unknown as { reference: string; invoiceId: number };
 
     const transaction = await dataSources.transactionDAOService.findByAny({
       where: { reference },
@@ -357,6 +370,10 @@ export default class TransactionController {
     if (!transaction) {
       return Promise.reject(CustomAPIError.response(transactionDoesNotExist, HttpStatus.NOT_FOUND.code));
     }
+
+    const invoice = await dataSources.invoiceDAOService.findById(invoiceId);
+
+    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
 
     //get default payment gateway
     const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
@@ -393,6 +410,18 @@ export default class TransactionController {
     };
 
     await transaction.update($transaction);
+
+    const newDueAmount = invoice.grandTotal === invoice.refundable ? 0 : invoice.dueAmount;
+
+    await invoice.update({
+      edited: true,
+      updateStatus: INVOICE_STATUS.update.refund,
+      refundable: 0,
+      depositAmount: 0,
+      dueAmount: newDueAmount,
+    });
+
+    await invoice.$add('transactions', [transaction]);
 
     const response: HttpResponse<void> = {
       code: HttpStatus.OK.code,

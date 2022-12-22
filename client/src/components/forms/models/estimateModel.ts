@@ -17,6 +17,7 @@ export interface ILabour {
 }
 
 export interface IEstimateValues {
+  id?: number;
   parts: IPart[];
   labours: ILabour[];
   tax: string;

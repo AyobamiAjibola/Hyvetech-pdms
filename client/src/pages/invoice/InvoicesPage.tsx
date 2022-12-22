@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { IInvoice } from '@app-models';
-import { Grid, Typography } from '@mui/material';
+import { Chip, Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
@@ -23,9 +23,10 @@ import {
 } from '../../store/reducers/transactionReducer';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useRouterQuery from '../../hooks/useRouterQuery';
-import { LOCAL_STORAGE } from '../../config/constants';
+import { INVOICE_STATUS, LOCAL_STORAGE } from '../../config/constants';
 import { verifyRefundCustomerAction } from '../../store/actions/transactionActions';
 import useAdmin from '../../hooks/useAdmin';
+import { getInvoicesAction } from '../../store/actions/invoiceActions';
 
 function InvoicesPage() {
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
@@ -58,15 +59,15 @@ function InvoicesPage() {
 
   const handleLocalStorage = useCallback(
     (ev: StorageEvent) => {
-      if (ev.key === LOCAL_STORAGE.referenceNumber && ev.newValue) {
-        void dispatch(verifyRefundCustomerAction(ev.newValue));
+      if (ev.key === LOCAL_STORAGE.referenceNumber && ev.newValue && transactionReducer.invoiceId) {
+        void dispatch(verifyRefundCustomerAction({ reference: ev.newValue, invoiceId: transactionReducer.invoiceId }));
       }
 
       if (ev.key === LOCAL_STORAGE.payCancelled && ev.newValue) {
         handleClosePaymentModal();
       }
     },
-    [dispatch, handleClosePaymentModal],
+    [dispatch, handleClosePaymentModal, transactionReducer.invoiceId],
   );
 
   useEffect(() => {
@@ -82,8 +83,14 @@ function InvoicesPage() {
       localStorage.removeItem(LOCAL_STORAGE.referenceNumber);
       localStorage.removeItem(LOCAL_STORAGE.payCancelled);
       handleClosePaymentModal();
+      dispatch(getInvoicesAction());
     }
-  }, [handleClosePaymentModal, transactionReducer.authorizationUrl, transactionReducer.verifyRefundCustomerStatus]);
+  }, [
+    dispatch,
+    handleClosePaymentModal,
+    transactionReducer.authorizationUrl,
+    transactionReducer.verifyRefundCustomerStatus,
+  ]);
 
   const columns = useMemo(() => {
     return [
@@ -116,6 +123,41 @@ function InvoicesPage() {
           const customer = estimate.customer;
 
           return `${customer.firstName} ${customer.lastName}`;
+        },
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        headerAlign: 'center',
+        align: 'center',
+        sortable: true,
+        type: 'string',
+        renderCell: params => {
+          return params.row.status === INVOICE_STATUS.paid ? (
+            <Chip label={INVOICE_STATUS.paid} size="small" color="success" />
+          ) : params.row.status === INVOICE_STATUS.dueSoon ? (
+            <Chip label={INVOICE_STATUS.dueSoon} size="small" color="warning" />
+          ) : params.row.status === INVOICE_STATUS.overDue ? (
+            <Chip label={INVOICE_STATUS.overDue} size="small" color="error" />
+          ) : null;
+        },
+      },
+      {
+        field: 'updateStatus',
+        headerName: 'Update Status',
+        headerAlign: 'center',
+        align: 'center',
+        sortable: true,
+        type: 'string',
+        width: 180,
+        renderCell: params => {
+          return params.row.updateStatus === INVOICE_STATUS.update.sent ? (
+            <Chip label={INVOICE_STATUS.update.sent} size="small" color="success" />
+          ) : params.row.updateStatus === INVOICE_STATUS.update.draft ? (
+            <Chip label={INVOICE_STATUS.update.draft} size="small" color="info" />
+          ) : params.row.updateStatus === INVOICE_STATUS.update.refund ? (
+            <Chip label={INVOICE_STATUS.update.refund} size="small" color="error" />
+          ) : null;
         },
       },
       {
@@ -263,6 +305,12 @@ function InvoicesPage() {
         </Grid>
       </Grid>
       <AppAlert
+        alertType="success"
+        show={undefined !== invoice.success}
+        message={invoice.success?.message}
+        onClose={() => invoice.setSuccess(undefined)}
+      />
+      <AppAlert
         alertType="error"
         show={undefined !== invoice.error}
         message={invoice.error?.message}
@@ -277,7 +325,8 @@ function InvoicesPage() {
             initialValues={invoice.initialValues}
             validationSchema={estimateModel.schema}
             onSubmit={values => {
-              console.log(values);
+              if (invoice.save) invoice.handleSaveInvoice(values);
+              if (!invoice.save) invoice.handleSendInvoice(values);
             }}
             enableReinitialize>
             <InvoiceForm
@@ -294,6 +343,8 @@ function InvoicesPage() {
               setRefundable={invoice.setRefundable}
               showRefund={invoice.showRefund}
               setShowRefund={invoice.setShowRefund}
+              onInitiateRefund={invoice.handleInitiateRefund}
+              setSave={invoice.setSave}
             />
           </Formik>
         }

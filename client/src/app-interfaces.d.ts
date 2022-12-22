@@ -244,6 +244,7 @@ declare module '@app-interfaces' {
   interface IInitTransaction {
     authorizationUrl: string;
     accessCode?: string;
+    invoiceId?: number;
     reference: string;
   }
 }

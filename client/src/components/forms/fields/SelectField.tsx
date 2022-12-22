@@ -22,6 +22,7 @@ interface ISelectFieldProps {
   label: string;
   data: ISelectData[];
   onClick?: (params?: ISelectData) => void;
+  disabled?: boolean;
 
   [p: string]: any;
 }
@@ -48,6 +49,7 @@ export default function SelectField(props: ISelectFieldProps) {
         error={errors[props.name] && touched[props.name]}>
         <InputLabel id={props.name}>{props.label}</InputLabel>
         <Select
+          disabled={props.disabled}
           sx={props.textInputStyle}
           size={props.size}
           labelId={props.name}

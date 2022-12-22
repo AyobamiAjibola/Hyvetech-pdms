@@ -19,7 +19,6 @@ import { IVINDecoderSchema } from '@app-interfaces';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
-import { ESTIMATE_STATUS } from '../../../config/constants';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -502,8 +501,7 @@ function EstimateForm(props: IProps) {
               variant="contained"
               color="secondary"
               endIcon={props.showEdit ? <Update /> : <Save />}
-              onClick={() => props.setSave(true)}
-              size="large">
+              onClick={() => props.setSave(true)}>
               {props.showEdit ? 'Update' : 'Save'}
             </LoadingButton>
             <LoadingButton
@@ -511,11 +509,10 @@ function EstimateForm(props: IProps) {
               type="submit"
               loading={sendStatus}
               onClick={() => props.setSave(false)}
-              disabled={sendStatus || (props.showEdit && values.status !== ESTIMATE_STATUS.draft)}
+              // disabled={sendStatus || (props.showEdit && values.status !== ESTIMATE_STATUS.draft)}
               variant="contained"
               color="success"
-              endIcon={<Send />}
-              size="large">
+              endIcon={<Send />}>
               Send
             </LoadingButton>
           </Grid>
