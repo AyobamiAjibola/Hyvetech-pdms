@@ -210,9 +210,7 @@ export default function eventManager(io: Server) {
         });
 
         console.log(response.data);
-      }
-
-      if (whichPushToken === 'ios') {
+      } else if (whichPushToken === 'ios') {
         const pushToken = customer.pushToken.replace('[ios]-', '');
         const appleKey = process.env.APPLE_KEY as string;
         const appleKeyId = process.env.APPLE_KEY_ID as string;
@@ -231,7 +229,12 @@ export default function eventManager(io: Server) {
         });
 
         if (responses.failed.length) {
-          console.log(responses.failed);
+          const final = await apns.sendToOne({
+            alert: title,
+            payload: { message },
+          });
+
+          console.log(final.failed);
         } else console.log(responses.sent);
       }
     })();

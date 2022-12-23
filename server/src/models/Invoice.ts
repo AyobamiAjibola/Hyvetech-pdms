@@ -28,9 +28,12 @@ export const $sendInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   laboursTotal: Joi.number().required().label(estimateFields.laboursTotal.label),
   grandTotal: Joi.number().required().label(estimateFields.firstName.label),
   depositAmount: Joi.string().required().label(estimateFields.depositAmount.label),
+  paidAmount: Joi.string().allow('').label(estimateFields.paidAmount.label),
+  additionalDeposit: Joi.string().allow('').label(estimateFields.additionalDeposit.label),
   refundable: Joi.number().allow().label('Funds to Refund'),
   jobDurationValue: Joi.string().required().label(estimateFields.jobDurationValue.label),
   jobDurationUnit: Joi.string().required().label(estimateFields.jobDurationUnit.label),
+  dueAmount: Joi.number().allow().label('Due Amount'),
 };
 
 export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
@@ -44,9 +47,12 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   laboursTotal: Joi.number().allow().label(estimateFields.laboursTotal.label),
   grandTotal: Joi.number().allow().label(estimateFields.firstName.label),
   depositAmount: Joi.string().allow('').label(estimateFields.depositAmount.label),
+  paidAmount: Joi.string().allow('').label(estimateFields.paidAmount.label),
+  additionalDeposit: Joi.string().allow('').label(estimateFields.additionalDeposit.label),
   refundable: Joi.number().allow().label('Refund'),
   jobDurationValue: Joi.string().allow('').label(estimateFields.jobDurationValue.label),
   jobDurationUnit: Joi.string().allow('').label(estimateFields.jobDurationUnit.label),
+  dueAmount: Joi.number().allow().label('Due Amount'),
 };
 
 @Table({ tableName: 'invoices', timestamps: true })
@@ -72,7 +78,13 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
   declare depositAmount: number;
 
   @Column(DataType.DOUBLE)
+  declare paidAmount: number;
+
+  @Column(DataType.DOUBLE)
   declare dueAmount: number;
+
+  @Column(DataType.DOUBLE)
+  declare additionalDeposit: number;
 
   @Column(DataType.DATE)
   declare dueDate: Date;

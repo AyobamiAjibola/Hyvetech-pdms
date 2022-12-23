@@ -181,6 +181,22 @@ export const estimateFields = {
       required: 'Deposit Amount is required',
     },
   },
+  paidAmount: {
+    name: 'paidAmount',
+    label: 'Paid Amount',
+    error: {
+      invalid: 'Paid Amount is invalid',
+      required: 'Paid Amount is required',
+    },
+  },
+  additionalDeposit: {
+    name: 'additionalDeposit',
+    label: 'Additional Amount',
+    error: {
+      invalid: 'Additional Amount is invalid',
+      required: 'Additional Amount is required',
+    },
+  },
   jobDuration: {
     name: 'jobDuration',
     label: 'Job Duration',

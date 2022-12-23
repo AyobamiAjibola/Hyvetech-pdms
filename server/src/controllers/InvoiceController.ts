@@ -154,9 +154,10 @@ export default class InvoiceController {
       const invoiceValues: Partial<Attributes<Invoice>> = {
         code: Generic.randomize({ number: true, count: 6 }),
         depositAmount: estimate.depositAmount,
+        paidAmount: estimate.depositAmount,
         dueAmount,
         grandTotal: estimate.grandTotal,
-        status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.dueSoon,
+        status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
         dueDate: moment().days(estimate.expiresIn).toDate(),
       };
 
@@ -202,7 +203,6 @@ export default class InvoiceController {
   public static async invoices(req: Request) {
     const partner = req.user.partner;
 
-    let estimates: Estimate[];
     let invoices: Invoice[];
 
     //Super Admin should see all invoices
@@ -249,6 +249,14 @@ export default class InvoiceController {
 
       invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
       invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+
+      if (invoice.edited) {
+        const parts = invoice.parts;
+        const labours = invoice.labours;
+
+        invoice.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+        invoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+      }
 
       return invoice;
     });
@@ -380,10 +388,17 @@ export default class InvoiceController {
       return Promise.reject(CustomAPIError.response('Invoice does not exist', HttpStatus.NOT_FOUND.code));
     }
 
+    const amount = invoice.additionalDeposit
+      ? invoice.depositAmount + invoice.additionalDeposit
+      : invoice.depositAmount;
+
+    const newDueAmount = invoice.additionalDeposit ? invoice.dueAmount - invoice.additionalDeposit : 0;
+
     await invoice.update({
-      dueAmount: 0,
-      depositAmount: invoice.depositAmount + invoice.dueAmount,
-      status: INVOICE_STATUS.paid,
+      dueAmount: newDueAmount,
+      paidAmount: amount,
+      depositAmount: amount,
+      status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
     });
 
     await transaction.update({
@@ -408,7 +423,18 @@ export default class InvoiceController {
 
   @TryCatch
   public static async saveInvoice(req: Request) {
-    const invoice = await this.doSave(req);
+    const { error, value } = Joi.object<InvoiceSchemaType>($saveInvoiceSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    if (!value)
+      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+
+    const invoice = await dataSources.invoiceDAOService.findById(value.id);
+
+    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
+
+    await this.doSave(invoice, value);
 
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.draft,
@@ -424,7 +450,18 @@ export default class InvoiceController {
 
   @TryCatch
   public static async sendInvoice(req: Request) {
-    const invoice = await this.doSend(req);
+    const { error, value } = Joi.object<InvoiceSchemaType>($sendInvoiceSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    if (!value)
+      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+
+    const invoice = await dataSources.invoiceDAOService.findById(value.id);
+
+    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
+
+    await this.doSave(invoice, value);
 
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.sent,
@@ -438,44 +475,66 @@ export default class InvoiceController {
     } as HttpResponse<Invoice>);
   }
 
-  private static async doSave(req: Request) {
-    const { error, value } = Joi.object<InvoiceSchemaType>($saveInvoiceSchema).validate(req.body);
-
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-
-    if (!value)
-      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
-
-    const invoice = await dataSources.invoiceDAOService.findById(value.id);
-
-    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
-
+  private static async doSave(invoice: Invoice, value: InvoiceSchemaType) {
     for (const valueKey in value) {
       const key = valueKey as keyof InvoiceSchemaType;
 
+      if (key === 'id') continue;
+
       if (value[key]) {
+        if (key === 'parts') {
+          await invoice.update({
+            [key]: value.parts.map((value: string) => JSON.stringify(value)),
+          });
+
+          continue;
+        }
+
+        if (key === 'labours') {
+          await invoice.update({
+            [key]: value.labours.map((value: string) => JSON.stringify(value)),
+          });
+
+          continue;
+        }
+
+        if (key === 'depositAmount') {
+          await invoice.update({
+            [key]: parseInt(`${value.depositAmount}`),
+          });
+
+          continue;
+        }
+
+        if (key === 'paidAmount') {
+          await invoice.update({
+            [key]: parseInt(`${value.paidAmount}`),
+          });
+
+          continue;
+        }
+
+        if (key === 'additionalDeposit') {
+          await invoice.update({
+            [key]: parseInt(`${value.additionalDeposit}`),
+          });
+
+          continue;
+        }
+
+        if (key === 'jobDurationValue') {
+          await invoice.update({
+            [key]: parseInt(`${value.jobDurationValue}`),
+          });
+
+          continue;
+        }
+
         await invoice.update({
           [key]: value[key],
         });
       }
     }
-
-    return invoice;
-  }
-
-  private static async doSend(req: Request) {
-    const { error, value } = Joi.object<InvoiceSchemaType>($sendInvoiceSchema).validate(req.body);
-
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-
-    if (!value)
-      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
-
-    const invoice = await dataSources.invoiceDAOService.findById(value.id);
-
-    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
-
-    return invoice;
   }
 
   private static async doAssignJob(estimate: Estimate) {
