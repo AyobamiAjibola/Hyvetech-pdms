@@ -84,7 +84,7 @@ function VehicleInformationFields(props: IProps) {
             disabled={props.disabled}
             value={props.values.mileage.count}
             name="mileage.count"
-            label={fields.mileage.label}
+            label={fields.mileageValue.label}
           />
         </Grid>
         <Grid item xs>

@@ -35,6 +35,8 @@ export interface IEstimateValues {
   depositAmount: string;
   jobDuration: { count: string; interval: string };
   status?: string;
+  additionalDeposit: string;
+  paidAmount: string;
 }
 
 const fields = {
@@ -142,12 +144,44 @@ const fields = {
       required: 'Model Year is required',
     },
   },
-  mileage: {
+  mileageValue: {
     name: 'mileage',
-    label: 'Mileage',
+    label: 'Mileage Value',
     error: {
-      invalid: 'Mileage is invalid',
-      required: 'Mileage is required',
+      invalid: 'Mileage Value is invalid',
+      required: 'Mileage Value is required',
+    },
+  },
+  mileageUnit: {
+    name: 'mileage',
+    label: 'Mileage Unit',
+    error: {
+      invalid: 'Mileage Unit is invalid',
+      required: 'Mileage Unit is required',
+    },
+  },
+  partsTotal: {
+    name: 'mileage',
+    label: 'Parts Total',
+    error: {
+      invalid: 'Parts Total is invalid',
+      required: 'Parts Total is required',
+    },
+  },
+  laboursTotal: {
+    name: 'mileage',
+    label: 'Labours Total',
+    error: {
+      invalid: 'Labours Total is invalid',
+      required: 'Labours Total is required',
+    },
+  },
+  grandTotal: {
+    name: 'mileage',
+    label: 'Grand Total',
+    error: {
+      invalid: 'Grand Total is invalid',
+      required: 'Grand Total is required',
     },
   },
   plateNumber: {
@@ -166,6 +200,22 @@ const fields = {
       required: 'Deposit Amount is required',
     },
   },
+  paidAmount: {
+    name: 'paidAmount',
+    label: 'Paid Amount',
+    error: {
+      invalid: 'Paid Amount is invalid',
+      required: 'Paid Amount is required',
+    },
+  },
+  additionalDeposit: {
+    name: 'additionalDeposit',
+    label: 'Additional Amount',
+    error: {
+      invalid: 'Additional Amount is invalid',
+      required: 'Additional Amount is required',
+    },
+  },
   jobDuration: {
     name: 'jobDuration',
     label: 'Job Duration',
@@ -174,12 +224,30 @@ const fields = {
       required: 'Job Duration is required',
     },
   },
+  jobDurationValue: {
+    name: 'mileage',
+    label: 'Job Duration Value',
+    error: {
+      invalid: 'Job Duration Value is invalid',
+      required: 'Job Duration Value is required',
+    },
+  },
+  jobDurationUnit: {
+    name: 'mileage',
+    label: 'Job Duration Unit',
+    error: {
+      invalid: 'Job Duration Unit is invalid',
+      required: 'Job Duration Unit is required',
+    },
+  },
 };
 
 const initialValues: IEstimateValues = {
   mileage: { count: '', unit: '' },
   plateNumber: '',
   depositAmount: '0',
+  additionalDeposit: '0',
+  paidAmount: '0',
   jobDuration: { count: '0', interval: '' },
   firstName: '',
   lastName: '',
@@ -216,6 +284,7 @@ const schema = Yup.object().shape({
   plateNumber: Yup.string().nullable().label(fields.plateNumber.label),
   tax: Yup.string().nullable().label(fields.tax.label),
   depositAmount: Yup.string().nullable().label(fields.depositAmount.label),
+  additionalDeposit: Yup.string().nullable().label(fields.additionalDeposit.label),
 });
 
 const estimateModel = {

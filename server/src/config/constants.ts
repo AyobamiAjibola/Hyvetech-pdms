@@ -462,6 +462,7 @@ export const INVOICE_STATUS = {
   paid: 'Paid',
   overDue: 'Overdue',
   dueSoon: 'Due soon',
+  deposit: 'Deposit',
   update: {
     draft: 'Draft',
     sent: 'Sent',

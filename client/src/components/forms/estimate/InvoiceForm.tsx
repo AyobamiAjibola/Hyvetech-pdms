@@ -15,7 +15,6 @@ import VehicleInformationFields from './VehicleInformationFields';
 import useAppDispatch from '../../../hooks/useAppDispatch';
 import { getVehicleVINAction } from '../../../store/actions/vehicleActions';
 import useAppSelector from '../../../hooks/useAppSelector';
-import { IVINDecoderSchema } from '@app-interfaces';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
@@ -53,12 +52,11 @@ function InvoiceForm(props: IProps) {
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
-  const vehicleReducer = useAppSelector(state => state.vehicleReducer);
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
 
   const dispatch = useAppDispatch();
 
-  const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
+  const { values, handleChange, setFieldValue, resetForm } = useFormikContext<IEstimateValues>();
 
   const {
     setGrandTotal,
@@ -117,7 +115,7 @@ function InvoiceForm(props: IProps) {
   useEffect(() => {
     const _grandTotal = vat + partTotal + labourTotal;
     const _depositAmount = parseInt(values.depositAmount);
-    const _dueBalance = _grandTotal - parseInt(values.depositAmount);
+    const _dueBalance = _grandTotal - _depositAmount;
 
     setGrandTotal(_grandTotal);
     setDueBalance(_dueBalance);
@@ -129,27 +127,6 @@ function InvoiceForm(props: IProps) {
       setRefundable(0);
     }
   }, [vat, partTotal, labourTotal, setGrandTotal, setDueBalance, grandTotal, values.depositAmount, setRefundable]);
-
-  useEffect(() => {
-    if (vehicleReducer.getVehicleVINStatus === 'completed') {
-      const tempVehicleDetails = vehicleReducer.vehicleVINDetails;
-
-      tempVehicleDetails.forEach((detail: IVINDecoderSchema) => {
-        const newDetail: IVINDecoderSchema = { ...detail };
-
-        if (detail.label === 'engineCylinders') newDetail.value = `${detail.value} cylinders`;
-
-        setFieldValue(newDetail.label, newDetail.value);
-        setFieldTouched(newDetail.label, false);
-      });
-    }
-  }, [vehicleReducer.getVehicleVINStatus, vehicleReducer.vehicleVINDetails, setFieldValue, setFieldTouched]);
-
-  useEffect(() => {
-    if (vehicleReducer.getVehicleVINStatus === 'failed') {
-      if (vehicleReducer.getVehicleVINError) setError({ message: vehicleReducer.getVehicleVINError });
-    }
-  }, [vehicleReducer.getVehicleVINError, vehicleReducer.getVehicleVINStatus]);
 
   const _handleChangeVIN = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,6 +190,22 @@ function InvoiceForm(props: IProps) {
   const onSend = useCallback(() => {
     if (setSave) setSave(false);
   }, [setSave]);
+
+  const handleAdditionalDeposit = useCallback(
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const additionalValue = e.target.value;
+      const additionalValueInt = parseInt(additionalValue);
+
+      if (additionalValueInt <= 0 || additionalValueInt > dueBalance) {
+        setError({ message: 'Due Balance is less than Additional Deposit!' });
+      } else {
+        setError(undefined);
+      }
+
+      setFieldValue(fields.additionalDeposit.name, additionalValue);
+    },
+    [dueBalance, setError, setFieldValue],
+  );
 
   return (
     <React.Fragment>
@@ -494,29 +487,32 @@ function InvoiceForm(props: IProps) {
             <Divider flexItem orientation="horizontal" />
           </Grid>
           <Grid item xs={2} alignSelf="center">
-            <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+            <Typography variant="body1">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
           </Grid>
           <Grid item xs={2} alignSelf="center">
-            <Typography variant="h6">Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
+            <Typography variant="body1">Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
           </Grid>
           <Grid item xs={2} container justifyContent="space-around" alignItems="center">
-            <Typography variant="h6">Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
+            <Typography variant="body1">Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2} container justifyContent="space-around" alignItems="center">
+            <Typography variant="body1">Deposited Amount: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
+          </Grid>
+          <Grid item xs={2}>
             <TextInputField
-              onChange={handleChange}
-              disabled={parseInt(values.depositAmount) !== 0}
-              value={values.depositAmount}
-              name={fields.depositAmount.name}
-              label={fields.depositAmount.label}
+              onChange={handleAdditionalDeposit}
+              value={values.additionalDeposit}
+              name={fields.additionalDeposit.name}
+              label={fields.additionalDeposit.label}
+              disabled={refundable !== 0}
               type="number"
               inputProps={{
                 min: '0',
               }}
             />
           </Grid>
-          <Grid item xs={3} container spacing={0.5}>
-            <Grid item xs={8}>
+          <Grid item xs={2} container spacing={0.5}>
+            <Grid item xs={6}>
               <TextInputField
                 onChange={handleChange}
                 value={values.jobDuration.count}

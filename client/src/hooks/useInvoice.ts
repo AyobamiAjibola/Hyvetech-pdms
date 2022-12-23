@@ -11,6 +11,34 @@ import { clearSaveEstimateStatus, clearUpdateEstimateStatus } from '../store/red
 
 const callbackUrl = `${process.env.REACT_APP_ADMIN_BASE_URL}/invoices`;
 
+function getUpdateData(
+  invoiceId: number | undefined,
+  values: IEstimateValues,
+  partTotal: number,
+  labourTotal: number,
+  grandTotal: number,
+  refundable: number,
+  dueAmount: number,
+) {
+  return {
+    id: invoiceId,
+    parts: values.parts,
+    labours: values.labours,
+    tax: values.tax,
+    addressType: values.addressType,
+    address: values.address,
+    depositAmount: values.depositAmount,
+    additionalDeposit: values.additionalDeposit,
+    jobDurationValue: values.jobDuration.count,
+    jobDurationUnit: values.jobDuration.interval,
+    partsTotal: Math.round(partTotal),
+    laboursTotal: Math.round(labourTotal),
+    grandTotal: Math.round(grandTotal),
+    refundable: Math.round(refundable),
+    dueAmount: Math.round(dueAmount),
+  };
+}
+
 export default function useInvoice() {
   const [invoices, setInvoices] = useState<IInvoice[]>([]);
   const [initialValues, setInitialValues] = useState<IEstimateValues>(estimateModel.initialValues);
@@ -30,11 +58,15 @@ export default function useInvoice() {
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
   const dispatch = useAppDispatch();
 
+  const handleReset = useCallback(() => {
+    dispatch(clearGetInvoicesStatus());
+    dispatch(clearSaveEstimateStatus());
+    dispatch(clearUpdateEstimateStatus());
+  }, [dispatch]);
+
   useEffect(() => {
-    if (invoiceReducer.getInvoicesStatus === 'idle') {
-      void dispatch(getInvoicesAction());
-    }
-  }, [dispatch, invoiceReducer.getInvoicesStatus]);
+    void dispatch(getInvoicesAction());
+  }, [dispatch]);
 
   useEffect(() => {
     if (invoiceReducer.getInvoicesStatus === 'completed') {
@@ -46,33 +78,35 @@ export default function useInvoice() {
     if (invoiceReducer.getInvoicesStatus === 'failed') {
       setError({ message: invoiceReducer.getInvoicesError });
     }
-  }, [dispatch, invoiceReducer.getInvoicesError, invoiceReducer.getInvoicesStatus]);
+  }, [dispatch, handleReset, invoiceReducer.getInvoicesError, invoiceReducer.getInvoicesStatus]);
 
   useEffect(() => {
     if (invoiceReducer.saveInvoiceStatus === 'completed') {
       setSuccess({ message: invoiceReducer.saveInvoiceSuccess });
       dispatch(getInvoicesAction());
+      handleReset();
     }
-  }, [dispatch, invoiceReducer.saveInvoiceStatus, invoiceReducer.saveInvoiceSuccess]);
+  }, [dispatch, handleReset, invoiceReducer.saveInvoiceStatus, invoiceReducer.saveInvoiceSuccess]);
 
   useEffect(() => {
     if (invoiceReducer.saveInvoiceStatus === 'failed') {
       setError({ message: invoiceReducer.saveInvoiceError });
     }
-  }, [dispatch, invoiceReducer.saveInvoiceError, invoiceReducer.saveInvoiceStatus]);
+  }, [dispatch, handleReset, invoiceReducer.saveInvoiceError, invoiceReducer.saveInvoiceStatus]);
 
   useEffect(() => {
     if (invoiceReducer.sendInvoiceStatus === 'completed') {
       setSuccess({ message: invoiceReducer.sendInvoiceSuccess });
       dispatch(getInvoicesAction());
+      handleReset();
     }
-  }, [dispatch, invoiceReducer.sendInvoiceStatus, invoiceReducer.sendInvoiceSuccess]);
+  }, [dispatch, handleReset, invoiceReducer.sendInvoiceStatus, invoiceReducer.sendInvoiceSuccess]);
 
   useEffect(() => {
     if (invoiceReducer.sendInvoiceStatus === 'failed') {
       setError({ message: invoiceReducer.sendInvoiceError });
     }
-  }, [dispatch, invoiceReducer.sendInvoiceError, invoiceReducer.sendInvoiceStatus]);
+  }, [dispatch, handleReset, invoiceReducer.sendInvoiceError, invoiceReducer.sendInvoiceStatus]);
 
   useEffect(() => {
     return () => {
@@ -150,7 +184,9 @@ export default function useInvoice() {
         setInvoiceId(invoice.id);
         setEstimateId(estimateId);
         setShowEdit(true);
-      } else if (invoice && !invoice.edited) {
+      }
+
+      if (invoice && !invoice.edited) {
         const estimate = invoice.estimate;
 
         const driver = estimate.rideShareDriver;
@@ -206,7 +242,7 @@ export default function useInvoice() {
         setInvoiceId(invoice.id);
         setEstimateId(estimateId);
         setShowEdit(true);
-      } else setError({ message: 'An Error Occurred. Please try again or contact support' });
+      }
     },
     [estimateId, invoices],
   );
@@ -222,47 +258,28 @@ export default function useInvoice() {
   };
 
   const handleSaveInvoice = (values: IEstimateValues) => {
-    const data = {
-      id: invoiceId,
-      parts: values.parts,
-      labours: values.labours,
-      tax: values.tax,
-      addressType: values.addressType,
-      address: values.address,
-      depositAmount: values.depositAmount,
-      jobDurationValue: values.jobDuration.count,
-      jobDurationUnit: values.jobDuration.interval,
-      partsTotal: Math.round(partTotal),
-      laboursTotal: Math.round(labourTotal),
-      grandTotal: Math.round(grandTotal),
-      refundable: Math.round(refundable),
-    };
+    const additionalValueInt = parseInt(values.additionalDeposit);
 
+    if (additionalValueInt <= 0 || additionalValueInt > dueBalance)
+      return setError({ message: 'Due Balance is less than Additional Deposit!' });
+
+    const data = getUpdateData(invoiceId, values, partTotal, labourTotal, grandTotal, refundable, dueBalance);
+
+    setSave(false);
     void dispatch(saveInvoiceAction(data));
   };
 
   const handleSendInvoice = (values: IEstimateValues) => {
     const parts = values.parts;
     const labours = values.labours;
+    const additionalValueInt = parseInt(values.additionalDeposit);
 
     if (!parts.length) return setError({ message: 'Parts Items Cannot not be empty!' });
     if (!labours.length) return setError({ message: 'Labour Items Cannot not be empty!' });
+    if (additionalValueInt <= 0 || additionalValueInt > dueBalance)
+      return setError({ message: 'Due Balance is less than Additional Deposit!' });
 
-    const data = {
-      id: invoiceId,
-      parts: values.parts,
-      labours: values.labours,
-      tax: values.tax,
-      addressType: values.addressType,
-      address: values.address,
-      depositAmount: values.depositAmount,
-      jobDurationValue: values.jobDuration.count,
-      jobDurationUnit: values.jobDuration.interval,
-      partsTotal: Math.round(partTotal),
-      laboursTotal: Math.round(labourTotal),
-      grandTotal: Math.round(grandTotal),
-      refundable: Math.round(refundable),
-    };
+    const data = getUpdateData(invoiceId, values, partTotal, labourTotal, grandTotal, refundable, dueBalance);
 
     void dispatch(sendInvoiceAction(data));
   };

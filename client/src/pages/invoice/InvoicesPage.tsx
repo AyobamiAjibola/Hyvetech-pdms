@@ -135,8 +135,8 @@ function InvoicesPage() {
         renderCell: params => {
           return params.row.status === INVOICE_STATUS.paid ? (
             <Chip label={INVOICE_STATUS.paid} size="small" color="success" />
-          ) : params.row.status === INVOICE_STATUS.dueSoon ? (
-            <Chip label={INVOICE_STATUS.dueSoon} size="small" color="warning" />
+          ) : params.row.status === INVOICE_STATUS.deposit ? (
+            <Chip label={INVOICE_STATUS.deposit} size="small" color="warning" />
           ) : params.row.status === INVOICE_STATUS.overDue ? (
             <Chip label={INVOICE_STATUS.overDue} size="small" color="error" />
           ) : null;
@@ -348,7 +348,10 @@ function InvoicesPage() {
             />
           </Formik>
         }
-        onClose={() => invoice.setShowEdit(false)}
+        onClose={() => {
+          invoice.setShowEdit(false);
+          dispatch(getInvoicesAction());
+        }}
       />
       <PaymentGateway
         show={transactionReducer.openTransactionPopup}

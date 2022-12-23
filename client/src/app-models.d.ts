@@ -622,6 +622,8 @@ declare module '@app-models' {
     grandTotal: number;
     depositAmount: number;
     dueAmount: number;
+    paidAmount: number;
+    additionalDeposit: number;
     refundable: number;
     dueDate: Date;
     parts: string[];

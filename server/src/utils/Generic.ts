@@ -295,12 +295,8 @@ export default class Generic {
     const iosSearch = '[ios]';
     const androidSearch = '[android]';
 
-    let which = '';
-
-    if (token.match(iosSearch)?.input) which = 'ios';
-
-    if (token.match(androidSearch)?.input) which = 'android';
-
-    return which;
+    if (token.match(iosSearch)?.input) return 'ios';
+    if (token.match(androidSearch)?.input) return 'android';
+    else return '';
   }
 }
