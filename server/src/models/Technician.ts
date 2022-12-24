@@ -95,10 +95,10 @@ export default class Technician extends Model<InferAttributes<Technician>, Infer
   @Column(DataType.DATE)
   declare loginDate: Date;
 
-  @HasMany(() => Contact, { onDelete: 'cascade' })
+  @HasMany(() => Contact, { onDelete: 'SET NULL' })
   declare contacts: NonAttribute<Contact[]>;
 
-  @HasMany(() => Job, { onDelete: 'cascade' })
+  @HasMany(() => Job, { onDelete: 'SET NULL' })
   declare jobs: NonAttribute<Job[]>;
 
   @BelongsToMany(() => Role, () => TechnicianRole)

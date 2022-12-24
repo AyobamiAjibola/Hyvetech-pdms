@@ -62,35 +62,35 @@ export default class Job extends Model<InferAttributes<Job>, InferCreationAttrib
   @Column(DataType.STRING)
   declare reportFileUrl: string;
 
-  @BelongsTo(() => Technician, { onDelete: 'cascade' })
+  @BelongsTo(() => Technician, { onDelete: 'SET NULL' })
   declare technician: NonAttribute<Technician>;
 
   @ForeignKey(() => Technician)
   @Column(DataType.INTEGER)
   declare technicianId: NonAttribute<number>;
 
-  @BelongsTo(() => Partner, { onDelete: 'cascade' })
+  @BelongsTo(() => Partner, { onDelete: 'SET NULL' })
   declare partner: NonAttribute<Partner>;
 
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'cascade' })
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'SET NULL' })
   declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
 
   @ForeignKey(() => RideShareDriverSubscription)
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: NonAttribute<number>;
 
-  @BelongsTo(() => CustomerSubscription, { onDelete: 'cascade' })
+  @BelongsTo(() => CustomerSubscription, { onDelete: 'SET NULL' })
   declare customerSubscription: NonAttribute<CustomerSubscription>;
 
   @ForeignKey(() => CustomerSubscription)
   @Column(DataType.INTEGER)
   declare customerSubscriptionId: NonAttribute<number>;
 
-  @BelongsTo(() => Vehicle, { onDelete: 'cascade' })
+  @BelongsTo(() => Vehicle, { onDelete: 'SET NULL' })
   declare vehicle: NonAttribute<Vehicle>;
 
   @ForeignKey(() => Vehicle)

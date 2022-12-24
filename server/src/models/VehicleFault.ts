@@ -27,7 +27,7 @@ export default class VehicleFault extends Model<InferAttributes<VehicleFault>, I
   @Column(DataType.STRING)
   declare videoPath: string;
 
-  @BelongsTo(() => Appointment, { onDelete: 'cascade' })
+  @BelongsTo(() => Appointment, { onDelete: 'SET NULL' })
   declare appointment: NonAttribute<Appointment>;
 
   @ForeignKey(() => Appointment)

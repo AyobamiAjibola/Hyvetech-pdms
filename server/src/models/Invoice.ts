@@ -134,7 +134,7 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
   @HasMany(() => Transaction)
   declare transactions: NonAttribute<Transaction[]>;
 
-  @BelongsTo(() => Estimate, { onDelete: 'cascade' })
+  @BelongsTo(() => Estimate, { onDelete: 'SET NULL' })
   declare estimate: NonAttribute<Estimate>;
 
   @ForeignKey(() => Estimate)

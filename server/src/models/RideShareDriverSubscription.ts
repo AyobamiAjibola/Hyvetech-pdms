@@ -105,9 +105,9 @@ export default class RideShareDriverSubscription extends Model<
   @HasMany(() => Job)
   declare jobs: NonAttribute<Array<Job>>;
 
-  @HasMany(() => Vehicle, { onDelete: 'cascade' })
+  @HasMany(() => Vehicle, { onDelete: 'SET NULL' })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasOne(() => Transaction, { onDelete: 'cascade' })
+  @HasOne(() => Transaction, { onDelete: 'SET NULL' })
   declare transaction: NonAttribute<Transaction>;
 }

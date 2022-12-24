@@ -31,7 +31,7 @@ export default class District extends Model<InferAttributes<District>, InferCrea
   @BelongsToMany(() => Discount, () => DistrictDiscount)
   declare discounts: NonAttribute<Array<Discount & { DistrictDiscount: DistrictDiscount }>>;
 
-  @BelongsTo(() => State, { onDelete: 'cascade' })
+  @BelongsTo(() => State, { onDelete: 'SET NULL' })
   declare state: NonAttribute<State>;
 
   @ForeignKey(() => State)
