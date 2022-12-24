@@ -37,166 +37,169 @@ import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
 export default class InvoiceController {
+  @TryCatch
   public static async generateInvoice(req: Request) {
-    try {
-      const { error, value } = Joi.object<IGenerateInvoice>({
-        estimateId: Joi.number().required().label('Estimate Id'),
-        txnRef: Joi.string().required().label('Transaction Reference'),
-        transaction: Joi.object().required().label('Transaction Update'),
-      }).validate(req.body);
+    const { error, value } = Joi.object<IGenerateInvoice>({
+      estimateId: Joi.number().required().label('Estimate Id'),
+      txnRef: Joi.string().required().label('Transaction Reference'),
+      transaction: Joi.object().required().label('Transaction Update'),
+    }).validate(req.body);
 
-      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-      if (!value)
-        return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+    if (!value)
+      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
 
-      const transaction = await dataSources.transactionDAOService.findByAny({
-        where: {
-          reference: value.txnRef,
-        },
-      });
+    const transaction = await dataSources.transactionDAOService.findByAny({
+      where: {
+        reference: value.txnRef,
+      },
+    });
 
-      if (!transaction)
-        return Promise.reject(CustomAPIError.response(transactionDoesNotExist, HttpStatus.NOT_FOUND.code));
+    if (!transaction)
+      return Promise.reject(CustomAPIError.response(transactionDoesNotExist, HttpStatus.NOT_FOUND.code));
 
-      const estimate = await dataSources.estimateDAOService.findById(value.estimateId);
+    const estimate = await dataSources.estimateDAOService.findById(value.estimateId);
 
-      if (!estimate)
-        return Promise.reject(CustomAPIError.response(`Estimate does not exist.`, HttpStatus.NOT_FOUND.code));
+    if (!estimate)
+      return Promise.reject(CustomAPIError.response(`Estimate does not exist.`, HttpStatus.NOT_FOUND.code));
 
-      const vehicle = await estimate.$get('vehicle');
+    const vehicle = await estimate.$get('vehicle');
 
-      if (!vehicle)
-        return Promise.reject(CustomAPIError.response(`Vehicle does not exist.`, HttpStatus.NOT_FOUND.code));
+    if (!vehicle) return Promise.reject(CustomAPIError.response(`Vehicle does not exist.`, HttpStatus.NOT_FOUND.code));
 
-      const customer = await estimate.$get('customer');
+    const customer = await estimate.$get('customer');
 
-      if (!customer)
-        return Promise.reject(CustomAPIError.response(`Customer does not exist.`, HttpStatus.NOT_FOUND.code));
+    if (!customer)
+      return Promise.reject(CustomAPIError.response(`Customer does not exist.`, HttpStatus.NOT_FOUND.code));
 
-      const partner = await estimate.$get('partner');
+    const partner = await estimate.$get('partner');
 
-      if (!partner)
-        return Promise.reject(CustomAPIError.response(`Partner does not exist.`, HttpStatus.NOT_FOUND.code));
+    if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist.`, HttpStatus.NOT_FOUND.code));
 
-      const banks = await dataSources.bankDAOService.findAll();
+    const banks = await dataSources.bankDAOService.findAll();
 
-      if (!banks.length)
-        return Promise.reject(CustomAPIError.response(`No banks Please contact support`, HttpStatus.NOT_FOUND.code));
+    if (!banks.length)
+      return Promise.reject(CustomAPIError.response(`No banks Please contact support`, HttpStatus.NOT_FOUND.code));
 
-      const bank = banks.find(bank => bank.name === partner.bankName);
+    const bank = banks.find(bank => bank.name === partner.bankName);
 
-      if (!bank)
-        return Promise.reject(
-          CustomAPIError.response(
-            `Bank ${partner.bankName} does not exist. Please contact support`,
-            HttpStatus.NOT_FOUND.code,
-          ),
-        );
-
-      const recipient = {
-        name: partner.name,
-        account_number: partner.accountNumber,
-        bank_code: bank.code,
-        currency: bank.currency,
-      };
-
-      const dueAmount = estimate.grandTotal - estimate.depositAmount;
-      const systemFee = estimate.depositAmount * 0.035;
-      const partnerFee = Math.round(estimate.depositAmount - systemFee);
-
-      //get default payment gateway
-      const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
-        where: { default: true },
-      });
-
-      if (!paymentGateway)
-        return Promise.reject(CustomAPIError.response(`No payment gateway found`, HttpStatus.NOT_FOUND.code));
-
-      let endpoint = '/transferrecipient';
-
-      axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
-      axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
-
-      const recipientResponse = await axiosClient.post(endpoint, recipient);
-
-      const recipientCode = recipientResponse.data.data.recipient_code;
-
-      endpoint = '/transfer';
-
-      const transfer = {
-        source: 'balance',
-        recipient: recipientCode,
-        reason: `Estimate-${estimate.code} Deposit`,
-        amount: partnerFee * 100,
-      };
-
-      const transferResponse = await axiosClient.post(endpoint, transfer);
-
-      const transferData = transferResponse.data.data;
-
-      const transferTransactionValues: Partial<Attributes<Transaction>> = {
-        amount: partnerFee,
-        type: 'Transfer',
-        reference: `${transferData.reference}:${transaction.reference}`,
-        status: transferData.status,
-        bank: partner.bankName,
-        purpose: `${partner.name}: Estimate-${estimate.code}`,
-        channel: 'bank',
-        currency: bank.currency,
-        paidAt: new Date(),
-      };
-
-      const transferTransaction = await dataSources.transactionDAOService.create(
-        transferTransactionValues as CreationAttributes<Transaction>,
+    if (!bank)
+      return Promise.reject(
+        CustomAPIError.response(
+          `Bank ${partner.bankName} does not exist. Please contact support`,
+          HttpStatus.NOT_FOUND.code,
+        ),
       );
 
-      const invoiceValues: Partial<Attributes<Invoice>> = {
-        code: Generic.randomize({ number: true, count: 6 }),
-        depositAmount: estimate.depositAmount,
-        paidAmount: estimate.depositAmount,
-        dueAmount,
-        grandTotal: estimate.grandTotal,
-        status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
-        dueDate: moment().days(estimate.expiresIn).toDate(),
-      };
+    const recipient = {
+      name: partner.name,
+      account_number: partner.accountNumber,
+      bank_code: bank.code,
+      currency: bank.currency,
+    };
 
-      const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
+    const dueAmount = estimate.grandTotal - estimate.depositAmount;
+    const systemFee = estimate.depositAmount * 0.035;
+    const partnerFee = Math.round(estimate.depositAmount - systemFee);
 
-      await estimate.update({ status: ESTIMATE_STATUS.invoiced });
-      await estimate.$set('invoice', invoice);
-      await invoice.$set('transactions', [transaction]);
-      await partner.$set('transactions', [transferTransaction]);
+    //get default payment gateway
+    const paymentGateway = await dataSources.paymentGatewayDAOService.findByAny({
+      where: { default: true },
+    });
 
-      //Update Initial Deposit Transaction
-      await transaction.update({
-        channel: value.transaction.channel,
-        cardType: value.transaction.cardType,
-        bank: value.transaction.bank,
-        last4: value.transaction.last4,
-        expMonth: value.transaction.expMonth,
-        expYear: value.transaction.expYear,
-        countryCode: value.transaction.countryCode,
-        brand: value.transaction.brand,
-        currency: value.transaction.currency,
-        status: value.transaction.status,
-        paidAt: value.transaction.paidAt,
-      });
+    if (!paymentGateway)
+      return Promise.reject(CustomAPIError.response(`No payment gateway found`, HttpStatus.NOT_FOUND.code));
 
-      const job = await this.doAssignJob(estimate);
+    axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
+    axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
 
-      await partner.$add('jobs', [job]);
+    let endpoint = '/balance';
 
-      const response: HttpResponse<Invoice> = {
-        code: HttpStatus.OK.code,
-        message: 'Invoice successfully created',
-      };
+    const balanceResponse = await axiosClient.get(endpoint);
 
-      return Promise.resolve(response);
-    } catch (e) {
-      console.log(e);
-      return Promise.reject(e);
-    }
+    if (balanceResponse.data.balance === 0)
+      return Promise.reject(
+        CustomAPIError.response('Insufficient Balance. Please contact support.', HttpStatus.BAD_REQUEST.code),
+      );
+
+    endpoint = '/transferrecipient';
+
+    const recipientResponse = await axiosClient.post(endpoint, recipient);
+
+    const recipientCode = recipientResponse.data.data.recipient_code;
+
+    endpoint = '/transfer';
+
+    const transfer = {
+      source: 'balance',
+      recipient: recipientCode,
+      reason: `Estimate-${estimate.code} Deposit`,
+      amount: partnerFee * 100,
+    };
+
+    const transferResponse = await axiosClient.post(endpoint, transfer);
+
+    const transferData = transferResponse.data.data;
+
+    const transferTransactionValues: Partial<Attributes<Transaction>> = {
+      amount: partnerFee,
+      type: 'Transfer',
+      reference: `${transferData.reference}:${transaction.reference}`,
+      status: transferData.status,
+      bank: partner.bankName,
+      purpose: `${partner.name}: Estimate-${estimate.code}`,
+      channel: 'bank',
+      currency: bank.currency,
+      paidAt: new Date(),
+    };
+
+    const transferTransaction = await dataSources.transactionDAOService.create(
+      transferTransactionValues as CreationAttributes<Transaction>,
+    );
+
+    const invoiceValues: Partial<Attributes<Invoice>> = {
+      code: Generic.randomize({ number: true, count: 6 }),
+      depositAmount: estimate.depositAmount,
+      paidAmount: estimate.depositAmount,
+      dueAmount,
+      grandTotal: estimate.grandTotal,
+      status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
+      dueDate: moment().days(estimate.expiresIn).toDate(),
+    };
+
+    const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
+
+    await estimate.update({ status: ESTIMATE_STATUS.invoiced });
+    await estimate.$set('invoice', invoice);
+    await invoice.$set('transactions', [transaction]);
+    await partner.$set('transactions', [transferTransaction]);
+
+    //Update Initial Deposit Transaction
+    await transaction.update({
+      channel: value.transaction.channel,
+      cardType: value.transaction.cardType,
+      bank: value.transaction.bank,
+      last4: value.transaction.last4,
+      expMonth: value.transaction.expMonth,
+      expYear: value.transaction.expYear,
+      countryCode: value.transaction.countryCode,
+      brand: value.transaction.brand,
+      currency: value.transaction.currency,
+      status: value.transaction.status,
+      paidAt: value.transaction.paidAt,
+    });
+
+    const job = await this.doAssignJob(estimate);
+
+    await partner.$add('jobs', [job]);
+
+    const response: HttpResponse<Invoice> = {
+      code: HttpStatus.OK.code,
+      message: 'Invoice successfully created',
+    };
+
+    return Promise.resolve(response);
   }
 
   @TryCatch
