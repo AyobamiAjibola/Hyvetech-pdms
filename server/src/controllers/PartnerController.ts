@@ -1,3 +1,5 @@
+// noinspection JSUnfilteredForInLoop
+
 import { Request } from 'express';
 import Joi from 'joi';
 import capitalize from 'capitalize';
@@ -278,10 +280,18 @@ export default class PartnerController {
     try {
       const partnerId = req.params.partnerId as unknown as string;
 
-      const partner = await dataSources.partnerDAOService.findById(+partnerId);
+      const partner = await dataSources.partnerDAOService.findById(+partnerId, { include: [{ all: true }] });
 
       if (!partner)
         return Promise.reject(CustomAPIError.response('Customer does not exist', HttpStatus.NOT_FOUND.code));
+
+      const estimates = await partner.$get('estimates');
+
+      await partner.$remove('estimates', estimates);
+
+      for (let i = 0; i < estimates.length; i++) {
+        await estimates[i].destroy();
+      }
 
       await partner.destroy();
 

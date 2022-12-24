@@ -55,7 +55,7 @@ export default class PaymentPlan extends Model<InferAttributes<PaymentPlan>, Inf
   @Column(DataType.ARRAY(DataType.STRING))
   declare pricing: string[];
 
-  @BelongsTo(() => Plan, { onDelete: 'cascade' })
+  @BelongsTo(() => Plan, { onDelete: 'SET NULL' })
   declare plan: NonAttribute<Plan>;
 
   @ForeignKey(() => Plan)

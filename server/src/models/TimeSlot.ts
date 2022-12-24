@@ -23,7 +23,7 @@ export default class TimeSlot extends Model<InferAttributes<TimeSlot>, InferCrea
   @Column(DataType.BOOLEAN)
   declare available: boolean;
 
-  @BelongsTo(() => Schedule, { onDelete: 'cascade' })
+  @BelongsTo(() => Schedule, { onDelete: 'SET NULL' })
   declare schedule: NonAttribute<Schedule>;
 
   @ForeignKey(() => Schedule)

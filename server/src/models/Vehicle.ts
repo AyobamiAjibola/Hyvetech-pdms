@@ -147,45 +147,45 @@ export default class Vehicle extends Model<InferAttributes<Vehicle>, InferCreati
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare onMaintenance: boolean;
 
-  @BelongsTo(() => Customer, { onDelete: 'cascade' })
+  @BelongsTo(() => Customer, { onDelete: 'SET NULL' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: number;
 
-  @BelongsTo(() => Appointment, { onDelete: 'cascade' })
+  @BelongsTo(() => Appointment, { onDelete: 'SET NULL' })
   declare appointment: NonAttribute<Appointment>;
 
   @ForeignKey(() => Appointment)
   @Column(DataType.INTEGER)
   declare appointmentId: number;
 
-  @BelongsTo(() => CustomerSubscription, { onDelete: 'cascade' })
+  @BelongsTo(() => CustomerSubscription, { onDelete: 'SET NULL' })
   declare subscription: NonAttribute<CustomerSubscription>;
 
   @ForeignKey(() => CustomerSubscription)
   @Column(DataType.INTEGER)
   declare customerSubscriptionId: number;
 
-  @BelongsTo(() => RideShareDriver, { onDelete: 'cascade' })
+  @BelongsTo(() => RideShareDriver, { onDelete: 'SET NULL' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'cascade' })
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'SET NULL' })
   declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
 
   @ForeignKey(() => RideShareDriverSubscription)
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: number;
 
-  @HasMany(() => Job, { onDelete: 'cascade' })
+  @HasMany(() => Job, { onDelete: 'SET NULL' })
   declare jobs: NonAttribute<Array<Job>>;
 
-  @HasMany(() => Estimate, { onDelete: 'cascade' })
+  @HasMany(() => Estimate, { onDelete: 'SET NULL' })
   declare estimates: NonAttribute<Array<Estimate>>;
 
   @BelongsToMany(() => Tag, () => VehicleTag)

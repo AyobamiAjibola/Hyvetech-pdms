@@ -109,22 +109,22 @@ export default class RideShareDriver extends Model<
   @Column(DataType.DATE)
   declare loginDate: Date;
 
-  @HasMany(() => Contact, { onDelete: 'cascade' })
+  @HasMany(() => Contact, { onDelete: 'SET NULL' })
   declare contacts: NonAttribute<Contact[]>;
 
-  @HasMany(() => PaymentDetail, { onDelete: 'cascade' })
+  @HasMany(() => PaymentDetail, { onDelete: 'SET NULL' })
   declare paymentDetails: NonAttribute<PaymentDetail[]>;
 
-  @HasMany(() => Vehicle, { onDelete: 'cascade' })
+  @HasMany(() => Vehicle, { onDelete: 'SET NULL' })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasMany(() => Transaction, { onDelete: 'cascade' })
+  @HasMany(() => Transaction, { onDelete: 'SET NULL' })
   declare transactions: NonAttribute<Transaction[]>;
 
-  @HasMany(() => Estimate, { onDelete: 'cascade' })
+  @HasMany(() => Estimate, { onDelete: 'SET NULL' })
   declare estimates: NonAttribute<Estimate[]>;
 
-  @HasMany(() => Appointment, { onDelete: 'cascade' })
+  @HasMany(() => Appointment, { onDelete: 'SET NULL' })
   declare appointments: NonAttribute<Appointment[]>;
 
   @BelongsToMany(() => RideShareDriverSubscription, () => RideShareDriverPlanSubscription)

@@ -90,7 +90,7 @@ export default class User extends Model<InferAttributes<User>, InferCreationAttr
   @Column(DataType.DATE)
   declare loginDate: Date | null;
 
-  @HasMany(() => Contact, { onDelete: 'cascade' })
+  @HasMany(() => Contact, { onDelete: 'SET NULL' })
   declare contacts: NonAttribute<Contact[]>;
 
   @BelongsToMany(() => Role, () => UserRole)

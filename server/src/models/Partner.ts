@@ -93,13 +93,13 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
   @Column(DataType.ARRAY(DataType.STRING))
   declare workingHours: string[];
 
-  @HasOne(() => Contact, { onDelete: 'cascade' })
+  @HasOne(() => Contact, { onDelete: 'SET NULL' })
   declare contact: NonAttribute<Contact>;
 
-  @HasMany(() => Plan, { onDelete: 'cascade' })
+  @HasMany(() => Plan, { onDelete: 'SET NULL' })
   declare plans: NonAttribute<Array<Plan>>;
 
-  @HasMany(() => Job, { onDelete: 'cascade' })
+  @HasMany(() => Job, { onDelete: 'SET NULL' })
   declare jobs: NonAttribute<Array<Job>>;
 
   @HasMany(() => User)

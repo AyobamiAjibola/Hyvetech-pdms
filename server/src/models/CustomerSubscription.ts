@@ -96,10 +96,10 @@ export default class CustomerSubscription extends Model<
   @BelongsToMany(() => Customer, () => CustomerPlanSubscription)
   declare customers: NonAttribute<Array<Customer & { CustomerPlanSubscription: CustomerPlanSubscription }>>;
 
-  @HasMany(() => Vehicle, { onDelete: 'cascade' })
+  @HasMany(() => Vehicle, { onDelete: 'SET NULL' })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasOne(() => Transaction, { onDelete: 'cascade' })
+  @HasOne(() => Transaction, { onDelete: 'SET NULL' })
   declare transaction: NonAttribute<Transaction>;
 
   @HasMany(() => Job)

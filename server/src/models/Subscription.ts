@@ -47,6 +47,6 @@ export default class Subscription extends Model<InferAttributes<Subscription>, I
   @BelongsToMany(() => Service, () => ServiceSubscription)
   declare services: NonAttribute<Array<Service & { ServiceSubscription: ServiceSubscription }>>;
 
-  @HasMany(() => Plan, { onDelete: 'cascade' })
+  @HasMany(() => Plan, { onDelete: 'SET NULL' })
   declare plans: NonAttribute<Plan[]>;
 }

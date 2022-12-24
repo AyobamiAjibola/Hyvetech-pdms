@@ -57,14 +57,14 @@ export default class PaymentDetail extends Model<
   @Column(DataType.STRING)
   declare authorizationCode: string;
 
-  @BelongsTo(() => Customer, { onDelete: 'cascade' })
+  @BelongsTo(() => Customer, { onDelete: 'SET NULL' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: number;
 
-  @BelongsTo(() => RideShareDriver, { onDelete: 'cascade' })
+  @BelongsTo(() => RideShareDriver, { onDelete: 'SET NULL' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)

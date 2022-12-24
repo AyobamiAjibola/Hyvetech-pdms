@@ -50,35 +50,35 @@ export default class Contact extends Model<InferAttributes<Contact>, InferCreati
   @Column(DataType.STRING)
   declare mapUrl: string;
 
-  @BelongsTo(() => Customer, { onDelete: 'cascade' })
+  @BelongsTo(() => Customer, { onDelete: 'SET NULL' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: NonAttribute<number>;
 
-  @BelongsTo(() => User, { onDelete: 'cascade' })
+  @BelongsTo(() => User, { onDelete: 'SET NULL' })
   declare user: NonAttribute<User>;
 
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
   declare userId: NonAttribute<number>;
 
-  @BelongsTo(() => Partner, { onDelete: 'cascade' })
+  @BelongsTo(() => Partner, { onDelete: 'SET NULL' })
   declare partner: NonAttribute<Partner>;
 
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriver, { onDelete: 'cascade' })
+  @BelongsTo(() => RideShareDriver, { onDelete: 'SET NULL' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
 
-  @BelongsTo(() => Technician, { onDelete: 'cascade' })
+  @BelongsTo(() => Technician, { onDelete: 'SET NULL' })
   declare technician: NonAttribute<Technician>;
 
   @ForeignKey(() => Technician)

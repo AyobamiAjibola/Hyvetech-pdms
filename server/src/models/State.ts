@@ -19,6 +19,6 @@ export default class State extends Model<InferAttributes<State>, InferCreationAt
   @Column(DataType.STRING)
   declare alias: string;
 
-  @HasMany(() => District, { onDelete: 'cascade' })
+  @HasMany(() => District, { onDelete: 'SET NULL' })
   declare districts: NonAttribute<District[]>;
 }

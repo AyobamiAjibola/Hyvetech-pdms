@@ -22,6 +22,6 @@ export default class Schedule extends Model<InferAttributes<Schedule>, InferCrea
   @Column(DataType.BOOLEAN)
   declare default: boolean;
 
-  @HasMany(() => TimeSlot, { onDelete: 'cascade' })
+  @HasMany(() => TimeSlot, { onDelete: 'SET NULL' })
   declare timeSlots: NonAttribute<TimeSlot[]>;
 }

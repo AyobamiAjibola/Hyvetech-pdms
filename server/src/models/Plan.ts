@@ -60,21 +60,21 @@ export default class Plan extends Model<InferAttributes<Plan>, InferCreationAttr
   @Column(DataType.STRING)
   declare serviceMode: string;
 
-  @BelongsTo(() => Subscription, { onDelete: 'cascade' })
+  @BelongsTo(() => Subscription, { onDelete: 'SET NULL' })
   declare subscriptions: Subscription;
 
   @ForeignKey(() => Subscription)
   @Column(DataType.INTEGER)
   declare subscriptionId: number;
 
-  @BelongsTo(() => Partner, { onDelete: 'cascade' })
+  @BelongsTo(() => Partner, { onDelete: 'SET NULL' })
   declare partner: Partner;
 
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: number;
 
-  @HasMany(() => PaymentPlan, { onDelete: 'cascade' })
+  @HasMany(() => PaymentPlan, { onDelete: 'SET NULL' })
   declare paymentPlans: PaymentPlan[];
 
   @BelongsToMany(() => Category, () => PlanCategory)

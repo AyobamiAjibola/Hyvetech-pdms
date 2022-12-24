@@ -77,20 +77,20 @@ export default class Appointment extends Model<InferAttributes<Appointment>, Inf
   @Column(DataType.STRING)
   declare estimateFile: string;
 
-  @HasOne(() => Vehicle, { onDelete: 'cascade' })
+  @HasOne(() => Vehicle, { onDelete: 'SET NULL' })
   declare vehicle: NonAttribute<Vehicle>;
 
-  @HasOne(() => VehicleFault, { onDelete: 'cascade' })
+  @HasOne(() => VehicleFault, { onDelete: 'SET NULL' })
   declare vehicleFault: NonAttribute<VehicleFault>;
 
-  @BelongsTo(() => Customer, { onDelete: 'cascade' })
+  @BelongsTo(() => Customer, { onDelete: 'SET NULL' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: number;
 
-  @BelongsTo(() => RideShareDriver, { onDelete: 'cascade' })
+  @BelongsTo(() => RideShareDriver, { onDelete: 'SET NULL' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)

@@ -77,42 +77,42 @@ export default class Transaction extends Model<InferAttributes<Transaction>, Inf
   @Column(DataType.DATE)
   declare paidAt: Date;
 
-  @BelongsTo(() => CustomerSubscription, { onDelete: 'cascade' })
+  @BelongsTo(() => CustomerSubscription, { onDelete: 'SET NULL' })
   declare customerSubscription: NonAttribute<CustomerSubscription>;
 
   @ForeignKey(() => CustomerSubscription)
   @Column(DataType.INTEGER)
   declare customerSubscriptionId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'cascade' })
+  @BelongsTo(() => RideShareDriverSubscription, { onDelete: 'SET NULL' })
   declare rideShareDriverSubscription: NonAttribute<RideShareDriverSubscription>;
 
   @ForeignKey(() => RideShareDriverSubscription)
   @Column(DataType.INTEGER)
   declare rideShareDriverSubscriptionId: NonAttribute<number>;
 
-  @BelongsTo(() => Customer, { onDelete: 'cascade' })
+  @BelongsTo(() => Customer, { onDelete: 'SET NULL' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriver, { onDelete: 'cascade' })
+  @BelongsTo(() => RideShareDriver, { onDelete: 'SET NULL' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)
   @Column(DataType.INTEGER)
   declare rideShareDriverId: NonAttribute<number>;
 
-  @BelongsTo(() => Invoice, { onDelete: 'cascade' })
+  @BelongsTo(() => Invoice, { onDelete: 'SET NULL' })
   declare invoice: NonAttribute<Invoice>;
 
   @ForeignKey(() => Invoice)
   @Column(DataType.INTEGER)
   declare invoiceId: NonAttribute<number>;
 
-  @BelongsTo(() => Partner, { onDelete: 'cascade' })
+  @BelongsTo(() => Partner, { onDelete: 'SET NULL' })
   declare partner: NonAttribute<Partner>;
 
   @ForeignKey(() => Partner)

@@ -135,22 +135,22 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
   @HasMany(() => CustomerWorkShop)
   declare workshops: NonAttribute<Array<CustomerWorkShop>>;
 
-  @HasMany(() => Estimate, { onDelete: 'cascade' })
+  @HasMany(() => Estimate, { onDelete: 'SET NULL' })
   declare estimates: NonAttribute<Estimate[]>;
 
-  @HasMany(() => Contact, { onDelete: 'cascade' })
+  @HasMany(() => Contact, { onDelete: 'SET NULL' })
   declare contacts: NonAttribute<Contact[]>;
 
-  @HasMany(() => PaymentDetail, { onDelete: 'cascade' })
+  @HasMany(() => PaymentDetail, { onDelete: 'SET NULL' })
   declare paymentDetails: NonAttribute<PaymentDetail[]>;
 
-  @HasMany(() => Vehicle, { onDelete: 'cascade' })
+  @HasMany(() => Vehicle, { onDelete: 'SET NULL' })
   declare vehicles: NonAttribute<Vehicle[]>;
 
-  @HasMany(() => Transaction, { onDelete: 'cascade' })
+  @HasMany(() => Transaction, { onDelete: 'SET NULL' })
   declare transactions: NonAttribute<Transaction[]>;
 
-  @HasMany(() => Appointment, { onDelete: 'cascade' })
+  @HasMany(() => Appointment, { onDelete: 'SET NULL' })
   declare appointments: NonAttribute<Appointment[]>;
 
   @BelongsToMany(() => CustomerSubscription, () => CustomerPlanSubscription)
