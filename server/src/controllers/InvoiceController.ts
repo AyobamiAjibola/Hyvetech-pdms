@@ -118,7 +118,7 @@ export default class InvoiceController {
 
     const balanceResponse = await axiosClient.get(endpoint);
 
-    if (balanceResponse.data.balance === 0)
+    if (balanceResponse.data.data.balance === 0)
       return Promise.reject(
         CustomAPIError.response('Insufficient Balance. Please contact support.', HttpStatus.BAD_REQUEST.code),
       );

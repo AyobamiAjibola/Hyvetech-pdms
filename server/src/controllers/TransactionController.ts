@@ -132,10 +132,20 @@ export default class TransactionController {
     const metadata = {
       cancel_action: `${process.env.PAYMENT_GW_CB_URL}/transactions?status=cancelled`,
     };
+
     axiosClient.defaults.baseURL = `${paymentGateway.baseUrl}`;
     axiosClient.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
 
-    const endpoint = '/transaction/initialize';
+    let endpoint = '/balance';
+
+    const balanceResponse = await axiosClient.get(endpoint);
+
+    if (balanceResponse.data.data.balance === 0)
+      return Promise.reject(
+        CustomAPIError.response('Insufficient Balance. Please contact support.', HttpStatus.BAD_REQUEST.code),
+      );
+
+    endpoint = '/transaction/initialize';
 
     const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}${endpoint}`;
     const amount = Math.round(value.depositAmount * 100);
