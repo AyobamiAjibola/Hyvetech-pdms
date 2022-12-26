@@ -10,7 +10,7 @@
   "main": "build/src/server.js",
   "scripts": {
     "start:dev": "nodemon",
-    "start": "node build/src/server.js",
+    "serve": "node build/server.js",
     "test": "jest --watchAll",
     "pretest": "cross-env NODE_ENV=test PORT=5001",
     "build": "tsc -b"
