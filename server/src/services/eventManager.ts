@@ -216,7 +216,7 @@ export default function eventManager(io: Server) {
           const appleTeamId = process.env.APPLE_TEAM_ID as string;
 
           const apns = PushNotificationService.apnMessaging.config({
-            production: process.env.NODE_ENV === 'production',
+            production: true,
             pushToken: whichPushToken.token,
             token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
             topic: 'com.jiffixproductmanager.autohyve',
