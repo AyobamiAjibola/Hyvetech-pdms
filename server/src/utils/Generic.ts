@@ -292,11 +292,20 @@ export default class Generic {
   }
 
   public static whichPushToken(token: string) {
-    const iosSearch = '[ios]';
-    const androidSearch = '[android]';
+    const ios = 'ios';
+    const android = 'android';
+    const response: { type: string; token: string } = { token: '', type: '' };
 
-    if (token.match(iosSearch)?.input) return 'ios';
-    if (token.match(androidSearch)?.input) return 'android';
-    else return '';
+    if (token.match(/ios/)?.input) {
+      response.type = ios;
+      response.token = token.replace(`[${ios}]-`, '');
+    }
+
+    if (token.match(/android/)?.input) {
+      response.type = android;
+      response.token = token.replace(`[${android}]-`, '');
+    }
+
+    return response;
   }
 }

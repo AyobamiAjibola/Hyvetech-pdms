@@ -184,20 +184,19 @@ export default function eventManager(io: Server) {
         await NotificationModel.create(notification);
 
         const whichPushToken = Generic.whichPushToken(customer.pushToken);
+
         const title = `${partner.name} Estimate`;
         const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
 
         io.to(customer.eventId).emit(CREATED_ESTIMATE, { title, message });
 
-        if (whichPushToken === 'android') {
-          const pushToken = customer.pushToken.replace('[android]-', '');
-
+        if (whichPushToken.type === 'android') {
           const fcm = PushNotificationService.fcmMessaging.config({
             baseURL: process.env.GOOGLE_FCM_HOST as string,
             experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
             scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
             serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY as string,
-            pushToken,
+            pushToken: whichPushToken.token,
           });
 
           const response = await fcm.sendToOne({
@@ -209,15 +208,16 @@ export default function eventManager(io: Server) {
           });
 
           console.log(response.data);
-        } else if (whichPushToken === 'ios') {
-          const pushToken = customer.pushToken.replace('[ios]-', '');
+        }
+
+        if (whichPushToken.type === 'ios') {
           const appleKey = process.env.APPLE_KEY as string;
           const appleKeyId = process.env.APPLE_KEY_ID as string;
           const appleTeamId = process.env.APPLE_TEAM_ID as string;
 
           const apns = PushNotificationService.apnMessaging.config({
             production: process.env.NODE_ENV === 'production',
-            pushToken,
+            pushToken: whichPushToken.token,
             token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
             topic: 'com.jiffixproductmanager.autohyve',
           });
