@@ -120,3 +120,7 @@ export function dataURItoBlob(dataURI: string) {
   //New Code
   return new Blob([ab], { type: mimeString });
 }
+
+export function getRndInteger(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

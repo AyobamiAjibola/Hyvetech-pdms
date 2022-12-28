@@ -27,6 +27,7 @@ import { INVOICE_STATUS, LOCAL_STORAGE } from '../../config/constants';
 import { verifyRefundCustomerAction } from '../../store/actions/transactionActions';
 import useAdmin from '../../hooks/useAdmin';
 import { getInvoicesAction } from '../../store/actions/invoiceActions';
+import { clearSaveInvoiceStatus, clearSendInvoiceStatus } from '../../store/reducers/invoiceReducer';
 
 function InvoicesPage() {
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
@@ -285,6 +286,13 @@ function InvoicesPage() {
     ] as GridColDef<IInvoice>[];
   }, [invoice, isTechAdmin, navigate]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearSaveInvoiceStatus());
+      dispatch(clearSendInvoiceStatus());
+    };
+  }, [dispatch]);
+
   return (
     <React.Fragment>
       <Grid container justifyContent="space-between" alignItems="center">
@@ -345,6 +353,7 @@ function InvoicesPage() {
               setShowRefund={invoice.setShowRefund}
               onInitiateRefund={invoice.handleInitiateRefund}
               setSave={invoice.setSave}
+              invoice={invoice.invoice}
             />
           </Formik>
         }

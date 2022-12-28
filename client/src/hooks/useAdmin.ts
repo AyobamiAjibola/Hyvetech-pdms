@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { LOCAL_STORAGE } from '../config/constants';
 import settings from '../config/settings';
 import { getUserAction } from '../store/actions/userActions';
-import cookie from '../utils/cookie';
 import useAppDispatch from './useAppDispatch';
 import useAppSelector from './useAppSelector';
 
@@ -19,10 +18,10 @@ export default function useAdmin() {
   const userReducer = useAppSelector(state => state.userReducer);
   const dispatch = useAppDispatch();
 
-  const token = useMemo(() => cookie.get(settings.auth.admin), []);
+  const token = useMemo(() => sessionStorage.getItem(settings.auth.admin), []);
 
   useEffect(() => {
-    const localPermissions = JSON.parse(localStorage.getItem(LOCAL_STORAGE.permissions) as string);
+    const localPermissions = JSON.parse(sessionStorage.getItem(LOCAL_STORAGE.permissions) as string);
 
     if (null !== localPermissions) {
       const permissions = localPermissions as IPermission[];

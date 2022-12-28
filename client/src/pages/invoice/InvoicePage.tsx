@@ -35,14 +35,32 @@ function InvoicePage() {
     if (estimate && invoice) {
       const driver = estimate.rideShareDriver;
       const customer = estimate.customer;
-      const _parts = invoice.edited ? invoice.parts : estimate.parts;
-      const _labours = invoice.edited ? invoice.labours : estimate.labours;
 
       const _owner = driver ? `${driver.firstName} ${driver.lastName}` : `${customer.firstName} ${customer.lastName}`;
+
+      let _parts: IPart[] = [];
+      let _labours: ILabour[] = [];
+
+      if (invoice.edited && invoice.draftInvoice) {
+        const draftInvoice = invoice.draftInvoice;
+        _parts = draftInvoice.parts.map(part => JSON.parse(part)) as IPart[];
+        _labours = draftInvoice.labours.map(labour => JSON.parse(labour)) as ILabour[];
+      }
+
+      if (invoice.edited && !invoice.draftInvoice) {
+        _parts = invoice.parts as unknown as IPart[];
+        _labours = invoice.labours as unknown as ILabour[];
+      }
+
+      if (!invoice.edited) {
+        _parts = estimate.parts as unknown as IPart[];
+        _labours = estimate.labours as unknown as ILabour[];
+      }
+
+      setParts(_parts);
+      setLabours(_labours);
       setOwner(capitalize.words(_owner));
       setBillingInformation(customer.billingInformation);
-      setParts(_parts as unknown as IPart[]);
-      setLabours(_labours as unknown as ILabour[]);
     }
   }, [estimate, invoice]);
 

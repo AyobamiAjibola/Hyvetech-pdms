@@ -1,9 +1,7 @@
-import { JwtPayload } from 'jsonwebtoken';
-import { NextFunction, Request, Response } from 'express';
 import { appModelTypes } from './app-model';
 import Permission from '../models/Permission';
-import { Fields, Files } from 'formidable';
-import { Attributes } from 'sequelize';
+import type { Fields, Files } from 'formidable';
+import type { Attributes } from 'sequelize';
 import IncomingForm from 'formidable/Formidable';
 import User from '../models/User';
 
@@ -12,6 +10,7 @@ import Transaction from '../models/Transaction';
 
 export declare namespace appCommonTypes {
   import IPermission = appModelTypes.IPermission;
+
   type DatabaseEnv = 'development' | 'production' | 'test';
   type CheckListAnswerType = {
     id: string;
@@ -154,6 +153,7 @@ export declare namespace appCommonTypes {
     redis: Record<DatabaseEnv, DatabaseConfig>;
     mongo: Record<DatabaseEnv, DatabaseConfig>;
     queue: Record<DatabaseEnv, DatabaseConfig>;
+    cookie: { name: string, secret: string };
     vinProviders: VINProvider[];
     roles: Roles[];
     permissions: Permissions[];

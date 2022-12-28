@@ -5,12 +5,14 @@ import cors from 'cors';
 import morgan from 'morgan';
 import swaggerJsdoc from 'swagger-jsdoc';
 import { serve, setup } from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 
 import settings from './config/settings';
 import globalExceptionHandler from './middleware/globalExceptionHandler';
 import config from './config';
 
 import router from './routes';
+
 
 const app = express();
 const openapiSpecification = swaggerJsdoc(config.swagger); //configure swagger API documentation
@@ -32,6 +34,7 @@ export const corsOptions = {
 };
 
 app.use(helmet());
+app.use(cookieParser(settings.cookie.secret));
 app.use(cors(corsOptions)); //handle cors operations
 app.use(json()); // Parse incoming requests data
 app.use(morgan('dev')); //Route debugger

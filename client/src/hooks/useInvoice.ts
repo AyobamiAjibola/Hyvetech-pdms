@@ -41,6 +41,7 @@ function getUpdateData(
 
 export default function useInvoice() {
   const [invoices, setInvoices] = useState<IInvoice[]>([]);
+  const [invoice, setInvoice] = useState<IInvoice>();
   const [initialValues, setInitialValues] = useState<IEstimateValues>(estimateModel.initialValues);
   const [labourTotal, setLabourTotal] = useState<number>(0);
   const [partTotal, setPartTotal] = useState<number>(0);
@@ -70,7 +71,9 @@ export default function useInvoice() {
 
   useEffect(() => {
     if (invoiceReducer.getInvoicesStatus === 'completed') {
-      setInvoices(invoiceReducer.invoices);
+      const invoices = invoiceReducer.invoices.map(value => ({ ...value }));
+
+      setInvoices(invoices);
     }
   }, [dispatch, invoiceReducer.getInvoicesStatus, invoiceReducer.invoices]);
 
@@ -129,10 +132,7 @@ export default function useInvoice() {
     (id: number) => {
       const invoice = invoices.find(invoice => invoice.id === id);
 
-      if (invoice && invoice.edited) {
-        //use invoice
-        const parts = invoice.parts as unknown as IPart[];
-        const labours = invoice.labours as unknown as ILabour[];
+      if (invoice && invoice.estimate) {
         const driver = invoice.estimate.rideShareDriver;
         const customer = invoice.estimate.customer;
         const vehicle = invoice.estimate.vehicle;
@@ -144,102 +144,129 @@ export default function useInvoice() {
         const plateNumber = vehicle && vehicle.plateNumber ? vehicle.plateNumber : '';
         const vin = vehicle && vehicle.vin ? vehicle.vin : '';
         const modelYear = vehicle && vehicle.modelYear ? vehicle.modelYear : '';
-        const address = invoice.address ? invoice.address : '';
-        const addressType = invoice.addressType ? invoice.addressType : '';
-        const jobDuration = { count: `${invoice.jobDurationValue}`, interval: invoice.jobDurationUnit };
-        const depositAmount = `${invoice.depositAmount}`;
-        const tax = `${invoice.tax}`;
+        const address = invoice.estimate.address ? invoice.estimate.address : '';
+        const addressType = invoice.estimate.addressType ? invoice.estimate.addressType : '';
         const mileage = {
           count: vehicle && vehicle.mileageValue ? vehicle.mileageValue : '',
           unit: vehicle && vehicle.mileageUnit ? vehicle.mileageUnit : '',
         };
-        const status = invoice.estimate.status;
 
-        setInitialValues(prevState => ({
-          ...prevState,
-          firstName,
-          lastName,
-          phone,
-          make,
-          model,
-          plateNumber,
-          vin,
-          modelYear,
-          address,
-          addressType,
-          jobDuration,
-          depositAmount,
-          tax,
-          mileage,
-          parts,
-          labours,
-          status,
-        }));
+        if (invoice.edited && invoice.draftInvoice) {
+          const draftInvoice = invoice.draftInvoice;
 
-        setGrandTotal(invoice.grandTotal);
-        setPartTotal(invoice.partsTotal);
-        setLabourTotal(invoice.laboursTotal);
-        setDueBalance(invoice.dueAmount);
-        setRefundable(invoice.refundable);
-        setInvoiceId(invoice.id);
-        setEstimateId(estimateId);
-        setShowEdit(true);
-      }
+          const parts = draftInvoice.parts.map(part => JSON.parse(part)) as IPart[];
+          const labours = draftInvoice.labours.map(labour => JSON.parse(labour)) as ILabour[];
+          const jobDuration = { count: `${draftInvoice.jobDurationValue}`, interval: draftInvoice.jobDurationUnit };
+          const depositAmount = `${draftInvoice.depositAmount}`;
+          const tax = `${draftInvoice.tax}`;
+          const status = draftInvoice.status;
 
-      if (invoice && !invoice.edited) {
-        const estimate = invoice.estimate;
+          setInitialValues(prevState => ({
+            ...prevState,
+            firstName,
+            lastName,
+            phone,
+            make,
+            model,
+            plateNumber,
+            vin,
+            modelYear,
+            address,
+            addressType,
+            jobDuration,
+            depositAmount,
+            tax,
+            mileage,
+            parts,
+            labours,
+            status,
+          }));
 
-        const driver = estimate.rideShareDriver;
-        const customer = estimate.customer;
-        const vehicle = estimate.vehicle;
-        const parts = estimate.parts as unknown as IPart[];
-        const labours = estimate.labours as unknown as ILabour[];
-        const firstName = driver ? driver.firstName : customer.firstName;
-        const lastName = driver ? driver.lastName : customer.lastName;
-        const phone = driver ? driver.phone : customer.phone;
-        const make = vehicle && vehicle.make ? vehicle.make : '';
-        const model = vehicle && vehicle.model ? vehicle.model : '';
-        const plateNumber = vehicle && vehicle.plateNumber ? vehicle.plateNumber : '';
-        const vin = vehicle && vehicle.vin ? vehicle.vin : '';
-        const modelYear = vehicle && vehicle.modelYear ? vehicle.modelYear : '';
-        const address = estimate.address ? estimate.address : '';
-        const addressType = estimate.addressType ? estimate.addressType : '';
-        const jobDuration = { count: `${estimate.jobDurationValue}`, interval: estimate.jobDurationUnit };
-        const depositAmount = `${estimate.depositAmount}`;
-        const tax = `${estimate.tax}`;
-        const mileage = {
-          count: vehicle && vehicle.mileageValue ? vehicle.mileageValue : '',
-          unit: vehicle && vehicle.mileageUnit ? vehicle.mileageUnit : '',
-        };
-        const status = estimate.status;
+          setGrandTotal(draftInvoice.grandTotal);
+          setPartTotal(draftInvoice.partsTotal);
+          setLabourTotal(draftInvoice.laboursTotal);
+          setDueBalance(draftInvoice.dueAmount);
+          setRefundable(draftInvoice.refundable);
+          setInvoiceId(invoice.id);
+        }
 
-        setInitialValues(prevState => ({
-          ...prevState,
-          firstName,
-          lastName,
-          phone,
-          make,
-          model,
-          plateNumber,
-          vin,
-          modelYear,
-          address,
-          addressType,
-          jobDuration,
-          depositAmount,
-          tax,
-          mileage,
-          parts,
-          labours,
-          status,
-        }));
+        if (invoice.edited && !invoice.draftInvoice) {
+          const parts = invoice.parts as unknown as IPart[];
+          const labours = invoice.labours as unknown as ILabour[];
+          const jobDuration = { count: `${invoice.jobDurationValue}`, interval: invoice.jobDurationUnit };
+          const depositAmount = `${invoice.depositAmount}`;
+          const tax = `${invoice.tax}`;
+          const status = invoice.estimate.status;
 
-        setGrandTotal(estimate.grandTotal);
-        setPartTotal(estimate.partsTotal);
-        setLabourTotal(estimate.laboursTotal);
-        setDueBalance(invoice.dueAmount);
-        setRefundable(invoice.refundable);
-        setInvoiceId(invoice.id);
+          setInitialValues(prevState => ({
+            ...prevState,
+            firstName,
+            lastName,
+            phone,
+            make,
+            model,
+            plateNumber,
+            vin,
+            modelYear,
+            address,
+            addressType,
+            jobDuration,
+            depositAmount,
+            tax,
+            mileage,
+            parts,
+            labours,
+            status,
+          }));
+
+          setGrandTotal(invoice.grandTotal);
+          setPartTotal(invoice.partsTotal);
+          setLabourTotal(invoice.laboursTotal);
+          setDueBalance(invoice.dueAmount);
+          setRefundable(invoice.refundable);
+          setInvoiceId(invoice.id);
+        }
+
+        if (!invoice.edited) {
+          const estimate = invoice.estimate;
+
+          const parts = estimate.parts as unknown as IPart[];
+          const labours = estimate.labours as unknown as ILabour[];
+          const jobDuration = { count: `${estimate.jobDurationValue}`, interval: estimate.jobDurationUnit };
+          const depositAmount = `${estimate.depositAmount}`;
+          const tax = `${estimate.tax}`;
+          const status = estimate.status;
+
+          setInitialValues(prevState => ({
+            ...prevState,
+            firstName,
+            lastName,
+            phone,
+            make,
+            model,
+            plateNumber,
+            vin,
+            modelYear,
+            address,
+            addressType,
+            jobDuration,
+            depositAmount,
+            tax,
+            mileage,
+            parts,
+            labours,
+            status,
+          }));
+
+          setGrandTotal(estimate.grandTotal);
+          setPartTotal(estimate.partsTotal);
+          setLabourTotal(estimate.laboursTotal);
+          setDueBalance(invoice.dueAmount);
+          setRefundable(invoice.refundable);
+          setInvoiceId(invoice.id);
+        }
+
+        setInvoice(invoice);
         setEstimateId(estimateId);
         setShowEdit(true);
       }
@@ -258,11 +285,6 @@ export default function useInvoice() {
   };
 
   const handleSaveInvoice = (values: IEstimateValues) => {
-    const additionalValueInt = parseInt(values.additionalDeposit);
-
-    if (additionalValueInt <= 0 || additionalValueInt > dueBalance)
-      return setError({ message: 'Due Balance is less than Additional Deposit!' });
-
     const data = getUpdateData(invoiceId, values, partTotal, labourTotal, grandTotal, refundable, dueBalance);
 
     setSave(false);
@@ -272,12 +294,9 @@ export default function useInvoice() {
   const handleSendInvoice = (values: IEstimateValues) => {
     const parts = values.parts;
     const labours = values.labours;
-    const additionalValueInt = parseInt(values.additionalDeposit);
 
     if (!parts.length) return setError({ message: 'Parts Items Cannot not be empty!' });
     if (!labours.length) return setError({ message: 'Labour Items Cannot not be empty!' });
-    if (additionalValueInt <= 0 || additionalValueInt > dueBalance)
-      return setError({ message: 'Due Balance is less than Additional Deposit!' });
 
     const data = getUpdateData(invoiceId, values, partTotal, labourTotal, grandTotal, refundable, dueBalance);
 
@@ -311,5 +330,6 @@ export default function useInvoice() {
     handleInitiateRefund,
     handleSaveInvoice,
     handleSendInvoice,
+    invoice,
   };
 }

@@ -5,6 +5,7 @@ import {
   DataType,
   ForeignKey,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -14,6 +15,7 @@ import { Attributes, NonAttribute } from 'sequelize';
 import Estimate, { estimateFields } from './Estimate';
 import Transaction from './Transaction';
 import Joi from 'joi';
+import DraftInvoice from './DraftInvoice';
 
 export type InvoiceSchemaType = Attributes<Invoice>;
 
@@ -133,6 +135,9 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
 
   @HasMany(() => Transaction)
   declare transactions: NonAttribute<Transaction[]>;
+
+  @HasOne(() => DraftInvoice)
+  declare draftInvoice: NonAttribute<DraftInvoice>;
 
   @BelongsTo(() => Estimate, { onDelete: 'SET NULL' })
   declare estimate: NonAttribute<Estimate>;

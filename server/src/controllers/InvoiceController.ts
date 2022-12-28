@@ -1,5 +1,3 @@
-// noinspection JSUnfilteredForInLoop
-
 import { TryCatch } from '../decorators';
 import { Request } from 'express';
 import Joi from 'joi';
@@ -30,6 +28,7 @@ import moment from 'moment';
 import Partner from '../models/Partner';
 import Contact from '../models/Contact';
 import BillingInformation from '../models/BillingInformation';
+import DraftInvoice from '../models/DraftInvoice';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
@@ -118,7 +117,7 @@ export default class InvoiceController {
 
     const balanceResponse = await axiosClient.get(endpoint);
 
-    if (balanceResponse.data.data.balance === 0)
+    if (balanceResponse.data.data.balance < partnerFee * 100)
       return Promise.reject(
         CustomAPIError.response('Insufficient Balance. Please contact support.', HttpStatus.BAD_REQUEST.code),
       );
@@ -224,6 +223,7 @@ export default class InvoiceController {
             ],
           },
           Transaction,
+          DraftInvoice,
         ],
       });
     } else {
@@ -242,6 +242,7 @@ export default class InvoiceController {
             ],
           },
           Transaction,
+          DraftInvoice,
         ],
       });
     }
@@ -253,7 +254,7 @@ export default class InvoiceController {
       invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
       invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
 
-      if (invoice.edited) {
+      if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
         const parts = invoice.parts;
         const labours = invoice.labours;
 
@@ -437,12 +438,64 @@ export default class InvoiceController {
 
     if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
 
-    await this.doSave(invoice, value);
+    let draftInvoice = await invoice.$get('draftInvoice');
 
-    await invoice.update({
-      updateStatus: INVOICE_STATUS.update.draft,
-      edited: true,
-    });
+    if (draftInvoice) {
+      await this.doSave(draftInvoice, value);
+    } else {
+      const data: Partial<Attributes<DraftInvoice>> = invoice.toJSON();
+
+      for (const valueKey in value) {
+        const key = valueKey as keyof InvoiceSchemaType;
+
+        if (key === 'id') continue;
+
+        if (value[key]) {
+          if (key === 'parts') {
+            data.parts = value.parts.map((value: string) => JSON.stringify(value));
+            continue;
+          }
+
+          if (key === 'labours') {
+            data.labours = value.labours.map((value: string) => JSON.stringify(value));
+            continue;
+          }
+
+          if (key === 'depositAmount') {
+            data.depositAmount = parseInt(`${value.depositAmount}`);
+            continue;
+          }
+
+          if (key === 'paidAmount') {
+            data.paidAmount = parseInt(`${value.paidAmount}`);
+            continue;
+          }
+
+          if (key === 'additionalDeposit') {
+            data.additionalDeposit = parseInt(`${value.additionalDeposit}`);
+            continue;
+          }
+
+          if (key === 'jobDurationValue') {
+            data.jobDurationValue = parseInt(`${value.jobDurationValue}`);
+            continue;
+          }
+
+          data[key] = value[key];
+        }
+      }
+
+      delete data.id;
+
+      draftInvoice = await DraftInvoice.create(data as CreationAttributes<DraftInvoice>);
+
+      await invoice.update({
+        updateStatus: INVOICE_STATUS.update.draft,
+        edited: true,
+      });
+
+      await invoice.$set('draftInvoice', draftInvoice);
+    }
 
     return Promise.resolve({
       code: HttpStatus.OK.code,
@@ -466,6 +519,11 @@ export default class InvoiceController {
 
     await this.doSave(invoice, value);
 
+    // @ts-ignore
+    await DraftInvoice.destroy({ where: { invoiceId: invoice.id } });
+
+    await invoice.$set('draftInvoice', null);
+
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.sent,
       edited: true,
@@ -478,7 +536,7 @@ export default class InvoiceController {
     } as HttpResponse<Invoice>);
   }
 
-  private static async doSave(invoice: Invoice, value: InvoiceSchemaType) {
+  private static async doSave(invoice: DraftInvoice | Invoice, value: InvoiceSchemaType) {
     for (const valueKey in value) {
       const key = valueKey as keyof InvoiceSchemaType;
 

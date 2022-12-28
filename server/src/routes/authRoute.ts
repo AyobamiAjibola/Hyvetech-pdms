@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import AuthenticationController from '../controllers/AuthenticationController';
 import PasswordEncoder from '../utils/PasswordEncoder';
 import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
+import settings from '../config/settings';
 
 const passwordEncoder = new PasswordEncoder();
 const authenticationController = new AuthenticationController(passwordEncoder);
@@ -77,6 +78,13 @@ export const signupHandler = async (req: Request, res: Response) => {
 export const signInHandler = async (req: Request, res: Response) => {
   const response = await authenticationController.signIn(req);
 
+  res.cookie(settings.cookie.name, response.result, {
+    sameSite: 'none',
+    secure: true,
+    signed: true,
+    httpOnly: true,
+  });
+
   res.status(response.code).json(response);
 };
 
@@ -88,6 +96,13 @@ export const bootstrapHandler = async (req: Request, res: Response) => {
 
 export const signOutHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
   const response = await authenticationController.signOut(req);
+
+  res.clearCookie(settings.cookie.name, {
+    sameSite: 'none',
+    secure: true,
+    signed: true,
+    httpOnly: true,
+  });
 
   res.status(response.code).json(response);
 });

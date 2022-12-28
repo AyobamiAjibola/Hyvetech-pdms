@@ -1,12 +1,10 @@
 import { CustomHookMessage } from '@app-types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import settings from '../config/settings';
 import { clearLoginStatus } from '../store/reducers/authenticationReducer';
-import cookie from '../utils/cookie';
 import useAppDispatch from './useAppDispatch';
 import useAppSelector from './useAppSelector';
+import settings from '../config/settings';
 
 export default function useLogin() {
   const [_timeout, _setTimeout] = useState<any>();
@@ -19,7 +17,7 @@ export default function useLogin() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const isLoggedIn = cookie.get(settings.auth.admin);
+    const isLoggedIn = sessionStorage.getItem(settings.auth.admin);
 
     if (!isLoggedIn) {
       navigate('/');
@@ -30,9 +28,7 @@ export default function useLogin() {
     if (authReducer.signingInStatus === 'completed') {
       setSuccess({ message: authReducer.signingInSuccess });
 
-      cookie.set(settings.auth.admin, authReducer.authToken);
-
-      dispatch(clearLoginStatus());
+      //cookie.set(settings.auth.admin, authReducer.authToken);
 
       _setTimeout(
         setTimeout(() => {
@@ -47,8 +43,9 @@ export default function useLogin() {
       if (authReducer.signingInError) {
         setError({ message: authReducer.signingInError });
       }
+      dispatch(clearLoginStatus());
     }
-  }, [authReducer.signingInStatus, authReducer.signingInError, navigate]);
+  }, [authReducer.signingInStatus, authReducer.signingInError, navigate, dispatch]);
 
   useEffect(() => {
     return () => {
@@ -58,6 +55,12 @@ export default function useLogin() {
 
   const clearError = () => setError(undefined);
   const clearSuccess = () => setSuccess(undefined);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearLoginStatus());
+    };
+  }, [dispatch]);
 
   return {
     success,
