@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { IEstimate } from '@app-models';
-import { Button, Chip, Grid, Typography } from '@mui/material';
+import { Button, Chip, DialogActions, DialogContentText, Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
@@ -14,7 +14,7 @@ import EstimateForm from '../../components/forms/estimate/EstimateForm';
 import useEstimate from '../../hooks/useEstimate';
 import { useNavigate } from 'react-router-dom';
 import useAdmin from '../../hooks/useAdmin';
-import { ESTIMATE_STATUS } from '../../config/constants';
+import { ESTIMATE_STATUS, MESSAGES } from '../../config/constants';
 import {
   clearCreateEstimateStatus,
   clearGetEstimateStatus,
@@ -24,6 +24,7 @@ import {
 } from '../../store/reducers/estimateReducer';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import EstimatePageContext from '../../context/EstimatePageContext';
+import AppLoader from '../../components/loader/AppLoader';
 
 function EstimatesPage() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
@@ -160,41 +161,38 @@ function EstimatesPage() {
         type: 'actions',
         headerAlign: 'center',
         align: 'center',
-        getActions: (params: any) => [
-          <GridActionsCellItem
-            key={0}
-            icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-            onClick={() => {
-              const row = params.row as IEstimate;
+        getActions: (params: any) => {
+          const row = params.row as IEstimate;
 
-              navigate(`/estimates/${row.id}`, { state: { estimate: row } });
-            }}
-            label="View"
-            showInMenu={false}
-          />,
+          return [
+            <GridActionsCellItem
+              key={0}
+              icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+              onClick={() => navigate(`/estimates/${row.id}`, { state: { estimate: row } })}
+              label="View"
+              showInMenu={false}
+            />,
 
-          <GridActionsCellItem
-            key={1}
-            icon={<Edit sx={{ color: 'limegreen', display: isTechAdmin ? 'block' : 'none' }} />}
-            onClick={() => {
-              const row = params.row as IEstimate;
-
-              estimate.onEdit(row.id);
-            }}
-            disabled={!isTechAdmin}
-            label="Edit"
-            showInMenu={false}
-          />,
-          <GridActionsCellItem
-            key={2}
-            icon={<Cancel sx={{ color: 'indianred' }} />}
-            onClick={() => {
-              //
-            }}
-            label="Delete"
-            showInMenu={false}
-          />,
-        ],
+            <GridActionsCellItem
+              sx={{ display: isTechAdmin ? 'block' : 'none' }}
+              key={1}
+              icon={<Edit sx={{ color: 'limegreen' }} />}
+              onClick={() => estimate.onEdit(row.id)}
+              disabled={!isTechAdmin}
+              label="Edit"
+              showInMenu={false}
+            />,
+            <GridActionsCellItem
+              sx={{ display: isTechAdmin ? 'block' : 'none' }}
+              key={2}
+              icon={<Cancel sx={{ color: 'indianred' }} />}
+              onClick={() => estimate.onDelete(row.id)}
+              label="Delete"
+              disabled={row.status === ESTIMATE_STATUS.invoiced}
+              showInMenu={false}
+            />,
+          ];
+        },
       },
     ] as GridColDef<IEstimate>[];
   }, [estimate, navigate, isTechAdmin]);
@@ -316,6 +314,19 @@ function EstimatesPage() {
         }
         onClose={() => estimate.setShowEdit(false)}
       />
+      <AppModal
+        fullWidth
+        show={estimate.showDelete}
+        Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => estimate.setShowDelete(false)}>Disagree</Button>
+            <Button onClick={estimate.handleDelete}>Agree</Button>
+          </DialogActions>
+        }
+        onClose={() => estimate.setShowDelete(false)}
+      />
+      <AppLoader show={estimateReducer.deleteEstimateStatus === 'loading'} />
     </EstimatePageContext.Provider>
   );
 }
