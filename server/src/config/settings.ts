@@ -2,6 +2,7 @@ import { appCommonTypes } from '../@types/app-common';
 import AppSettings = appCommonTypes.AppSettings;
 
 const settings: AppSettings = {
+  cookie: { name: process.env.COOKIE_AUTH as string, secret: process.env.COOKIE_AUTH as string },
   permissions: [
     'manage_all',
 

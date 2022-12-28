@@ -12,8 +12,9 @@ import Partner from '../models/Partner';
 import TechnicianRepository from '../repositories/TechnicianRepository';
 import CustomerRepository from '../repositories/CustomerRepository';
 import RideShareDriverRepository from '../repositories/RideShareDriverRepository';
-import AsyncWrapper = appCommonTypes.AsyncWrapper;
+import cookieParser = require('cookie-parser');
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
+import AsyncWrapper = appCommonTypes.AsyncWrapper;
 
 const logger = AppLogger.init(authenticateRouteWrapper.name).logger;
 const userRepository = new UserRepository();
@@ -25,83 +26,112 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
   return async function (req: Request, res: Response, next: NextFunction) {
     const headers = req.headers;
 
-    const cookie = headers.cookie;
     const authorization = headers.authorization;
+    const cookies = req.signedCookies;
     const key = settings.jwt.key;
-    let jwt = '';
+    const cookieName = settings.cookie.name;
+
+    const cookie = cookies[cookieName];
 
     if (cookie) {
-      if (!cookie.split('=')[0].startsWith('_admin_auth')) {
-        logger.error("malformed authorization: '_admin_auth' missing");
+      const jwt = cookieParser.signedCookie(cookie, settings.cookie.secret);
+
+      if (false === jwt) {
+        logger.error(`malformed authorization: invalid cookie`);
 
         return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
       }
 
-      jwt = cookie.split('=')[1];
+      const payload = verify(jwt, key) as CustomJwtPayload;
+
+      req.permissions = payload.permissions;
+      req.jwt = jwt;
+
+      if (payload.rideShareDriverId) {
+        const { rideShareDriverId } = payload;
+
+        const rideShareDriver = await rideShareDriverRepository.findById(rideShareDriverId, {
+          include: [Role, Partner],
+        });
+
+        if (rideShareDriver) return await handler(req, res, next);
+      }
+
+      if (payload.userId) {
+        const { userId } = payload;
+
+        const user = await userRepository.findById(userId, {
+          include: [Role, Partner],
+        });
+
+        if (user) {
+          req.user = user;
+
+          return await handler(req, res, next);
+        }
+
+        const technician = await technicianRepository.findById(userId, {
+          include: [Role, Partner],
+        });
+
+        if (technician) return await handler(req, res, next);
+
+        const customer = await customerRepository.findById(userId, {
+          include: [Role],
+        });
+
+        if (customer) return await handler(req, res, next);
+      }
     }
 
     if (authorization) {
       if (!authorization.startsWith('Bearer')) {
-        logger.error("malformed authorization: 'Bearer' missing");
+        logger.error(`malformed authorization: 'Bearer' missing`);
 
         return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
       }
 
-      jwt = authorization.split(' ')[1].trim();
-    }
+      const jwt = authorization.split(' ')[1].trim();
 
-    const payload = verify(jwt, key) as CustomJwtPayload;
+      const payload = verify(jwt, key) as CustomJwtPayload;
 
-    if (payload.rideShareDriverId) {
-      const { rideShareDriverId } = payload;
+      req.permissions = payload.permissions;
+      req.jwt = jwt;
 
-      const rideShareDriver = await rideShareDriverRepository.findById(rideShareDriverId, {
-        include: [Role, Partner],
-      });
+      if (payload.rideShareDriverId) {
+        const { rideShareDriverId } = payload;
 
-      if (rideShareDriver) {
-        req.permissions = payload.permissions;
-        req.jwt = jwt;
+        const rideShareDriver = await rideShareDriverRepository.findById(rideShareDriverId, {
+          include: [Role, Partner],
+        });
 
-        return await handler(req, res, next);
-      }
-    }
-
-    if (payload.userId) {
-      const { userId } = payload;
-
-      const user = await userRepository.findById(userId, {
-        include: [Role, Partner],
-      });
-
-      if (user) {
-        req.permissions = payload.permissions;
-        req.user = user;
-        req.jwt = jwt;
-
-        return await handler(req, res, next);
+        if (rideShareDriver) return await handler(req, res, next);
       }
 
-      const technician = await technicianRepository.findById(userId, {
-        include: [Role, Partner],
-      });
+      if (payload.userId) {
+        const { userId } = payload;
 
-      if (technician) {
-        req.permissions = payload.permissions;
-        req.jwt = jwt;
+        const user = await userRepository.findById(userId, {
+          include: [Role, Partner],
+        });
 
-        return await handler(req, res, next);
-      }
+        if (user) {
+          req.user = user;
 
-      const customer = await customerRepository.findById(userId, {
-        include: [Role],
-      });
+          return await handler(req, res, next);
+        }
 
-      if (customer) {
-        req.permissions = payload.permissions;
-        req.jwt = jwt;
+        const technician = await technicianRepository.findById(userId, {
+          include: [Role, Partner],
+        });
 
-        return await handler(req, res, next);
+        if (technician) return await handler(req, res, next);
+
+        const customer = await customerRepository.findById(userId, {
+          include: [Role],
+        });
+
+        if (customer) return await handler(req, res, next);
       }
     }
 

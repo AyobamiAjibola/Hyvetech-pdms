@@ -10,6 +10,8 @@ import HttpResponse = appCommonTypes.HttpResponse;
 const logger = AppLogger.init(globalExceptionHandler.name).logger;
 
 export default function globalExceptionHandler(err: Error, req: Request, res: Response, next: NextFunction) {
+  console.log(err);
+
   if (res.headersSent) return next(err);
 
   const response: HttpResponse<null> = {

@@ -18,6 +18,8 @@ import useAppSelector from '../../../hooks/useAppSelector';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
+import { IInvoice } from '@app-models';
+import { INVOICE_STATUS } from '../../../config/constants';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -37,6 +39,7 @@ interface IProps {
   setShowRefund?: (refund: boolean) => void;
   setSave?: Dispatch<SetStateAction<boolean>>;
   onInitiateRefund: () => void;
+  invoice?: IInvoice;
 }
 
 const { fields } = estimateModel;
@@ -73,6 +76,7 @@ function InvoiceForm(props: IProps) {
     refundable,
     onInitiateRefund,
     setSave,
+    invoice,
   } = props;
 
   useEffect(() => {
@@ -190,22 +194,6 @@ function InvoiceForm(props: IProps) {
   const onSend = useCallback(() => {
     if (setSave) setSave(false);
   }, [setSave]);
-
-  const handleAdditionalDeposit = useCallback(
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const additionalValue = e.target.value;
-      const additionalValueInt = parseInt(additionalValue);
-
-      if (additionalValueInt <= 0 || additionalValueInt > dueBalance) {
-        setError({ message: 'Due Balance is less than Additional Deposit!' });
-      } else {
-        setError(undefined);
-      }
-
-      setFieldValue(fields.additionalDeposit.name, additionalValue);
-    },
-    [dueBalance, setError, setFieldValue],
-  );
 
   return (
     <React.Fragment>
@@ -495,23 +483,10 @@ function InvoiceForm(props: IProps) {
           <Grid item xs={2} container justifyContent="space-around" alignItems="center">
             <Typography variant="body1">Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
           </Grid>
-          <Grid item xs={2} container justifyContent="space-around" alignItems="center">
+          <Grid item xs={3} container justifyContent="space-around" alignItems="center">
             <Typography variant="body1">Deposited Amount: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
           </Grid>
-          <Grid item xs={2}>
-            <TextInputField
-              onChange={handleAdditionalDeposit}
-              value={values.additionalDeposit}
-              name={fields.additionalDeposit.name}
-              label={fields.additionalDeposit.label}
-              disabled={refundable !== 0}
-              type="number"
-              inputProps={{
-                min: '0',
-              }}
-            />
-          </Grid>
-          <Grid item xs={2} container spacing={0.5}>
+          <Grid item xs={3} container spacing={0.5}>
             <Grid item xs={6}>
               <TextInputField
                 onChange={handleChange}
@@ -567,6 +542,7 @@ function InvoiceForm(props: IProps) {
                 Send
               </LoadingButton>
               <LoadingButton
+                disabled={invoice && invoice.updateStatus !== INVOICE_STATUS.update.sent}
                 color="error"
                 variant="contained"
                 onClick={onInitiateRefund}

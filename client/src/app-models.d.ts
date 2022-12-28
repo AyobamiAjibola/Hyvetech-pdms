@@ -641,6 +641,7 @@ declare module '@app-models' {
     updateStatus: string;
     estimate: IEstimate;
     transactions: ITransaction[];
+    draftInvoice: IInvoice;
     createdAt: string;
     updatedAt: string;
   }

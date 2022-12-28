@@ -1,12 +1,11 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import cookie from '../../utils/cookie';
 import settings from '../../config/settings';
 
-const cookieName = settings.auth.admin;
+const admin = settings.auth.admin;
 
 function PrivateRoute({ children }: any) {
-  const isSignedIn = cookie.exist(cookieName);
+  const isSignedIn = sessionStorage.getItem(admin);
 
   return isSignedIn ? children : <Navigate to="/" replace />;
 }

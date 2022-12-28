@@ -88,5 +88,11 @@ declare namespace NodeJS {
     APPLE_TEAM_ID: string;
     GOOGLE_FCM_HOST: string;
     AUTOHYVE_FCM_SERVER_KEY: string;
+
+    COOKIE_AUTH: string;
+    COOKIE_SECRET: string;
+
+    SSL_CRT_FILE: string;
+    SSL_KEY_FILE: string;
   }
 }

@@ -1,9 +1,6 @@
-import { Server as HttpServer } from 'http';
 import { Server as SocketServer } from 'socket.io';
 import { QueueManager } from 'rabbitmq-email-manager';
 import { AppAgenda } from 'agenda-schedule-wrapper';
-
-import AppLogger from '../utils/AppLogger';
 import database from '../config/database';
 import dataStore from '../config/dataStore';
 import CommandLineRunner from '../helpers/CommandLineRunner';
@@ -13,10 +10,7 @@ import agendaManager from '../services/agendaManager';
 import { appEventEmitter } from '../services/AppEventEmitter';
 import eventManager from '../services/eventManager';
 
-export default async function startup(server: HttpServer, io: SocketServer) {
-  const port = process.env.PORT || 5050;
-  const logger = AppLogger.init(startup.name).logger;
-
+export default async function startup(io: SocketServer) {
   dataStore.init();
   await database.init();
   const mongodb = await database.mongodb();
@@ -35,6 +29,4 @@ export default async function startup(server: HttpServer, io: SocketServer) {
 
   agendaManager(appEventEmitter);
   eventManager(io);
-
-  server.listen(port, () => logger.info(`Server running on port: ${port}`));
 }

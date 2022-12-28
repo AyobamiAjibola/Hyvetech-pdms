@@ -15,7 +15,6 @@ import useAppDispatch from './useAppDispatch';
 import { CustomHookMessage } from '@app-types';
 import { IEstimate, IRideShareDriver } from '@app-models';
 import { useParams } from 'react-router-dom';
-import cookie from '../utils/cookie';
 import settings from '../config/settings';
 import { CustomJwtPayload } from '@app-interfaces';
 import {
@@ -56,7 +55,7 @@ export default function useEstimate() {
   }, [dispatch]);
 
   useEffect(() => {
-    const auth = jwt.decode(cookie.get(settings.auth.admin)) as CustomJwtPayload;
+    const auth = jwt.decode(sessionStorage.getItem(settings.auth.admin) as string) as unknown as CustomJwtPayload;
 
     if (params.id) {
       setPartnerId(+params.id);

@@ -6,6 +6,7 @@ import { garageSignUpAction, signInAction, signOutAction } from '../actions/auth
 import { IPermission } from '@app-models';
 import { LOCAL_STORAGE } from '../../config/constants';
 import { CustomJwtPayload } from '@app-interfaces';
+import settings from '../../config/settings';
 
 interface IAuthenticationState {
   signingInStatus: IThunkAPIStatus;
@@ -68,13 +69,18 @@ const authenticationSlice = createSlice({
       .addCase(signInAction.fulfilled, (state, action) => {
         state.signingInStatus = 'completed';
         state.signingInSuccess = action.payload.message;
-        state.authToken = action.payload.result as string;
 
-        const { permissions } = jwt.decode(action.payload.result as string) as CustomJwtPayload;
+        if (action.payload.result) {
+          state.authToken = action.payload.result;
 
-        state.permissions = permissions;
+          const { permissions } = jwt.decode(state.authToken) as CustomJwtPayload;
 
-        localStorage.setItem(LOCAL_STORAGE.permissions, JSON.stringify(permissions));
+          state.permissions = permissions;
+
+          sessionStorage.setItem(LOCAL_STORAGE.permissions, JSON.stringify(permissions));
+
+          sessionStorage.setItem(settings.auth.admin, state.authToken);
+        }
       })
       .addCase(signInAction.rejected, (state, action) => {
         state.signingInStatus = 'failed';

@@ -6,8 +6,8 @@ import moment from 'moment';
 export type CustomJWTPayload = JwtPayload & { exp: number };
 
 const cookie = {
-  clear(cookies: string) {
-    if (!_.isArray(cookies) && cookies.length === 0) return false;
+  clear(cookies: string[]) {
+    if (!_.isArray(cookies)) return false;
 
     for (let i = 0; i < cookies.length; i++) {
       this.remove(cookies[i]);
