@@ -8,6 +8,11 @@ export const createEstimateHandler = authenticateRouteWrapper(async (req, res) =
   res.status(response.code).json(response);
 });
 
+export const deleteEstimateHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await estimateController.delete(req);
+  res.status(response.code).json(response);
+});
+
 export const saveEstimateHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await estimateController.save(req);
   res.status(response.code).json(response);

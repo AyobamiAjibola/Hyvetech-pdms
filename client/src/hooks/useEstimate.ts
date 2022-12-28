@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import estimateModel, { IEstimateValues, ILabour, IPart } from '../components/forms/models/estimateModel';
 import {
   createEstimateAction,
+  deleteEstimateAction,
   getEstimatesAction,
   saveEstimateAction,
   sendDraftEstimateAction,
@@ -37,6 +38,7 @@ export default function useEstimate() {
   const [showCreate, setShowCreate] = useState<boolean>(false);
   const [showEdit, setShowEdit] = useState<boolean>(false);
   const [showView, setShowView] = useState<boolean>(false);
+  const [showDelete, setShowDelete] = useState<boolean>(false);
   const [estimateId, setEstimateId] = useState<number>();
   const [partnerId, setPartnerId] = useState<number>();
   const [save, setSave] = useState<boolean>(false);
@@ -127,6 +129,21 @@ export default function useEstimate() {
       dispatch(getEstimatesAction());
     }
   }, [dispatch, estimateReducer.updateEstimateStatus, estimateReducer.updateEstimateSuccess, handleReset]);
+
+  useEffect(() => {
+    if (estimateReducer.deleteEstimateStatus === 'failed') {
+      setError({ message: estimateReducer.deleteEstimateError });
+      handleReset();
+    }
+  }, [estimateReducer.deleteEstimateError, estimateReducer.deleteEstimateStatus, handleReset]);
+
+  useEffect(() => {
+    if (estimateReducer.deleteEstimateStatus === 'completed') {
+      setSuccess({ message: estimateReducer.deleteEstimateSuccess });
+      handleReset();
+      dispatch(getEstimatesAction());
+    }
+  }, [dispatch, estimateReducer.deleteEstimateStatus, estimateReducer.deleteEstimateSuccess, handleReset]);
 
   useEffect(() => {
     if (estimateReducer.sendDraftEstimateStatus === 'failed') {
@@ -331,6 +348,16 @@ export default function useEstimate() {
     [estimates],
   );
 
+  const onDelete = useCallback((id: number) => {
+    setEstimateId(id);
+    setShowDelete(true);
+  }, []);
+
+  const handleDelete = useCallback(() => {
+    if (estimateId) void dispatch(deleteEstimateAction(estimateId));
+    setShowDelete(false);
+  }, [dispatch, estimateId]);
+
   const onView = (estimateId: number) => {
     setEstimateId(estimateId);
     setShowView(true);
@@ -368,5 +395,9 @@ export default function useEstimate() {
     handleUpdateEstimate,
     handleSendDraftEstimate,
     onView,
+    showDelete,
+    setShowDelete,
+    onDelete,
+    handleDelete,
   };
 }

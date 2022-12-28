@@ -2,6 +2,7 @@ import { IThunkAPIStatus } from '@app-types';
 import { createSlice } from '@reduxjs/toolkit';
 import {
   createEstimateAction,
+  deleteEstimateAction,
   getEstimatesAction,
   saveEstimateAction,
   sendDraftEstimateAction,
@@ -21,6 +22,10 @@ interface IEstimateState {
   updateEstimateStatus: IThunkAPIStatus;
   updateEstimateSuccess: string;
   updateEstimateError?: string;
+
+  deleteEstimateStatus: IThunkAPIStatus;
+  deleteEstimateSuccess: string;
+  deleteEstimateError: string;
 
   sendDraftEstimateStatus: IThunkAPIStatus;
   sendDraftEstimateSuccess: string;
@@ -46,6 +51,10 @@ const initialState: IEstimateState = {
   updateEstimateError: '',
   updateEstimateStatus: 'idle',
   updateEstimateSuccess: '',
+
+  deleteEstimateError: '',
+  deleteEstimateStatus: 'idle',
+  deleteEstimateSuccess: '',
 
   sendDraftEstimateError: '',
   sendDraftEstimateStatus: 'idle',
@@ -79,6 +88,12 @@ const estimateSlice = createSlice({
       state.updateEstimateStatus = 'idle';
       state.updateEstimateSuccess = '';
       state.updateEstimateError = '';
+    },
+
+    clearDeleteEstimateStatus(state: IEstimateState) {
+      state.deleteEstimateStatus = 'idle';
+      state.deleteEstimateSuccess = '';
+      state.deleteEstimateError = '';
     },
 
     clearSendDraftEstimateStatus(state: IEstimateState) {
@@ -147,6 +162,22 @@ const estimateSlice = createSlice({
       });
 
     builder
+      .addCase(deleteEstimateAction.pending, state => {
+        state.updateEstimateStatus = 'loading';
+      })
+      .addCase(deleteEstimateAction.fulfilled, (state, action) => {
+        state.deleteEstimateStatus = 'completed';
+        state.deleteEstimateSuccess = action.payload.message;
+      })
+      .addCase(deleteEstimateAction.rejected, (state, action) => {
+        state.deleteEstimateStatus = 'failed';
+
+        if (action.payload) {
+          state.deleteEstimateError = action.payload.message;
+        } else state.deleteEstimateError = action.error.message as string;
+      });
+
+    builder
       .addCase(sendDraftEstimateAction.pending, state => {
         state.sendDraftEstimateStatus = 'loading';
       })
@@ -188,6 +219,7 @@ export const {
   clearSaveEstimateStatus,
   clearSendDraftEstimateStatus,
   clearUpdateEstimateStatus,
+  clearDeleteEstimateStatus,
 } = estimateSlice.actions;
 
 export default estimateSlice.reducer;

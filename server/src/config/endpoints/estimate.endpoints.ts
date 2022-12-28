@@ -1,5 +1,6 @@
 import {
   createEstimateHandler,
+  deleteEstimateHandler,
   getEstimatesHandler,
   saveEstimateHandler,
   sendDraftEstimateHandler,
@@ -39,6 +40,12 @@ const estimateEndpoints: RouteEndpoints = [
     method: 'get',
     path: estimatesPath,
     handler: getEstimatesHandler,
+  },
+  {
+    name: 'delete estimate',
+    method: 'delete',
+    path: `${estimatesPath}/:estimateId`,
+    handler: deleteEstimateHandler,
   },
 ];
 

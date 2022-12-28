@@ -52,6 +52,27 @@ export default class EstimateController {
   }
 
   @TryCatch
+  public async delete(req: Request) {
+    const estimateId = req.params.estimateId as string;
+
+    const estimate = await dataSources.estimateDAOService.findById(+estimateId);
+
+    if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found`, HttpStatus.NOT_FOUND.code));
+
+    if (estimate.status === ESTIMATE_STATUS.invoiced)
+      return Promise.reject(
+        CustomAPIError.response(`Cannot delete an already invoiced estimate`, HttpStatus.BAD_REQUEST.code),
+      );
+
+    await Estimate.destroy({ where: { id: +estimateId }, force: true });
+
+    return Promise.resolve({
+      code: HttpStatus.ACCEPTED.code,
+      message: 'Estimate deleted successfully',
+    } as HttpResponse<void>);
+  }
+
+  @TryCatch
   public async save(req: Request) {
     const { estimate } = await this.doSaveEstimate(req);
 
