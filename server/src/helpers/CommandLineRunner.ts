@@ -1,6 +1,9 @@
 /**
  * This helper Class, executes commands in form of methods,we want to run at runtime.
  */
+
+import fs from 'fs/promises';
+
 import { Op } from 'sequelize';
 
 import RoleRepository from '../repositories/RoleRepository';
@@ -61,6 +64,7 @@ import TagRepository from '../repositories/TagRepository';
 
 import statesAndDistrictsJson from '../resources/data/states_and_districts.json';
 import adminJson from '../resources/data/admin.json';
+import settingsJson from '../resources/data/appSettings.json';
 import UserRepository from '../repositories/UserRepository';
 import PasswordEncoder from '../utils/PasswordEncoder';
 import PaymentGateway from '../models/PaymentGateway';
@@ -69,9 +73,9 @@ import dataStore from '../config/dataStore';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
 import Generic from '../utils/Generic';
-import fs from 'fs/promises';
 import Bank from '../models/Bank';
 import BankRepository from '../repositories/BankRepository';
+import SettingRepository from '../repositories/SettingRepository';
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 import IPayStackBank = appModelTypes.IPayStackBank;
 
@@ -95,6 +99,7 @@ export default class CommandLineRunner {
   private stateRepository: AbstractCrudRepository;
   private tagRepository: AbstractCrudRepository;
   private userRepository: AbstractCrudRepository;
+  private settingRepository: AbstractCrudRepository;
 
   constructor() {
     this.roleRepository = new RoleRepository();
@@ -115,9 +120,11 @@ export default class CommandLineRunner {
     this.stateRepository = new StateRepository();
     this.tagRepository = new TagRepository();
     this.userRepository = new UserRepository();
+    this.settingRepository = new SettingRepository();
   }
 
   public static async run() {
+    await this.singleton.loadDefaultSettings();
     await this.singleton.createUploadDirectory();
     await this.singleton.loadDefaultEmailConfig();
     await this.singleton.loadDefaultRolesAndPermissions();
@@ -131,6 +138,12 @@ export default class CommandLineRunner {
     await this.singleton.loadDefaultAdmin();
     await this.singleton.loadPayStackPlans();
     await this.singleton.loadPayStackBanks();
+  }
+
+  async loadDefaultSettings() {
+    await this.settingRepository.deleteAll({ force: true });
+
+    await this.settingRepository.bulkCreate(settingsJson);
   }
 
   async createUploadDirectory() {

@@ -289,7 +289,7 @@ function InvoicePage() {
               }}>
               <Typography>Paid</Typography>
               <Typography sx={{ ml: 5 }}>₦</Typography>
-              <Typography>{formatNumberToIntl(estimate.depositAmount)}</Typography>
+              <Typography>{formatNumberToIntl(invoice.depositAmount)}</Typography>
             </Box>
           </Grid>
         </Grid>

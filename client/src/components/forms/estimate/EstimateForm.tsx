@@ -2,7 +2,7 @@ import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEff
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Divider, Grid, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Save, Send, Update } from '@mui/icons-material';
+import { Add, Remove, SendAndArchive } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -167,10 +167,6 @@ function EstimateForm(props: IProps) {
   const sendStatus = useMemo(() => {
     return estimateReducer.sendDraftEstimateStatus === 'loading' || estimateReducer.createEstimateStatus === 'loading';
   }, [estimateReducer.createEstimateStatus, estimateReducer.sendDraftEstimateStatus]);
-
-  const saveStatus = useMemo(() => {
-    return estimateReducer.updateEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading';
-  }, [estimateReducer.saveEstimateStatus, estimateReducer.updateEstimateStatus]);
 
   useEffect(() => {
     return () => {
@@ -495,25 +491,15 @@ function EstimateForm(props: IProps) {
           <Grid item xs={12}>
             <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
             <LoadingButton
-              type="submit"
-              loading={saveStatus}
-              disabled={saveStatus}
-              variant="contained"
-              color="secondary"
-              endIcon={props.showEdit ? <Update /> : <Save />}
-              onClick={() => props.setSave(true)}>
-              {props.showEdit ? 'Update' : 'Save'}
-            </LoadingButton>
-            <LoadingButton
               sx={{ ml: 2 }}
               type="submit"
               loading={sendStatus}
               onClick={() => props.setSave(false)}
-              // disabled={sendStatus || (props.showEdit && values.status !== ESTIMATE_STATUS.draft)}
+              disabled={sendStatus}
               variant="contained"
               color="success"
-              endIcon={<Send />}>
-              Send
+              endIcon={<SendAndArchive />}>
+              Save & Send
             </LoadingButton>
           </Grid>
         </Grid>

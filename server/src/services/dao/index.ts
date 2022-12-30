@@ -70,6 +70,8 @@ import InvoiceDAOService from './InvoiceDAOService';
 import VINDAOService from './VINDAOService';
 import CustomerWorkShopRepository from '../../repositories/CustomerWorkShopRepository';
 import CustomerWorkShopDAOService from './CustomerWorkShopDAOService';
+import SettingRepository from '../../repositories/SettingRepository';
+import SettingDAOService from './SettingDAOService';
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -107,6 +109,7 @@ const estimateRepository = new EstimateRepository();
 const billingInformationRepository = new BillingInformationRepository();
 const invoiceRepository = new InvoiceRepository();
 const customerWorkShopRepository = new CustomerWorkShopRepository();
+const settingRepository = new SettingRepository();
 
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
@@ -145,6 +148,7 @@ const estimateDAOService = new EstimateDAOService(estimateRepository);
 const billingInformationDAOService = new BillingInformationDAOService(billingInformationRepository);
 const invoiceDAOService = new InvoiceDAOService(invoiceRepository);
 const customerWorkShopDAOService = new CustomerWorkShopDAOService(customerWorkShopRepository);
+const settingDAOService = new SettingDAOService(settingRepository);
 
 export default {
   customerDAOService,
@@ -182,4 +186,5 @@ export default {
   invoiceDAOService,
   vinDAOService,
   customerWorkShopDAOService,
+  settingDAOService,
 };

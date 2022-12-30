@@ -357,10 +357,7 @@ function InvoicesPage() {
             />
           </Formik>
         }
-        onClose={() => {
-          invoice.setShowEdit(false);
-          dispatch(getInvoicesAction());
-        }}
+        onClose={() => invoice.handleCloseEdit()}
       />
       <PaymentGateway
         show={transactionReducer.openTransactionPopup}
