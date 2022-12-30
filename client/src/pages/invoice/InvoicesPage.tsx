@@ -252,6 +252,7 @@ function InvoicesPage() {
             key={0}
             icon={<Visibility sx={{ color: 'dodgerblue' }} />}
             onClick={() => {
+              void dispatch(getInvoicesAction());
               const invoice = params.row as IInvoice;
               const estimate = invoice.estimate;
 
@@ -284,7 +285,7 @@ function InvoicesPage() {
         ],
       },
     ] as GridColDef<IInvoice>[];
-  }, [invoice, isTechAdmin, navigate]);
+  }, [dispatch, invoice, isTechAdmin, navigate]);
 
   useEffect(() => {
     return () => {

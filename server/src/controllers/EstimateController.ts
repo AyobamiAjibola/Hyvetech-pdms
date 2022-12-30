@@ -114,6 +114,15 @@ export default class EstimateController {
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
+    if (estimate.status === ESTIMATE_STATUS.invoiced) {
+      return Promise.reject(
+        CustomAPIError.response(
+          `Estimate can not be edited! Customer have made a deposit. Please refresh page.`,
+          HttpStatus.BAD_REQUEST.code,
+        ),
+      );
+    }
+
     for (const valueKey in value) {
       const key = valueKey as keyof CreateEstimateType;
 

@@ -197,9 +197,12 @@ function InvoiceForm(props: IProps) {
 
   const disableRefundBtn = useMemo(() => {
     if (invoice) {
-      if (invoice.updateStatus !== INVOICE_STATUS.update.sent && invoice.refundable <= 0) return false;
-
-      return invoice.updateStatus !== INVOICE_STATUS.update.sent;
+      return (
+        invoice.updateStatus !== INVOICE_STATUS.update.sent ||
+        (invoice.updateStatus !== INVOICE_STATUS.update.sent && invoice.refundable <= 0) ||
+        (invoice.updateStatus !== INVOICE_STATUS.update.sent && invoice.status !== INVOICE_STATUS.deposit) ||
+        (invoice.updateStatus !== INVOICE_STATUS.update.sent && invoice.status !== INVOICE_STATUS.paid)
+      );
     }
     return false;
   }, [invoice]);
