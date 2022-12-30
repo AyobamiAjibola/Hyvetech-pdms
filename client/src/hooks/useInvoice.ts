@@ -130,6 +130,8 @@ export default function useInvoice() {
 
   const onEdit = useCallback(
     (id: number) => {
+      void dispatch(getInvoicesAction());
+
       const invoice = invoices.find(invoice => invoice.id === id);
 
       if (invoice && invoice.estimate) {
@@ -271,7 +273,7 @@ export default function useInvoice() {
         setShowEdit(true);
       }
     },
-    [estimateId, invoices],
+    [dispatch, estimateId, invoices],
   );
 
   const handleInitiateRefund = () => {

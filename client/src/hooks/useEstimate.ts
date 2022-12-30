@@ -304,6 +304,8 @@ export default function useEstimate() {
 
   const onEdit = useCallback(
     (estimateId: number) => {
+      void dispatch(getEstimatesAction());
+
       const estimate = estimates.find(estimate => estimate.id === estimateId);
 
       if (estimate) {
@@ -345,7 +347,7 @@ export default function useEstimate() {
         setShowEdit(true);
       } else setError({ message: 'An Error Occurred. Please try again or contact support' });
     },
-    [estimates],
+    [dispatch, estimates],
   );
 
   const onDelete = useCallback((id: number) => {

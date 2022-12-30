@@ -25,6 +25,7 @@ import {
 import useAppDispatch from '../../hooks/useAppDispatch';
 import EstimatePageContext from '../../context/EstimatePageContext';
 import AppLoader from '../../components/loader/AppLoader';
+import { getEstimatesAction } from '../../store/actions/estimateActions';
 
 function EstimatesPage() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
@@ -168,7 +169,10 @@ function EstimatesPage() {
             <GridActionsCellItem
               key={0}
               icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-              onClick={() => navigate(`/estimates/${row.id}`, { state: { estimate: row } })}
+              onClick={() => {
+                void dispatch(getEstimatesAction());
+                navigate(`/estimates/${row.id}`, { state: { estimate: row } });
+              }}
               label="View"
               showInMenu={false}
             />,
@@ -178,6 +182,7 @@ function EstimatesPage() {
               key={1}
               icon={<Edit sx={{ color: 'limegreen' }} />}
               onClick={() => estimate.onEdit(row.id)}
+              // disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
               disabled={!isTechAdmin}
               label="Edit"
               showInMenu={false}
@@ -195,7 +200,7 @@ function EstimatesPage() {
         },
       },
     ] as GridColDef<IEstimate>[];
-  }, [estimate, navigate, isTechAdmin]);
+  }, [isTechAdmin, dispatch, navigate, estimate]);
 
   useEffect(() => {
     return () => {

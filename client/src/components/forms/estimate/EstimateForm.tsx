@@ -19,6 +19,7 @@ import { IVINDecoderSchema } from '@app-interfaces';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
+import { ESTIMATE_STATUS } from '../../../config/constants';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -180,7 +181,7 @@ function EstimateForm(props: IProps) {
       <Form autoComplete="off" autoCorrect="off">
         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }}>
           <Grid item xs={12}>
-            <Typography gutterBottom variant="subtitle1" component="h1">
+            <Typography gutterBottom variant="h6" display="block" component="h1">
               Customer Information
             </Typography>
             <Divider orientation="horizontal" />
@@ -235,7 +236,7 @@ function EstimateForm(props: IProps) {
           </Grid>
           <VehicleInformationFields values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
           <Grid item xs={12}>
-            <Typography gutterBottom variant="subtitle1" component="h1">
+            <Typography gutterBottom variant="h6" display="block" component="h1">
               {fields.parts.label}
             </Typography>
             <Divider orientation="horizontal" />
@@ -350,7 +351,7 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography gutterBottom variant="subtitle1" component="h1">
+            <Typography gutterBottom variant="h6" display="block" component="h1">
               {fields.labours.label}
             </Typography>
             <Divider orientation="horizontal" />
@@ -439,15 +440,18 @@ function EstimateForm(props: IProps) {
             <Grid item />
           </Grid>
           <Grid item xs={12}>
-            <Typography gutterBottom variant="subtitle1" component="h1">
+            <Typography gutterBottom variant="h6" display="block" component="h1">
               Job Information
             </Typography>
             <Divider flexItem orientation="horizontal" />
           </Grid>
-          <Grid item xs={4} alignSelf="center">
-            <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+          <Grid item xs={3} alignSelf="center">
+            <Typography variant="body1">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3} alignSelf="center">
+            <Typography variant="body1">Deposited Amount: ₦{values.depositAmount}</Typography>
+          </Grid>
+          <Grid item xs={3}>
             <TextInputField
               onChange={handleChange}
               value={values.depositAmount}
@@ -459,7 +463,7 @@ function EstimateForm(props: IProps) {
               }}
             />
           </Grid>
-          <Grid item xs={4} container spacing={0.5}>
+          <Grid item xs={3} container spacing={0.5}>
             <Grid item xs={8}>
               <TextInputField
                 onChange={handleChange}
@@ -495,7 +499,7 @@ function EstimateForm(props: IProps) {
               type="submit"
               loading={sendStatus}
               onClick={() => props.setSave(false)}
-              disabled={sendStatus}
+              disabled={sendStatus || values.status === ESTIMATE_STATUS.invoiced}
               variant="contained"
               color="success"
               endIcon={<SendAndArchive />}>
