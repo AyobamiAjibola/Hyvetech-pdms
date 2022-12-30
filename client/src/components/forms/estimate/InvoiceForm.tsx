@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Divider, Grid, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -194,6 +194,15 @@ function InvoiceForm(props: IProps) {
   const onSend = useCallback(() => {
     if (setSave) setSave(false);
   }, [setSave]);
+
+  const disableRefundBtn = useMemo(() => {
+    if (invoice) {
+      if (invoice.updateStatus !== INVOICE_STATUS.update.sent && invoice.refundable <= 0) return false;
+
+      return invoice.updateStatus !== INVOICE_STATUS.update.sent;
+    }
+    return false;
+  }, [invoice]);
 
   return (
     <React.Fragment>
@@ -542,7 +551,7 @@ function InvoiceForm(props: IProps) {
                 Send
               </LoadingButton>
               <LoadingButton
-                disabled={invoice && invoice.updateStatus !== INVOICE_STATUS.update.sent}
+                disabled={disableRefundBtn}
                 color="error"
                 variant="contained"
                 onClick={onInitiateRefund}

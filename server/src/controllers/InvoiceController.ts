@@ -392,16 +392,15 @@ export default class InvoiceController {
       return Promise.reject(CustomAPIError.response('Invoice does not exist', HttpStatus.NOT_FOUND.code));
     }
 
-    const amount = invoice.additionalDeposit
-      ? invoice.depositAmount + invoice.additionalDeposit
-      : invoice.depositAmount;
+    const amount = invoice.depositAmount + transaction.amount;
 
-    const newDueAmount = invoice.additionalDeposit ? invoice.dueAmount - invoice.additionalDeposit : 0;
+    const newDueAmount = invoice.grandTotal - amount;
 
     await invoice.update({
       dueAmount: newDueAmount,
       paidAmount: amount,
       depositAmount: amount,
+      refundable: newDueAmount,
       status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
     });
 

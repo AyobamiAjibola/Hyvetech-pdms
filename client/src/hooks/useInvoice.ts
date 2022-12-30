@@ -233,7 +233,7 @@ export default function useInvoice() {
           const parts = estimate.parts as unknown as IPart[];
           const labours = estimate.labours as unknown as ILabour[];
           const jobDuration = { count: `${estimate.jobDurationValue}`, interval: estimate.jobDurationUnit };
-          const depositAmount = `${estimate.depositAmount}`;
+          const depositAmount = `${invoice.depositAmount}`;
           const tax = `${estimate.tax}`;
           const status = estimate.status;
 
@@ -303,6 +303,21 @@ export default function useInvoice() {
     void dispatch(sendInvoiceAction(data));
   };
 
+  const handleCloseEdit = () => {
+    setShowEdit(false);
+    setSave(false);
+    setInvoiceId(undefined);
+    setEstimateId(undefined);
+    setSuccess(undefined);
+    setError(undefined);
+    setRefundable(0);
+    setGrandTotal(0);
+    setPartTotal(0);
+    setDueBalance(0);
+    setInitialValues(estimateModel.initialValues);
+    void dispatch(getInvoicesAction());
+  };
+
   return {
     invoices,
     error,
@@ -330,6 +345,7 @@ export default function useInvoice() {
     handleInitiateRefund,
     handleSaveInvoice,
     handleSendInvoice,
+    handleCloseEdit,
     invoice,
   };
 }
