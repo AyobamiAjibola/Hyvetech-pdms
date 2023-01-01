@@ -337,6 +337,7 @@ function InvoicesPage() {
               if (invoice.save) invoice.handleSaveInvoice(values);
               if (!invoice.save) invoice.handleSendInvoice(values);
             }}
+            validateOnChange
             enableReinitialize>
             <InvoiceForm
               showEdit={invoice.showEdit}

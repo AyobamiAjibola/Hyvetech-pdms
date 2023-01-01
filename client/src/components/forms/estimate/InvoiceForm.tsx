@@ -1,9 +1,9 @@
-import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Divider, Grid, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send } from '@mui/icons-material';
-import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
+import estimateModel, { IEstimateValues } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import TextInputField from '../fields/TextInputField';
@@ -19,7 +19,6 @@ import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
 import { IInvoice } from '@app-models';
-import { INVOICE_STATUS } from '../../../config/constants';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -43,12 +42,6 @@ interface IProps {
 }
 
 const { fields } = estimateModel;
-
-export type PartArgs = IPart & {
-  handleChange: (e: any) => void;
-  index: number;
-  values: IEstimateValues;
-};
 
 function InvoiceForm(props: IProps) {
   const [vat, setVat] = useState<number>(0);
@@ -74,9 +67,7 @@ function InvoiceForm(props: IProps) {
     setDueBalance,
     setRefundable,
     refundable,
-    onInitiateRefund,
     setSave,
-    invoice,
   } = props;
 
   useEffect(() => {
@@ -84,7 +75,7 @@ function InvoiceForm(props: IProps) {
       resetForm();
       setRefundable(0);
     }
-  }, [resetForm, setRefundable, showCreate, showEdit]);
+  }, [resetForm, setRefundable, showCreate, showEdit, values.status]);
 
   useEffect(() => {
     let total = 0;
@@ -194,18 +185,6 @@ function InvoiceForm(props: IProps) {
   const onSend = useCallback(() => {
     if (setSave) setSave(false);
   }, [setSave]);
-
-  const disableRefundBtn = useMemo(() => {
-    if (invoice) {
-      return (
-        invoice.updateStatus !== INVOICE_STATUS.update.sent ||
-        (invoice.updateStatus !== INVOICE_STATUS.update.sent && invoice.refundable <= 0) ||
-        (invoice.updateStatus !== INVOICE_STATUS.update.sent && invoice.status !== INVOICE_STATUS.deposit) ||
-        (invoice.updateStatus !== INVOICE_STATUS.update.sent && invoice.status !== INVOICE_STATUS.paid)
-      );
-    }
-    return false;
-  }, [invoice]);
 
   return (
     <React.Fragment>
@@ -534,6 +513,7 @@ function InvoiceForm(props: IProps) {
           <Grid item xs={6}>
             <Stack direction="row" spacing={2}>
               <LoadingButton
+                // disabled={values.status === ESTIMATE_STATUS.invoiced}
                 onClick={onSave}
                 sx={{ ml: 2 }}
                 type="submit"
@@ -544,6 +524,7 @@ function InvoiceForm(props: IProps) {
                 Save
               </LoadingButton>
               <LoadingButton
+                // disabled={values.status === ESTIMATE_STATUS.invoiced}
                 onClick={onSend}
                 sx={{ ml: 2 }}
                 type="submit"
@@ -552,14 +533,6 @@ function InvoiceForm(props: IProps) {
                 loading={invoiceReducer.sendInvoiceStatus === 'loading'}
                 endIcon={<Send />}>
                 Send
-              </LoadingButton>
-              <LoadingButton
-                disabled={disableRefundBtn}
-                color="error"
-                variant="contained"
-                onClick={onInitiateRefund}
-                sx={{ display: refundable <= 0 ? 'none' : 'block' }}>
-                Initiate Refund
               </LoadingButton>
             </Stack>
           </Grid>

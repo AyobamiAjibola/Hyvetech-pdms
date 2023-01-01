@@ -29,6 +29,7 @@ import { appEventEmitter } from '../services/AppEventEmitter';
 import BillingInformation from '../models/BillingInformation';
 import { TryCatch } from '../decorators';
 import { CreationAttributes } from 'sequelize/types';
+import { Op } from 'sequelize';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class EstimateController {
@@ -442,6 +443,14 @@ export default class EstimateController {
 
     if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found`, HttpStatus.NOT_FOUND.code));
 
+    if (estimate.status === ESTIMATE_STATUS.invoiced)
+      return Promise.reject(
+        CustomAPIError.response(
+          `Customer have already made a deposit for this estimate. Kindly refresh page.`,
+          HttpStatus.NOT_FOUND.code,
+        ),
+      );
+
     const { error, value } = Joi.object<CreateEstimateType>($updateEstimateSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -450,6 +459,21 @@ export default class EstimateController {
       return Promise.reject(
         CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
       );
+
+    if (value.vin || value.plateNumber) {
+      const vehicle = await dataSources.vehicleDAOService.findByAny({
+        where: {
+          [Op.or]: [{ vin: value.vin }, { plateNumber: value.plateNumber }],
+        },
+      });
+
+      if (!vehicle)
+        return Promise.reject(
+          CustomAPIError.response(`Vehicle with VIN or plate number does not exist.`, HttpStatus.NOT_FOUND.code),
+        );
+
+      await vehicle.$add('estimates', [estimate]);
+    }
 
     const estimateValues: Partial<Estimate> = {
       jobDurationUnit: value.jobDurationUnit,

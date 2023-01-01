@@ -182,7 +182,7 @@ function EstimatesPage() {
               key={1}
               icon={<Edit sx={{ color: 'limegreen' }} />}
               onClick={() => estimate.onEdit(row.id)}
-              // disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
+              //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
               disabled={!isTechAdmin}
               label="Edit"
               showInMenu={false}
@@ -266,6 +266,7 @@ function EstimatesPage() {
           <Formik
             initialValues={estimate.initialValues}
             validationSchema={estimateModel.schema}
+            validateOnChange
             onSubmit={(values, formikHelpers) => {
               if (estimate.save) {
                 estimate.handleSaveEstimate(values, formikHelpers);
@@ -300,7 +301,8 @@ function EstimatesPage() {
               if (estimate.save) estimate.handleUpdateEstimate(values, formikHelpers);
               if (!estimate.save) estimate.handleSendDraftEstimate(values, formikHelpers);
             }}
-            enableReinitialize>
+            enableReinitialize
+            validateOnChange>
             <EstimateForm
               showEdit={estimate.showEdit}
               setLabourTotal={estimate.setLabourTotal}
