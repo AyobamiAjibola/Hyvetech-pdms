@@ -73,7 +73,33 @@ export default function useInvoice() {
     if (invoiceReducer.getInvoicesStatus === 'completed') {
       const invoices = invoiceReducer.invoices.map(value => ({ ...value }));
 
-      setInvoices(invoices);
+      const newInvoices: IInvoice[] = [];
+
+      for (let i = 0; i < invoices.length; i++) {
+        const draft = invoices[i].draftInvoice;
+
+        if (draft) {
+          const parts = draft.parts.length ? draft.parts.map(part => JSON.parse(part)) : [];
+          const labours = draft.labours.length ? draft.labours.map(labour => JSON.parse(labour)) : [];
+
+          const draftInvoice = {
+            ...draft,
+            parts,
+            labours,
+            estimate: invoices[i].estimate,
+            transactions: invoices[i].transactions,
+          };
+
+          draftInvoice.id = invoices[i].id;
+
+          newInvoices.push(draftInvoice);
+
+          continue;
+        }
+        newInvoices.push(invoices[i]);
+      }
+
+      setInvoices(newInvoices);
     }
   }, [dispatch, invoiceReducer.getInvoicesStatus, invoiceReducer.invoices]);
 
@@ -287,6 +313,12 @@ export default function useInvoice() {
   };
 
   const handleSaveInvoice = (values: IEstimateValues) => {
+    const parts = values.parts;
+    const labours = values.labours;
+
+    if (!parts.length) return setError({ message: 'Parts Items Cannot not be empty!' });
+    if (!labours.length) return setError({ message: 'Labour Items Cannot not be empty!' });
+
     const data = getUpdateData(invoiceId, values, partTotal, labourTotal, grandTotal, refundable, dueBalance);
 
     setSave(false);

@@ -161,145 +161,157 @@ export default function useEstimate() {
   }, [dispatch, estimateReducer.sendDraftEstimateStatus, estimateReducer.sendDraftEstimateSuccess, handleReset]);
 
   const handleCreateEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
-    if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {
-      const data = {
-        id: partnerId,
-        parts: values.parts,
-        labours: values.labours,
-        tax: values.tax,
-        addressType: values.addressType,
-        address: values.address,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        phone: values.phone,
-        depositAmount: values.depositAmount,
-        jobDurationValue: values.jobDuration.count,
-        jobDurationUnit: values.jobDuration.interval,
-        vin: values.vin,
-        make: values.make,
-        model: values.model,
-        plateNumber: values.plateNumber,
-        modelYear: values.modelYear,
-        mileageValue: values.mileage.count,
-        mileageUnit: values.mileage.unit,
-        partsTotal: Math.round(partTotal),
-        laboursTotal: Math.round(labourTotal),
-        grandTotal: Math.round(grandTotal),
-      };
+    const depositAmount = values.depositAmount;
 
-      dispatch(createEstimateAction(data));
-      // options?.resetForm();
-    } else
-      options?.setFieldError(
+    if (depositAmount === 'null' || !depositAmount)
+      return options?.setFieldError('depositAmount', `Deposit amount must not be empty.`);
+
+    if (Math.sign(+depositAmount) === -1)
+      return options?.setFieldError('depositAmount', `Deposit amount must be a positive number greater than 0`);
+
+    if (+depositAmount > grandTotal)
+      return options?.setFieldError(
         'depositAmount',
-        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
+        `Deposit  must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
       );
+
+    const data = {
+      id: partnerId,
+      parts: values.parts,
+      labours: values.labours,
+      tax: values.tax,
+      addressType: values.addressType,
+      address: values.address,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      phone: values.phone,
+      depositAmount: values.depositAmount,
+      jobDurationValue: values.jobDuration.count,
+      jobDurationUnit: values.jobDuration.interval,
+      vin: values.vin,
+      make: values.make,
+      model: values.model,
+      plateNumber: values.plateNumber,
+      modelYear: values.modelYear,
+      mileageValue: values.mileage.count,
+      mileageUnit: values.mileage.unit,
+      partsTotal: Math.round(partTotal),
+      laboursTotal: Math.round(labourTotal),
+      grandTotal: Math.round(grandTotal),
+    };
+
+    dispatch(createEstimateAction(data));
   };
 
   const handleSaveEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
-    if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {
-      const data = {
-        id: partnerId,
-        parts: values.parts,
-        labours: values.labours,
-        tax: values.tax,
-        addressType: values.addressType,
-        address: values.address,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        phone: values.phone,
-        depositAmount: values.depositAmount,
-        jobDurationValue: values.jobDuration.count,
-        jobDurationUnit: values.jobDuration.interval,
-        vin: values.vin,
-        make: values.make,
-        model: values.model,
-        plateNumber: values.plateNumber,
-        modelYear: values.modelYear,
-        mileageValue: values.mileage.count,
-        mileageUnit: values.mileage.unit,
-        partsTotal: Math.round(partTotal),
-        laboursTotal: Math.round(labourTotal),
-        grandTotal: Math.round(grandTotal),
-      };
+    const depositAmount = values.depositAmount;
 
-      dispatch(saveEstimateAction(data));
-      // options?.resetForm();
-    } else
-      options?.setFieldError(
-        'depositAmount',
-        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
-      );
+    if (Math.sign(+depositAmount) === -1)
+      return options?.setFieldError('depositAmount', `Deposit amount must be a positive number greater than 0`);
+
+    const data = {
+      id: partnerId,
+      parts: values.parts,
+      labours: values.labours,
+      tax: values.tax,
+      addressType: values.addressType,
+      address: values.address,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      phone: values.phone,
+      depositAmount: values.depositAmount,
+      jobDurationValue: values.jobDuration.count,
+      jobDurationUnit: values.jobDuration.interval,
+      vin: values.vin,
+      make: values.make,
+      model: values.model,
+      plateNumber: values.plateNumber,
+      modelYear: values.modelYear,
+      mileageValue: values.mileage.count,
+      mileageUnit: values.mileage.unit,
+      partsTotal: Math.round(partTotal),
+      laboursTotal: Math.round(labourTotal),
+      grandTotal: Math.round(grandTotal),
+    };
+
+    dispatch(saveEstimateAction(data));
   };
 
   const handleUpdateEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
-    if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {
-      const data = {
-        id: estimateId,
-        parts: values.parts,
-        labours: values.labours,
-        tax: values.tax,
-        addressType: values.addressType,
-        address: values.address,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        phone: values.phone,
-        depositAmount: values.depositAmount,
-        jobDurationValue: values.jobDuration.count,
-        jobDurationUnit: values.jobDuration.interval,
-        vin: values.vin,
-        make: values.make,
-        model: values.model,
-        plateNumber: values.plateNumber,
-        modelYear: values.modelYear,
-        mileageValue: values.mileage.count,
-        mileageUnit: values.mileage.unit,
-        partsTotal: Math.round(partTotal),
-        laboursTotal: Math.round(labourTotal),
-        grandTotal: Math.round(grandTotal),
-      };
+    const depositAmount = values.depositAmount;
 
-      void dispatch(updateEstimateAction(data));
-    } else
-      options?.setFieldError(
-        'depositAmount',
-        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
-      );
+    if (Math.sign(+depositAmount) === -1)
+      return options?.setFieldError('depositAmount', `Deposit amount must be a positive number greater than 0`);
+
+    const data = {
+      id: estimateId,
+      parts: values.parts,
+      labours: values.labours,
+      tax: values.tax,
+      addressType: values.addressType,
+      address: values.address,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      phone: values.phone,
+      depositAmount: values.depositAmount,
+      jobDurationValue: values.jobDuration.count,
+      jobDurationUnit: values.jobDuration.interval,
+      vin: values.vin,
+      make: values.make,
+      model: values.model,
+      plateNumber: values.plateNumber,
+      modelYear: values.modelYear,
+      mileageValue: values.mileage.count,
+      mileageUnit: values.mileage.unit,
+      partsTotal: Math.round(partTotal),
+      laboursTotal: Math.round(labourTotal),
+      grandTotal: Math.round(grandTotal),
+    };
+
+    void dispatch(updateEstimateAction(data));
   };
 
   const handleSendDraftEstimate = (values: IEstimateValues, options?: FormikHelpers<IEstimateValues>) => {
-    if (+values.depositAmount <= 0 || +values.depositAmount <= grandTotal) {
-      const data = {
-        id: estimateId,
-        parts: values.parts,
-        labours: values.labours,
-        tax: values.tax,
-        addressType: values.addressType,
-        address: values.address,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        phone: values.phone,
-        depositAmount: values.depositAmount,
-        jobDurationValue: values.jobDuration.count,
-        jobDurationUnit: values.jobDuration.interval,
-        vin: values.vin,
-        make: values.make,
-        model: values.model,
-        plateNumber: values.plateNumber,
-        modelYear: values.modelYear,
-        mileageValue: values.mileage.count,
-        mileageUnit: values.mileage.unit,
-        partsTotal: Math.round(partTotal),
-        laboursTotal: Math.round(labourTotal),
-        grandTotal: Math.round(grandTotal),
-      };
+    const depositAmount = values.depositAmount;
 
-      void dispatch(sendDraftEstimateAction(data));
-    } else
-      options?.setFieldError(
+    if (depositAmount === 'null' || !depositAmount)
+      return options?.setFieldError('depositAmount', `Deposit amount must not be empty.`);
+
+    if (Math.sign(+depositAmount) === -1)
+      return options?.setFieldError('depositAmount', `Deposit amount must be a positive number greater than 0`);
+
+    if (+depositAmount > grandTotal)
+      return options?.setFieldError(
         'depositAmount',
-        `Deposit ${values.depositAmount} must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
+        `Deposit  must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
       );
+
+    const data = {
+      id: estimateId,
+      parts: values.parts,
+      labours: values.labours,
+      tax: values.tax,
+      addressType: values.addressType,
+      address: values.address,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      phone: values.phone,
+      depositAmount: values.depositAmount,
+      jobDurationValue: values.jobDuration.count,
+      jobDurationUnit: values.jobDuration.interval,
+      vin: values.vin,
+      make: values.make,
+      model: values.model,
+      plateNumber: values.plateNumber,
+      modelYear: values.modelYear,
+      mileageValue: values.mileage.count,
+      mileageUnit: values.mileage.unit,
+      partsTotal: Math.round(partTotal),
+      laboursTotal: Math.round(labourTotal),
+      grandTotal: Math.round(grandTotal),
+    };
+
+    void dispatch(sendDraftEstimateAction(data));
   };
 
   const onEdit = useCallback(

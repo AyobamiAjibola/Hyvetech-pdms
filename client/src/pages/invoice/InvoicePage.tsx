@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IBillingInformation, IEstimate, IInvoice } from '@app-models';
 import { useLocation } from 'react-router-dom';
 import { Alert, Avatar, Box, Divider, Grid, Stack, Typography } from '@mui/material';
@@ -7,6 +7,7 @@ import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
 import { formatNumberToIntl } from '../../utils/generic';
 import settings from '../../config/settings';
+import { INVOICE_STATUS } from '../../config/constants';
 
 interface ILocationState {
   estimate?: IEstimate;
@@ -38,23 +39,18 @@ function InvoicePage() {
 
       const _owner = driver ? `${driver.firstName} ${driver.lastName}` : `${customer.firstName} ${customer.lastName}`;
 
-      let _parts: IPart[] = [];
-      let _labours: ILabour[] = [];
+      let _parts: IPart[];
+      let _labours: ILabour[];
 
-      if (invoice.edited && invoice.draftInvoice) {
-        const draftInvoice = invoice.draftInvoice;
-        _parts = draftInvoice.parts.map(part => JSON.parse(part)) as IPart[];
-        _labours = draftInvoice.labours.map(labour => JSON.parse(labour)) as ILabour[];
-      }
-
-      if (invoice.edited && !invoice.draftInvoice) {
-        _parts = invoice.parts as unknown as IPart[];
-        _labours = invoice.labours as unknown as ILabour[];
-      }
-
-      if (!invoice.edited) {
-        _parts = estimate.parts as unknown as IPart[];
-        _labours = estimate.labours as unknown as ILabour[];
+      if (invoice.edited && INVOICE_STATUS.update.draft) {
+        _parts = !invoice.parts.length ? [] : (invoice.parts as unknown as IPart[]);
+        _labours = !invoice.labours.length ? [] : (invoice.labours as unknown as ILabour[]);
+      } else if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
+        _parts = !invoice.parts.length ? [] : (invoice.parts as unknown as IPart[]);
+        _labours = !invoice.labours.length ? [] : (invoice.labours as unknown as ILabour[]);
+      } else {
+        _parts = !estimate.parts.length ? [] : (estimate.parts as unknown as IPart[]);
+        _labours = !estimate.labours.length ? [] : (estimate.labours as unknown as ILabour[]);
       }
 
       setParts(_parts);
@@ -62,6 +58,23 @@ function InvoicePage() {
       setOwner(capitalize.words(_owner));
       setBillingInformation(customer.billingInformation);
     }
+  }, [estimate, invoice]);
+
+  const subTotal = useMemo(() => {
+    if (invoice && estimate) {
+      const laboursTotal = invoice.edited ? invoice.laboursTotal : estimate.laboursTotal;
+      const partsTotal = invoice && invoice.edited ? invoice.partsTotal : estimate.partsTotal;
+
+      return laboursTotal + partsTotal;
+    }
+    return 0;
+  }, [estimate, invoice]);
+
+  const grandTotal = useMemo(() => {
+    if (invoice && estimate) {
+      return invoice.edited ? invoice.grandTotal : estimate.grandTotal;
+    }
+    return 0;
   }, [estimate, invoice]);
 
   if (!estimate || !invoice)
@@ -212,12 +225,10 @@ function InvoicePage() {
                       {part.name}
                     </Grid>
                     <Grid item xs={3}>
-                      {!part.warranty ? null : `${part.warranty.warranty} ${part.warranty.interval}`}
+                      {part.warranty.warranty} {part.warranty.interval}
                     </Grid>
                     <Grid item xs={3}>
-                      {!part.quantity
-                        ? null
-                        : `${formatNumberToIntl(+part.price)} x ${part.quantity.quantity}${part.quantity.unit}`}
+                      {formatNumberToIntl(+part.price)} x {part.quantity.quantity}${part.quantity.unit}
                     </Grid>
                     <Grid item xs={3}>
                       {amount}
@@ -259,16 +270,14 @@ function InvoicePage() {
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>
-              Subtotal: {formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}
-            </Typography>
+            <Typography gutterBottom>Subtotal: {formatNumberToIntl(subTotal)}</Typography>
             <Typography gutterBottom>VAT(7.5%): {estimate.tax}</Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>TOTAL: {formatNumberToIntl(estimate.grandTotal)}</Typography>
+            <Typography gutterBottom>TOTAL: {formatNumberToIntl(grandTotal)}</Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" mt={1} mb={2}>

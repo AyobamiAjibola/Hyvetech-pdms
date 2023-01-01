@@ -2,7 +2,7 @@ import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEff
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Divider, Grid, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, SendAndArchive } from '@mui/icons-material';
+import { Add, Remove, Save, Send, SendAndArchive } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -169,6 +169,10 @@ function EstimateForm(props: IProps) {
     return estimateReducer.sendDraftEstimateStatus === 'loading' || estimateReducer.createEstimateStatus === 'loading';
   }, [estimateReducer.createEstimateStatus, estimateReducer.sendDraftEstimateStatus]);
 
+  const saveStatus = useMemo(() => {
+    return estimateReducer.updateEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading';
+  }, [estimateReducer.saveEstimateStatus, estimateReducer.updateEstimateStatus]);
+
   useEffect(() => {
     return () => {
       clearTimeout(timer);
@@ -181,7 +185,7 @@ function EstimateForm(props: IProps) {
       <Form autoComplete="off" autoCorrect="off">
         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }}>
           <Grid item xs={12}>
-            <Typography gutterBottom variant="h6" display="block" component="h1">
+            <Typography gutterBottom variant="subtitle1" component="h1">
               Customer Information
             </Typography>
             <Divider orientation="horizontal" />
@@ -236,7 +240,7 @@ function EstimateForm(props: IProps) {
           </Grid>
           <VehicleInformationFields values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
           <Grid item xs={12}>
-            <Typography gutterBottom variant="h6" display="block" component="h1">
+            <Typography gutterBottom variant="subtitle1" component="h1">
               {fields.parts.label}
             </Typography>
             <Divider orientation="horizontal" />
@@ -351,7 +355,7 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography gutterBottom variant="h6" display="block" component="h1">
+            <Typography gutterBottom variant="subtitle1" component="h1">
               {fields.labours.label}
             </Typography>
             <Divider orientation="horizontal" />
@@ -440,18 +444,15 @@ function EstimateForm(props: IProps) {
             <Grid item />
           </Grid>
           <Grid item xs={12}>
-            <Typography gutterBottom variant="h6" display="block" component="h1">
+            <Typography gutterBottom variant="subtitle1" component="h1">
               Job Information
             </Typography>
             <Divider flexItem orientation="horizontal" />
           </Grid>
-          <Grid item xs={3} alignSelf="center">
-            <Typography variant="body1">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+          <Grid item xs={4} alignSelf="center">
+            <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
           </Grid>
-          <Grid item xs={3} alignSelf="center">
-            <Typography variant="body1">Deposited Amount: ₦{values.depositAmount}</Typography>
-          </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4}>
             <TextInputField
               onChange={handleChange}
               value={values.depositAmount}
@@ -463,7 +464,7 @@ function EstimateForm(props: IProps) {
               }}
             />
           </Grid>
-          <Grid item xs={3} container spacing={0.5}>
+          <Grid item xs={4} container spacing={0.5}>
             <Grid item xs={8}>
               <TextInputField
                 onChange={handleChange}
@@ -472,7 +473,7 @@ function EstimateForm(props: IProps) {
                 label={fields.jobDuration.label}
                 type="number"
                 inputProps={{
-                  min: '1',
+                  min: '0',
                 }}
               />
             </Grid>
@@ -495,15 +496,27 @@ function EstimateForm(props: IProps) {
           <Grid item xs={12}>
             <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
             <LoadingButton
+              type="submit"
+              loading={saveStatus}
+              disabled={
+                saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
+              }
+              variant="contained"
+              color="secondary"
+              endIcon={<Save />}
+              onClick={() => props.setSave(true)}>
+              {'Save'}
+            </LoadingButton>
+            <LoadingButton
               sx={{ ml: 2 }}
               type="submit"
               loading={sendStatus}
+              disabled={values.status === ESTIMATE_STATUS.invoiced}
               onClick={() => props.setSave(false)}
-              disabled={sendStatus || values.status === ESTIMATE_STATUS.invoiced}
               variant="contained"
               color="success"
-              endIcon={<SendAndArchive />}>
-              Save & Send
+              endIcon={values.status === ESTIMATE_STATUS.sent ? <SendAndArchive /> : <Send />}>
+              {values.status === ESTIMATE_STATUS.sent ? 'Save & Send' : 'Send'}
             </LoadingButton>
           </Grid>
         </Grid>

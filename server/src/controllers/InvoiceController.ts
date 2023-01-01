@@ -338,7 +338,12 @@ export default class InvoiceController {
     const endpoint = '/transaction/initialize';
 
     const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}${endpoint}`;
-    const amount = Math.round(value.dueAmount * 100);
+
+    const dueAmount = value.dueAmount;
+
+    const serviceCharge = Math.round(0.015 * dueAmount + 100);
+
+    const amount = Math.round((serviceCharge + dueAmount) * 100);
 
     const initResponse = await axiosClient.post(`${endpoint}`, {
       email: customer.email,
@@ -437,12 +442,30 @@ export default class InvoiceController {
 
     if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
 
+    const estimate = await invoice.$get('estimate');
+
+    if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found.`, HttpStatus.NOT_FOUND.code));
+
     let draftInvoice = await invoice.$get('draftInvoice');
+
+    await invoice.update({
+      updateStatus: INVOICE_STATUS.update.draft,
+      edited: true,
+      paidAmount: invoice.depositAmount,
+    });
 
     if (draftInvoice) {
       await this.doSave(draftInvoice, value);
     } else {
-      const data: Partial<Attributes<DraftInvoice>> = invoice.toJSON();
+      const data: Partial<Attributes<DraftInvoice>> = {
+        ...value,
+        code: invoice.code,
+        purpose: invoice.purpose,
+        status: invoice.status,
+        updateStatus: invoice.updateStatus,
+        expiresIn: estimate.expiresIn,
+        edited: invoice.edited,
+      };
 
       for (const valueKey in value) {
         const key = valueKey as keyof InvoiceSchemaType;
@@ -488,11 +511,6 @@ export default class InvoiceController {
 
       draftInvoice = await DraftInvoice.create(data as CreationAttributes<DraftInvoice>);
 
-      await invoice.update({
-        updateStatus: INVOICE_STATUS.update.draft,
-        edited: true,
-      });
-
       await invoice.$set('draftInvoice', draftInvoice);
     }
 
@@ -518,10 +536,14 @@ export default class InvoiceController {
 
     await this.doSave(invoice, value);
 
-    // @ts-ignore
-    await DraftInvoice.destroy({ where: { invoiceId: invoice.id } });
+    const draftInvoice = await invoice.$get('draftInvoice');
 
-    await invoice.$set('draftInvoice', null);
+    if (draftInvoice) {
+      // @ts-ignore
+      await DraftInvoice.destroy({ where: { invoiceId: invoice.id } });
+
+      await invoice.$set('draftInvoice', null);
+    }
 
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.sent,
