@@ -12,6 +12,8 @@ import {
   INVOICE_STATUS,
   JOB_STATUS,
   PAYMENT_CHANNELS,
+  TRANSACTION_TYPE,
+  UPDATE_INVOICE,
 } from '../config/constants';
 import axiosClient from '../services/api/axiosClient';
 import { Attributes, CreationAttributes } from 'sequelize';
@@ -99,7 +101,10 @@ export default class InvoiceController {
     };
 
     const dueAmount = estimate.grandTotal - estimate.depositAmount;
-    const systemFee = estimate.depositAmount * 0.035;
+    let systemFee = estimate.depositAmount * 0.035;
+
+    if (systemFee >= 5000) systemFee = 5000;
+
     const partnerFee = Math.round(estimate.depositAmount - systemFee);
 
     //get default payment gateway
@@ -143,7 +148,7 @@ export default class InvoiceController {
 
     const transferTransactionValues: Partial<Attributes<Transaction>> = {
       amount: partnerFee,
-      type: 'Transfer',
+      type: TRANSACTION_TYPE.transfer,
       reference: `${transferData.reference}:${transaction.reference}`,
       status: transferData.status,
       bank: partner.bankName,
@@ -341,7 +346,9 @@ export default class InvoiceController {
 
     const dueAmount = value.dueAmount;
 
-    const serviceCharge = Math.round(0.015 * dueAmount + 100);
+    let serviceCharge = 0.015 * dueAmount + 100;
+
+    if (serviceCharge >= 2000) serviceCharge = 2000;
 
     const amount = Math.round((serviceCharge + dueAmount) * 100);
 
@@ -397,6 +404,88 @@ export default class InvoiceController {
       return Promise.reject(CustomAPIError.response('Invoice does not exist', HttpStatus.NOT_FOUND.code));
     }
 
+    const estimate = await invoice.$get('estimate');
+
+    if (!estimate) {
+      return Promise.reject(CustomAPIError.response('Estimate does not exist', HttpStatus.NOT_FOUND.code));
+    }
+
+    const partner = await estimate.$get('partner');
+
+    if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist.`, HttpStatus.NOT_FOUND.code));
+
+    const banks = await dataSources.bankDAOService.findAll();
+
+    if (!banks.length)
+      return Promise.reject(CustomAPIError.response(`No banks Please contact support`, HttpStatus.NOT_FOUND.code));
+
+    const bank = banks.find(bank => bank.name === partner.bankName);
+
+    if (!bank)
+      return Promise.reject(
+        CustomAPIError.response(
+          `Bank ${partner.bankName} does not exist. Please contact support`,
+          HttpStatus.NOT_FOUND.code,
+        ),
+      );
+
+    const recipient = {
+      name: partner.name,
+      account_number: partner.accountNumber,
+      bank_code: bank.code,
+      currency: bank.currency,
+    };
+
+    let systemFee = transaction.amount * 0.035;
+
+    if (systemFee >= 5000) systemFee = 5000;
+
+    const partnerFee = Math.round(transaction.amount - systemFee);
+
+    let endpoint = '/balance';
+
+    const balanceResponse = await axiosClient.get(endpoint);
+
+    if (balanceResponse.data.data.balance < partnerFee)
+      return Promise.reject(
+        CustomAPIError.response('Insufficient Balance. Please contact support.', HttpStatus.BAD_REQUEST.code),
+      );
+
+    endpoint = '/transferrecipient';
+
+    const recipientResponse = await axiosClient.post(endpoint, recipient);
+
+    const recipientCode = recipientResponse.data.data.recipient_code;
+
+    endpoint = '/transfer';
+
+    const transfer = {
+      source: 'balance',
+      recipient: recipientCode,
+      reason: `Estimate-${estimate.code} Deposit`,
+      amount: partnerFee * 100,
+    };
+
+    const transferResponse = await axiosClient.post(endpoint, transfer);
+
+    const transferData = transferResponse.data.data;
+
+    const transferTransactionValues: Partial<Attributes<Transaction>> = {
+      amount: partnerFee,
+      type: TRANSACTION_TYPE.transfer,
+      reference: `${transferData.reference}:${transaction.reference}`,
+      status: transferData.status,
+      bank: partner.bankName,
+      purpose: `${partner.name}: Estimate-${estimate.code}`,
+      channel: 'bank',
+      currency: bank.currency,
+      paidAt: new Date(),
+    };
+
+    const transferTransaction = await dataSources.transactionDAOService.create(
+      transferTransactionValues as CreationAttributes<Transaction>,
+    );
+
     const amount = invoice.depositAmount + transaction.amount;
 
     const newDueAmount = invoice.grandTotal - amount;
@@ -423,6 +512,8 @@ export default class InvoiceController {
       paidAt: value.paidAt,
     });
 
+    await partner.$set('transactions', [transferTransaction]);
+
     return Promise.resolve({
       code: HttpStatus.OK.code,
       message: 'Payment complete',
@@ -445,6 +536,10 @@ export default class InvoiceController {
     const estimate = await invoice.$get('estimate');
 
     if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found.`, HttpStatus.NOT_FOUND.code));
+
+    const customer = await estimate.$get('customer');
+
+    if (!customer) return Promise.reject(CustomAPIError.response(`Customer not found.`, HttpStatus.NOT_FOUND.code));
 
     let draftInvoice = await invoice.$get('draftInvoice');
 
@@ -514,6 +609,8 @@ export default class InvoiceController {
       await invoice.$set('draftInvoice', draftInvoice);
     }
 
+    appEventEmitter.emit(UPDATE_INVOICE, { invoice, customer });
+
     return Promise.resolve({
       code: HttpStatus.OK.code,
       message: `Invoice saved successfully.`,
@@ -534,6 +631,14 @@ export default class InvoiceController {
 
     if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found.`, HttpStatus.NOT_FOUND.code));
 
+    const estimate = await invoice.$get('estimate');
+
+    if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found.`, HttpStatus.NOT_FOUND.code));
+
+    const customer = await estimate.$get('customer');
+
+    if (!customer) return Promise.reject(CustomAPIError.response(`Customer not found.`, HttpStatus.NOT_FOUND.code));
+
     await this.doSave(invoice, value);
 
     const draftInvoice = await invoice.$get('draftInvoice');
@@ -549,6 +654,8 @@ export default class InvoiceController {
       updateStatus: INVOICE_STATUS.update.sent,
       edited: true,
     });
+
+    appEventEmitter.emit(UPDATE_INVOICE, { invoice, customer });
 
     return Promise.resolve({
       code: HttpStatus.OK.code,

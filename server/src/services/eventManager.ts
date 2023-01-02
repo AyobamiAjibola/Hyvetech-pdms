@@ -12,6 +12,7 @@ import {
   RESCHEDULE_APPOINTMENT,
   TXN_CANCELLED,
   TXN_REFERENCE,
+  UPDATE_INVOICE,
   VERIFY_TRANSACTION,
 } from '../config/constants';
 import Appointment from '../models/Appointment';
@@ -283,6 +284,12 @@ export default function eventManager(io: Server) {
           notification: notification.toJSON({ flattenMaps: true }),
         });
       })();
+    });
+
+    appEventEmitter.on(UPDATE_INVOICE, (props: INotificationProps) => {
+      const { customer } = props;
+
+      io.to(customer.eventId).emit(UPDATE_INVOICE);
     });
   } catch (e: any | unknown) {
     throw new Error(e);
