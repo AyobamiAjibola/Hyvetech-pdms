@@ -303,8 +303,8 @@ function InvoicePage() {
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
               <Typography>Paid</Typography>
-              <Typography sx={{ ml: 5 }}>₦</Typography>
-              <Typography>{formatNumberToIntl(invoice.depositAmount)}</Typography>
+              <Typography sx={{ ml: 5 }} />
+              <Typography>₦{formatNumberToIntl(invoice.depositAmount)}</Typography>
             </Box>
           </Grid>
         </Grid>
@@ -319,8 +319,24 @@ function InvoicePage() {
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
               <Typography>Balance Due</Typography>
-              <Typography sx={{ mr: 7 }}>₦</Typography>
-              <Typography>{formatNumberToIntl(invoice.dueAmount)}</Typography>
+              <Typography sx={{ mr: 7 }} />
+              <Typography>₦{formatNumberToIntl(invoice.dueAmount)}</Typography>
+            </Box>
+          </Grid>
+        </Grid>
+        <Grid item container justifyContent="center" alignItems="center">
+          <Grid item xs={10} />
+          <Grid item flexGrow={1}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
+              }}>
+              <Typography>Refund Due</Typography>
+              <Typography sx={{ mr: 7 }} />
+              <Typography>₦{formatNumberToIntl(invoice.refundable)}</Typography>
             </Box>
           </Grid>
         </Grid>
