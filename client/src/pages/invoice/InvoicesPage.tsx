@@ -219,6 +219,15 @@ function InvoicesPage() {
         sortable: true,
       },
       {
+        field: 'refundable',
+        headerName: 'Due Refund',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 150,
+        sortable: true,
+      },
+      {
         field: 'createdAt',
         headerName: 'Created Date',
         headerAlign: 'center',

@@ -639,7 +639,22 @@ export default class InvoiceController {
 
     if (!customer) return Promise.reject(CustomAPIError.response(`Customer not found.`, HttpStatus.NOT_FOUND.code));
 
-    await this.doSave(invoice, value);
+    await invoice.update({
+      parts: value.parts.map((value: string) => JSON.stringify(value)),
+      labours: value.labours.map((value: string) => JSON.stringify(value)),
+      depositAmount: parseInt(`${value.depositAmount}`),
+      additionalDeposit: parseInt(`${value.additionalDeposit}`),
+      jobDurationValue: parseInt(`${value.jobDurationValue}`),
+      tax: value.tax,
+      jobDurationUnit: value.jobDurationUnit,
+      partsTotal: value.partsTotal,
+      laboursTotal: value.laboursTotal,
+      grandTotal: value.grandTotal,
+      refundable: value.refundable,
+      dueAmount: value.dueAmount,
+      updateStatus: INVOICE_STATUS.update.sent,
+      edited: true,
+    });
 
     const draftInvoice = await invoice.$get('draftInvoice');
 
@@ -649,11 +664,6 @@ export default class InvoiceController {
 
       await invoice.$set('draftInvoice', null);
     }
-
-    await invoice.update({
-      updateStatus: INVOICE_STATUS.update.sent,
-      edited: true,
-    });
 
     appEventEmitter.emit(UPDATE_INVOICE, { invoice, customer });
 

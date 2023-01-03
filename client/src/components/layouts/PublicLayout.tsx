@@ -35,6 +35,9 @@ const mainContainerStyle = {
 
 const childrenWrapperStyle = {
   width: '40%',
+  maxHeight: "90%",
+  overflow: "hidden",
+  overflowY: "scroll",
   position: 'relative',
   right: '23%',
   left: '0',
