@@ -31,9 +31,6 @@ function SignInPage() {
       <Typography textAlign="center" sx={headTextStyle}>
         Welcome to your gateway to boundless opportunities!
       </Typography>
-      <Typography textAlign="center" sx={headTextStyle}>
-        Welcome to your gateway to boundless opportunities!
-      </Typography>
       <Formik initialValues={signInModel.initialValues} validationSchema={signInModel.schema} onSubmit={handleSignIn}>
         <SignInForm />
       </Formik>
