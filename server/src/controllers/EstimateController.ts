@@ -192,7 +192,7 @@ export default class EstimateController {
       estimates = await dataSources.estimateDAOService.findAll({
         include: [
           Vehicle,
-          { model: Customer, include: [BillingInformation] },
+          { model: Customer, include: [BillingInformation], paranoid: false },
           RideShareDriver,
           { model: Partner, include: [Contact] },
         ],
@@ -201,7 +201,7 @@ export default class EstimateController {
       estimates = await partner.$get('estimates', {
         include: [
           Vehicle,
-          { model: Customer, include: [BillingInformation] },
+          { model: Customer, include: [BillingInformation], paranoid: false },
           RideShareDriver,
           { model: Partner, include: [Contact] },
         ],
@@ -471,6 +471,18 @@ export default class EstimateController {
         return Promise.reject(
           CustomAPIError.response(`Vehicle with VIN or plate number does not exist.`, HttpStatus.NOT_FOUND.code),
         );
+
+      for (const valueKey in value) {
+        const key = valueKey as keyof CreateEstimateType;
+
+        if (key === 'id') continue;
+
+        if (value[key]) {
+          await vehicle.update({
+            [key]: value[key],
+          });
+        }
+      }
 
       await vehicle.$add('estimates', [estimate]);
     }

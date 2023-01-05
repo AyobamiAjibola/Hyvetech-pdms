@@ -57,7 +57,7 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   dueAmount: Joi.number().allow().label('Due Amount'),
 };
 
-@Table({ tableName: 'invoices', timestamps: true })
+@Table({ tableName: 'invoices', timestamps: true, paranoid: true })
 export default class Invoice extends Model<InferAttributes<Invoice>, InferCreationAttributes<Invoice>> {
   @PrimaryKey
   @AutoIncrement
@@ -139,7 +139,7 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
   @HasOne(() => DraftInvoice)
   declare draftInvoice: NonAttribute<DraftInvoice>;
 
-  @BelongsTo(() => Estimate, { onDelete: 'SET NULL' })
+  @BelongsTo(() => Estimate, { onDelete: 'CASCADE' })
   declare estimate: NonAttribute<Estimate>;
 
   @ForeignKey(() => Estimate)

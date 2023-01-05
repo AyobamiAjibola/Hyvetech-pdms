@@ -62,6 +62,7 @@ export const $addVehicleSchema = {
 @Table({
   timestamps: true,
   tableName: 'customers',
+  paranoid: true,
 })
 export default class Customer extends Model<InferAttributes<Customer>, InferCreationAttributes<Customer>> {
   @PrimaryKey

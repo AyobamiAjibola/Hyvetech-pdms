@@ -281,6 +281,7 @@ export const $updateEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
 @Table({
   timestamps: true,
   tableName: 'estimates',
+  paranoid: true,
 })
 export default class Estimate extends Model<InferAttributes<Estimate>, InferCreationAttributes<Estimate>> {
   @PrimaryKey
@@ -336,14 +337,14 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
   @HasOne(() => Invoice)
   declare invoice: NonAttribute<Invoice>;
 
-  @BelongsTo(() => Customer)
+  @BelongsTo(() => Customer, { onDelete: 'CASCADE' })
   declare customer: NonAttribute<Customer>;
 
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: NonAttribute<number>;
 
-  @BelongsTo(() => RideShareDriver)
+  @BelongsTo(() => RideShareDriver, { onDelete: 'CASCADE' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
 
   @ForeignKey(() => RideShareDriver)
@@ -357,7 +358,7 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
   @Column(DataType.INTEGER)
   declare vehicleId: NonAttribute<number>;
 
-  @BelongsTo(() => Partner)
+  @BelongsTo(() => Partner, { onDelete: 'CASCADE' })
   declare partner: NonAttribute<Partner>;
 
   @ForeignKey(() => Partner)
