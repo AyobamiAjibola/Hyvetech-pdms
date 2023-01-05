@@ -219,7 +219,7 @@ export default class InvoiceController {
           {
             model: Estimate,
             include: [
-              { model: Customer, include: [BillingInformation] },
+              { model: Customer, include: [BillingInformation], paranoid: false },
               Vehicle,
               {
                 model: Partner,
@@ -238,7 +238,7 @@ export default class InvoiceController {
             model: Estimate,
             where: { partnerId: partner.id },
             include: [
-              { model: Customer, include: [BillingInformation] },
+              { model: Customer, include: [BillingInformation], paranoid: false },
               Vehicle,
               {
                 model: Partner,

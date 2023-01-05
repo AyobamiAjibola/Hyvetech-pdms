@@ -3,7 +3,7 @@ import { CreationOptional, InferAttributes, InferCreationAttributes } from 'sequ
 import Invoice from './Invoice';
 import { NonAttribute } from 'sequelize';
 
-@Table({ tableName: 'draft_invoices', timestamps: true })
+@Table({ tableName: 'draft_invoices', timestamps: true, paranoid: true })
 export default class DraftInvoice extends Model<InferAttributes<DraftInvoice>, InferCreationAttributes<DraftInvoice>> {
   @PrimaryKey
   @AutoIncrement
