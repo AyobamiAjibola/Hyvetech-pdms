@@ -111,6 +111,19 @@ export default class EstimateController {
 
     if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found`, HttpStatus.NOT_FOUND.code));
 
+    const customer = await estimate.$get('customer');
+
+    if (!customer)
+      return Promise.reject(CustomAPIError.response(`Customer does not found`, HttpStatus.BAD_REQUEST.code));
+
+    const vehicle = await estimate.$get('vehicle');
+
+    if (!vehicle) return Promise.reject(CustomAPIError.response(`Vehicle not found`, HttpStatus.BAD_REQUEST.code));
+
+    const partner = await estimate.$get('partner', { include: [Contact] });
+
+    if (!partner) return Promise.reject(CustomAPIError.response(`Partner not found`, HttpStatus.BAD_REQUEST.code));
+
     const { error, value } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -162,13 +175,15 @@ export default class EstimateController {
       });
     }
 
+    const vin = await dataSources.vinDAOService.findByAny({ where: { vin: value.vin } });
+
+    if (vin) await vin.update({ plateNumber: value.plateNumber });
+
+    await vehicle.update({ plateNumber: value.plateNumber });
+
     await estimate.update({
       status: ESTIMATE_STATUS.sent,
     });
-
-    const customer = await estimate.$get('customer');
-    const vehicle = await estimate.$get('vehicle');
-    const partner = await estimate.$get('partner', { include: [Contact] });
 
     appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
 
