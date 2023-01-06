@@ -582,6 +582,7 @@ declare module '@app-models' {
     expiresIn: number;
     createdAt: string;
     updatedAt: string;
+    deletedAt: string;
   }
 
   interface IPayStackBank {
@@ -644,5 +645,6 @@ declare module '@app-models' {
     draftInvoice: IInvoice;
     createdAt: string;
     updatedAt: string;
+    deletedAt: string;
   }
 }
