@@ -320,7 +320,9 @@ function InvoicePage() {
               }}>
               <Typography>Balance Due</Typography>
               <Typography sx={{ mr: 7 }} />
-              <Typography>₦{formatNumberToIntl(invoice.dueAmount)}</Typography>
+              <Typography>
+                ₦{Math.sign(invoice.dueAmount) === -1 ? '0.00' : formatNumberToIntl(invoice.dueAmount)}
+              </Typography>
             </Box>
           </Grid>
         </Grid>
