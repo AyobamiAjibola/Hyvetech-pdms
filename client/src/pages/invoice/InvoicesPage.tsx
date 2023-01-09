@@ -235,7 +235,7 @@ function InvoicesPage() {
         width: 200,
         type: 'string',
         valueFormatter: ({ value }) => {
-          return value ? moment(value).utc(false).format('LLL') : '-';
+          return value ? moment(value).format('LLL') : '-';
         },
         sortable: true,
       },
@@ -247,7 +247,7 @@ function InvoicesPage() {
         width: 200,
         type: 'string',
         valueFormatter: ({ value }) => {
-          return value ? moment(value).utc(false).format('LLL') : '-';
+          return value ? moment(value).format('LLL') : '-';
         },
         sortable: true,
       },
