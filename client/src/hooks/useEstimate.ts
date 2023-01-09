@@ -169,7 +169,10 @@ export default function useEstimate() {
     if (Math.sign(+depositAmount) === -1)
       return options?.setFieldError('depositAmount', `Deposit amount must be a positive number greater than 0`);
 
-    if (+depositAmount > grandTotal)
+    const _depositAmount = Math.round(parseInt(depositAmount));
+    const _grandTotal = Math.round(grandTotal);
+
+    if (_depositAmount > _grandTotal)
       return options?.setFieldError(
         'depositAmount',
         `Deposit  must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
@@ -280,7 +283,16 @@ export default function useEstimate() {
     if (Math.sign(+depositAmount) === -1)
       return options?.setFieldError('depositAmount', `Deposit amount must be a positive number greater than 0`);
 
-    if (+depositAmount > grandTotal)
+    const _depositAmount = Math.round(parseInt(depositAmount));
+    const _grandTotal = Math.round(grandTotal);
+
+    if (_depositAmount > _grandTotal)
+      return options?.setFieldError(
+        'depositAmount',
+        `Deposit  must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
+      );
+
+    if (_depositAmount > _grandTotal)
       return options?.setFieldError(
         'depositAmount',
         `Deposit  must be less than or equal to Grand Total ${Math.round(grandTotal)}`,

@@ -217,6 +217,9 @@ function InvoicesPage() {
         type: 'number',
         width: 150,
         sortable: true,
+        valueFormatter: ({ value }) => {
+          return value ? (Math.sign(value) === -1 ? 0 : value) : 0;
+        },
       },
       {
         field: 'refundable',

@@ -487,14 +487,13 @@ export default class InvoiceController {
     );
 
     const amount = invoice.depositAmount + transaction.amount;
-
     const newDueAmount = invoice.grandTotal - amount;
 
     await invoice.update({
       dueAmount: newDueAmount,
       paidAmount: amount,
       depositAmount: amount,
-      refundable: newDueAmount,
+      refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : invoice.refundable,
       status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
     });
 
