@@ -287,6 +287,13 @@ export default class EstimateController {
 
       vehicle = await dataSources.vehicleDAOService.create(data);
     } else {
+      const vin = await dataSources.vinDAOService.findByAny({
+        where: { vin: value.vin },
+      });
+
+      if (!vin)
+        return Promise.reject(CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code));
+
       vehicle = await findVehicle.update({
         vin: value.vin.length ? value.vin : findVehicle.vin,
         make: value.make.length ? value.make : findVehicle.make,
@@ -295,6 +302,10 @@ export default class EstimateController {
         mileageValue: value.mileageValue.length ? value.mileageValue : findVehicle.mileageValue,
         mileageUnit: value.mileageUnit.length ? value.mileageUnit : findVehicle.mileageUnit,
         plateNumber: value.plateNumber.length ? value.plateNumber : findVehicle.plateNumber,
+      });
+
+      await vin.update({
+        plateNumber: value.plateNumber,
       });
     }
 
