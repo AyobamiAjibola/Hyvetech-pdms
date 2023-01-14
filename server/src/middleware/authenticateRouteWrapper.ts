@@ -34,6 +34,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
     const cookie = cookies[cookieName];
 
     if (cookie) {
+
       const jwt = cookieParser.signedCookie(cookie, settings.cookie.secret);
 
       if (false === jwt) {
