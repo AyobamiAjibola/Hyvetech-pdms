@@ -41,6 +41,8 @@ export default function VehicleOwner() {
   const [customer, setCustomer] = useState<ICustomer>();
   const [tabs, setTabs] = useState<ITab[]>(customerSearchResultTabs);
 
+  console.log(options)
+
   const params = useParams();
   const admin = useAdmin();
 

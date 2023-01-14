@@ -69,6 +69,14 @@ export const estimateFields = {
       required: 'Tax is required',
     },
   },
+  taxPart: {
+    name: 'tax',
+    label: 'Tax',
+    error: {
+      invalid: 'Tax is invalid',
+      required: 'Tax is required',
+    },
+  },
   discount: {
     name: 'discount',
     label: 'Discount (%)',
@@ -241,6 +249,7 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   partsTotal: Joi.number().required().label(estimateFields.partsTotal.label),
   labours: Joi.array().required().label(estimateFields.labours.label),
   tax: Joi.string().required().label(estimateFields.tax.label),
+  taxPart: Joi.string().optional().label(estimateFields.taxPart.label),
   laboursTotal: Joi.number().required().label(estimateFields.laboursTotal.label),
   grandTotal: Joi.number().required().label(estimateFields.firstName.label),
   depositAmount: Joi.any().required().label(estimateFields.depositAmount.label),
@@ -266,6 +275,7 @@ export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   partsTotal: Joi.number().allow().label(estimateFields.partsTotal.label),
   labours: Joi.array().allow().label(estimateFields.labours.label),
   tax: Joi.string().allow('').label(estimateFields.tax.label),
+  taxPart: Joi.string().optional().label(estimateFields.taxPart.label),
   laboursTotal: Joi.number().allow().label(estimateFields.laboursTotal.label),
   grandTotal: Joi.number().allow().label(estimateFields.firstName.label),
   depositAmount: Joi.any().allow('').label(estimateFields.depositAmount.label),
@@ -315,6 +325,9 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
 
   @Column(DataType.STRING)
   declare tax: string;
+
+  @Column(DataType.STRING)
+  declare taxPart: string;
 
   @Column(DataType.INTEGER)
   declare jobDurationValue: number;

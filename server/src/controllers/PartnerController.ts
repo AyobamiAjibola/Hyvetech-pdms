@@ -870,7 +870,7 @@ export default class PartnerController {
 
       for (let i = 0; i < drivers.length; i++) {
         const driver = drivers[i];
-        const fullName = `${driver.firstName} ${driver.lastName}`;
+        const fullName = `${driver.firstName} ${driver.lastName} ${driver.phone} ${driver.email} ${driver.companyName}`;
         const email = driver.email;
 
         const vehicles = await drivers[i].$get('vehicles');
@@ -885,7 +885,7 @@ export default class PartnerController {
           const vehicle = vehicles[j];
 
           Object.assign(driverInfo[i], {
-            query: `${driverInfo[i].query} ${vehicle.plateNumber}`,
+            query: `${driverInfo[i].query} ${vehicle.plateNumber} ${vehicle.vin}`,
           });
         }
       }

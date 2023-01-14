@@ -245,6 +245,8 @@ export default class EstimateController {
   private async doCreateEstimate(req: Request) {
     const { error, value } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
 
+    console.log(error)
+
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     if (!value)
@@ -340,6 +342,7 @@ export default class EstimateController {
       address: value.address,
       addressType: value.addressType,
       tax: value.tax,
+      taxPart: value.taxPart,
       code: Generic.randomize({ count: 6, number: true }),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
     };
@@ -447,6 +450,7 @@ export default class EstimateController {
       address: value.address,
       addressType: value.addressType,
       tax: value.tax,
+      taxPart: value.taxPart,
       code: Generic.randomize({ count: 6, number: true }),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
     };
@@ -525,6 +529,7 @@ export default class EstimateController {
       address: value.address,
       addressType: value.addressType,
       tax: value.tax,
+      taxPart: value.taxPart,
     };
 
     await estimate.update(estimateValues);
