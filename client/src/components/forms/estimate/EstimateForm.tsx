@@ -1,13 +1,13 @@
 import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import { Divider, Grid, Typography } from '@mui/material';
+import { Autocomplete, CircularProgress, createFilterOptions, Divider, Grid, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send, SendAndArchive } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import TextInputField from '../fields/TextInputField';
-import { formatNumberToIntl } from '../../../utils/generic';
+import { formatNumberToIntl, reload } from '../../../utils/generic';
 import SelectField from '../fields/SelectField';
 import WarrantyFields from './WarrantyFields';
 import QuantityFields from './QuantityFields';
@@ -15,11 +15,16 @@ import VehicleInformationFields from './VehicleInformationFields';
 import useAppDispatch from '../../../hooks/useAppDispatch';
 import { getVehicleVINAction } from '../../../store/actions/vehicleActions';
 import useAppSelector from '../../../hooks/useAppSelector';
-import { IVINDecoderSchema } from '@app-interfaces';
+import { IDriversFilterData, IVINDecoderSchema } from '@app-interfaces';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
 import { ESTIMATE_STATUS } from '../../../config/constants';
+// import useEstimate from '../../../hooks/useEstimate';
+import useAdmin from '../../../hooks/useAdmin';
+import { getCustomerAction } from '../../../store/actions/customerActions';
+import { useParams } from 'react-router-dom';
+import { getOwnersFilterDataAction, getPartnerAction } from '../../../store/actions/partnerActions';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -31,6 +36,7 @@ interface IProps {
   grandTotal: number;
   showCreate?: boolean;
   showEdit?: boolean;
+  isPopUp?: boolean;
   setSave: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -42,19 +48,59 @@ export type PartArgs = IPart & {
   values: IEstimateValues;
 };
 
+const filterOptions = createFilterOptions({
+  matchFrom: 'any',
+  stringify: (option: IDriversFilterData) => `${option.query}`,
+});
+
 function EstimateForm(props: IProps) {
   const [vat, setVat] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
+  const [value, setValue] = React.useState<IDriversFilterData | null>(null);
+  const [inputValue, setInputValue] = React.useState('');
+  const [options, setOptions] = useState<IDriversFilterData[]>([]);
+
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
   const estimateReducer = useAppSelector(state => state.estimateReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
+  const customerReducer = useAppSelector(state => state.customerReducer);
+
   const dispatch = useAppDispatch();
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
 
   const { setGrandTotal, setPartTotal, setLabourTotal, showCreate, showEdit, grandTotal, labourTotal, partTotal } =
     props;
+
+  // const estimate = useEstimate();
+  const { isTechAdmin } = useAdmin();
+  const params = useParams();
+  const admin = useAdmin();
+
+  const partnerId = useMemo(() => {
+    if (admin.isTechAdmin && admin.user) {
+      return admin.user.partner.id;
+    }
+
+    if (params.id) {
+      return +(params.id as unknown as string);
+    }
+  }, [admin.isTechAdmin, admin.user, params.id]);
+
+  useEffect(() => {
+    if (partnerId) {
+      dispatch(getOwnersFilterDataAction(+partnerId));
+      dispatch(getPartnerAction(partnerId));
+    }
+  }, [dispatch, partnerId]);
+
+  useEffect(() => {
+    if (partnerReducer.getOwnersFilterDataStatus === 'completed') {
+      setOptions(partnerReducer.ownersFilterData);
+    }
+  }, [partnerReducer.ownersFilterData, partnerReducer.getOwnersFilterDataStatus]);
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -180,10 +226,88 @@ function EstimateForm(props: IProps) {
     };
   }, [timer, dispatch]);
 
+  const handleGetDriverInfo = (id?: number) => {
+    if (id) {
+      dispatch(getCustomerAction(id));
+    }
+  };
+
+  useEffect(()=>{
+    if(value?.id !== (null || undefined)){
+      // console.log(value)
+      if(customerReducer.getCustomerStatus === "completed"){
+        const _customer: any = customerReducer.customer;
+        // console.log(_customer)
+
+        // upto-populate info
+        setFieldValue(fields.firstName.name, _customer.firstName);
+        setFieldValue(fields.lastName.name, _customer.lastName);
+        setFieldValue(fields.phone.name, _customer.phone);
+        alert(_customer.lastName)
+      }
+
+
+    }
+  }, [value, customerReducer.getCustomerStatus])
+
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }}>
+
+          {
+            ((isTechAdmin) && (props?.isPopUp || false) && (
+              <Grid style={{ width: '100%' }}>
+                <div style={{ marginTop: 10, paddingTop: 15, paddingBottom: 15, width: '100%' }}></div>
+
+                <Grid container justifyContent="center" alignItems="center">
+                  <Grid item xs={12} md={6}>
+                    <Autocomplete
+                      filterOptions={filterOptions}
+                      inputValue={inputValue}
+                      value={value}
+                      loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
+                      getOptionLabel={option => option.fullName}
+                      isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
+                      onChange={(_: any, newValue: IDriversFilterData | null) => {
+                        // console.log(newValue);
+                        setValue(newValue);
+                        handleGetDriverInfo(newValue?.id);
+                      }}
+                      onInputChange={(_, newInputValue, reason) => {
+                        setInputValue(newInputValue);
+                        if (reason === 'clear') {
+                          // setCustomer(undefined);
+                          reload();
+                        }
+                      }}
+                      renderInput={props => (
+                        <TextField
+                          {...props}
+                          label="Search customer by First name, last name, car plate number."
+                          InputProps={{
+                            ...props.InputProps,
+                            endAdornment: (
+                              <React.Fragment>
+                                {partnerReducer.getDriversFilterDataStatus === 'loading' ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {props.InputProps.endAdornment}
+                              </React.Fragment>
+                            ),
+                          }}
+                        />
+                      )}
+                      options={options}
+                    />
+                  </Grid>
+                </Grid>
+
+                <Divider orientation="horizontal" />
+              </Grid>
+            ))
+          }
+
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               Customer Information

@@ -274,6 +274,7 @@ function EstimatesPage() {
             }}>
             <EstimateForm
               showCreate={estimate.showCreate}
+              isPopUp={true}
               setLabourTotal={estimate.setLabourTotal}
               setPartTotal={estimate.setPartTotal}
               setGrandTotal={estimate.setGrandTotal}
@@ -305,6 +306,7 @@ function EstimatesPage() {
             validateOnChange>
             <EstimateForm
               showEdit={estimate.showEdit}
+              isPopUp={true}
               setLabourTotal={estimate.setLabourTotal}
               setPartTotal={estimate.setPartTotal}
               setGrandTotal={estimate.setGrandTotal}
