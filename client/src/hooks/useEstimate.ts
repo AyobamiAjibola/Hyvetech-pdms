@@ -25,6 +25,7 @@ import {
   clearUpdateEstimateStatus,
 } from '../store/reducers/estimateReducer';
 import { FormikHelpers } from 'formik';
+import { reload } from '../utils/generic';
 
 export default function useEstimate() {
   const [driver, setDriver] = useState<IRideShareDriver | null>(null);
@@ -112,6 +113,7 @@ export default function useEstimate() {
       setSuccess({ message: estimateReducer.saveEstimateSuccess });
       handleReset();
       dispatch(getEstimatesAction());
+      reload()
     }
   }, [dispatch, estimateReducer.saveEstimateStatus, estimateReducer.saveEstimateSuccess, handleReset]);
 

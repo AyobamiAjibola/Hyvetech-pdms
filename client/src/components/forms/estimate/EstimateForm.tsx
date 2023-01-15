@@ -638,7 +638,9 @@ function EstimateForm(props: IProps) {
               />
             </Grid>
           </Grid>
-          <Grid item xs={12}>
+          {
+            ( (parseInt(values.depositAmount) > 0 ) && ( parseInt(values.depositAmount) <= grandTotal ) &&
+              (<Grid item xs={12}>
             <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
             <LoadingButton
               type="submit"
@@ -663,7 +665,8 @@ function EstimateForm(props: IProps) {
               endIcon={values.status === ESTIMATE_STATUS.sent ? <SendAndArchive /> : <Send />}>
               {values.status === ESTIMATE_STATUS.sent ? 'Save & Send' : 'Send'}
             </LoadingButton>
-          </Grid>
+          </Grid>))
+          }
         </Grid>
       </Form>
       <AppAlert

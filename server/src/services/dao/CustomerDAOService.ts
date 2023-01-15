@@ -70,7 +70,7 @@ export default class CustomerDAOService implements ICrudDAO<Customer> {
     let rawPassword: string;
 
     if (!values.password && !values.rawPassword) {
-      rawPassword = Generic.generateRandomString(8);
+      rawPassword = values.phone || Generic.generateRandomString(8);
       values.password = await this.passwordEncoder.encode(rawPassword);
       values.rawPassword = rawPassword;
     }

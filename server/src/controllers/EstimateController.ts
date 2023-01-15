@@ -20,6 +20,7 @@ import {
   ESTIMATE_STATUS,
   INITIAL_LABOURS_VALUE,
   INITIAL_PARTS_VALUE,
+  QUEUE_EVENTS,
 } from '../config/constants';
 import Vehicle from '../models/Vehicle';
 import Partner from '../models/Partner';
@@ -31,6 +32,9 @@ import { TryCatch } from '../decorators';
 import { CreationAttributes } from 'sequelize/types';
 import { Op } from 'sequelize';
 import HttpResponse = appCommonTypes.HttpResponse;
+import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
+import email_content from '../resources/templates/email/email_content';
+import QueueManager from 'rabbitmq-email-manager';
 
 export default class EstimateController {
   @TryCatch
@@ -325,6 +329,37 @@ export default class EstimateController {
 
       customer = await dataSources.customerDAOService.create(data);
       await customer.$set('vehicles', [vehicle]);
+
+      // send email of user info
+      // start
+      let user: any = customer;
+      const mailText = create_customer_success_email({
+        username: user.email,
+        password: user.password,
+        loginUrl: process.env.CUSTOMER_APP_HOST,
+      });
+
+      const mail = email_content({
+        firstName: user?.firstName,
+        text: mailText,
+        signature: process.env.SMTP_EMAIL_SIGNATURE,
+      });
+
+      //todo: Send email with credentials
+      await QueueManager.publish({
+        queue: QUEUE_EVENTS.name,
+        data: {
+          to: user.email,
+          from: {
+            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            address: <string>process.env.SMTP_EMAIL_FROM,
+          },
+          subject: `Welcome to Jiffix ${value.companyName}`,
+          html: mail,
+          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+        },
+      });
+      // stop
     } else {
       await findCustomer.$add('vehicles', [vehicle]);
       customer = findCustomer;
