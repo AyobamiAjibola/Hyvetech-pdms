@@ -21,6 +21,7 @@ export interface IEstimateValues {
   parts: IPart[];
   labours: ILabour[];
   tax: string;
+  taxPart: string;
   vin: string;
   make: string;
   model: string;
@@ -81,6 +82,14 @@ const fields = {
     },
   },
   tax: {
+    name: 'tax',
+    label: 'Tax',
+    error: {
+      invalid: 'Tax is invalid',
+      required: 'Tax is required',
+    },
+  },
+  taxPart: {
     name: 'tax',
     label: 'Tax',
     error: {
@@ -269,6 +278,7 @@ const initialValues: IEstimateValues = {
   ],
   labours: [{ title: '', cost: '0' }],
   tax: '0',
+  taxPart: '0',
 };
 
 const schema = Yup.object().shape({
@@ -283,6 +293,7 @@ const schema = Yup.object().shape({
   modelYear: Yup.string().nullable().label(fields.modelYear.label),
   plateNumber: Yup.string().nullable().label(fields.plateNumber.label),
   tax: Yup.string().nullable().label(fields.tax.label),
+  taxPart: Yup.string().nullable().label(fields.taxPart.label),
   depositAmount: Yup.string().nullable().label(fields.depositAmount.label),
   additionalDeposit: Yup.string().nullable().label(fields.additionalDeposit.label),
 });

@@ -55,6 +55,7 @@ const filterOptions = createFilterOptions({
 
 function EstimateForm(props: IProps) {
   const [vat, setVat] = useState<number>(0);
+  const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
@@ -132,6 +133,14 @@ function EstimateForm(props: IProps) {
 
   useEffect(() => {
     const vat = 7.5 * 0.01;
+    const tax = partTotal * vat;
+
+    setFieldValue('taxPart', formatNumberToIntl(tax));
+    setVatPart(tax);
+  }, [partTotal, setFieldValue]);
+
+  useEffect(() => {
+    const vat = 7.5 * 0.01;
     const tax = labourTotal * vat;
 
     setFieldValue('tax', formatNumberToIntl(tax));
@@ -139,8 +148,8 @@ function EstimateForm(props: IProps) {
   }, [labourTotal, setFieldValue]);
 
   useEffect(() => {
-    setGrandTotal(vat + partTotal + labourTotal);
-  }, [vat, partTotal, labourTotal, setGrandTotal]);
+    setGrandTotal(vat + vatPart + partTotal + labourTotal);
+  }, [vat, partTotal, vatPart, labourTotal, setGrandTotal]);
 
   useEffect(() => {
     if (vehicleReducer.getVehicleVINStatus === 'completed') {
@@ -469,6 +478,14 @@ function EstimateForm(props: IProps) {
                     <Grid item xs={12} container spacing={2} columns={13}>
                       <Grid item xs={8} />
                       <Grid item xs={4}>
+                        <TextField
+                          name={fields.taxPart.name}
+                          value={values.taxPart}
+                          label={`${fields.taxPart.label} (VAT 7.5%)`}
+                          variant="outlined"
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
                         Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
                       <Grid item />

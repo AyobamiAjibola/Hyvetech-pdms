@@ -26,6 +26,8 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
   return async function (req: Request, res: Response, next: NextFunction) {
     const headers = req.headers;
 
+    console.log(req)
+
     const authorization = headers.authorization;
     const cookies = req.signedCookies;
     const key = settings.jwt.key;
@@ -34,6 +36,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
     const cookie = cookies[cookieName];
 
     if (cookie) {
+
       const jwt = cookieParser.signedCookie(cookie, settings.cookie.secret);
 
       if (false === jwt) {
