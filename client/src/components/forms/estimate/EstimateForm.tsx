@@ -62,6 +62,7 @@ function EstimateForm(props: IProps) {
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
+  const [vinOptions, setvinOptions] = useState<any>([]);
 
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
   const estimateReducer = useAppSelector(state => state.estimateReducer);
@@ -246,13 +247,16 @@ function EstimateForm(props: IProps) {
       // console.log(value)
       if(customerReducer.getCustomerStatus === "completed"){
         const _customer: any = customerReducer.customer;
-        // console.log(_customer)
+        console.log(_customer)
 
         // upto-populate info
         setFieldValue(fields.firstName.name, _customer.firstName);
         setFieldValue(fields.lastName.name, _customer.lastName);
         setFieldValue(fields.phone.name, _customer.phone);
-        alert(_customer.lastName)
+
+        const vinList = (_customer.vehicles).map( (_data: any) => (_data?.vin || ""));
+        setvinOptions(vinList)
+        // alert(_customer.lastName)
       }
 
 
@@ -371,7 +375,7 @@ function EstimateForm(props: IProps) {
               />
             </Grid>
           </Grid>
-          <VehicleInformationFields values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
+          <VehicleInformationFields vinOptions={vinOptions} values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               {fields.parts.label}

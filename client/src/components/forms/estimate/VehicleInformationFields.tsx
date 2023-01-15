@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { CircularProgress, Divider, Grid, InputAdornment, Typography } from '@mui/material';
+import { CircularProgress, Divider, Grid, InputAdornment, Typography, Autocomplete, TextField } from '@mui/material';
 import TextInputField from '../fields/TextInputField';
 import SelectField from '../fields/SelectField';
 import estimateModel, { IEstimateValues } from '../models/estimateModel';
@@ -12,10 +12,12 @@ interface IProps {
   handleChange: any;
   handleChangeVIN: any;
   disabled?: boolean;
+  vinOptions?: any;
 }
 
 function VehicleInformationFields(props: IProps) {
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
+  console.log(props.vinOptions, "props.vinOptions")
 
   return (
     <React.Fragment>
@@ -26,7 +28,31 @@ function VehicleInformationFields(props: IProps) {
         <Divider orientation="horizontal" />
       </Grid>
       <Grid item xs={4}>
-        <TextInputField
+        
+        <Autocomplete 
+          options={props.vinOptions || []}
+          onChange={props.handleChangeVIN}
+          value={props.values.vin}
+          // name={fields.vin.name}
+          disabled={props.disabled}
+          renderInput={params => 
+              <TextField
+                {...params}
+                label={fields.vin.label}
+                name={fields.vin.name}
+                onChange={props.handleChangeVIN}
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                      {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
+                    </InputAdornment>
+                  ),
+                }}
+            />}
+          />
+
+        {/* <TextInputField
           label={fields.vin.label}
           disabled={props.disabled}
           name={fields.vin.name}
@@ -39,7 +65,7 @@ function VehicleInformationFields(props: IProps) {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
       </Grid>
       <Grid item xs={4}>
         <TextInputField
