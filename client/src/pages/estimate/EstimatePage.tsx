@@ -7,6 +7,7 @@ import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
 import { formatNumberToIntl } from '../../utils/generic';
 import settings from '../../config/settings';
+import { ArrowBackIosNew } from '@mui/icons-material';
 
 interface ILocationState {
   estimate?: IEstimate;
@@ -56,9 +57,19 @@ function EstimatePage() {
   else
     return (
       <React.Fragment>
+
+        <Grid>
+
+          <Grid>
+            <ArrowBackIosNew onClick={()=> window.history.back()} style={{ position: 'absolute', cursor: 'pointer' }}/>
+          </Grid>
+          
+        </Grid>
+
         <Typography mb={3} textAlign="center" display="block" variant="subtitle1">
           #{estimate.code}
         </Typography>
+
         <Grid container my={3} justifyContent="space-between" alignItems="center">
           <Grid item xs>
             <Typography variant="h6" gutterBottom>
@@ -242,6 +253,7 @@ function EstimatePage() {
               Subtotal: {formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}
             </Typography>
             <Typography gutterBottom>VAT(7.5%): {estimate.tax}</Typography>
+            <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>

@@ -252,7 +252,26 @@ export default class InvoiceController {
       });
     }
 
-    invoices = invoices.map(invoice => {
+    // sort by date updated
+    for(let i = 1 ; i < invoices.length ; i++ ){
+
+      for (let j = i ; j > 0 ; j--){
+        const _t1 : any = invoices[j];
+        const _t0 : any = invoices[j - 1];
+
+        if( ((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime()) ){
+          invoices[j] = _t0;
+          invoices[j - 1] = _t1;
+
+          // console.log('sorted')
+        }else{
+          // console.log('no sorted')
+        }
+
+      }
+    }
+
+    invoices = (invoices).map(invoice => {
       const parts = invoice.estimate.parts;
       const labours = invoice.estimate.labours;
 

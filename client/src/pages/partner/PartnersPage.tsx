@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Formik, FormikHelpers } from 'formik';
-import { Button } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import AppModal from '../../components/modal/AppModal';
 import { Image, ImageBackdrop, ImageButton, ImageMarked, ImageSrc } from '../../components/buttons/imageButton';
 
@@ -25,12 +25,19 @@ import AppLoader from '../../components/loader/AppLoader';
 export default function PartnersPage() {
   const [createPartner, setCreatePartner] = useState<boolean>(false);
   const [images, setImages] = useState<IImageButtonData[]>([]);
+  const [viewData, setViewData] = useState<any>([])
+  const [searchTxt, setsearchTxt] = useState<any>("")
 
   const miscReducer = useAppSelector(state => state.miscellaneousReducer);
   const partnerReducer = useAppSelector(state => state.partnerReducer);
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    // by default auto-fill with initial
+    setViewData(images)
+  }, [images])
 
   useEffect(() => {
     if (miscReducer.getStatesAndDistrictsStatus === 'idle') {
@@ -104,8 +111,17 @@ export default function PartnersPage() {
           Create Partner
         </Button>
       </Box>
+
+      <Box sx={{ minWidth: 300, width: '100%', marginBottom: 4 }}>
+        <TextField
+          style={{ width: '70%' }}
+          placeholder="Search Partner"
+          value={searchTxt}
+           />
+      </Box>
+
       <Box sx={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
-        {images.map(image => {
+        {viewData.map(image => {
           return (
             <ImageButton
               focusRipple

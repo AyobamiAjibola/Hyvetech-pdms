@@ -227,7 +227,26 @@ export default class EstimateController {
       });
     }
 
-    estimates = estimates.map(estimate => {
+    // sort by date updated
+    for(let i = 1 ; i < estimates.length ; i++ ){
+
+      for (let j = i ; j > 0 ; j--){
+        const _t1 : any = estimates[j];
+        const _t0 : any = estimates[j - 1];
+
+        if( ((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime()) ){
+          estimates[j] = _t0;
+          estimates[j - 1] = _t1;
+
+          // console.log('sorted')
+        }else{
+          // console.log('no sorted')
+        }
+
+      }
+    }
+
+    estimates = (estimates).map(estimate => {
       const parts = estimate.parts;
       const labours = estimate.labours;
 

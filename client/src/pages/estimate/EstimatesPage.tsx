@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+/* eslint-disable */
+import React, { useEffect, useMemo, useState } from 'react';
 import { IEstimate } from '@app-models';
 import { Button, Chip, DialogActions, DialogContentText, Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
@@ -30,10 +31,23 @@ import { getEstimatesAction } from '../../store/actions/estimateActions';
 function EstimatesPage() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
   const dispatch = useAppDispatch();
+  const [_estimate, _seEstimate] = useState<any>([])
 
   const estimate = useEstimate();
   const { isTechAdmin } = useAdmin();
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    // sort estimate and return sorted
+    // console.log(estimate.estimates)
+
+    // @ts-ignore
+    // eslint-disable-next-line
+    const _temp01 = estimate.estimates;
+
+    _seEstimate(_temp01);
+
+  }, [estimate.estimates])
 
   const columns = useMemo(() => {
     return [
@@ -156,6 +170,7 @@ function EstimatesPage() {
           return value ? moment(value).format('LLL') : '-';
         },
         sortable: true,
+        sortingOrder: ["desc"]
       },
       {
         field: 'actions',
@@ -239,7 +254,7 @@ function EstimatesPage() {
       <Grid container>
         <Grid item xs={12}>
           <AppDataGrid
-            rows={estimate.estimates}
+            rows={(estimate.estimates)}
             columns={columns}
             showToolbar
             loading={estimateReducer.getEstimatesStatus === 'loading'}

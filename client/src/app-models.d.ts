@@ -579,6 +579,7 @@ declare module '@app-models' {
     invoice: IInvoice;
     partnerId: number;
     tax: number;
+    taxPart?: number;
     expiresIn: number;
     createdAt: string;
     updatedAt: string;
