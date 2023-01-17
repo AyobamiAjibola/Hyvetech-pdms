@@ -26,6 +26,7 @@ export default function PartnersPage() {
   const [createPartner, setCreatePartner] = useState<boolean>(false);
   const [images, setImages] = useState<IImageButtonData[]>([]);
   const [viewData, setViewData] = useState<any>([])
+  // @ts-ignore
   const [searchTxt, setsearchTxt] = useState<any>("")
 
   const miscReducer = useAppSelector(state => state.miscellaneousReducer);
@@ -116,7 +117,9 @@ export default function PartnersPage() {
         <TextField
           style={{ width: '70%' }}
           placeholder="Search Partner"
+          // @ts-ignore
           value={searchTxt}
+          // @ts-ignore
           onChange={e => setsearchTxt(e.target.value)}
            />
       </Box>
