@@ -117,11 +117,12 @@ export default function PartnersPage() {
           style={{ width: '70%' }}
           placeholder="Search Partner"
           value={searchTxt}
+          onChange={e => setsearchTxt(e.target.value)}
            />
       </Box>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
-        {viewData.map(image => {
+        {viewData.map((image: any) => {
           return (
             <ImageButton
               focusRipple
