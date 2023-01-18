@@ -149,6 +149,8 @@ export default class AuthenticationController {
       const hash = user.password;
       const password = value.password;
 
+      console.log(user)
+
       const isMatch = await this.passwordEncoder.match(password, hash);
 
       if (!isMatch)

@@ -891,9 +891,9 @@ export default class PartnerController {
             query: `${driverInfo[i].query} ${vehicle.plateNumber} ${vehicle.vin}`,
           });
 
-          Object.assign(driverInfo[i], {
-            fullName: `${driverInfo[i].fullName} ${(vehicle.plateNumber !== "") ? "plate:"+vehicle.plateNumber : ""} vin:${(vehicle.vin !== "") ? "vin:"+vehicle.vin : "" }`,
-          });
+          // Object.assign(driverInfo[i], {
+          //   fullName: `${driverInfo[i].fullName} ${(vehicle.plateNumber !== "") ? "plate:"+vehicle.plateNumber : ""} vin:${(vehicle.vin !== "") ? "vin:"+vehicle.vin : "" }`,
+          // });
         }
       }
 

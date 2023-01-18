@@ -16,7 +16,7 @@ coverage
 .grunt
 bower_components
 .lock-wscript
-build/Release
+# build/Release
 node_modules/
 jspm_packages/
 web_modules/
@@ -60,7 +60,7 @@ keys
 .vscode
 .idea
 .env*
-build
+# build
 *.rdb
 .DS_Store
 yarn.lock

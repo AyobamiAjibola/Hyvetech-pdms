@@ -253,6 +253,9 @@ function EstimateForm(props: IProps) {
         setFieldValue(fields.firstName.name, _customer.firstName);
         setFieldValue(fields.lastName.name, _customer.lastName);
         setFieldValue(fields.phone.name, _customer.phone);
+        setFieldValue(fields.email.name, _customer.email);
+        setFieldValue(fields.state.name, _customer.contacts[0]?.state || '');
+        // alert(_customer.contacts[0]?.state || '..')
 
         const vinList = (_customer.vehicles).map( (_data: any) => (_data?.vin || ""));
         setvinOptions(vinList)
@@ -327,6 +330,26 @@ function EstimateForm(props: IProps) {
             </Typography>
             <Divider orientation="horizontal" />
           </Grid>
+
+          <Grid item xs={4}>
+            <TextInputField
+              onChange={handleChange}
+              label={fields.email.label}
+              // @ts-ignore
+              value={values.email}
+              name={fields.email.name}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextInputField
+              onChange={handleChange}
+              label={fields.state.label}
+              // @ts-ignore
+              value={values.state}
+              name={fields.state.name}
+            />
+          </Grid>
+
           <Grid item xs={3}>
             <TextInputField
               onChange={handleChange}

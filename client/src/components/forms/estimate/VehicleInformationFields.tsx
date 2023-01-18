@@ -31,7 +31,7 @@ function VehicleInformationFields(props: IProps) {
         
         <Autocomplete 
           options={props.vinOptions || []}
-          onChange={props.handleChangeVIN}
+          // onChange={props.handleChangeVIN}
           value={props.values.vin}
           // name={fields.vin.name}
           disabled={props.disabled}
@@ -40,7 +40,10 @@ function VehicleInformationFields(props: IProps) {
                 {...params}
                 label={fields.vin.label}
                 name={fields.vin.name}
-                onChange={props.handleChangeVIN}
+                onChange={e => {
+                  console.log(e)
+                  // props.handleChangeVIN
+                }}
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (

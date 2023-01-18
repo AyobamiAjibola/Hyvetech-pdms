@@ -37,6 +37,22 @@ export const estimateFields = {
       required: 'Last Name is required',
     },
   },
+  email: {
+    name: 'email',
+    label: 'Email',
+    error: {
+      invalid: 'Email is invalid',
+      required: 'Email is required',
+    },
+  },
+  state: {
+    name: 'state',
+    label: 'State',
+    error: {
+      invalid: 'State is invalid',
+      required: 'State is required',
+    },
+  },
   phone: {
     name: 'phone',
     label: 'Phone Number',
@@ -235,6 +251,9 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   id: Joi.number().required().label('Partner Id'),
   firstName: Joi.string().required().label(estimateFields.firstName.label),
   lastName: Joi.string().required().label(estimateFields.lastName.label),
+  email: Joi.string().optional().label(estimateFields.email.label),
+  // @ts-ignore
+  state: Joi.string().optional().label(estimateFields.state.label),
   phone: Joi.string().required().label(estimateFields.phone.label),
   addressType: Joi.string().required().label(estimateFields.addressType.label),
   address: Joi.string().required().label(estimateFields.address.label),
@@ -261,6 +280,11 @@ export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   id: Joi.number().required().label('Partner Id'),
   firstName: Joi.string().allow('').label(estimateFields.firstName.label),
   lastName: Joi.string().allow('').label(estimateFields.lastName.label),
+  
+  email: Joi.string().optional().label(estimateFields.email.label),
+  // @ts-ignore
+  state: Joi.string().optional().label(estimateFields.state.label),
+
   phone: Joi.string().allow('').label(estimateFields.phone.label),
   addressType: Joi.string().allow('').label(estimateFields.addressType.label),
   address: Joi.string().allow('').label(estimateFields.address.label),

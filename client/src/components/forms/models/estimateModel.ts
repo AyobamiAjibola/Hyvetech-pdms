@@ -32,6 +32,8 @@ export interface IEstimateValues {
   address: string;
   firstName: string;
   lastName: string;
+  email?: string;
+  state?: string;
   phone: string;
   depositAmount: string;
   jobDuration: { count: string; interval: string };
@@ -63,6 +65,22 @@ const fields = {
     error: {
       invalid: 'Phone Number is invalid',
       required: 'Phone Number is required',
+    },
+  },
+  email: {
+    name: 'email',
+    label: 'Email Address',
+    error: {
+      invalid: 'Email Address is invalid',
+      required: 'Email Address is required',
+    },
+  },
+  state: {
+    name: 'state',
+    label: 'State',
+    error: {
+      invalid: 'State is invalid',
+      required: 'State is required',
     },
   },
   parts: {
