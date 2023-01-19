@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import { Autocomplete, CircularProgress, createFilterOptions, Divider, Grid, Typography } from '@mui/material';
+import { Autocomplete, Checkbox, CircularProgress, createFilterOptions, Divider, Grid, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send, SendAndArchive } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
@@ -54,6 +54,10 @@ const filterOptions = createFilterOptions({
 });
 
 function EstimateForm(props: IProps) {
+
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(true)
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(true)
+
   const [vat, setVat] = useState<number>(0);
   const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
@@ -133,24 +137,56 @@ function EstimateForm(props: IProps) {
   }, [setLabourTotal, values.labours]);
 
   useEffect(() => {
+    if (!enableTaxPart) {
+      setVatPart(0);
+      return;
+    }
     const vat = 7.5 * 0.01;
     const tax = partTotal * vat;
 
     setFieldValue('taxPart', formatNumberToIntl(tax));
     setVatPart(tax);
-  }, [partTotal, setFieldValue]);
+  }, [partTotal, setFieldValue, enableTaxPart]);
 
   useEffect(() => {
+    if (!enableTaxLabor) {
+      setVat(0);
+      return
+    }
     const vat = 7.5 * 0.01;
     const tax = labourTotal * vat;
 
     setFieldValue('tax', formatNumberToIntl(tax));
     setVat(tax);
-  }, [labourTotal, setFieldValue]);
+  }, [labourTotal, setFieldValue, enableTaxLabor]);
 
   useEffect(() => {
-    setGrandTotal(vat + vatPart + partTotal + labourTotal);
-  }, [vat, partTotal, vatPart, labourTotal, setGrandTotal]);
+
+    let gT = 0;
+    if (!enableTaxLabor) {
+      gT = (vatPart + partTotal + labourTotal);
+      console.log(vatPart + partTotal + labourTotal)
+
+    }
+
+    if (!enableTaxPart) {
+      gT = (vat + partTotal + labourTotal);
+      console.log(vat + partTotal + labourTotal)
+
+    }
+
+    if (enableTaxPart && enableTaxLabor) {
+      gT = (vat + vatPart + partTotal + labourTotal);
+      console.log(vat + vatPart + partTotal + labourTotal)
+    } else if (!enableTaxPart && !enableTaxLabor) {
+      gT = (partTotal + labourTotal);
+      console.log(partTotal + labourTotal)
+    }
+
+    setGrandTotal(gT)
+    console.log(gT)
+
+  }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
     if (vehicleReducer.getVehicleVINStatus === 'completed') {
@@ -242,10 +278,10 @@ function EstimateForm(props: IProps) {
     }
   };
 
-  useEffect(()=>{
-    if(value?.id !== (null || undefined)){
+  useEffect(() => {
+    if (value?.id !== (null || undefined)) {
       // console.log(value)
-      if(customerReducer.getCustomerStatus === "completed"){
+      if (customerReducer.getCustomerStatus === "completed") {
         const _customer: any = customerReducer.customer;
         console.log(_customer)
 
@@ -257,14 +293,25 @@ function EstimateForm(props: IProps) {
         setFieldValue(fields.state.name, _customer.contacts[0]?.state || '');
         // alert(_customer.contacts[0]?.state || '..')
 
-        const vinList = (_customer.vehicles).map( (_data: any) => (_data?.vin || ""));
+        const vinList = (_customer.vehicles).map((_data: any) => (_data?.vin || ""));
         setvinOptions(vinList)
         // alert(_customer.lastName)
       }
-
-
     }
   }, [value, customerReducer.getCustomerStatus])
+
+  // listen for tax changes and adjust
+  useEffect(() => {
+    // check for labor
+    if (!enableTaxLabor) {
+      setFieldValue(fields.tax.name, 0)
+    }
+
+    // check for part
+    if (!enableTaxPart) {
+      setFieldValue(fields.taxPart.name, 0)
+    }
+  }, [enableTaxLabor, enableTaxPart, values.taxPart, values.tax])
 
   return (
     <React.Fragment>
@@ -503,19 +550,27 @@ function EstimateForm(props: IProps) {
                       </IconButton>
                     </Grid>
                     <Grid item xs={12} container spacing={2} columns={13}>
-                      <Grid item xs={8} />
+                      <Grid item xs={6} />
                       <Grid item xs={4}>
-                        <TextField
+                        {(enableTaxPart && (<TextField
                           name={fields.taxPart.name}
                           value={values.taxPart}
                           label={`${fields.taxPart.label} (VAT 7.5%)`}
                           variant="outlined"
                           fullWidth
                           sx={{ mb: 2 }}
-                        />
+                        />))}
                         Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
-                      <Grid item />
+
+                      <Grid item style={{}}>
+                        {/* disable tax for labour */}
+                        <div>
+                          <span>Enable Tax</span>
+                          <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
+                        </div>
+                      </Grid>
+
                     </Grid>
                   </React.Fragment>
                 );
@@ -597,19 +652,27 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12} container spacing={2} columns={13}>
-            <Grid item xs={8} />
+            <Grid item xs={6} />
             <Grid item xs={4}>
-              <TextField
+              {(enableTaxLabor && (<TextField
                 name={fields.tax.name}
                 value={values.tax}
                 label={`${fields.tax.label} (VAT 7.5%)`}
                 variant="outlined"
                 fullWidth
                 sx={{ mb: 2 }}
-              />
+              />))}
               <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
-            <Grid item />
+
+            <Grid item style={{}}>
+              {/* disable tax for labour */}
+              <div>
+                <span>Enable Tax</span>
+                <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
+              </div>
+            </Grid>
+
           </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
@@ -662,33 +725,33 @@ function EstimateForm(props: IProps) {
             </Grid>
           </Grid>
           {
-            ( (parseInt(values.depositAmount) > 0 ) && ( parseInt(values.depositAmount) <= grandTotal ) &&
+            ((parseInt(values.depositAmount) > 0) && (parseInt(values.depositAmount) <= grandTotal) &&
               (<Grid item xs={12}>
-            <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
-            <LoadingButton
-              type="submit"
-              loading={saveStatus}
-              disabled={
-                saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
-              }
-              variant="contained"
-              color="secondary"
-              endIcon={<Save />}
-              onClick={() => props.setSave(true)}>
-              {'Save'}
-            </LoadingButton>
-            <LoadingButton
-              sx={{ ml: 2 }}
-              type="submit"
-              loading={sendStatus}
-              disabled={values.status === ESTIMATE_STATUS.invoiced}
-              onClick={() => props.setSave(false)}
-              variant="contained"
-              color="success"
-              endIcon={values.status === ESTIMATE_STATUS.sent ? <SendAndArchive /> : <Send />}>
-              {values.status === ESTIMATE_STATUS.sent ? 'Save & Send' : 'Send'}
-            </LoadingButton>
-          </Grid>))
+                <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
+                <LoadingButton
+                  type="submit"
+                  loading={saveStatus}
+                  disabled={
+                    saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
+                  }
+                  variant="contained"
+                  color="secondary"
+                  endIcon={<Save />}
+                  onClick={() => props.setSave(true)}>
+                  {'Save'}
+                </LoadingButton>
+                <LoadingButton
+                  sx={{ ml: 2 }}
+                  type="submit"
+                  loading={sendStatus}
+                  disabled={values.status === ESTIMATE_STATUS.invoiced}
+                  onClick={() => props.setSave(false)}
+                  variant="contained"
+                  color="success"
+                  endIcon={values.status === ESTIMATE_STATUS.sent ? <SendAndArchive /> : <Send />}>
+                  {values.status === ESTIMATE_STATUS.sent ? 'Save & Send' : 'Send'}
+                </LoadingButton>
+              </Grid>))
           }
         </Grid>
       </Form>

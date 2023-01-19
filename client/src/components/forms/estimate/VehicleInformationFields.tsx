@@ -28,32 +28,37 @@ function VehicleInformationFields(props: IProps) {
         <Divider orientation="horizontal" />
       </Grid>
       <Grid item xs={4}>
-        
-        <Autocomplete 
+
+        <Autocomplete
           options={props.vinOptions || []}
           // onChange={props.handleChangeVIN}
+          // @ts-ignore
+          onChange={(_, newValue) => {
+            // console.log(newValue)
+            props.handleChangeVIN({ target: { value: newValue } })
+          }}
           value={props.values.vin}
           // name={fields.vin.name}
           disabled={props.disabled}
-          renderInput={params => 
-              <TextField
-                {...params}
-                label={fields.vin.label}
-                name={fields.vin.name}
-                onChange={e => {
-                  console.log(e)
-                  // props.handleChangeVIN
-                }}
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
-                      {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
-                    </InputAdornment>
-                  ),
-                }}
+          renderInput={params =>
+            <TextField
+              {...params}
+              label={fields.vin.label}
+              name={fields.vin.name}
+              // onChange={e => {
+              //   console.log(e)
+              //   // props.handleChangeVIN
+              // }}
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                    {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
+                  </InputAdornment>
+                ),
+              }}
             />}
-          />
+        />
 
         {/* <TextInputField
           label={fields.vin.label}
