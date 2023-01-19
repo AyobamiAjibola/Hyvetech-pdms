@@ -145,7 +145,7 @@ class PartnerController {
                     }
                     //Ride-Share Partner
                     if (value.category === constants_1.CATEGORIES[4].name) {
-                        mailSubject = `Welcome to Jiffix Hyve!`;
+                        mailSubject = `Welcome to Auto Hyve!`;
                         mailText = (0, ride_share_partner_welcome_email_1.default)({
                             partnerName: (0, capitalize_1.default)(partnerValues.name),
                             password: userValues.rawPassword,

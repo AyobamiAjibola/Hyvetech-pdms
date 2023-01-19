@@ -199,7 +199,7 @@ export default class PartnerController {
 
           //Ride-Share Partner
           if (value.category === CATEGORIES[4].name) {
-            mailSubject = `Welcome to Jiffix Hyve!`;
+            mailSubject = `Welcome to Auto Hyve!`;
             mailText = ride_share_partner_welcome_email({
               partnerName: capitalize(partnerValues.name),
               password: userValues.rawPassword,

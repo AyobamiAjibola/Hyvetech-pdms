@@ -64,7 +64,7 @@ function PrivateLayout() {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              Jiffix HYVE
+              Auto HYVE
             </Typography>
           </Toolbar>
         </AppBar>
