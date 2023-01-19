@@ -246,6 +246,8 @@ export declare namespace appCommonTypes {
 
   interface MailTextConfig {
     subName?: string;
+    firstName?: string;
+    lastName?: string;
     numOfInspections?: number;
     numOfVehicles?: string;
     planCategory?: string;

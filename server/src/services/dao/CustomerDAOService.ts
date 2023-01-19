@@ -10,6 +10,7 @@ import {
 
 import CustomerRepository from '../../repositories/CustomerRepository';
 import Customer from '../../models/Customer';
+import Role from '../../models/Role';
 import RoleRepository from '../../repositories/RoleRepository';
 import { appModelTypes } from '../../@types/app-model';
 import Generic from '../../utils/Generic';
@@ -76,11 +77,18 @@ export default class CustomerDAOService implements ICrudDAO<Customer> {
     }
 
     //get customer role
-    const role = await this.roleRepository.findOne({
-      where: { name: settings.roles[1] },
+    // Role.findOne
+    const role = await Role.findOne({
+      where: {
+        // name: settings?.roles[1] || "CUSTOMER_ROLE"
+        id: 2
+      },
     });
 
-    if (!role) throw new Error('Role does not exist');
+    if (!role) {
+      console.log(settings?.roles[1] || "CUSTOMER_ROLE")
+      throw new Error('Role does not exist')
+    }
 
     //create customer
     const customer = await this.customerRepository.save(values, options);

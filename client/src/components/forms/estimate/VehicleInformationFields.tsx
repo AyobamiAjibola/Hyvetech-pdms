@@ -45,10 +45,10 @@ function VehicleInformationFields(props: IProps) {
               {...params}
               label={fields.vin.label}
               name={fields.vin.name}
-              // onChange={e => {
-              //   console.log(e)
-              //   // props.handleChangeVIN
-              // }}
+              onChange={(e) => {
+                // console.log(e.target.value)
+                props.handleChangeVIN(e)
+              }}
               InputProps={{
                 ...params.InputProps,
                 endAdornment: (

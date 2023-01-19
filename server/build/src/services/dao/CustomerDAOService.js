@@ -42,10 +42,13 @@ class CustomerDAOService {
         }
         //get customer role
         const role = await this.roleRepository.findOne({
-            where: { name: settings_1.default.roles[1] },
+            where: { name: "CUSTOMER_ROLE" },
+            // where: { name: settings_1?.default?.roles[1] || "CUSTOMER_ROLE" },
         });
-        if (!role)
+        if (!role) {
+            console.log("CUSTOMER_ROLE")
             throw new Error('Role does not exist');
+        }
         //create customer
         const customer = await this.customerRepository.save(values, options);
         //associate customer with role

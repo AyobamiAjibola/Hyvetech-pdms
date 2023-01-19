@@ -35,6 +35,7 @@ import HttpResponse = appCommonTypes.HttpResponse;
 import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
 import email_content from '../resources/templates/email/email_content';
 import QueueManager from 'rabbitmq-email-manager';
+import create_customer_from_estimate from '../resources/templates/email/create_customer_from_estimate';
 
 export default class EstimateController {
   @TryCatch
@@ -228,18 +229,18 @@ export default class EstimateController {
     }
 
     // sort by date updated
-    for(let i = 1 ; i < estimates.length ; i++ ){
+    for (let i = 1; i < estimates.length; i++) {
 
-      for (let j = i ; j > 0 ; j--){
-        const _t1 : any = estimates[j];
-        const _t0 : any = estimates[j - 1];
+      for (let j = i; j > 0; j--) {
+        const _t1: any = estimates[j];
+        const _t0: any = estimates[j - 1];
 
-        if( ((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime()) ){
+        if (((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime())) {
           estimates[j] = _t0;
           estimates[j - 1] = _t1;
 
           // console.log('sorted')
-        }else{
+        } else {
           // console.log('no sorted')
         }
 
@@ -303,12 +304,16 @@ export default class EstimateController {
         where: { vin: value.vin },
       });
 
-      if (!vin)
-        return Promise.reject(CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code));
+      const isVinExistMandatory = false;
 
-      await vin.update({
-        plateNumber: value.plateNumber,
-      });
+      if (isVinExistMandatory) {
+        if (!vin)
+          return Promise.reject(CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code));
+
+        await vin.update({
+          plateNumber: value.plateNumber,
+        });
+      }
 
       vehicle = await dataSources.vehicleDAOService.create(data);
     } else {
@@ -352,17 +357,23 @@ export default class EstimateController {
       // send email of user info
       // start
       let user: any = customer;
-      const mailText = create_customer_success_email({
-        username: user.email,
-        password: user.password,
-        loginUrl: process.env.CUSTOMER_APP_HOST,
-      });
 
-      const mail = email_content({
-        firstName: user?.firstName,
-        text: mailText,
-        signature: process.env.SMTP_EMAIL_SIGNATURE,
-      });
+      // const mailText = create_customer_success_email({
+      //   username: user.email,
+      //   password: user.password,
+      //   loginUrl: process.env.CUSTOMER_APP_HOST,
+      // });
+
+      // const mail = email_content({
+      //   firstName: user?.firstName,
+      //   text: mailText,
+      //   signature: process.env.SMTP_EMAIL_SIGNATURE,
+      // });
+
+      const mail = create_customer_from_estimate({
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+      })
 
       //todo: Send email with credentials
       await QueueManager.publish({
@@ -373,7 +384,7 @@ export default class EstimateController {
             name: <string>process.env.SMTP_EMAIL_FROM_NAME,
             address: <string>process.env.SMTP_EMAIL_FROM,
           },
-          subject: `Welcome to Jiffix ${value.companyName}`,
+          subject: `You Have a New Estimate`,
           html: mail,
           bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
         },
