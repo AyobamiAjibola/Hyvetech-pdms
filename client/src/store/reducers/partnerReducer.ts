@@ -15,6 +15,7 @@ import {
   getPartnersAction,
   getPaymentPlansAction,
   getPlansAction,
+  togglePartnerAction,
 } from '../actions/partnerActions';
 import { IPartner, IPaymentPlan, IPlan } from '@app-models';
 import { IDriversFilterData } from '@app-interfaces';
@@ -27,6 +28,10 @@ interface IPartnerState {
   deletePartnerStatus: IThunkAPIStatus;
   deletePartnerSuccess: string;
   deletePartnerError?: string;
+
+  togglePartnerStatus: IThunkAPIStatus;
+  togglePartnerSuccess: string;
+  togglePartnerError?: string;
 
   createPartnerKycStatus: IThunkAPIStatus;
   createPartnerKycSuccess: string;
@@ -94,6 +99,10 @@ const initialState: IPartnerState = {
   deletePartnerError: '',
   deletePartnerStatus: 'idle',
   deletePartnerSuccess: '',
+
+  togglePartnerError: '',
+  togglePartnerStatus: 'idle',
+  togglePartnerSuccess: '',
 
   createPartnerKycError: '',
   createPartnerKycStatus: 'idle',
@@ -167,6 +176,12 @@ const partnerSlice = createSlice({
       state.deletePartnerStatus = 'idle';
       state.deletePartnerSuccess = '';
       state.deletePartnerError = '';
+    },
+
+    clearTogglePartnerStatus(state: IPartnerState) {
+      state.togglePartnerStatus = 'idle';
+      state.togglePartnerSuccess = '';
+      state.togglePartnerError = '';
     },
     clearCreatePartnerKycStatus(state: IPartnerState) {
       state.createPartnerKycStatus = 'idle';
@@ -252,6 +267,21 @@ const partnerSlice = createSlice({
         if (action.payload) {
           state.deletePartnerError = action.payload.message;
         } else state.deletePartnerError = action.error.message;
+      });
+
+    builder
+      .addCase(togglePartnerAction.pending, state => {
+        state.togglePartnerStatus = 'loading';
+      })
+      .addCase(togglePartnerAction.fulfilled, (state, action) => {
+        state.togglePartnerStatus = 'completed';
+        state.togglePartnerSuccess = action.payload.message;
+      })
+      .addCase(togglePartnerAction.rejected, (state, action) => {
+        state.togglePartnerStatus = 'failed';
+        if (action.payload) {
+          state.togglePartnerError = action.payload.message;
+        } else state.togglePartnerError = action.error.message;
       });
 
     builder
@@ -474,6 +504,7 @@ export const {
   clearDeletePaymentPlanStatus,
   clearDeletePlanStatus,
   clearDeletePartnerStatus,
+  clearTogglePartnerStatus,
   clearGetOwnersFilterDataStatus,
 } = partnerSlice.actions;
 

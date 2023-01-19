@@ -20,6 +20,12 @@ export const deletePartnerHandler = authenticateRouteWrapper(async (req: Request
   res.status(result.code).json(result);
 });
 
+export const togglePartnerHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
+  const result = await partnerController.togglePartner(req);
+
+  res.status(result.code).json(result);
+});
+
 export const createPartnerKycHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
   const result = await partnerController.createKyc(req);
 

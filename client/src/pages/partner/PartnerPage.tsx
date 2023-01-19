@@ -8,6 +8,7 @@ import {
   getPartnerAction,
   getPaymentPlansAction,
   getPlansAction,
+  togglePartnerAction,
 } from '../../store/actions/partnerActions';
 import { IPartner } from '@app-models';
 import { ITab, PartnerPageContextProps } from '@app-interfaces';
@@ -18,6 +19,7 @@ import {
   clearGetPartnerStatus,
   clearGetPaymentPlansStatus,
   clearGetPlansStatus,
+  clearTogglePartnerStatus,
 } from '../../store/reducers/partnerReducer';
 import { GARAGE_CATEGORY, MESSAGES, RIDE_SHARE_CATEGORY } from '../../config/constants';
 import useAdmin from '../../hooks/useAdmin';
@@ -28,6 +30,7 @@ import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../components/alerts/AppAlert';
 import { clearCreateEstimateStatus } from '../../store/reducers/estimateReducer';
 import { AppCan } from '../../context/AbilityContext';
+import { reload } from '../../utils/generic';
 
 export const PartnerPageContext = createContext<PartnerPageContextProps | null>(null);
 
@@ -41,6 +44,8 @@ function PartnerPage() {
   const [success, setSuccess] = useState<CustomHookMessage>();
   const [error, setError] = useState<CustomHookMessage>();
   const [_timeout, _setTimeout] = useState<NodeJS.Timer>();
+
+  // console.log(partner, "partner")
 
   const params = useParams();
   const navigate = useNavigate();
@@ -117,6 +122,7 @@ function PartnerPage() {
       dispatch(clearGetPaymentPlansStatus());
       dispatch(clearDeletePartnerStatus());
       dispatch(clearCreateEstimateStatus());
+      dispatch(clearTogglePartnerStatus())
       clearTimeout(_timeout);
     };
   }, [_timeout, dispatch]);
@@ -131,12 +137,31 @@ function PartnerPage() {
     setShowDelete(false);
   };
 
+  const handleToggleAccount = (id: any) => {
+    if (id) dispatch(togglePartnerAction(id));
+  };
+
+  useEffect(() => {
+    if (partnerReducer.togglePartnerStatus === 'completed') {
+      setSuccess({ message: partnerReducer.togglePartnerSuccess });
+
+      _setTimeout(setTimeout(() => reload(), 1000));
+    }
+  }, [navigate, partnerReducer.togglePartnerStatus, partnerReducer.togglePartnerSuccess]);
+
+  useEffect(() => {
+    if (partnerReducer.togglePartnerStatus === 'failed') {
+      if (partnerReducer.togglePartnerError) setError({ message: partnerReducer.togglePartnerError });
+    }
+  }, [partnerReducer.togglePartnerStatus, partnerReducer.togglePartnerError]);
+
   return (
     <React.Fragment>
       <Grid container justifyContent="space-between" alignItems="center">
-        <Grid item xs={11}>
+        <Grid item xs={9}>
           <h1>{partner?.name}</h1>
         </Grid>
+
         <Grid item>
           <AppCan I="manage" a="all">
             <LoadingButton
@@ -149,6 +174,20 @@ function PartnerPage() {
             </LoadingButton>
           </AppCan>
         </Grid>
+
+        <Grid item>
+          <AppCan I="manage" a="all">
+            <LoadingButton
+              onClick={() => handleToggleAccount(partnerId)}
+              // endIcon={<Delete />}
+              variant="outlined"
+              color="info"
+              size="small">
+              {((partner?.users[0]?.active == true) ? "Disable Partner" : "Enable Partner") || ""}
+            </LoadingButton>
+          </AppCan>
+        </Grid>
+
       </Grid>
       <PartnerPageContext.Provider
         value={{

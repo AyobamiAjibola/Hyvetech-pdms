@@ -13,6 +13,7 @@ import {
   getPaymentPlansHandler,
   getPlansHandler,
   partnerJobsHandler,
+  togglePartnerHandler,
 } from '../../routes/partnerHandler';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -115,6 +116,12 @@ const partnerEndpoints: RouteEndpoints = [
     method: 'delete',
     path: '/partners/:partnerId',
     handler: deletePartnerHandler,
+  },
+  {
+    name: 'toggle partner',
+    method: 'post',
+    path: '/partners-toggle/:partnerId',
+    handler: togglePartnerHandler,
   },
 ];
 

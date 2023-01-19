@@ -7,6 +7,7 @@ import { IPartner, IPaymentPlan, IPlan } from '@app-models';
 
 const CREATE_PARTNER = 'partner:CREATE_PARTNER';
 const DELETE_PARTNER = 'partner:DELETE_PARTNER';
+const TOGGLE_PARTNER = 'partner:TOGGLE_PARTNER';
 const CREATE_PARTNER_KYC = 'partner:CREATE_PARTNER_KYC';
 const CREATE_PARTNER_SETTINGS = 'partner:CREATE_PARTNER_SETTINGS';
 const GET_PARTNERS = 'partner:GET_PARTNERS';
@@ -43,6 +44,14 @@ export const deletePartnerAction = asyncThunkWrapper<ApiResponseSuccess<void>, n
   DELETE_PARTNER,
   async partnerId => {
     const response = await axiosClient.delete(`${API_ROOT}/partners/${partnerId}`);
+    return response.data;
+  },
+);
+
+export const togglePartnerAction = asyncThunkWrapper<ApiResponseSuccess<void>, number>(
+  TOGGLE_PARTNER,
+  async partnerId => {
+    const response = await axiosClient.post(`${API_ROOT}/partners-toggle/${partnerId}`);
     return response.data;
   },
 );

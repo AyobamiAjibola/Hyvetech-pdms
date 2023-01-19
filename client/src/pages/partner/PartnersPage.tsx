@@ -57,7 +57,7 @@ export default function PartnersPage() {
 
   useEffect(() => {
     if (partnerReducer.getPartnersStatus === 'completed') {
-      console.log(partnerReducer.partners, "partnerReducer.partners")
+      // console.log(partnerReducer.partners, "partnerReducer.partners")
 
       setImages(
         partnerReducer.partners.map(partner => ({

@@ -163,7 +163,8 @@ export default class PartnerController {
             email: value.email,
             firstName: 'Admin',
             lastName: 'Admin',
-            active: true,
+            // active: true,
+            active: false,
             password,
             rawPassword: password,
           };
@@ -274,6 +275,40 @@ export default class PartnerController {
         }
       });
     });
+  }
+
+  public async togglePartner(req: Request) {
+    // start
+    try {
+      const partnerId = req.params.partnerId as unknown as string;
+
+      const partner = await dataSources.partnerDAOService.findById(+partnerId, { include: [{ all: true }] });
+
+      if (!partner)
+        return Promise.reject(CustomAPIError.response('Customer does not exist', HttpStatus.NOT_FOUND.code));
+
+      console.log(partner, "partner")
+      const user_id = partner.users[0].id;
+      const user_active = partner.users[0].active;
+
+      await User.update({
+        active: !user_active,
+      },
+        {
+          where: {
+            id: user_id
+          }
+        });
+
+      return Promise.resolve({
+        code: HttpStatus.OK.code,
+        message: `Partner Account Adjusted successfully.`,
+        partner
+      } as HttpResponse<void>);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+    // end
   }
 
   public async deletePartner(req: Request) {
