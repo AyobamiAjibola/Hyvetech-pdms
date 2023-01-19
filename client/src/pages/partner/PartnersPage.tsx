@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Formik, FormikHelpers } from 'formik';
-import { Button, TextField } from '@mui/material';
+import { Button, MenuItem, Select, TextField } from '@mui/material';
 import AppModal from '../../components/modal/AppModal';
 import { Image, ImageBackdrop, ImageButton, ImageMarked, ImageSrc } from '../../components/buttons/imageButton';
 
@@ -28,6 +28,9 @@ export default function PartnersPage() {
   const [viewData, setViewData] = useState<any>([])
   // @ts-ignore
   const [searchTxt, setsearchTxt] = useState<any>("")
+  const [filterTxt, setfilterTxt] = useState<any>("")
+
+  const [filterBy, setfilterBy] = useState<any>("none")
 
   const miscReducer = useAppSelector(state => state.miscellaneousReducer);
   const partnerReducer = useAppSelector(state => state.partnerReducer);
@@ -35,7 +38,7 @@ export default function PartnersPage() {
 
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     // by default auto-fill with initial
     setViewData(images)
   }, [images])
@@ -54,12 +57,15 @@ export default function PartnersPage() {
 
   useEffect(() => {
     if (partnerReducer.getPartnersStatus === 'completed') {
+      console.log(partnerReducer.partners, "partnerReducer.partners")
+
       setImages(
         partnerReducer.partners.map(partner => ({
           id: partner.id,
           url: partner.logo ? getImageUrl(partner.logo) : partnerImg,
           title: partner.name,
           width: '33.33%',
+          partner
         })),
       );
     }
@@ -105,6 +111,25 @@ export default function PartnersPage() {
     formikHelper.resetForm();
   }
 
+  useEffect(() => {
+
+    // filter logic
+    if (filterBy == "none") {
+      setViewData(images)
+    } else {
+      // 
+      if (filterBy == "state") {
+        // filter by state
+        const temp = images.filter(val => ((val.partner.contact.state).includes(filterTxt)));
+        setViewData(temp)
+      } else {
+        // filter by category
+        const temp = images.filter(val => ((val.partner.categories[0].name).includes(filterTxt)));
+        setViewData(temp)
+      }
+    }
+  }, [filterBy, filterTxt])
+
   return (
     <React.Fragment>
       <Box mb={1}>
@@ -115,13 +140,48 @@ export default function PartnersPage() {
 
       <Box sx={{ minWidth: 300, width: '100%', marginBottom: 4 }}>
         <TextField
-          style={{ width: '70%' }}
+          style={{ width: '38%' }}
           placeholder="Search Partner"
           // @ts-ignore
           value={searchTxt}
           // @ts-ignore
-          onChange={e => setsearchTxt(e.target.value)}
-           />
+          onChange={e => {
+
+            // search logic
+            const temp = images.filter(val => ((val.title).includes(e.target.value)));
+            setViewData(temp)
+
+            setsearchTxt(e.target.value)
+          }}
+        />
+
+        <TextField
+          style={{ width: '30%', marginLeft: '5%' }}
+          placeholder="Filter, e.g Garage or Abuja"
+          // @ts-ignore
+          value={filterTxt}
+          // @ts-ignore
+          onChange={e => {
+            const _val = e.target.value;
+            setfilterTxt(_val)
+          }}
+        />
+
+        <Select
+          style={{ width: '23%', marginLeft: '1%', }}
+          placeholder='Filter By'
+          label='Filter-By'
+          value={filterBy}
+          onChange={(e) => {
+            const _val = e.target.value;
+
+            setfilterBy(_val)
+          }}
+        >
+          <MenuItem value={'none'}>None</MenuItem>
+          <MenuItem value={'category'}>Category</MenuItem>
+          <MenuItem value={'state'}>State</MenuItem>
+        </Select>
       </Box>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>

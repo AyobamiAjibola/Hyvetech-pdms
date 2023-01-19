@@ -227,6 +227,7 @@ declare module '@app-interfaces' {
     width: string;
     questionId?: any;
     file?: File;
+    partner?: any;
   }
 
   interface IVINDecoderSchema {
