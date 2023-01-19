@@ -23,7 +23,7 @@ const rideShareDriverRepository = new RideShareDriverRepository_1.default();
 function authenticateRouteWrapper(handler) {
     return async function (req, res, next) {
         const headers = req.headers;
-        console.log(req);
+        // console.log(req)
         const authorization = headers.authorization;
         const cookies = req.signedCookies;
         const key = settings_1.default.jwt.key;

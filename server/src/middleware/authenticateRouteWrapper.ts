@@ -26,7 +26,7 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
   return async function (req: Request, res: Response, next: NextFunction) {
     const headers = req.headers;
 
-    console.log(req)
+    // console.log(req)
 
     const authorization = headers.authorization;
     const cookies = req.signedCookies;

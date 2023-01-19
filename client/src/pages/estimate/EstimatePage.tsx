@@ -252,8 +252,14 @@ function EstimatePage() {
             <Typography gutterBottom>
               Subtotal: {formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}
             </Typography>
-            <Typography gutterBottom>VAT-Labor(7.5%): {estimate.tax}</Typography>
-            <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography>
+            <Typography gutterBottom>
+              VAT(7.5%):
+              {
+                // @ts-ignore
+                parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0)
+              }.00
+            </Typography>
+            {/* <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography> */}
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>
