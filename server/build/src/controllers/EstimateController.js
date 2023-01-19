@@ -285,6 +285,7 @@ class EstimateController {
                 firstName: value.firstName,
                 lastName: value.lastName,
                 phone: value.phone,
+                email: value.email,
             };
             customer = await dao_1.default.customerDAOService.create(data);
             await customer.$set('vehicles', [vehicle]);
