@@ -302,8 +302,7 @@ export default class PartnerController {
 
       return Promise.resolve({
         code: HttpStatus.OK.code,
-        message: `Partner Account Adjusted successfully.`,
-        partner
+        message: `Partner Account Adjusted successfully.`
       } as HttpResponse<void>);
     } catch (e) {
       return Promise.reject(e);

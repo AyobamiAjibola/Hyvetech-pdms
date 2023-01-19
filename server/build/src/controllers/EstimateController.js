@@ -52,9 +52,8 @@ const AppEventEmitter_1 = require("../services/AppEventEmitter");
 const BillingInformation_1 = __importDefault(require("../models/BillingInformation"));
 const decorators_1 = require("../decorators");
 const sequelize_1 = require("sequelize");
-const create_customer_success_email_1 = __importDefault(require("../resources/templates/email/create_customer_success_email"));
-const email_content_1 = __importDefault(require("../resources/templates/email/email_content"));
 const rabbitmq_email_manager_1 = __importDefault(require("rabbitmq-email-manager"));
+const create_customer_from_estimate_1 = __importDefault(require("../resources/templates/email/create_customer_from_estimate"));
 class EstimateController {
     async create(req) {
         const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
@@ -248,11 +247,14 @@ class EstimateController {
             const vin = await dao_1.default.vinDAOService.findByAny({
                 where: { vin: value.vin },
             });
-            if (!vin)
-                return Promise.reject(CustomAPIError_1.default.response(`VIN: ${value.vin} does not exist.`, HttpStatus_1.default.NOT_FOUND.code));
-            await vin.update({
-                plateNumber: value.plateNumber,
-            });
+            const isVinExistMandatory = false;
+            if (isVinExistMandatory) {
+                if (!vin)
+                    return Promise.reject(CustomAPIError_1.default.response(`VIN: ${value.vin} does not exist.`, HttpStatus_1.default.NOT_FOUND.code));
+                await vin.update({
+                    plateNumber: value.plateNumber,
+                });
+            }
             vehicle = await dao_1.default.vehicleDAOService.create(data);
         }
         else {
@@ -289,15 +291,19 @@ class EstimateController {
             // send email of user info
             // start
             let user = customer;
-            const mailText = (0, create_customer_success_email_1.default)({
-                username: user.email,
-                password: user.password,
-                loginUrl: process.env.CUSTOMER_APP_HOST,
-            });
-            const mail = (0, email_content_1.default)({
-                firstName: user?.firstName,
-                text: mailText,
-                signature: process.env.SMTP_EMAIL_SIGNATURE,
+            // const mailText = create_customer_success_email({
+            //   username: user.email,
+            //   password: user.password,
+            //   loginUrl: process.env.CUSTOMER_APP_HOST,
+            // });
+            // const mail = email_content({
+            //   firstName: user?.firstName,
+            //   text: mailText,
+            //   signature: process.env.SMTP_EMAIL_SIGNATURE,
+            // });
+            const mail = (0, create_customer_from_estimate_1.default)({
+                firstName: customer.firstName,
+                lastName: customer.lastName,
             });
             //todo: Send email with credentials
             await rabbitmq_email_manager_1.default.publish({
@@ -308,7 +314,7 @@ class EstimateController {
                         name: process.env.SMTP_EMAIL_FROM_NAME,
                         address: process.env.SMTP_EMAIL_FROM,
                     },
-                    subject: `Welcome to Jiffix ${value.companyName}`,
+                    subject: `You Have a New Estimate`,
                     html: mail,
                     bcc: [process.env.SMTP_CUSTOMER_CARE_EMAIL, process.env.SMTP_EMAIL_FROM],
                 },

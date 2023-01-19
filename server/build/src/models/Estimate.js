@@ -37,6 +37,22 @@ exports.estimateFields = {
             required: 'Last Name is required',
         },
     },
+    email: {
+        name: 'email',
+        label: 'Email',
+        error: {
+            invalid: 'Email is invalid',
+            required: 'Email is required',
+        },
+    },
+    state: {
+        name: 'state',
+        label: 'State',
+        error: {
+            invalid: 'State is invalid',
+            required: 'State is required',
+        },
+    },
     phone: {
         name: 'phone',
         label: 'Phone Number',
@@ -234,6 +250,9 @@ exports.$createEstimateSchema = {
     id: joi_1.default.number().required().label('Partner Id'),
     firstName: joi_1.default.string().required().label(exports.estimateFields.firstName.label),
     lastName: joi_1.default.string().required().label(exports.estimateFields.lastName.label),
+    email: joi_1.default.string().optional().label(exports.estimateFields.email.label),
+    // @ts-ignore
+    state: joi_1.default.string().optional().label(exports.estimateFields.state.label),
     phone: joi_1.default.string().required().label(exports.estimateFields.phone.label),
     addressType: joi_1.default.string().required().label(exports.estimateFields.addressType.label),
     address: joi_1.default.string().required().label(exports.estimateFields.address.label),
@@ -259,6 +278,9 @@ exports.$saveEstimateSchema = {
     id: joi_1.default.number().required().label('Partner Id'),
     firstName: joi_1.default.string().allow('').label(exports.estimateFields.firstName.label),
     lastName: joi_1.default.string().allow('').label(exports.estimateFields.lastName.label),
+    email: joi_1.default.string().optional().label(exports.estimateFields.email.label),
+    // @ts-ignore
+    state: joi_1.default.string().optional().label(exports.estimateFields.state.label),
     phone: joi_1.default.string().allow('').label(exports.estimateFields.phone.label),
     addressType: joi_1.default.string().allow('').label(exports.estimateFields.addressType.label),
     address: joi_1.default.string().allow('').label(exports.estimateFields.address.label),

@@ -98,5 +98,11 @@ const partnerEndpoints = [
         path: '/partners/:partnerId',
         handler: partnerHandler_1.deletePartnerHandler,
     },
+    {
+        name: 'toggle partner',
+        method: 'post',
+        path: '/partners-toggle/:partnerId',
+        handler: partnerHandler_1.togglePartnerHandler,
+    },
 ];
 exports.default = partnerEndpoints;

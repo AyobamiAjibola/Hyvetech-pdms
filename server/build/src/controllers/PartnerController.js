@@ -114,7 +114,8 @@ class PartnerController {
                         email: value.email,
                         firstName: 'Admin',
                         lastName: 'Admin',
-                        active: true,
+                        // active: true,
+                        active: false,
                         password,
                         rawPassword: password,
                     };
@@ -209,6 +210,33 @@ class PartnerController {
                 }
             });
         });
+    }
+    async togglePartner(req) {
+        // start
+        try {
+            const partnerId = req.params.partnerId;
+            const partner = await dao_1.default.partnerDAOService.findById(+partnerId, { include: [{ all: true }] });
+            if (!partner)
+                return Promise.reject(CustomAPIError_1.default.response('Customer does not exist', HttpStatus_1.default.NOT_FOUND.code));
+            console.log(partner, "partner");
+            const user_id = partner.users[0].id;
+            const user_active = partner.users[0].active;
+            await User_1.default.update({
+                active: !user_active,
+            }, {
+                where: {
+                    id: user_id
+                }
+            });
+            return Promise.resolve({
+                code: HttpStatus_1.default.OK.code,
+                message: `Partner Account Adjusted successfully.`
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+        // end
     }
     async deletePartner(req) {
         try {
@@ -681,9 +709,9 @@ class PartnerController {
                     Object.assign(driverInfo[i], {
                         query: `${driverInfo[i].query} ${vehicle.plateNumber} ${vehicle.vin}`,
                     });
-                    Object.assign(driverInfo[i], {
-                        fullName: `${driverInfo[i].fullName} ${(vehicle.plateNumber !== "") ? "plate:" + vehicle.plateNumber : ""} vin:${(vehicle.vin !== "") ? "vin:" + vehicle.vin : ""}`,
-                    });
+                    // Object.assign(driverInfo[i], {
+                    //   fullName: `${driverInfo[i].fullName} ${(vehicle.plateNumber !== "") ? "plate:"+vehicle.plateNumber : ""} vin:${(vehicle.vin !== "") ? "vin:"+vehicle.vin : "" }`,
+                    // });
                 }
             }
             return Promise.resolve(response);

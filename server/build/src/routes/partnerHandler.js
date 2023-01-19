@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePlanHandler = exports.partnerJobsHandler = exports.driversFilterDataHandler = exports.filterDriversHandler = exports.getPaymentPlansHandler = exports.getPlansHandler = exports.addPaymentPlanHandler = exports.addPlanHandler = exports.getPartnerHandler = exports.getPartnersHandler = exports.createPartnerSettingsHandler = exports.createPartnerKycHandler = exports.deletePartnerHandler = exports.createPartnerHandler = void 0;
+exports.deletePlanHandler = exports.partnerJobsHandler = exports.driversFilterDataHandler = exports.filterDriversHandler = exports.getPaymentPlansHandler = exports.getPlansHandler = exports.addPaymentPlanHandler = exports.addPlanHandler = exports.getPartnerHandler = exports.getPartnersHandler = exports.createPartnerSettingsHandler = exports.createPartnerKycHandler = exports.togglePartnerHandler = exports.deletePartnerHandler = exports.createPartnerHandler = void 0;
 const PartnerController_1 = __importDefault(require("../controllers/PartnerController"));
 const authenticateRouteWrapper_1 = __importDefault(require("../middleware/authenticateRouteWrapper"));
 const PasswordEncoder_1 = __importDefault(require("../utils/PasswordEncoder"));
@@ -15,6 +15,10 @@ exports.createPartnerHandler = (0, authenticateRouteWrapper_1.default)(async (re
 });
 exports.deletePartnerHandler = (0, authenticateRouteWrapper_1.default)(async (req, res) => {
     const result = await partnerController.deletePartner(req);
+    res.status(result.code).json(result);
+});
+exports.togglePartnerHandler = (0, authenticateRouteWrapper_1.default)(async (req, res) => {
+    const result = await partnerController.togglePartner(req);
     res.status(result.code).json(result);
 });
 exports.createPartnerKycHandler = (0, authenticateRouteWrapper_1.default)(async (req, res) => {

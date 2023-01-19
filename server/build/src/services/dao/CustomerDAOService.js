@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Role_1 = __importDefault(require("../../models/Role"));
 const Generic_1 = __importDefault(require("../../utils/Generic"));
 const settings_1 = __importDefault(require("../../config/settings"));
 const moment_1 = __importDefault(require("moment/moment"));
@@ -41,12 +42,15 @@ class CustomerDAOService {
             values.rawPassword = rawPassword;
         }
         //get customer role
-        const role = await this.roleRepository.findOne({
-            where: { name: "CUSTOMER_ROLE" },
-            // where: { name: settings_1?.default?.roles[1] || "CUSTOMER_ROLE" },
+        // Role.findOne
+        const role = await Role_1.default.findOne({
+            where: {
+                // name: settings?.roles[1] || "CUSTOMER_ROLE"
+                id: 2
+            },
         });
         if (!role) {
-            console.log("CUSTOMER_ROLE")
+            console.log(settings_1.default?.roles[1] || "CUSTOMER_ROLE");
             throw new Error('Role does not exist');
         }
         //create customer
