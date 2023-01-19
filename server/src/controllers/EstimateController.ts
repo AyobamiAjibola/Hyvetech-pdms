@@ -349,6 +349,7 @@ export default class EstimateController {
         firstName: value.firstName,
         lastName: value.lastName,
         phone: value.phone,
+        email: value.email,
       };
 
       customer = await dataSources.customerDAOService.create(data);

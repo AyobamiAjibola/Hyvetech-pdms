@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import TextInputField from '../fields/TextInputField';
 import { formatNumberToIntl, reload } from '../../../utils/generic';
-import SelectField from '../fields/SelectField';
+import SelectField, { ISelectData } from '../fields/SelectField';
 import WarrantyFields from './WarrantyFields';
 import QuantityFields from './QuantityFields';
 import VehicleInformationFields from './VehicleInformationFields';
@@ -19,7 +19,7 @@ import { IDriversFilterData, IVINDecoderSchema } from '@app-interfaces';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
-import { ESTIMATE_STATUS } from '../../../config/constants';
+import { ESTIMATE_STATUS, STATES } from '../../../config/constants';
 // import useEstimate from '../../../hooks/useEstimate';
 import useAdmin from '../../../hooks/useAdmin';
 import { getCustomerAction } from '../../../store/actions/customerActions';
@@ -67,6 +67,9 @@ function EstimateForm(props: IProps) {
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
   const [vinOptions, setvinOptions] = useState<any>([]);
+
+  // @ts-ignore
+  const [states, setStates] = useState<ISelectData[]>([]);
 
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
   const estimateReducer = useAppSelector(state => state.estimateReducer);
@@ -266,6 +269,17 @@ function EstimateForm(props: IProps) {
   }, [estimateReducer.saveEstimateStatus, estimateReducer.updateEstimateStatus]);
 
   useEffect(() => {
+    if (
+
+      (estimateReducer.saveEstimateStatus == 'completed') ||
+      (estimateReducer.updateEstimateStatus == 'completed') ||
+      (estimateReducer.createEstimateStatus == 'completed') ||
+      (estimateReducer.sendDraftEstimateStatus == 'completed')) {
+      reload()
+    }
+  }, [estimateReducer.saveEstimateStatus, estimateReducer.updateEstimateStatus, estimateReducer.createEstimateStatus, estimateReducer.sendDraftEstimateStatus])
+
+  useEffect(() => {
     return () => {
       clearTimeout(timer);
       dispatch(clearGetVehicleVINStatus());
@@ -279,25 +293,34 @@ function EstimateForm(props: IProps) {
   };
 
   useEffect(() => {
-    if (value?.id !== (null || undefined)) {
-      // console.log(value)
-      if (customerReducer.getCustomerStatus === "completed") {
-        const _customer: any = customerReducer.customer;
-        console.log(_customer)
+    // if (value?.id !== (null || undefined)) {
+    // @ts-ignore
+    // if (true) {
+    // console.log(value)
+    if (customerReducer.getCustomerStatus === "completed") {
+      const _customer: any = customerReducer.customer;
+      console.log(_customer)
 
-        // upto-populate info
-        setFieldValue(fields.firstName.name, _customer.firstName);
-        setFieldValue(fields.lastName.name, _customer.lastName);
-        setFieldValue(fields.phone.name, _customer.phone);
-        setFieldValue(fields.email.name, _customer.email);
-        setFieldValue(fields.state.name, _customer.contacts[0]?.state || '');
-        // alert(_customer.contacts[0]?.state || '..')
+      // upto-populate info
+      setFieldValue(fields.firstName.name, _customer.firstName);
+      setFieldValue(fields.lastName.name, _customer.lastName);
+      setFieldValue(fields.phone.name, _customer.phone);
+      setFieldValue(fields.email.name, _customer.email);
+      setFieldValue(fields.state.name, _customer.contacts[0]?.state || '');
 
-        const vinList = (_customer.vehicles).map((_data: any) => (_data?.vin || ""));
-        setvinOptions(vinList)
-        // alert(_customer.lastName)
-      }
+      // handleChange({
+      //   target: {
+      //     name: fields.state.name,
+      //     value: _customer.contacts[0]?.state || ''
+      //   }
+      // })
+      // alert(_customer.contacts[0]?.state || '..')
+
+      const vinList = (_customer.vehicles).map((_data: any) => (_data?.vin || ""));
+      setvinOptions(vinList)
+      // alert(_customer.lastName)
     }
+    // }
   }, [value, customerReducer.getCustomerStatus])
 
   // listen for tax changes and adjust
@@ -312,6 +335,15 @@ function EstimateForm(props: IProps) {
       setFieldValue(fields.taxPart.name, 0)
     }
   }, [enableTaxLabor, enableTaxPart, values.taxPart, values.tax])
+
+  useEffect(() => {
+    const newStates = STATES.map(state => ({
+      label: state.name,
+      value: state.name,
+    }));
+
+    setStates(newStates);
+  }, []);
 
   return (
     <React.Fragment>
@@ -388,13 +420,30 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={3}>
-            <TextInputField
-              onChange={handleChange}
-              label={fields.state.label}
-              // @ts-ignore
-              value={values.state}
-              name={fields.state.name}
-            />
+            {
+              (customerReducer.getCustomerStatus === "completed") ?
+                <TextInputField
+                  onChange={handleChange}
+                  label={fields.state.label}
+                  // @ts-ignore
+                  value={values.state}
+                  name={fields.state.name}
+                />
+                :
+                <SelectField
+                  onChange={e => {
+                    console.log(e)
+                  }}
+                  value={values.state}
+                  name={fields.state.name}
+                  label={fields.state.label}
+                  data={states}
+                  fullWidth
+                />
+
+            }
+
+
           </Grid>
 
           <Grid item xs={3}>
@@ -566,7 +615,7 @@ function EstimateForm(props: IProps) {
                       <Grid item style={{}}>
                         {/* disable tax for labour */}
                         <div>
-                          <span>Enable Tax</span>
+                          <span>Apply Tax</span>
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
                       </Grid>
@@ -668,7 +717,7 @@ function EstimateForm(props: IProps) {
             <Grid item style={{}}>
               {/* disable tax for labour */}
               <div>
-                <span>Enable Tax</span>
+                <span>Apply Tax</span>
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
             </Grid>

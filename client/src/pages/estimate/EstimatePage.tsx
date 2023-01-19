@@ -61,9 +61,9 @@ function EstimatePage() {
         <Grid>
 
           <Grid>
-            <ArrowBackIosNew onClick={()=> window.history.back()} style={{ position: 'absolute', cursor: 'pointer' }}/>
+            <ArrowBackIosNew onClick={() => window.history.back()} style={{ position: 'absolute', cursor: 'pointer' }} />
           </Grid>
-          
+
         </Grid>
 
         <Typography mb={3} textAlign="center" display="block" variant="subtitle1">
@@ -252,7 +252,7 @@ function EstimatePage() {
             <Typography gutterBottom>
               Subtotal: {formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}
             </Typography>
-            <Typography gutterBottom>VAT(7.5%): {estimate.tax}</Typography>
+            <Typography gutterBottom>VAT-Labor(7.5%): {estimate.tax}</Typography>
             <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography>
           </Grid>
         </Grid>

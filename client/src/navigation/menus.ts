@@ -70,12 +70,12 @@ export const partnerDetailTabs: ITab[] = [
 ];
 
 export const driverSearchResultTabs: ITab[] = [
-  { tag: 'driver', name: 'Driver Profile', Element: GarageDriverProfile },
+  { tag: 'driver', name: 'Customer Profile', Element: GarageDriverProfile },
   { tag: 'driver', name: 'Vehicles', Element: GarageVehicles },
 ];
 
 export const customerSearchResultTabs: ITab[] = [
-  { tag: 'profile', name: 'Driver Profile', Element: GarageDriverProfile },
+  { tag: 'profile', name: 'Customer Profile', Element: GarageDriverProfile },
   { tag: 'vehicles', name: 'Vehicles', Element: OwnerVehicles },
   { tag: 'estimate', name: 'Create Estimate', Element: Estimate },
 ];

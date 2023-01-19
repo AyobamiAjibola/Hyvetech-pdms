@@ -8,6 +8,7 @@ import { ILabour, IPart } from '../../components/forms/models/estimateModel';
 import { formatNumberToIntl } from '../../utils/generic';
 import settings from '../../config/settings';
 import { INVOICE_STATUS } from '../../config/constants';
+import { ArrowBackIosNew } from '@mui/icons-material';
 
 interface ILocationState {
   estimate?: IEstimate;
@@ -90,6 +91,15 @@ function InvoicePage() {
   else
     return (
       <React.Fragment>
+
+        <Grid>
+
+          <Grid>
+            <ArrowBackIosNew onClick={() => window.history.back()} style={{ position: 'absolute', cursor: 'pointer' }} />
+          </Grid>
+
+        </Grid>
+
         <Typography mb={3} textAlign="center" display="block" variant="subtitle1">
           #{invoice.code}
         </Typography>
@@ -207,65 +217,65 @@ function InvoicePage() {
           {!parts.length
             ? null
             : parts.map((part, idx1) => {
-                const amount = formatNumberToIntl(parseInt(part.amount));
+              const amount = formatNumberToIntl(parseInt(part.amount));
 
-                return (
-                  <Grid
-                    key={idx1}
-                    item
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    columns={14}
-                    sx={{ pb: 2.5 }}
-                    borderBottom="0.01px solid"
-                    borderColor="#676767">
-                    <Grid item xs={2} />
-                    <Grid item xs={3}>
-                      {part.name}
-                    </Grid>
-                    <Grid item xs={3}>
-                      {part.warranty.warranty} {part.warranty.interval}
-                    </Grid>
-                    <Grid item xs={3}>
-                      {formatNumberToIntl(+part.price)} x {part.quantity.quantity}${part.quantity.unit}
-                    </Grid>
-                    <Grid item xs={3}>
-                      {amount}
-                    </Grid>
+              return (
+                <Grid
+                  key={idx1}
+                  item
+                  container
+                  justifyContent="center"
+                  alignItems="center"
+                  columns={14}
+                  sx={{ pb: 2.5 }}
+                  borderBottom="0.01px solid"
+                  borderColor="#676767">
+                  <Grid item xs={2} />
+                  <Grid item xs={3}>
+                    {part.name}
                   </Grid>
-                );
-              })}
+                  <Grid item xs={3}>
+                    {part.warranty.warranty} {part.warranty.interval}
+                  </Grid>
+                  <Grid item xs={3}>
+                    {formatNumberToIntl(+part.price)} x {part.quantity.quantity}${part.quantity.unit}
+                  </Grid>
+                  <Grid item xs={3}>
+                    {amount}
+                  </Grid>
+                </Grid>
+              );
+            })}
           {!labours.length
             ? null
             : labours.map((labour, idx1) => {
-                return (
-                  <Grid
-                    key={idx1}
-                    item
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    columns={14}
-                    sx={{ pb: 2.5 }}
-                    borderBottom="0.01px solid"
-                    borderColor="#676767">
-                    <Grid item xs={2} />
-                    <Grid item xs={3}>
-                      {labour.title}
-                    </Grid>
-                    <Grid item xs={3}>
-                      -
-                    </Grid>
-                    <Grid item xs={3}>
-                      {formatNumberToIntl(+labour.cost)} x 1
-                    </Grid>
-                    <Grid item xs={3}>
-                      {formatNumberToIntl(+labour.cost)}
-                    </Grid>
+              return (
+                <Grid
+                  key={idx1}
+                  item
+                  container
+                  justifyContent="center"
+                  alignItems="center"
+                  columns={14}
+                  sx={{ pb: 2.5 }}
+                  borderBottom="0.01px solid"
+                  borderColor="#676767">
+                  <Grid item xs={2} />
+                  <Grid item xs={3}>
+                    {labour.title}
                   </Grid>
-                );
-              })}
+                  <Grid item xs={3}>
+                    -
+                  </Grid>
+                  <Grid item xs={3}>
+                    {formatNumberToIntl(+labour.cost)} x 1
+                  </Grid>
+                  <Grid item xs={3}>
+                    {formatNumberToIntl(+labour.cost)}
+                  </Grid>
+                </Grid>
+              );
+            })}
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
