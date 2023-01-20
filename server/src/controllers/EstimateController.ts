@@ -36,6 +36,7 @@ import create_customer_success_email from '../resources/templates/email/create_c
 import email_content from '../resources/templates/email/email_content';
 import QueueManager from 'rabbitmq-email-manager';
 import create_customer_from_estimate from '../resources/templates/email/create_customer_from_estimate';
+import User from '../models/User';
 
 export default class EstimateController {
   @TryCatch
@@ -278,12 +279,21 @@ export default class EstimateController {
         CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
       );
 
-    const partner = await dataSources.partnerDAOService.findById(value.id, { include: [Contact] });
+    const partner = await dataSources.partnerDAOService.findById(value.id, { include: [Contact, User] });
 
     if (!partner)
       return Promise.reject(
         CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code),
       );
+
+    // check if partner is active
+    try {
+      if ((!(partner?.users[0]?.active || true) || false)) {
+        return Promise.reject(
+          CustomAPIError.response(`Partner Account Inactive`, HttpStatus.NOT_FOUND.code),
+        );
+      }
+    } catch (_e: any) { }
 
     const findVehicle = await dataSources.vehicleDAOService.findByVIN(value.vin);
 

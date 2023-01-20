@@ -54,6 +54,7 @@ const decorators_1 = require("../decorators");
 const sequelize_1 = require("sequelize");
 const rabbitmq_email_manager_1 = __importDefault(require("rabbitmq-email-manager"));
 const create_customer_from_estimate_1 = __importDefault(require("../resources/templates/email/create_customer_from_estimate"));
+const User_1 = __importDefault(require("../models/User"));
 class EstimateController {
     async create(req) {
         const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
@@ -229,9 +230,16 @@ class EstimateController {
             return Promise.reject(CustomAPIError_1.default.response(error.details[0].message, HttpStatus_1.default.BAD_REQUEST.code));
         if (!value)
             return Promise.reject(CustomAPIError_1.default.response(HttpStatus_1.default.INTERNAL_SERVER_ERROR.value, HttpStatus_1.default.INTERNAL_SERVER_ERROR.code));
-        const partner = await dao_1.default.partnerDAOService.findById(value.id, { include: [Contact_1.default] });
+        const partner = await dao_1.default.partnerDAOService.findById(value.id, { include: [Contact_1.default, User_1.default] });
         if (!partner)
             return Promise.reject(CustomAPIError_1.default.response(`Partner with Id: ${value.id} does not exist`, HttpStatus_1.default.NOT_FOUND.code));
+        // check if partner is active
+        try {
+            if ((!(partner?.users[0]?.active || true) || false)) {
+                return Promise.reject(CustomAPIError_1.default.response(`Partner Account Inactive`, HttpStatus_1.default.NOT_FOUND.code));
+            }
+        }
+        catch (_e) { }
         const findVehicle = await dao_1.default.vehicleDAOService.findByVIN(value.vin);
         let vehicle, customer;
         if (!findVehicle) {
