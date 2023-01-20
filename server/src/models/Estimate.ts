@@ -267,7 +267,7 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   parts: Joi.array().required().label(estimateFields.parts.label),
   partsTotal: Joi.number().required().label(estimateFields.partsTotal.label),
   labours: Joi.array().required().label(estimateFields.labours.label),
-  tax: Joi.string().required().label(estimateFields.tax.label),
+  tax: Joi.string().optional().label(estimateFields.tax.label),
   taxPart: Joi.string().optional().label(estimateFields.taxPart.label),
   laboursTotal: Joi.number().required().label(estimateFields.laboursTotal.label),
   grandTotal: Joi.number().required().label(estimateFields.firstName.label),

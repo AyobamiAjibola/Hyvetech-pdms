@@ -1,13 +1,13 @@
 import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import { Divider, Grid, Stack, Typography } from '@mui/material';
+import { Checkbox, Divider, Grid, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send } from '@mui/icons-material';
 import estimateModel, { IEstimateValues } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import TextInputField from '../fields/TextInputField';
-import { formatNumberToIntl } from '../../../utils/generic';
+import { formatNumberToIntl, reload } from '../../../utils/generic';
 import SelectField from '../fields/SelectField';
 import WarrantyFields from './WarrantyFields';
 import QuantityFields from './QuantityFields';
@@ -48,6 +48,9 @@ function InvoiceForm(props: IProps) {
   const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
+
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(true)
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(true)
 
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
 
@@ -194,6 +197,30 @@ function InvoiceForm(props: IProps) {
   const onSend = useCallback(() => {
     if (setSave) setSave(false);
   }, [setSave]);
+
+  // listen for tax changes and adjust
+  useEffect(() => {
+    // check for labor
+    if (!enableTaxLabor) {
+      setFieldValue(fields.tax.name, 0)
+      // setVat(0)
+      console.log('making labor 0', "mainLog1")
+    }
+
+    // check for part
+    if (!enableTaxPart) {
+      setFieldValue(fields.taxPart.name, 0)
+      // setVatPart(0)
+      console.log('making part 0', "mainLog1")
+    }
+  }, [enableTaxLabor, enableTaxPart])
+
+  // listen for reload
+  useEffect(()=>{
+    if( (invoiceReducer.saveInvoiceStatus == 'completed') || (invoiceReducer.sendInvoiceSuccess == 'completed') ){
+      reload()
+    }
+  }, [invoiceReducer.saveInvoiceStatus, invoiceReducer.sendInvoiceSuccess])
 
   return (
     <React.Fragment>
@@ -368,21 +395,29 @@ function InvoiceForm(props: IProps) {
                       </IconButton>
                     </Grid>
                     <Grid item xs={12} container spacing={2} columns={13}>
-                      <Grid item xs={8} />
+                      <Grid item xs={6} />
                       <Grid item xs={4}>
 
-                        <TextField
+                        {((enableTaxPart) && (<TextField
                           name={fields.taxPart.name}
                           value={values.taxPart}
                           label={`${fields.taxPart.label} (VAT 7.5%)`}
                           variant="outlined"
                           fullWidth
                           sx={{ mb: 2 }}
-                        />
+                        />))}
 
                         Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
-                      <Grid item />
+                      
+                      <Grid item style={{}}>
+                        {/* disable tax for labour */}
+                        <div>
+                          <span>Apply Tax</span>
+                          <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
+                        </div>
+                      </Grid>
+
                     </Grid>
                   </React.Fragment>
                 );
@@ -464,19 +499,27 @@ function InvoiceForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12} container spacing={2} columns={13}>
-            <Grid item xs={8} />
+            <Grid item xs={6} />
             <Grid item xs={4}>
-              <TextField
+              {((enableTaxLabor) && (<TextField
                 name={fields.tax.name}
                 value={values.tax}
                 label={`${fields.tax.label} (VAT 7.5%)`}
                 variant="outlined"
                 fullWidth
                 sx={{ mb: 2 }}
-              />
+              />))}
               <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
-            <Grid item />
+            
+            <Grid item style={{}}>
+              {/* disable tax for labour */}
+              <div>
+                <span>Apply Tax</span>
+                <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
+              </div>
+            </Grid>
+
           </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">

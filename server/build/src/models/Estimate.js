@@ -266,7 +266,7 @@ exports.$createEstimateSchema = {
     parts: joi_1.default.array().required().label(exports.estimateFields.parts.label),
     partsTotal: joi_1.default.number().required().label(exports.estimateFields.partsTotal.label),
     labours: joi_1.default.array().required().label(exports.estimateFields.labours.label),
-    tax: joi_1.default.string().required().label(exports.estimateFields.tax.label),
+    tax: joi_1.default.string().optional().label(exports.estimateFields.tax.label),
     taxPart: joi_1.default.string().optional().label(exports.estimateFields.taxPart.label),
     laboursTotal: joi_1.default.number().required().label(exports.estimateFields.laboursTotal.label),
     grandTotal: joi_1.default.number().required().label(exports.estimateFields.firstName.label),
