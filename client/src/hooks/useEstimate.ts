@@ -190,6 +190,8 @@ export default function useEstimate() {
       address: values.address,
       firstName: values.firstName,
       lastName: values.lastName,
+      email: values.email,
+      state: values.state,
       phone: values.phone,
       depositAmount: values.depositAmount,
       jobDurationValue: values.jobDuration.count,
@@ -205,6 +207,9 @@ export default function useEstimate() {
       laboursTotal: Math.round(labourTotal),
       grandTotal: Math.round(grandTotal),
     };
+
+    // console.log("dataSent", data)
+    // return
 
     dispatch(createEstimateAction(data));
   };
@@ -225,6 +230,8 @@ export default function useEstimate() {
       address: values.address,
       firstName: values.firstName,
       lastName: values.lastName,
+      email: values.email,
+      state: values.state,
       phone: values.phone,
       depositAmount: values.depositAmount,
       jobDurationValue: values.jobDuration.count,
@@ -260,6 +267,8 @@ export default function useEstimate() {
       address: values.address,
       firstName: values.firstName,
       lastName: values.lastName,
+      email: values.email,
+      state: values.state,
       phone: values.phone,
       depositAmount: values.depositAmount,
       jobDurationValue: values.jobDuration.count,
@@ -313,6 +322,8 @@ export default function useEstimate() {
       address: values.address,
       firstName: values.firstName,
       lastName: values.lastName,
+      email: values.email,
+      state: values.state,
       phone: values.phone,
       depositAmount: values.depositAmount,
       jobDurationValue: values.jobDuration.count,
