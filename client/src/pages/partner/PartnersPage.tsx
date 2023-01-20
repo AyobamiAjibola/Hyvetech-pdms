@@ -186,6 +186,8 @@ export default function PartnersPage() {
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
         {viewData.map((image: any) => {
+          console.log(image, "imageData")
+          const active = image?.partner?.users[0]?.active || false;
           return (
             <ImageButton
               focusRipple
@@ -197,6 +199,16 @@ export default function PartnersPage() {
               <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
               <ImageBackdrop className="MuiImageBackdrop-root" />
               <Image>
+
+                <div style={{
+                  position: 'absolute',
+                  top: 20,
+                  right: 20,
+                }}>
+                  <Button disabled variant="outlined" color="secondary">
+                    {active ? 'Active' : 'In-Active'}
+                  </Button>
+                </div>
                 <Typography
                   component="span"
                   variant="subtitle1"
