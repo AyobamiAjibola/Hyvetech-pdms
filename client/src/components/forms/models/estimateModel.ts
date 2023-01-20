@@ -310,8 +310,8 @@ const schema = Yup.object().shape({
   model: Yup.string().nullable().label(fields.model.label),
   modelYear: Yup.string().nullable().label(fields.modelYear.label),
   plateNumber: Yup.string().nullable().label(fields.plateNumber.label),
-  tax: Yup.string().nullable().label(fields.tax.label),
-  taxPart: Yup.string().nullable().label(fields.taxPart.label),
+  tax: Yup.string().optional().nullable().label(fields.tax.label),
+  taxPart: Yup.string().optional().nullable().label(fields.taxPart.label),
   depositAmount: Yup.string().nullable().label(fields.depositAmount.label),
   additionalDeposit: Yup.string().nullable().label(fields.additionalDeposit.label),
 });
