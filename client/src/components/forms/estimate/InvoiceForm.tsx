@@ -217,7 +217,7 @@ function InvoiceForm(props: IProps) {
 
   // listen for reload
   useEffect(()=>{
-    if( (invoiceReducer.saveInvoiceStatus == 'completed') || (invoiceReducer.sendInvoiceSuccess == 'completed') ){
+    if( (invoiceReducer.saveInvoiceStatus == 'completed') || (invoiceReducer.sendInvoiceStatus == 'completed') ){
       reload()
     }
   }, [invoiceReducer.saveInvoiceStatus, invoiceReducer.sendInvoiceSuccess])
