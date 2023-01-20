@@ -328,13 +328,17 @@ function EstimateForm(props: IProps) {
     // check for labor
     if (!enableTaxLabor) {
       setFieldValue(fields.tax.name, 0)
+      // setVat(0)
+      console.log('making labor 0', "mainLog1")
     }
 
     // check for part
     if (!enableTaxPart) {
       setFieldValue(fields.taxPart.name, 0)
+      // setVatPart(0)
+      console.log('making part 0', "mainLog1")
     }
-  }, [enableTaxLabor, enableTaxPart, values.taxPart, values.tax])
+  }, [enableTaxLabor, enableTaxPart])
 
   useEffect(() => {
     const newStates = STATES.map(state => ({

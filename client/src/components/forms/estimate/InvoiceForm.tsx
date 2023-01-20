@@ -45,6 +45,7 @@ const { fields } = estimateModel;
 
 function InvoiceForm(props: IProps) {
   const [vat, setVat] = useState<number>(0);
+  const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
@@ -108,7 +109,15 @@ function InvoiceForm(props: IProps) {
   }, [labourTotal, setFieldValue]);
 
   useEffect(() => {
-    const _grandTotal = vat + partTotal + labourTotal;
+    const vat = 7.5 * 0.01;
+    const tax = partTotal * vat;
+
+    setFieldValue('taxPart', formatNumberToIntl(tax));
+    setVatPart(tax);
+  }, [partTotal, setFieldValue]);
+
+  useEffect(() => {
+    const _grandTotal = vat + vatPart + partTotal + labourTotal;
     const _depositAmount = parseInt(values.depositAmount);
     const _dueBalance = _grandTotal - _depositAmount;
 
@@ -121,7 +130,7 @@ function InvoiceForm(props: IProps) {
     } else {
       setRefundable(0);
     }
-  }, [vat, partTotal, labourTotal, setGrandTotal, setDueBalance, grandTotal, values.depositAmount, setRefundable]);
+  }, [vat, vatPart, partTotal, labourTotal, setGrandTotal, setDueBalance, grandTotal, values.depositAmount, setRefundable]);
 
   const _handleChangeVIN = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -361,6 +370,16 @@ function InvoiceForm(props: IProps) {
                     <Grid item xs={12} container spacing={2} columns={13}>
                       <Grid item xs={8} />
                       <Grid item xs={4}>
+
+                        <TextField
+                          name={fields.taxPart.name}
+                          value={values.taxPart}
+                          label={`${fields.taxPart.label} (VAT 7.5%)`}
+                          variant="outlined"
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
+
                         Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
                       <Grid item />

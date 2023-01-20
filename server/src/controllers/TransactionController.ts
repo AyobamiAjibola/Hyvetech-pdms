@@ -149,7 +149,11 @@ export default class TransactionController {
 
     const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}${endpoint}`;
     const depositAmount = value.depositAmount;
-    let serviceCharge = 0.015 * depositAmount + 100;
+    let serviceCharge = 0.015 * depositAmount;
+
+    if (depositAmount >= 2500) {
+      serviceCharge = 0.015 * depositAmount + 100;
+    }
 
     if (serviceCharge >= 2000) serviceCharge = 2000;
 
@@ -169,9 +173,8 @@ export default class TransactionController {
       reference: data.reference,
       authorizationUrl: data.authorization_url,
       type: 'Deposit',
-      purpose: `${partner.name}: Estimate-${estimate.code}${
-        value.grandTotal === value.depositAmount ? ' Payment' : ' Deposit Payment'
-      }`,
+      purpose: `${partner.name}: Estimate-${estimate.code}${value.grandTotal === value.depositAmount ? ' Payment' : ' Deposit Payment'
+        }`,
       status: initResponse.data.message,
       amount: value.depositAmount,
     };

@@ -76,8 +76,8 @@ class InvoiceController {
         };
         const dueAmount = estimate.grandTotal - estimate.depositAmount;
         let systemFee = estimate.depositAmount * 0.035;
-        if (systemFee >= 5000)
-            systemFee = 5000;
+        if (systemFee >= 500)
+            systemFee = 500;
         const partnerFee = Math.round(estimate.depositAmount - systemFee);
         //get default payment gateway
         const paymentGateway = await dao_1.default.paymentGatewayDAOService.findByAny({

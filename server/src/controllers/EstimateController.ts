@@ -384,6 +384,8 @@ export default class EstimateController {
       const mail = create_customer_from_estimate({
         firstName: customer.firstName,
         lastName: customer.lastName,
+        partner,
+        vehichleData: `${value.modelYear} ${value.make} ${value.model}`
       })
 
       //todo: Send email with credentials

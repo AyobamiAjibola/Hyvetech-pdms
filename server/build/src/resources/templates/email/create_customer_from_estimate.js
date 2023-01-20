@@ -266,7 +266,7 @@ function create_customer_from_estimate(config) {
 
                     <!-- <p class="defaultPassword">YOUR PASSWORD WAS CHANGED</p> -->
                     <p class="utilsClass">Dear ${config.firstName} ${config.lastName},</p>
-                    <p class="utilsClass">Thank you for visiting us. Your estimate can be viewed on the AutoHyve mobile
+                    <p class="utilsClass">Thank you for visiting ${config?.partner?.name || 'us'}. Your ${config?.vehichleData || ''} estimate can be viewed on the AutoHyve mobile
                         application. Click
                         on the button below to
                         download the app and login to view estimate.</p>
@@ -283,7 +283,7 @@ function create_customer_from_estimate(config) {
 
         </table>
         <p class="btnContainer">
-            <button class="btn">View Estimate</button>
+            <a href="https://onelink.to/fh7uc5"><button class="btn">View Estimate</button></a>
         </p>
 
         <p class="bottomBorder"></p>

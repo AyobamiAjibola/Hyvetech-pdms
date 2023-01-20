@@ -111,7 +111,10 @@ class TransactionController {
         endpoint = '/transaction/initialize';
         const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}${endpoint}`;
         const depositAmount = value.depositAmount;
-        let serviceCharge = 0.015 * depositAmount + 100;
+        let serviceCharge = 0.015 * depositAmount;
+        if (depositAmount >= 2500) {
+            serviceCharge = 0.015 * depositAmount + 100;
+        }
         if (serviceCharge >= 2000)
             serviceCharge = 2000;
         const amount = Math.round((serviceCharge + depositAmount) * 100);

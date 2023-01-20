@@ -313,6 +313,8 @@ class EstimateController {
             const mail = (0, create_customer_from_estimate_1.default)({
                 firstName: customer.firstName,
                 lastName: customer.lastName,
+                partner,
+                vehichleData: `${value.modelYear} ${value.make} ${value.model}`
             });
             //todo: Send email with credentials
             await rabbitmq_email_manager_1.default.publish({

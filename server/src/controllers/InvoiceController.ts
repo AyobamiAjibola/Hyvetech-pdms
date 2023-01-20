@@ -103,7 +103,7 @@ export default class InvoiceController {
     const dueAmount = estimate.grandTotal - estimate.depositAmount;
     let systemFee = estimate.depositAmount * 0.035;
 
-    if (systemFee >= 5000) systemFee = 5000;
+    if (systemFee >= 500) systemFee = 500;
 
     const partnerFee = Math.round(estimate.depositAmount - systemFee);
 
@@ -253,18 +253,18 @@ export default class InvoiceController {
     }
 
     // sort by date updated
-    for(let i = 1 ; i < invoices.length ; i++ ){
+    for (let i = 1; i < invoices.length; i++) {
 
-      for (let j = i ; j > 0 ; j--){
-        const _t1 : any = invoices[j];
-        const _t0 : any = invoices[j - 1];
+      for (let j = i; j > 0; j--) {
+        const _t1: any = invoices[j];
+        const _t0: any = invoices[j - 1];
 
-        if( ((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime()) ){
+        if (((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime())) {
           invoices[j] = _t0;
           invoices[j - 1] = _t1;
 
           // console.log('sorted')
-        }else{
+        } else {
           // console.log('no sorted')
         }
 

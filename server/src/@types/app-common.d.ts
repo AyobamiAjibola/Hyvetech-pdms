@@ -251,6 +251,8 @@ export declare namespace appCommonTypes {
     numOfInspections?: number;
     numOfVehicles?: string;
     planCategory?: string;
+    partner?: any;
+    vehichleData?: any;
     username?: string;
     password?: string;
     appointmentDate?: string;
