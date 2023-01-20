@@ -26,7 +26,8 @@ export const $sendInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   parts: Joi.array().required().label(estimateFields.parts.label),
   partsTotal: Joi.number().required().label(estimateFields.partsTotal.label),
   labours: Joi.array().required().label(estimateFields.labours.label),
-  tax: Joi.string().required().label(estimateFields.tax.label),
+  tax: Joi.any().optional().label(estimateFields.tax.label),
+  taxPart: Joi.any().optional().label(estimateFields.tax.label),
   laboursTotal: Joi.number().required().label(estimateFields.laboursTotal.label),
   grandTotal: Joi.number().required().label(estimateFields.firstName.label),
   depositAmount: Joi.string().required().label(estimateFields.depositAmount.label),
@@ -45,7 +46,8 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   parts: Joi.array().allow().label(estimateFields.parts.label),
   partsTotal: Joi.number().allow().label(estimateFields.partsTotal.label),
   labours: Joi.array().allow().label(estimateFields.labours.label),
-  tax: Joi.string().allow('').label(estimateFields.tax.label),
+  tax: Joi.any().allow('').optional().label(estimateFields.tax.label),
+  taxPart: Joi.any().allow('').optional().label(estimateFields.taxPart.label),
   laboursTotal: Joi.number().allow().label(estimateFields.laboursTotal.label),
   grandTotal: Joi.number().allow().label(estimateFields.firstName.label),
   depositAmount: Joi.string().allow('').label(estimateFields.depositAmount.label),
@@ -111,6 +113,9 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
 
   @Column(DataType.STRING)
   declare tax: string;
+
+  @Column(DataType.STRING)
+  declare taxPart: string;
 
   @Column(DataType.INTEGER)
   declare jobDurationValue: number;
