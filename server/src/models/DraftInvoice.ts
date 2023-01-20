@@ -58,6 +58,9 @@ export default class DraftInvoice extends Model<InferAttributes<DraftInvoice>, I
   @Column(DataType.STRING)
   declare tax: string;
 
+  @Column(DataType.STRING)
+  declare taxPart: string;
+
   @Column(DataType.INTEGER)
   declare jobDurationValue: number;
 
