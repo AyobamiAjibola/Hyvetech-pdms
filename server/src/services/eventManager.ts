@@ -198,13 +198,14 @@ export default function eventManager(io: Server) {
           let token = ((whichPushToken).replace("[android]-", "")).replace("[ios]-", "");
           const baseURL = "https://exp.host/--/api/v2/push/send";
 
-          await fetch(baseURL, {
+          const _res = await fetch(baseURL, {
             method: "POST",
-            body: {
+            body: JSON.stringify({
               to: token,
               title: title,
               body: message
-            }
+            }),
+            headers: {'Content-Type': 'application/json'}
           })
 
           // AxiosMain.default.defaults.baseURL = '';
@@ -214,7 +215,7 @@ export default function eventManager(io: Server) {
           //   body: message
           // })
 
-          console.log('sent')
+          console.log('sent', _res)
 
         }catch(e){
           console.log(e)
