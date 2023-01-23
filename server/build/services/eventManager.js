@@ -138,6 +138,7 @@ function eventManager(io) {
                 try {
                     let token = ((whichPushToken).replace("[android]-", "")).replace("[ios]-", "");
                     const baseURL = "https://exp.host/--/api/v2/push/send";
+                    AxiosMain.default.defaults.baseURL = '';
                     await AxiosMain.default.post(baseURL, {
                         to: token,
                         title: title,
