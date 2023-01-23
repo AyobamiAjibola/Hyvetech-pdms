@@ -10,7 +10,7 @@ const constants_1 = require("../config/constants");
 const notification_1 = require("../models/nosql/notification");
 const sequelize_1 = require("sequelize");
 const axios_1 = __importDefault(require("axios"));
-const node_fetch_1 = __importDefault(require("node-fetch"));
+const fetch = require("node-fetch");
 function eventManager(io) {
     try {
         AppEventEmitter_1.appEventEmitter.on(constants_1.RESCHEDULE_APPOINTMENT, (props) => {
@@ -115,7 +115,7 @@ function eventManager(io) {
                 try {
                     let token = ((whichPushToken).replace("[android]-", "")).replace("[ios]-", "");
                     const baseURL = "https://exp.host/--/api/v2/push/send";
-                    await (0, node_fetch_1.default)(baseURL, {
+                    await fetch(baseURL, {
                         method: "POST",
                         body: {
                             to: token,

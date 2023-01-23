@@ -27,9 +27,11 @@ import Vehicle from '../models/Vehicle';
 import Transaction from '../models/Transaction';
 import axios from 'axios';
 import * as AxiosMain from 'axios';
-import fetch from 'node-fetch';
+// import fetch from 'node-fetch';
 import PushNotificationService from './PushNotificationService';
 import Generic from '../utils/Generic';
+
+const fetch = require("node-fetch")
 
 interface AppointmentProps {
   appointment: Appointment;
