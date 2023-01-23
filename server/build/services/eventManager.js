@@ -130,7 +130,7 @@ function eventManager(io) {
                     //   title: title,
                     //   body: message
                     // })
-                    console.log('sent', _res);
+                    console.log('sent', _res, token);
                 }
                 catch (e) {
                     console.log(e);
