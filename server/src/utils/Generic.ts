@@ -310,6 +310,12 @@ export default class Generic {
       response.type = ios;
       response.token = token;
     }
+
+    try{
+      response.type = android;
+      response.token = (response.token).replace(`[${android}]-`, '');
+      response.token = (response.token).replace(`[${ios}]-`, '');
+    }catch(e){}
     
     return response;
   }

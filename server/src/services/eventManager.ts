@@ -184,59 +184,77 @@ export default function eventManager(io: Server) {
 
         await NotificationModel.create(notification);
 
-        const whichPushToken = Generic.whichPushToken(customer.pushToken);
+        // const whichPushToken = Generic.whichPushToken(customer.pushToken);
+        const whichPushToken = (customer.pushToken);
 
         const title = `${partner.name} Estimate`;
         const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
 
+        try{
+          let token = ((whichPushToken).replace("[android]-", "")).replace("[ios]-", "");
+          const baseURL = "https://exp.host/--/api/v2/push/send";
+
+          await axios.post(baseURL, {
+            to: token,
+            title: title,
+            body: message
+          })
+
+          console.log('sent')
+
+        }catch(e){
+          console.log(e)
+        }
+
         io.to(customer.eventId).emit(CREATED_ESTIMATE, { title, message });
 
-        if (whichPushToken.type === 'android') {
-          const fcm = PushNotificationService.fcmMessaging.config({
-            baseURL: process.env.GOOGLE_FCM_HOST as string,
-            experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
-            scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
-            serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY as string,
-            pushToken: whichPushToken.token,
-          });
+        // if (whichPushToken.type === 'android') {
+        //   const fcm = PushNotificationService.fcmMessaging.config({
+        //     baseURL: process.env.GOOGLE_FCM_HOST as string,
+        //     experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
+        //     scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
+        //     serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY as string,
+        //     pushToken: whichPushToken.token,
+        //   });
 
-          const response = await fcm.sendToOne({
-            title,
-            message,
-            sound: true,
-            vibrate: true,
-            priority: 'max',
-          });
+        //   const response = await fcm.sendToOne({
+        //     title,
+        //     message,
+        //     sound: true,
+        //     vibrate: true,
+        //     priority: 'max',
+        //   });
 
-          console.log(response.data);
-        }
+        //   console.log(response.data);
+        // }
 
-        if (whichPushToken.type === 'ios') {
-          const appleKey = process.env.APPLE_KEY as string;
-          const appleKeyId = process.env.APPLE_KEY_ID as string;
-          const appleTeamId = process.env.APPLE_TEAM_ID as string;
+        // if (whichPushToken.type === 'ios') {
+        //   const appleKey = process.env.APPLE_KEY as string;
+        //   const appleKeyId = process.env.APPLE_KEY_ID as string;
+        //   const appleTeamId = process.env.APPLE_TEAM_ID as string;
 
-          const apns = PushNotificationService.apnMessaging.config({
-            production: true,
-            pushToken: whichPushToken.token,
-            token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
-            topic: 'com.jiffixproductmanager.autohyve',
-          });
+        //   const apns = PushNotificationService.apnMessaging.config({
+        //     production: true,
+        //     pushToken: whichPushToken.token,
+        //     token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
+        //     topic: 'com.jiffixproductmanager.autohyve',
+        //   });
 
-          const responses = await apns.sendToOne({
-            alert: title,
-            payload: { message },
-          });
+        //   const responses = await apns.sendToOne({
+        //     alert: title,
+        //     payload: { message },
+        //   });
 
-          if (responses.failed.length) {
-            const final = await apns.sendToOne({
-              alert: title,
-              payload: { message },
-            });
+        //   if (responses.failed.length) {
+        //     const final = await apns.sendToOne({
+        //       alert: title,
+        //       payload: { message },
+        //     });
 
-            console.log(final.failed);
-          } else console.log(responses.sent);
-        }
+        //     console.log(final.failed);
+        //   } else console.log(responses.sent);
+        // }
+
       })();
     });
 
