@@ -20,11 +20,11 @@ type SendToOneConfig = {
 type SendToManyConfig = Omit<SendToOneConfig, 'token'> & { tokens: string[] };
 
 export default function firebaseMessaging(config?: FirebaseMsgConfig) {
-  // let app: ReturnType<() => App>;
+  let app: ReturnType<() => App>;
 
-  // if (config && config.serviceAccount) {
-  //   app = admin.initializeApp({ credential: admin.credential.cert(config.serviceAccount) });
-  // } else app = admin.initializeApp();
+  if (config && config.serviceAccount) {
+    app = admin.initializeApp({ credential: admin.credential.cert(config.serviceAccount) });
+  } else app = admin.initializeApp();
 
   const baseURL = "https://exp.host/--/api/v2/push/send";
 
@@ -38,11 +38,11 @@ export default function firebaseMessaging(config?: FirebaseMsgConfig) {
         data: config.data,
       })
 
-      // await app.messaging().send({
-      //   data: config.data,
-      //   token: config.token,
-      //   notification: config.notification,
-      // });
+      await app.messaging().send({
+        data: config.data,
+        token: config.token,
+        notification: config.notification,
+      });
     },
 
     async sendToMany(config: SendToManyConfig) {
@@ -52,11 +52,12 @@ export default function firebaseMessaging(config?: FirebaseMsgConfig) {
         body: config.notification.body,
         data: config.data,
       })
-      // await app.messaging().sendMulticast({
-      //   data: config.data,
-      //   tokens: config.tokens,
-      //   notification: config.notification,
-      // });
+
+      await app.messaging().sendMulticast({
+        data: config.data,
+        tokens: config.tokens,
+        notification: config.notification,
+      });
     },
   };
 }
