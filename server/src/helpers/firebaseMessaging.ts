@@ -20,11 +20,11 @@ type SendToOneConfig = {
 type SendToManyConfig = Omit<SendToOneConfig, 'token'> & { tokens: string[] };
 
 export default function firebaseMessaging(config?: FirebaseMsgConfig) {
-  let app: ReturnType<() => App>;
+  // let app: ReturnType<() => App>;
 
-  if (config && config.serviceAccount) {
-    app = admin.initializeApp({ credential: admin.credential.cert(config.serviceAccount) });
-  } else app = admin.initializeApp();
+  // if (config && config.serviceAccount) {
+  //   app = admin.initializeApp({ credential: admin.credential.cert(config.serviceAccount) });
+  // } else app = admin.initializeApp();
 
   const baseURL = "https://exp.host/--/api/v2/push/send";
 
