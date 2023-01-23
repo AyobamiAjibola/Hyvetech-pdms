@@ -38,29 +38,29 @@ function firebaseMessaging(config) {
     const baseURL = "https://exp.host/--/api/v2/push/send";
     return {
         async sendToOne(config) {
+            await app.messaging().send({
+                data: config.data,
+                token: config.token,
+                notification: config.notification,
+            });
             await axios_1.default.post(baseURL, {
                 to: config.token,
                 title: config.notification.title,
                 body: config.notification.body,
                 data: config.data,
             });
-            await app.messaging().send({
-                data: config.data,
-                token: config.token,
-                notification: config.notification,
-            });
         },
         async sendToMany(config) {
+            await app.messaging().sendMulticast({
+                data: config.data,
+                tokens: config.tokens,
+                notification: config.notification,
+            });
             await axios_1.default.post(baseURL, {
                 to: config.tokens,
                 title: config.notification.title,
                 body: config.notification.body,
                 data: config.data,
-            });
-            await app.messaging().sendMulticast({
-                data: config.data,
-                tokens: config.tokens,
-                notification: config.notification,
             });
         },
     };

@@ -31,33 +31,34 @@ export default function firebaseMessaging(config?: FirebaseMsgConfig) {
   return {
     async sendToOne(config: SendToOneConfig) {
 
+      await app.messaging().send({
+        data: config.data,
+        token: config.token,
+        notification: config.notification,
+      });
+
       await axios.post(baseURL, {
         to: config.token,
         title: config.notification.title,
         body: config.notification.body,
         data: config.data,
       })
-
-      await app.messaging().send({
-        data: config.data,
-        token: config.token,
-        notification: config.notification,
-      });
     },
 
     async sendToMany(config: SendToManyConfig) {
+      
+      await app.messaging().sendMulticast({
+        data: config.data,
+        tokens: config.tokens,
+        notification: config.notification,
+      });
+
       await axios.post(baseURL, {
         to: config.tokens,
         title: config.notification.title,
         body: config.notification.body,
         data: config.data,
       })
-
-      await app.messaging().sendMulticast({
-        data: config.data,
-        tokens: config.tokens,
-        notification: config.notification,
-      });
     },
   };
 }
