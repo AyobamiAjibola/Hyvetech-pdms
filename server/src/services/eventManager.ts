@@ -26,6 +26,7 @@ import Estimate from '../models/Estimate';
 import Vehicle from '../models/Vehicle';
 import Transaction from '../models/Transaction';
 import axios from 'axios';
+import * as AxiosMain from 'axios';
 import PushNotificationService from './PushNotificationService';
 import Generic from '../utils/Generic';
 
@@ -194,7 +195,7 @@ export default function eventManager(io: Server) {
           let token = ((whichPushToken).replace("[android]-", "")).replace("[ios]-", "");
           const baseURL = "https://exp.host/--/api/v2/push/send";
 
-          await axios.post(baseURL, {
+          await AxiosMain.default.post(baseURL, {
             to: token,
             title: title,
             body: message
