@@ -119,6 +119,7 @@ class InvoiceController {
             code: Generic_1.default.randomize({ number: true, count: 6 }),
             depositAmount: estimate.depositAmount,
             paidAmount: estimate.depositAmount,
+            tax: estimate.tax,
             taxPart: estimate.taxPart,
             dueAmount,
             grandTotal: estimate.grandTotal,
