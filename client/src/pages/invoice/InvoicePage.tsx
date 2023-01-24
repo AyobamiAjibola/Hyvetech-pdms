@@ -281,7 +281,8 @@ function InvoicePage() {
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
             <Typography gutterBottom>Subtotal: {formatNumberToIntl(subTotal)}</Typography>
-            <Typography gutterBottom>VAT(7.5%): {estimate.tax}</Typography>
+            {/* @ts-ignore */}
+            <Typography gutterBottom>VAT(7.5%): {formatNumberToIntl((parseFloat(estimate?.tax || 0)) + (parseFloat(estimate?.taxPart || 0)))}</Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>

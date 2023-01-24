@@ -256,8 +256,8 @@ function EstimatePage() {
               VAT(7.5%):
               {
                 // @ts-ignore
-                parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0)
-              }.00
+                formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
+              }
             </Typography>
             {/* <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography> */}
           </Grid>
