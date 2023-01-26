@@ -37,6 +37,7 @@ import email_content from '../resources/templates/email/email_content';
 import QueueManager from 'rabbitmq-email-manager';
 import create_customer_from_estimate from '../resources/templates/email/create_customer_from_estimate';
 import User from '../models/User';
+import new_estimate_template from '../resources/templates/email/new_estimate';
 
 export default class EstimateController {
   @TryCatch
@@ -406,6 +407,30 @@ export default class EstimateController {
     } else {
       await findCustomer.$add('vehicles', [vehicle]);
       customer = findCustomer;
+
+      // send mail to customer also
+      let user: any = customer;
+      const mail = new_estimate_template({
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        partner,
+        vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+      })
+
+      //todo: Send email with credentials
+      await QueueManager.publish({
+        queue: QUEUE_EVENTS.name,
+        data: {
+          to: user.email,
+          from: {
+            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            address: <string>process.env.SMTP_EMAIL_FROM,
+          },
+          subject: `You Have a New Estimate`,
+          html: mail,
+          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+        },
+      });
     }
 
     const estimateValues: Partial<Estimate> = {
