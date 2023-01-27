@@ -26,6 +26,7 @@ import {
 } from '../store/reducers/estimateReducer';
 import { FormikHelpers } from 'formik';
 import { reload } from '../utils/generic';
+import { getCustomerAction } from '../store/actions/customerActions';
 
 export default function useEstimate() {
   const [driver, setDriver] = useState<IRideShareDriver | null>(null);
@@ -353,6 +354,9 @@ export default function useEstimate() {
         const driver = estimate.rideShareDriver;
         const customer = estimate.customer;
         const vehicle = estimate.vehicle;
+        // console.log(estimate, "estimateestimate")
+        dispatch(getCustomerAction(customer?.id));
+        // handleGetDriverInfo(customer?.id);
 
         const parts = estimate.parts as unknown as IPart[];
         const labours = estimate.labours as unknown as ILabour[];
@@ -361,6 +365,7 @@ export default function useEstimate() {
           ...prevState,
           firstName: driver ? driver.firstName : customer.firstName,
           lastName: driver ? driver.lastName : customer.lastName,
+          email: driver ? driver.email : customer.email,
           phone: driver ? driver.phone : customer.phone,
           make: vehicle && vehicle.make ? vehicle.make : '',
           model: vehicle && vehicle.model ? vehicle.model : '',
@@ -379,6 +384,7 @@ export default function useEstimate() {
           parts,
           labours,
           status: estimate.status,
+          estimate
         }));
 
         setGrandTotal(estimate.grandTotal);

@@ -55,9 +55,6 @@ const filterOptions = createFilterOptions({
 
 function EstimateForm(props: IProps) {
 
-  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(true)
-  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(true)
-
   const [vat, setVat] = useState<number>(0);
   const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
@@ -79,6 +76,29 @@ function EstimateForm(props: IProps) {
   const dispatch = useAppDispatch();
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
+  // @ts-ignore
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>((values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : true)
+  // @ts-ignore
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>((values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? true : false) : true)
+
+  useEffect(() => {
+    setTimeout(() => {
+
+      // @ts-ignore
+      if (values.estimate != undefined) {
+        // @ts-ignore
+        const _lab = (values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : true;
+        setEnableTaxLabor(_lab)
+        // @ts-ignore
+        const _part = (values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? true : false) : true;
+        setEnableTaxPart(_part)
+
+        console.log(_lab, _part, "_lab, _part")
+      } else {
+        console.log("did not reach", "_lab, _part")
+      }
+    }, 3000)
+  }, [props?.isPopUp, props, customerReducer.getCustomerStatus])
 
   const { setGrandTotal, setPartTotal, setLabourTotal, showCreate, showEdit, grandTotal, labourTotal, partTotal } =
     props;
@@ -299,7 +319,7 @@ function EstimateForm(props: IProps) {
     // console.log(value)
     if (customerReducer.getCustomerStatus === "completed") {
       const _customer: any = customerReducer.customer;
-      console.log(_customer)
+      console.log(_customer, "_customer")
 
       // upto-populate info
       setFieldValue(fields.firstName.name, _customer.firstName);
@@ -348,6 +368,8 @@ function EstimateForm(props: IProps) {
 
     setStates(newStates);
   }, []);
+
+  // console.log(values, "fieldsfields")
 
   return (
     <React.Fragment>

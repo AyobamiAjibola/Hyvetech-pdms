@@ -499,11 +499,13 @@ export default class EstimateController {
           where: { vin: value.vin },
         });
 
-        if (!vin)
-          return Promise.reject(
-            CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
-          );
+        // disable vin doesn't exist
+        // if (!vin)
+        //   return Promise.reject(
+        //     CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+        //   );
 
+        // @ts-ignore
         await vin.update({
           plateNumber: value.plateNumber,
         });

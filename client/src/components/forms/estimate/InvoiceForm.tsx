@@ -75,6 +75,25 @@ function InvoiceForm(props: IProps) {
   } = props;
 
   useEffect(() => {
+    setTimeout(() => {
+      console.log(Object.keys(values), "_lab, _part")
+      // @ts-ignore
+      if (values.invoice != undefined) {
+        // @ts-ignore
+        const _lab = (values?.invoice?.tax !== undefined) ? (parseInt(values.invoice.tax) !== 0 ? true : false) : true;
+        setEnableTaxLabor(_lab)
+        // @ts-ignore
+        const _part = (values?.invoice?.taxPart !== undefined) ? (parseInt(values.invoice.taxPart) !== 0 ? true : false) : true;
+        setEnableTaxPart(_part)
+
+        console.log(_lab, _part, "_lab, _part")
+      } else {
+        console.log("did not reach", "_lab, _part")
+      }
+    }, 3000)
+  }, [props, values.email])
+
+  useEffect(() => {
     if (!showCreate || !showEdit) {
       resetForm();
       setRefundable(0);
@@ -216,8 +235,8 @@ function InvoiceForm(props: IProps) {
   }, [enableTaxLabor, enableTaxPart])
 
   // listen for reload
-  useEffect(()=>{
-    if( (invoiceReducer.saveInvoiceStatus == 'completed') || (invoiceReducer.sendInvoiceStatus == 'completed') ){
+  useEffect(() => {
+    if ((invoiceReducer.saveInvoiceStatus == 'completed') || (invoiceReducer.sendInvoiceStatus == 'completed')) {
       reload()
     }
   }, [invoiceReducer.saveInvoiceStatus, invoiceReducer.sendInvoiceSuccess])
@@ -409,7 +428,7 @@ function InvoiceForm(props: IProps) {
 
                         Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
-                      
+
                       <Grid item style={{}}>
                         {/* disable tax for labour */}
                         <div>
@@ -511,7 +530,7 @@ function InvoiceForm(props: IProps) {
               />))}
               <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
-            
+
             <Grid item style={{}}>
               {/* disable tax for labour */}
               <div>
