@@ -262,8 +262,8 @@ export default function new_estimate_template(config: MailTextConfig) {
                     <table width=" 100%">
             <tr>
                 <td class="contentBox">
-                    <img src="https://res.cloudinary.com/blisify/image/upload/v1672704682/blackLogo_ej1i0j.png" alt=""
-                        style="height:100px; width:110px; margin-left: 75px; margin-bottom: -20px;">
+                    <!-- <img src="https://res.cloudinary.com/blisify/image/upload/v1672704682/blackLogo_ej1i0j.png" alt=""
+                        style="height:100px; width:110px; margin-left: 75px; margin-bottom: -20px;"> -->
 
                     <!-- <p class="defaultPassword">YOUR PASSWORD WAS CHANGED</p> -->
                     <p class="utilsClass">Dear ${config.firstName} ${config.lastName},</p>
@@ -271,6 +271,14 @@ export default function new_estimate_template(config: MailTextConfig) {
                         application. Click
                         on the button below to
                         download the app and login to view estimate.</p>
+
+                        <p style="font-weight: 500;">
+                            Your first time using AutoHyve?
+                        </p>
+
+                    <p class="utilsClass"> <span class="noSignUp">No sign up required.</span> Simply log in with your
+                        email,and use your phone number
+                        as password.</p>
 
                 </td>
             </tr>

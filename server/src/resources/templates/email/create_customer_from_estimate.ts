@@ -262,8 +262,8 @@ export default function create_customer_from_estimate(config: MailTextConfig) {
                     <table width=" 100%">
             <tr>
                 <td class="contentBox">
-                    <img src="https://res.cloudinary.com/blisify/image/upload/v1672704682/blackLogo_ej1i0j.png" alt=""
-                        style="height:100px; width:110px; margin-left: 75px; margin-bottom: -20px;">
+                    <!-- <img src="https://res.cloudinary.com/blisify/image/upload/v1672704682/blackLogo_ej1i0j.png" alt=""
+                        style="height:100px; width:110px; margin-left: 75px; margin-bottom: -20px;"> -->
 
                     <!-- <p class="defaultPassword">YOUR PASSWORD WAS CHANGED</p> -->
                     <p class="utilsClass">Dear ${config.firstName} ${config.lastName},</p>
