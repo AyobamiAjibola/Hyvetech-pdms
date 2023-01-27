@@ -49,8 +49,8 @@ function InvoiceForm(props: IProps) {
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
-  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(true)
-  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(true)
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(false)
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(false)
 
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
 

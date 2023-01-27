@@ -368,7 +368,7 @@ export default class EstimateController {
 
       // send email of user info
       // start
-      let user: any = customer;
+      // let user: any = customer;
 
       // const mailText = create_customer_success_email({
       //   username: user.email,
@@ -382,55 +382,55 @@ export default class EstimateController {
       //   signature: process.env.SMTP_EMAIL_SIGNATURE,
       // });
 
-      const mail = create_customer_from_estimate({
-        firstName: customer.firstName,
-        lastName: customer.lastName,
-        partner,
-        vehichleData: `${value.modelYear} ${value.make} ${value.model}`
-      })
+      // const mail = create_customer_from_estimate({
+      //   firstName: customer.firstName,
+      //   lastName: customer.lastName,
+      //   partner,
+      //   vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+      // })
 
-      //todo: Send email with credentials
-      await QueueManager.publish({
-        queue: QUEUE_EVENTS.name,
-        data: {
-          to: user.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
-          subject: `You Have a New Estimate`,
-          html: mail,
-          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
-        },
-      });
+      // //todo: Send email with credentials
+      // await QueueManager.publish({
+      //   queue: QUEUE_EVENTS.name,
+      //   data: {
+      //     to: user.email,
+      //     from: {
+      //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+      //       address: <string>process.env.SMTP_EMAIL_FROM,
+      //     },
+      //     subject: `You Have a New Estimate`,
+      //     html: mail,
+      //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      //   },
+      // });
       // stop
     } else {
       await findCustomer.$add('vehicles', [vehicle]);
       customer = findCustomer;
 
       // send mail to customer also
-      let user: any = customer;
-      const mail = new_estimate_template({
-        firstName: customer.firstName,
-        lastName: customer.lastName,
-        partner,
-        vehichleData: `${value.modelYear} ${value.make} ${value.model}`
-      })
+      // let user: any = customer;
+      // const mail = new_estimate_template({
+      //   firstName: customer.firstName,
+      //   lastName: customer.lastName,
+      //   partner,
+      //   vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+      // })
 
-      //todo: Send email with credentials
-      await QueueManager.publish({
-        queue: QUEUE_EVENTS.name,
-        data: {
-          to: user.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
-          subject: `You Have a New Estimate`,
-          html: mail,
-          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
-        },
-      });
+      // //todo: Send email with credentials
+      // await QueueManager.publish({
+      //   queue: QUEUE_EVENTS.name,
+      //   data: {
+      //     to: user.email,
+      //     from: {
+      //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+      //       address: <string>process.env.SMTP_EMAIL_FROM,
+      //     },
+      //     subject: `You Have a New Estimate`,
+      //     html: mail,
+      //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      //   },
+      // });
     }
 
     const estimateValues: Partial<Estimate> = {
@@ -457,6 +457,31 @@ export default class EstimateController {
     await vehicle.$add('estimates', [estimate]);
 
     await customer.$add('estimates', [estimate]);
+
+    // send mail
+    let user: any = customer;
+    const mail = new_estimate_template({
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      partner,
+      estimate,
+      vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+    })
+
+    //todo: Send email with credentials
+    await QueueManager.publish({
+      queue: QUEUE_EVENTS.name,
+      data: {
+        to: user.email,
+        from: {
+          name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+          address: <string>process.env.SMTP_EMAIL_FROM,
+        },
+        subject: `You Have a New Estimate`,
+        html: mail,
+        bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      },
+    });
 
     return { estimate, customer, vehicle, partner };
   }

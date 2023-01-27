@@ -77,9 +77,9 @@ function EstimateForm(props: IProps) {
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
   // @ts-ignore
-  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>((values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : true)
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>((values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : false)
   // @ts-ignore
-  const [enableTaxPart, setEnableTaxPart] = useState<boolean>((values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? true : false) : true)
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>((values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? true : false) : false)
 
   useEffect(() => {
     setTimeout(() => {
