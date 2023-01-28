@@ -10,8 +10,10 @@ const constants_1 = require("../config/constants");
 const notification_1 = require("../models/nosql/notification");
 const sequelize_1 = require("sequelize");
 const axios_1 = __importDefault(require("axios"));
+// import fetch from 'node-fetch';
 const PushNotificationService_1 = __importDefault(require("./PushNotificationService"));
 const Generic_1 = __importDefault(require("../utils/Generic"));
+const fetch = require("node-fetch");
 function eventManager(io) {
     try {
         AppEventEmitter_1.appEventEmitter.on(constants_1.RESCHEDULE_APPOINTMENT, (props) => {
@@ -110,8 +112,31 @@ function eventManager(io) {
                 };
                 await notification_1.NotificationModel.create(notification);
                 const whichPushToken = Generic_1.default.whichPushToken(customer.pushToken);
+                // const whichPushToken = (customer.pushToken);
                 const title = `${partner.name} Estimate`;
                 const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
+                // try{
+                //   let token = ((whichPushToken).replace("[android]-", "")).replace("[ios]-", "");
+                //   const baseURL = "https://exp.host/--/api/v2/push/send";
+                //   const _res = await fetch(baseURL, {
+                //     method: "POST",
+                //     body: JSON.stringify({
+                //       to: token,
+                //       title: title,
+                //       body: message
+                //     }),
+                //     headers: {'Content-Type': 'application/json'}
+                //   })
+                // AxiosMain.default.defaults.baseURL = '';
+                // await AxiosMain.default.post(baseURL, {
+                //   to: token,
+                //   title: title,
+                //   body: message
+                // })
+                // console.log('sent', _res, token)
+                // }catch(e){
+                // console.log(e)
+                // }
                 io.to(customer.eventId).emit(constants_1.CREATED_ESTIMATE, { title, message });
                 if (whichPushToken.type === 'android') {
                     const fcm = PushNotificationService_1.default.fcmMessaging.config({

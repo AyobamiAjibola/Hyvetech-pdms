@@ -53,8 +53,8 @@ const BillingInformation_1 = __importDefault(require("../models/BillingInformati
 const decorators_1 = require("../decorators");
 const sequelize_1 = require("sequelize");
 const rabbitmq_email_manager_1 = __importDefault(require("rabbitmq-email-manager"));
-const create_customer_from_estimate_1 = __importDefault(require("../resources/templates/email/create_customer_from_estimate"));
 const User_1 = __importDefault(require("../models/User"));
+const new_estimate_1 = __importDefault(require("../resources/templates/email/new_estimate"));
 class EstimateController {
     async create(req) {
         const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
@@ -299,7 +299,7 @@ class EstimateController {
             await customer.$set('vehicles', [vehicle]);
             // send email of user info
             // start
-            let user = customer;
+            // let user: any = customer;
             // const mailText = create_customer_success_email({
             //   username: user.email,
             //   password: user.password,
@@ -310,31 +310,53 @@ class EstimateController {
             //   text: mailText,
             //   signature: process.env.SMTP_EMAIL_SIGNATURE,
             // });
-            const mail = (0, create_customer_from_estimate_1.default)({
-                firstName: customer.firstName,
-                lastName: customer.lastName,
-                partner,
-                vehichleData: `${value.modelYear} ${value.make} ${value.model}`
-            });
-            //todo: Send email with credentials
-            await rabbitmq_email_manager_1.default.publish({
-                queue: constants_1.QUEUE_EVENTS.name,
-                data: {
-                    to: user.email,
-                    from: {
-                        name: process.env.SMTP_EMAIL_FROM_NAME,
-                        address: process.env.SMTP_EMAIL_FROM,
-                    },
-                    subject: `You Have a New Estimate`,
-                    html: mail,
-                    bcc: [process.env.SMTP_CUSTOMER_CARE_EMAIL, process.env.SMTP_EMAIL_FROM],
-                },
-            });
+            // const mail = create_customer_from_estimate({
+            //   firstName: customer.firstName,
+            //   lastName: customer.lastName,
+            //   partner,
+            //   vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+            // })
+            // //todo: Send email with credentials
+            // await QueueManager.publish({
+            //   queue: QUEUE_EVENTS.name,
+            //   data: {
+            //     to: user.email,
+            //     from: {
+            //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            //       address: <string>process.env.SMTP_EMAIL_FROM,
+            //     },
+            //     subject: `You Have a New Estimate`,
+            //     html: mail,
+            //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+            //   },
+            // });
             // stop
         }
         else {
             await findCustomer.$add('vehicles', [vehicle]);
             customer = findCustomer;
+            // send mail to customer also
+            // let user: any = customer;
+            // const mail = new_estimate_template({
+            //   firstName: customer.firstName,
+            //   lastName: customer.lastName,
+            //   partner,
+            //   vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+            // })
+            // //todo: Send email with credentials
+            // await QueueManager.publish({
+            //   queue: QUEUE_EVENTS.name,
+            //   data: {
+            //     to: user.email,
+            //     from: {
+            //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            //       address: <string>process.env.SMTP_EMAIL_FROM,
+            //     },
+            //     subject: `You Have a New Estimate`,
+            //     html: mail,
+            //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+            //   },
+            // });
         }
         const estimateValues = {
             jobDurationUnit: value.jobDurationUnit,
@@ -356,6 +378,29 @@ class EstimateController {
         await partner.$add('estimates', [estimate]);
         await vehicle.$add('estimates', [estimate]);
         await customer.$add('estimates', [estimate]);
+        // send mail
+        let user = customer;
+        const mail = (0, new_estimate_1.default)({
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            partner,
+            estimate,
+            vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+        });
+        //todo: Send email with credentials
+        await rabbitmq_email_manager_1.default.publish({
+            queue: constants_1.QUEUE_EVENTS.name,
+            data: {
+                to: user.email,
+                from: {
+                    name: process.env.SMTP_EMAIL_FROM_NAME,
+                    address: process.env.SMTP_EMAIL_FROM,
+                },
+                subject: `You Have a New Estimate`,
+                html: mail,
+                bcc: [process.env.SMTP_CUSTOMER_CARE_EMAIL, process.env.SMTP_EMAIL_FROM],
+            },
+        });
         return { estimate, customer, vehicle, partner };
     }
     async doSaveEstimate(req) {
@@ -383,8 +428,12 @@ class EstimateController {
                 const vin = await dao_1.default.vinDAOService.findByAny({
                     where: { vin: value.vin },
                 });
-                if (!vin)
-                    return Promise.reject(CustomAPIError_1.default.response(`VIN: ${value.vin} does not exist.`, HttpStatus_1.default.NOT_FOUND.code));
+                // disable vin doesn't exist
+                // if (!vin)
+                //   return Promise.reject(
+                //     CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+                //   );
+                // @ts-ignore
                 await vin.update({
                     plateNumber: value.plateNumber,
                 });

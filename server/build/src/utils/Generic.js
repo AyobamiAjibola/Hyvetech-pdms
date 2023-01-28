@@ -218,14 +218,26 @@ class Generic {
         const ios = 'ios';
         const android = 'android';
         const response = { token: '', type: '' };
-        if (token.match(/ios/)?.input) {
+        try {
+            if (token.match(/ios/)?.input) {
+                response.type = ios;
+                response.token = token.replace(`[${ios}]-`, '');
+            }
+            if (token.match(/android/)?.input) {
+                response.type = android;
+                response.token = token.replace(`[${android}]-`, '');
+            }
+        }
+        catch (e) {
             response.type = ios;
-            response.token = token.replace(`[${ios}]-`, '');
+            response.token = token;
         }
-        if (token.match(/android/)?.input) {
+        try {
             response.type = android;
-            response.token = token.replace(`[${android}]-`, '');
+            response.token = (response.token).replace(`[${android}]-`, '');
+            response.token = (response.token).replace(`[${ios}]-`, '');
         }
+        catch (e) { }
         return response;
     }
 }

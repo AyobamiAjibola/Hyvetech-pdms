@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function create_customer_from_estimate(config) {
+function new_estimate_template(config) {
     return `
-      <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -54,7 +54,8 @@ function create_customer_from_estimate(config) {
             width: 100%;
             max-width: 666px;
             background-color: #fff;
-            padding-bottom: 50px;
+            padding-bottom: 20px;
+
             font-family: 'Inter', sans-serif;
             /* text-align: center; */
         }
@@ -93,7 +94,7 @@ function create_customer_from_estimate(config) {
             font-size: 12px;
             color: #000000;
             font-family: 'Inter', sans-serif;
-            margin-top: 70px;
+            margin-top: 20px;
         }
 
         .contentBox {
@@ -129,7 +130,7 @@ function create_customer_from_estimate(config) {
         .bottomBorder {
             border: 0.5px solid #000000;
             width: 60% !important;
-            margin-top: 70px;
+            margin-top: 34px;
             margin-left: auto;
             margin-right: auto;
 
@@ -157,6 +158,7 @@ function create_customer_from_estimate(config) {
             display: block !important;
             margin-left: auto !important;
             margin-right: auto !important;
+            margin-top: 35px;
             cursor: pointer;
         }
 
@@ -171,9 +173,67 @@ function create_customer_from_estimate(config) {
 
         .noSignUp {
             font-weight: 700;
+            line-height: 18px;
         }
 
+        .priceBold {
+            font-size: 10px;
+            font-weight: 700;
+            color: #000;
+            display: block;
+            width: 100px;
+        }
+
+        .price {
+            font-style: normal;
+            font-weight: 400;
+            color: #3D3D3D;
+            font-size: 12px;
+            display: block;
+            width: 150px;
+
+            text-align: left;
+        }
+
+        .priceWrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 38%;
+            margin-bottom: -5px;
+        }
+
+        .firstTime {
+            color: #FBA91A;
+            font-weight: 700;
+            font-size: 12px;
+            margin-top: 65px;
+            font-style: italic;
+        }
+
+        .firstTimeText {
+            font-style: italic;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .name {
+            margin-top: 25px;
+        }
+
+
         @media(max-width:700px) {
+
+            .priceWrapper {
+                display: flex !important;
+                justify-content: space-between !important;
+                width: 100% !important;
+                margin-bottom: -5px !important;
+            }
+
+            .firstTimeText {
+                width: 90%;
+            }
+
             .topText {
                 margin-left: 45px !important;
                 font-style: normal;
@@ -261,30 +321,51 @@ function create_customer_from_estimate(config) {
                     <table width=" 100%">
             <tr>
                 <td class="contentBox">
-                    <img src="https://res.cloudinary.com/blisify/image/upload/v1672704682/blackLogo_ej1i0j.png" alt=""
-                        style="height:100px; width:110px; margin-left: 75px; margin-bottom: -20px;">
+
 
                     <!-- <p class="defaultPassword">YOUR PASSWORD WAS CHANGED</p> -->
-                    <p class="utilsClass">Dear ${config.firstName} ${config.lastName},</p>
-                    <p class="utilsClass">Thank you for visiting ${config?.partner?.name || 'us'}. Your ${config?.vehichleData || ''} estimate can be viewed on the AutoHyve mobile
-                        application. Click
-                        on the button below to
-                        download the app and login to view estimate.</p>
+                    <p class="utilsClass name">Dear  ${config.firstName} ${config.lastName},</p>
+                    <p class="utilsClass">Thank you for visiting <span class="noSignUp">${config?.partner?.name || 'us'}.</span>
+                        Your ${config?.vehichleData || ''}estimate is ready. Click on the button
+                        below to view estimate.
+                    </p>
 
-                    <p class="utilsClass"> <span class="noSignUp">No sign up required.</span> Simply log in with your
-                        email,and use your phone number
-                        as password.</p>
                 </td>
             </tr>
-
-            <!-- <tr style="width: 100%;">
-                <td "></td>
-            </tr> -->
-
         </table>
+
+        <center>
+            <p class="priceWrapper">
+                <span class="priceBold">Estimate #:</span>
+                <span class="price">${config.estimate?.code || ''}</span>
+            </p>
+
+            <p class="priceWrapper">
+                <span class="priceBold">Grand Total #:</span>
+                <span class="price">₦ ${new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format((config.estimate?.grandTotal || ''))}</span>
+            </p>
+
+            <p class="priceWrapper">
+                <span class="priceBold">Date Created:</span>
+                <span class="price">${(new Date(config.estimate?.updatedAt || '')).toDateString()}</span>
+            </p>
+        </center>
+        <!-- <table width=" 50%" style="background-color: #FBA91A;">
+
+           
+           
+           
+
+        </table> -->
         <p class="btnContainer">
-            <a href="https://onelink.to/fh7uc5"><button class="btn">View Estimate</button></a>
+            <button class="btn">View Estimate</button>
         </p>
+
+        <center>
+            <p class="firstTime">Your first time using AutoHyve?</p>
+            <p class="firstTimeText">No sign up is required. Log in with your email,and use your phone number as
+                password.</p>
+        </center>
 
         <p class="bottomBorder"></p>
         <p class="pleaseChangeText">
@@ -303,6 +384,6 @@ function create_customer_from_estimate(config) {
 </body>
 
 </html>
-`;
+    `;
 }
-exports.default = create_customer_from_estimate;
+exports.default = new_estimate_template;
