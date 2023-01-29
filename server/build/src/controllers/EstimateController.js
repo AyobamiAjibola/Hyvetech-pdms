@@ -119,9 +119,23 @@ class EstimateController {
         const customer = await estimate.$get('customer');
         if (!customer)
             return Promise.reject(CustomAPIError_1.default.response(`Customer does not found`, HttpStatus_1.default.BAD_REQUEST.code));
-        const vehicle = await estimate.$get('vehicle');
-        if (!vehicle)
-            return Promise.reject(CustomAPIError_1.default.response(`Vehicle not found`, HttpStatus_1.default.BAD_REQUEST.code));
+        let vehicle = await estimate.$get('vehicle');
+        if (!vehicle) {
+            const value = req.body;
+            const data = {
+                vin: value.vin,
+                make: value.make,
+                model: value.model,
+                modelYear: value.modelYear,
+                plateNumber: value.plateNumber,
+                mileageValue: value.mileageValue,
+                mileageUnit: value.mileageUnit,
+            };
+            vehicle = await dao_1.default.vehicleDAOService.create(data);
+            await customer.$add('vehicles', [vehicle]);
+            await vehicle.$add('estimates', [estimate]);
+            // return Promise.reject(CustomAPIError.response(`Vehicle not found`, HttpStatus.BAD_REQUEST.code))
+        }
         const partner = await estimate.$get('partner', { include: [Contact_1.default] });
         if (!partner)
             return Promise.reject(CustomAPIError_1.default.response(`Partner not found`, HttpStatus_1.default.BAD_REQUEST.code));
