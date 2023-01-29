@@ -14,6 +14,7 @@ interface ITextInputFieldProps {
   value: string | number | boolean;
   name: string;
   label: string;
+  placeholder?: string;
 
   [p: string]: any;
 }
@@ -25,6 +26,7 @@ function TextInputField(props: ITextInputFieldProps) {
     <FormGroup sx={props.inputGroupStyle}>
       <TextField
         size={props.size}
+        placeholder={props?.placeholder || undefined}
         onBlur={props.onBlur}
         sx={props.textInputStyle}
         fullWidth={props.fullWidth}

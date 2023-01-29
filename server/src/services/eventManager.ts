@@ -26,7 +26,7 @@ import Estimate from '../models/Estimate';
 import Vehicle from '../models/Vehicle';
 import Transaction from '../models/Transaction';
 import axios from 'axios';
-import * as AxiosMain from 'axios';
+// import * as AxiosMain from 'axios';
 // import fetch from 'node-fetch';
 import PushNotificationService from './PushNotificationService';
 import Generic from '../utils/Generic';
@@ -177,99 +177,77 @@ export default function eventManager(io: Server) {
       const partnerContact = partner.contact.address;
 
       (async () => {
-        const notification = {
-          seen: false,
-          from: `${partner.name} ${partnerContact}`,
-          to: `${customer.id}`,
-          type: 'Estimate',
-          subject: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
-          message: `${estimate.id}`,
-        };
 
-        await NotificationModel.create(notification);
 
-        const whichPushToken = Generic.whichPushToken(customer.pushToken);
-        // const whichPushToken = (customer.pushToken);
+        try {
+          const notification = {
+            seen: false,
+            from: `${partner.name} ${partnerContact}`,
+            to: `${customer.id}`,
+            type: 'Estimate',
+            subject: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
+            message: `${estimate.id}`,
+          };
 
-        const title = `${partner.name} Estimate`;
-        const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
+          await NotificationModel.create(notification);
 
-        // try{
-        //   let token = ((whichPushToken).replace("[android]-", "")).replace("[ios]-", "");
-        //   const baseURL = "https://exp.host/--/api/v2/push/send";
+          const whichPushToken = Generic.whichPushToken(customer.pushToken);
+          // const whichPushToken = (customer.pushToken);
 
-        //   const _res = await fetch(baseURL, {
-        //     method: "POST",
-        //     body: JSON.stringify({
-        //       to: token,
-        //       title: title,
-        //       body: message
-        //     }),
-        //     headers: {'Content-Type': 'application/json'}
-        //   })
+          const title = `${partner.name} Estimate`;
+          const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
 
-          // AxiosMain.default.defaults.baseURL = '';
-          // await AxiosMain.default.post(baseURL, {
-          //   to: token,
-          //   title: title,
-          //   body: message
-          // })
+          io.to(customer.eventId).emit(CREATED_ESTIMATE, { title, message });
 
-          // console.log('sent', _res, token)
+          if (whichPushToken.type === 'android') {
+            const fcm = PushNotificationService.fcmMessaging.config({
+              baseURL: process.env.GOOGLE_FCM_HOST as string,
+              experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
+              scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
+              serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY as string,
+              pushToken: whichPushToken.token,
+            });
 
-        // }catch(e){
-          // console.log(e)
-        // }
+            const response = await fcm.sendToOne({
+              title,
+              message,
+              sound: true,
+              vibrate: true,
+              priority: 'max',
+            });
 
-        io.to(customer.eventId).emit(CREATED_ESTIMATE, { title, message });
+            console.log(response.data);
+          }
 
-        if (whichPushToken.type === 'android') {
-          const fcm = PushNotificationService.fcmMessaging.config({
-            baseURL: process.env.GOOGLE_FCM_HOST as string,
-            experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
-            scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
-            serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY as string,
-            pushToken: whichPushToken.token,
-          });
+          if (whichPushToken.type === 'ios') {
+            const appleKey = process.env.APPLE_KEY as string;
+            const appleKeyId = process.env.APPLE_KEY_ID as string;
+            const appleTeamId = process.env.APPLE_TEAM_ID as string;
 
-          const response = await fcm.sendToOne({
-            title,
-            message,
-            sound: true,
-            vibrate: true,
-            priority: 'max',
-          });
+            const apns = PushNotificationService.apnMessaging.config({
+              production: true,
+              pushToken: whichPushToken.token,
+              token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
+              topic: 'com.jiffixproductmanager.autohyve',
+            });
 
-          console.log(response.data);
-        }
-
-        if (whichPushToken.type === 'ios') {
-          const appleKey = process.env.APPLE_KEY as string;
-          const appleKeyId = process.env.APPLE_KEY_ID as string;
-          const appleTeamId = process.env.APPLE_TEAM_ID as string;
-
-          const apns = PushNotificationService.apnMessaging.config({
-            production: true,
-            pushToken: whichPushToken.token,
-            token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
-            topic: 'com.jiffixproductmanager.autohyve',
-          });
-
-          const responses = await apns.sendToOne({
-            alert: title,
-            payload: { message },
-          });
-
-          if (responses.failed.length) {
-            const final = await apns.sendToOne({
+            const responses = await apns.sendToOne({
               alert: title,
               payload: { message },
             });
 
-            console.log(final.failed);
-          } else console.log(responses.sent);
-        }
+            if (responses.failed.length) {
+              const final = await apns.sendToOne({
+                alert: title,
+                payload: { message },
+              });
 
+              console.log(final.failed);
+            } else console.log(responses.sent);
+          }
+        } catch (e) {
+          console.log(e)
+        }
       })();
     });
 
