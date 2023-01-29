@@ -322,9 +322,6 @@ export default function new_estimate_template(config: MailTextConfig) {
                     <table width=" 100%">
             <tr>
                 <td class="contentBox">
-
-
-                    <!-- <p class="defaultPassword">YOUR PASSWORD WAS CHANGED</p> -->
                     <p class="utilsClass name">Dear  ${config.firstName} ${config.lastName},</p>
                     <p class="utilsClass">Thank you for visiting <span class="noSignUp">${config?.partner?.name || 'us'}.</span>
                         Your ${config?.vehichleData || ''}estimate is ready. Click on the button
@@ -359,7 +356,7 @@ export default function new_estimate_template(config: MailTextConfig) {
 
         </table> -->
         <p class="btnContainer">
-            <button class="btn">View Estimate</button>
+            <a href='https://onelink.to/fh7uc5'><button class="btn">View Estimate</button> </a>
         </p>
 
         <center>
