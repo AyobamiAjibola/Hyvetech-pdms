@@ -53,15 +53,23 @@ const BillingInformation_1 = __importDefault(require("../models/BillingInformati
 const decorators_1 = require("../decorators");
 const sequelize_1 = require("sequelize");
 const rabbitmq_email_manager_1 = __importDefault(require("rabbitmq-email-manager"));
-const create_customer_from_estimate_1 = __importDefault(require("../resources/templates/email/create_customer_from_estimate"));
 const User_1 = __importDefault(require("../models/User"));
+const new_estimate_1 = __importDefault(require("../resources/templates/email/new_estimate"));
 class EstimateController {
     async create(req) {
         const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
-        await estimate.update({
-            status: constants_1.ESTIMATE_STATUS.sent,
-        });
-        AppEventEmitter_1.appEventEmitter.emit(constants_1.CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
+        try {
+            // console.log('before 1')
+            await estimate.update({
+                status: constants_1.ESTIMATE_STATUS.sent,
+            });
+            // console.log('before 2')
+            AppEventEmitter_1.appEventEmitter.emit(constants_1.CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
+            // console.log('before 3')
+        }
+        catch (e) {
+            console.log(e);
+        }
         const response = {
             code: HttpStatus_1.default.OK.code,
             message: 'Estimate created successfully.',
@@ -111,9 +119,23 @@ class EstimateController {
         const customer = await estimate.$get('customer');
         if (!customer)
             return Promise.reject(CustomAPIError_1.default.response(`Customer does not found`, HttpStatus_1.default.BAD_REQUEST.code));
-        const vehicle = await estimate.$get('vehicle');
-        if (!vehicle)
-            return Promise.reject(CustomAPIError_1.default.response(`Vehicle not found`, HttpStatus_1.default.BAD_REQUEST.code));
+        let vehicle = await estimate.$get('vehicle');
+        if (!vehicle) {
+            const value = req.body;
+            const data = {
+                vin: value.vin,
+                make: value.make,
+                model: value.model,
+                modelYear: value.modelYear,
+                plateNumber: value.plateNumber,
+                mileageValue: value.mileageValue,
+                mileageUnit: value.mileageUnit,
+            };
+            vehicle = await dao_1.default.vehicleDAOService.create(data);
+            await customer.$add('vehicles', [vehicle]);
+            await vehicle.$add('estimates', [estimate]);
+            // return Promise.reject(CustomAPIError.response(`Vehicle not found`, HttpStatus.BAD_REQUEST.code))
+        }
         const partner = await estimate.$get('partner', { include: [Contact_1.default] });
         if (!partner)
             return Promise.reject(CustomAPIError_1.default.response(`Partner not found`, HttpStatus_1.default.BAD_REQUEST.code));
@@ -285,7 +307,9 @@ class EstimateController {
             });
         }
         const findCustomer = await dao_1.default.customerDAOService.findByAny({
-            where: { phone: value.phone },
+            where: {
+                email: value.email
+            },
             include: [Contact_1.default],
         });
         if (!findCustomer) {
@@ -297,9 +321,17 @@ class EstimateController {
             };
             customer = await dao_1.default.customerDAOService.create(data);
             await customer.$set('vehicles', [vehicle]);
+            // try to link a contact with this customer
+            const contactValue = {
+                label: "Home",
+                // @ts-ignore
+                state: value?.state || "Abuja (FCT)"
+            };
+            const contact = await dao_1.default.contactDAOService.create(contactValue);
+            await customer.$set('contacts', [contact]);
             // send email of user info
             // start
-            let user = customer;
+            // let user: any = customer;
             // const mailText = create_customer_success_email({
             //   username: user.email,
             //   password: user.password,
@@ -310,31 +342,53 @@ class EstimateController {
             //   text: mailText,
             //   signature: process.env.SMTP_EMAIL_SIGNATURE,
             // });
-            const mail = (0, create_customer_from_estimate_1.default)({
-                firstName: customer.firstName,
-                lastName: customer.lastName,
-                partner,
-                vehichleData: `${value.modelYear} ${value.make} ${value.model}`
-            });
-            //todo: Send email with credentials
-            await rabbitmq_email_manager_1.default.publish({
-                queue: constants_1.QUEUE_EVENTS.name,
-                data: {
-                    to: user.email,
-                    from: {
-                        name: process.env.SMTP_EMAIL_FROM_NAME,
-                        address: process.env.SMTP_EMAIL_FROM,
-                    },
-                    subject: `You Have a New Estimate`,
-                    html: mail,
-                    bcc: [process.env.SMTP_CUSTOMER_CARE_EMAIL, process.env.SMTP_EMAIL_FROM],
-                },
-            });
+            // const mail = create_customer_from_estimate({
+            //   firstName: customer.firstName,
+            //   lastName: customer.lastName,
+            //   partner,
+            //   vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+            // })
+            // //todo: Send email with credentials
+            // await QueueManager.publish({
+            //   queue: QUEUE_EVENTS.name,
+            //   data: {
+            //     to: user.email,
+            //     from: {
+            //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            //       address: <string>process.env.SMTP_EMAIL_FROM,
+            //     },
+            //     subject: `You Have a New Estimate`,
+            //     html: mail,
+            //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+            //   },
+            // });
             // stop
         }
         else {
             await findCustomer.$add('vehicles', [vehicle]);
             customer = findCustomer;
+            // send mail to customer also
+            // let user: any = customer;
+            // const mail = new_estimate_template({
+            //   firstName: customer.firstName,
+            //   lastName: customer.lastName,
+            //   partner,
+            //   vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+            // })
+            // //todo: Send email with credentials
+            // await QueueManager.publish({
+            //   queue: QUEUE_EVENTS.name,
+            //   data: {
+            //     to: user.email,
+            //     from: {
+            //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            //       address: <string>process.env.SMTP_EMAIL_FROM,
+            //     },
+            //     subject: `You Have a New Estimate`,
+            //     html: mail,
+            //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+            //   },
+            // });
         }
         const estimateValues = {
             jobDurationUnit: value.jobDurationUnit,
@@ -356,6 +410,32 @@ class EstimateController {
         await partner.$add('estimates', [estimate]);
         await vehicle.$add('estimates', [estimate]);
         await customer.$add('estimates', [estimate]);
+        console.log('reach0');
+        // send mail
+        let user = customer;
+        const mail = (0, new_estimate_1.default)({
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            partner,
+            estimate,
+            vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+        });
+        console.log('reach1');
+        //todo: Send email with credentials
+        await rabbitmq_email_manager_1.default.publish({
+            queue: constants_1.QUEUE_EVENTS.name,
+            data: {
+                to: user.email,
+                from: {
+                    name: "AutoHyve",
+                    address: process.env.SMTP_EMAIL_FROM,
+                },
+                subject: `${partner.name} has sent you an estimate on AutoHyve`,
+                html: mail,
+                bcc: [process.env.SMTP_CUSTOMER_CARE_EMAIL, process.env.SMTP_EMAIL_FROM],
+            },
+        });
+        // console.log(estimate, customer, vehicle, partner, 'reach2')
         return { estimate, customer, vehicle, partner };
     }
     async doSaveEstimate(req) {
@@ -383,11 +463,18 @@ class EstimateController {
                 const vin = await dao_1.default.vinDAOService.findByAny({
                     where: { vin: value.vin },
                 });
-                if (!vin)
-                    return Promise.reject(CustomAPIError_1.default.response(`VIN: ${value.vin} does not exist.`, HttpStatus_1.default.NOT_FOUND.code));
-                await vin.update({
-                    plateNumber: value.plateNumber,
-                });
+                // disable vin doesn't exist
+                if (!vin) {
+                    // return Promise.reject(
+                    //   CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+                    // );
+                }
+                else {
+                    // @ts-ignore
+                    await vin.update({
+                        plateNumber: value.plateNumber,
+                    });
+                }
                 vehicle = await dao_1.default.vehicleDAOService.create(data);
             }
             else {
@@ -403,7 +490,9 @@ class EstimateController {
             }
         }
         const findCustomer = await dao_1.default.customerDAOService.findByAny({
-            where: { phone: value.phone },
+            where: {
+                email: value.email
+            },
             include: [Contact_1.default],
         });
         if (!findCustomer) {
@@ -411,10 +500,23 @@ class EstimateController {
                 firstName: value.firstName,
                 lastName: value.lastName,
                 phone: value.phone,
+                email: value.email,
             };
             customer = await dao_1.default.customerDAOService.create(data);
             if (vehicle)
                 await customer.$set('vehicles', [vehicle]);
+            try {
+                const contactValue = {
+                    label: "Home",
+                    // @ts-ignore
+                    state: value?.state || "Abuja (FCT)"
+                };
+                const contact = await dao_1.default.contactDAOService.create(contactValue);
+                await customer.$set('contacts', [contact]);
+            }
+            catch (e) {
+                console.log(e);
+            }
         }
         else {
             if (vehicle)
@@ -441,7 +543,12 @@ class EstimateController {
         await partner.$add('estimates', [estimate]);
         if (vehicle)
             await vehicle.$add('estimates', [estimate]);
-        await customer.$add('estimates', [estimate]);
+        try {
+            await customer.$add('estimates', [estimate]);
+        }
+        catch (e) {
+            console.log(e);
+        }
         return { estimate, customer, vehicle, partner };
     }
     async doUpdateEstimate(req) {

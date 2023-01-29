@@ -1,6 +1,9 @@
 import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import { Checkbox, Divider, Grid, Stack, Typography } from '@mui/material';
+import {
+  Checkbox,
+  Divider, Grid, Stack, Typography
+} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send } from '@mui/icons-material';
 import estimateModel, { IEstimateValues } from '../models/estimateModel';
@@ -49,8 +52,8 @@ function InvoiceForm(props: IProps) {
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
-  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(true)
-  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(true)
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(false)
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(false)
 
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
 
@@ -73,6 +76,25 @@ function InvoiceForm(props: IProps) {
     refundable,
     setSave,
   } = props;
+
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(Object.keys(values), "_lab, _part")
+      // @ts-ignore
+      if (values.invoice != undefined) {
+        // @ts-ignore
+        const _lab = (values?.invoice?.tax !== undefined) ? (parseInt(values.invoice.tax) !== 0 ? true : false) : true;
+        setEnableTaxLabor(_lab)
+        // @ts-ignore
+        const _part = (values?.invoice?.taxPart !== undefined) ? (parseInt(values.invoice.taxPart) !== 0 ? false : false) : false;
+        setEnableTaxPart(_part)
+
+        console.log(_lab, _part, "_lab, _part")
+      } else {
+        console.log("did not reach", "_lab, _part")
+      }
+    }, 3000)
+  }, [props, values.email])
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -216,8 +238,8 @@ function InvoiceForm(props: IProps) {
   }, [enableTaxLabor, enableTaxPart])
 
   // listen for reload
-  useEffect(()=>{
-    if( (invoiceReducer.saveInvoiceStatus == 'completed') || (invoiceReducer.sendInvoiceStatus == 'completed') ){
+  useEffect(() => {
+    if ((invoiceReducer.saveInvoiceStatus == 'completed') || (invoiceReducer.sendInvoiceStatus == 'completed')) {
       reload()
     }
   }, [invoiceReducer.saveInvoiceStatus, invoiceReducer.sendInvoiceSuccess])
@@ -395,7 +417,7 @@ function InvoiceForm(props: IProps) {
                       </IconButton>
                     </Grid>
                     <Grid item xs={12} container spacing={2} columns={13}>
-                      <Grid item xs={6} />
+                      <Grid item xs={8} />
                       <Grid item xs={4}>
 
                         {((enableTaxPart) && (<TextField
@@ -409,14 +431,13 @@ function InvoiceForm(props: IProps) {
 
                         Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
-                      
-                      <Grid item style={{}}>
-                        {/* disable tax for labour */}
+
+                      {/* <Grid item style={{}}>
                         <div>
                           <span>Apply Tax</span>
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
-                      </Grid>
+                      </Grid> */}
 
                     </Grid>
                   </React.Fragment>
@@ -511,9 +532,8 @@ function InvoiceForm(props: IProps) {
               />))}
               <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
-            
+
             <Grid item style={{}}>
-              {/* disable tax for labour */}
               <div>
                 <span>Apply Tax</span>
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />

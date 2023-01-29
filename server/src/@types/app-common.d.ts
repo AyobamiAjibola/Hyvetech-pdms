@@ -265,6 +265,7 @@ export declare namespace appCommonTypes {
     vehicleFault?: string;
     loginUrl?: string;
     whatsappUrl?: string;
+    estimate?: any;
   }
 
   interface BcryptPasswordEncoder {

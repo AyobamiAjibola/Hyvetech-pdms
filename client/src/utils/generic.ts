@@ -8,6 +8,54 @@ export function formatNumberToIntl(amount: number) {
   }).format(amount);
 }
 
+export const filterPhoneNumber = (phone: any) => {
+  if (phone.length > 5) {
+    let _phone = phone;
+    let error = false;
+    let message = 'phone number invalid, but fixed';
+
+    // check if phone number was initialize with 234 or +
+    if (phone[0] == '+') {
+      _phone = (phone.substring(1));
+      error = true;
+    }
+
+    // check if phone number is 234 instead of 0
+    if ((_phone[0] == '2') && (_phone[1] == '3') && (_phone[2] == '4')) {
+      _phone = '0' + (_phone.substring(3));
+      error = true;
+    }
+
+    if ((_phone[0] == '0') && !((_phone[1] == '7') || (_phone[1] == '8') || (_phone[1] == '9'))) {
+      // _phone = _phone;
+      message = 'Not a Nigerian Number';
+      error = true;
+    }
+
+    if (_phone.length > 11) {
+      message = 'Phone number invalid';
+      error = true;
+    }
+
+    // filter for white space
+    _phone = (_phone.trim());
+    _phone = (_phone.replaceAll(" ", ""));
+    // _phone = (_phone.replace(/\s+/g, ' ').replace(/^\s/, '').replace(/\s$/, ''));
+
+
+    return {
+      error,
+      message: message,
+      phone: _phone
+    };
+  }
+  return {
+    error: false,
+    message: '',
+    phone
+  };
+}
+
 export function computeMonthlyColumnChartData(dashboardData: IDashboardData) {
   const appointmentData = dashboardData.monthlyData.appointments.data.map((value: any) => value.y);
   const appointment = {

@@ -37,17 +37,26 @@ import email_content from '../resources/templates/email/email_content';
 import QueueManager from 'rabbitmq-email-manager';
 import create_customer_from_estimate from '../resources/templates/email/create_customer_from_estimate';
 import User from '../models/User';
+import new_estimate_template from '../resources/templates/email/new_estimate';
 
 export default class EstimateController {
   @TryCatch
   public async create(req: Request) {
     const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
 
-    await estimate.update({
-      status: ESTIMATE_STATUS.sent,
-    });
 
-    appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
+    try {
+      // console.log('before 1')
+      await estimate.update({
+        status: ESTIMATE_STATUS.sent,
+      });
+      // console.log('before 2')
+
+      appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
+      // console.log('before 3')
+    } catch (e) {
+      console.log(e)
+    }
 
     const response: HttpResponse<Estimate> = {
       code: HttpStatus.OK.code,
@@ -122,9 +131,25 @@ export default class EstimateController {
     if (!customer)
       return Promise.reject(CustomAPIError.response(`Customer does not found`, HttpStatus.BAD_REQUEST.code));
 
-    const vehicle = await estimate.$get('vehicle');
+    let vehicle = await estimate.$get('vehicle');
 
-    if (!vehicle) return Promise.reject(CustomAPIError.response(`Vehicle not found`, HttpStatus.BAD_REQUEST.code));
+    if (!vehicle) {
+      const value = req.body;
+      const data: any = {
+        vin: value.vin,
+        make: value.make,
+        model: value.model,
+        modelYear: value.modelYear,
+        plateNumber: value.plateNumber,
+        mileageValue: value.mileageValue,
+        mileageUnit: value.mileageUnit,
+      };
+
+      vehicle = await dataSources.vehicleDAOService.create(data);
+      await customer.$add('vehicles', [vehicle]);
+      await vehicle.$add('estimates', [estimate]);
+      // return Promise.reject(CustomAPIError.response(`Vehicle not found`, HttpStatus.BAD_REQUEST.code))
+    }
 
     const partner = await estimate.$get('partner', { include: [Contact] });
 
@@ -350,7 +375,9 @@ export default class EstimateController {
     }
 
     const findCustomer = await dataSources.customerDAOService.findByAny({
-      where: { phone: value.phone },
+      where: {
+        email: value.email
+      },
       include: [Contact],
     });
 
@@ -364,10 +391,21 @@ export default class EstimateController {
 
       customer = await dataSources.customerDAOService.create(data);
       await customer.$set('vehicles', [vehicle]);
+      // try to link a contact with this customer
+
+      const contactValue: any = {
+        label: "Home",
+        // @ts-ignore
+        state: value?.state || "Abuja (FCT)"
+      }
+
+      const contact = await dataSources.contactDAOService.create(contactValue);
+      await customer.$set('contacts', [contact]);
+
 
       // send email of user info
       // start
-      let user: any = customer;
+      // let user: any = customer;
 
       // const mailText = create_customer_success_email({
       //   username: user.email,
@@ -381,31 +419,55 @@ export default class EstimateController {
       //   signature: process.env.SMTP_EMAIL_SIGNATURE,
       // });
 
-      const mail = create_customer_from_estimate({
-        firstName: customer.firstName,
-        lastName: customer.lastName,
-        partner,
-        vehichleData: `${value.modelYear} ${value.make} ${value.model}`
-      })
+      // const mail = create_customer_from_estimate({
+      //   firstName: customer.firstName,
+      //   lastName: customer.lastName,
+      //   partner,
+      //   vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+      // })
 
-      //todo: Send email with credentials
-      await QueueManager.publish({
-        queue: QUEUE_EVENTS.name,
-        data: {
-          to: user.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
-          subject: `You Have a New Estimate`,
-          html: mail,
-          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
-        },
-      });
+      // //todo: Send email with credentials
+      // await QueueManager.publish({
+      //   queue: QUEUE_EVENTS.name,
+      //   data: {
+      //     to: user.email,
+      //     from: {
+      //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+      //       address: <string>process.env.SMTP_EMAIL_FROM,
+      //     },
+      //     subject: `You Have a New Estimate`,
+      //     html: mail,
+      //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      //   },
+      // });
       // stop
     } else {
       await findCustomer.$add('vehicles', [vehicle]);
       customer = findCustomer;
+
+      // send mail to customer also
+      // let user: any = customer;
+      // const mail = new_estimate_template({
+      //   firstName: customer.firstName,
+      //   lastName: customer.lastName,
+      //   partner,
+      //   vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+      // })
+
+      // //todo: Send email with credentials
+      // await QueueManager.publish({
+      //   queue: QUEUE_EVENTS.name,
+      //   data: {
+      //     to: user.email,
+      //     from: {
+      //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+      //       address: <string>process.env.SMTP_EMAIL_FROM,
+      //     },
+      //     subject: `You Have a New Estimate`,
+      //     html: mail,
+      //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      //   },
+      // });
     }
 
     const estimateValues: Partial<Estimate> = {
@@ -432,6 +494,36 @@ export default class EstimateController {
     await vehicle.$add('estimates', [estimate]);
 
     await customer.$add('estimates', [estimate]);
+
+    console.log('reach0')
+    // send mail
+    let user: any = customer;
+    const mail = new_estimate_template({
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      partner,
+      estimate,
+      vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+    })
+
+    console.log('reach1')
+
+    //todo: Send email with credentials
+    await QueueManager.publish({
+      queue: QUEUE_EVENTS.name,
+      data: {
+        to: user.email,
+        from: {
+          name: "AutoHyve",
+          address: <string>process.env.SMTP_EMAIL_FROM,
+        },
+        subject: `${partner.name} has sent you an estimate on AutoHyve`,
+        html: mail,
+        bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      },
+    });
+
+    // console.log(estimate, customer, vehicle, partner, 'reach2')
 
     return { estimate, customer, vehicle, partner };
   }
@@ -474,14 +566,18 @@ export default class EstimateController {
           where: { vin: value.vin },
         });
 
-        if (!vin)
-          return Promise.reject(
-            CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
-          );
+        // disable vin doesn't exist
+        if (!vin) {
+          // return Promise.reject(
+          //   CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+          // );
+        } else {
+          // @ts-ignore
+          await vin.update({
+            plateNumber: value.plateNumber,
+          });
+        }
 
-        await vin.update({
-          plateNumber: value.plateNumber,
-        });
 
         vehicle = await dataSources.vehicleDAOService.create(data);
       } else {
@@ -498,7 +594,9 @@ export default class EstimateController {
     }
 
     const findCustomer = await dataSources.customerDAOService.findByAny({
-      where: { phone: value.phone },
+      where: {
+        email: value.email
+      },
       include: [Contact],
     });
 
@@ -507,10 +605,25 @@ export default class EstimateController {
         firstName: value.firstName,
         lastName: value.lastName,
         phone: value.phone,
+        email: value.email,
       };
 
       customer = await dataSources.customerDAOService.create(data);
       if (vehicle) await customer.$set('vehicles', [vehicle]);
+
+      try {
+        const contactValue: any = {
+          label: "Home",
+          // @ts-ignore
+          state: value?.state || "Abuja (FCT)"
+        }
+
+        const contact = await dataSources.contactDAOService.create(contactValue);
+        await customer.$set('contacts', [contact]);
+      } catch (e) {
+        console.log(e)
+      }
+
     } else {
       if (vehicle) await findCustomer.$add('vehicles', [vehicle]);
       customer = findCustomer;
@@ -539,7 +652,11 @@ export default class EstimateController {
 
     if (vehicle) await vehicle.$add('estimates', [estimate]);
 
-    await customer.$add('estimates', [estimate]);
+    try {
+      await customer.$add('estimates', [estimate]);
+    } catch (e) {
+      console.log(e)
+    }
 
     return { estimate, customer, vehicle, partner };
   }

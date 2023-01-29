@@ -250,7 +250,7 @@ exports.$createEstimateSchema = {
     id: joi_1.default.number().required().label('Partner Id'),
     firstName: joi_1.default.string().required().label(exports.estimateFields.firstName.label),
     lastName: joi_1.default.string().required().label(exports.estimateFields.lastName.label),
-    email: joi_1.default.string().optional().label(exports.estimateFields.email.label),
+    email: joi_1.default.string().required().label(exports.estimateFields.email.label),
     // @ts-ignore
     state: joi_1.default.string().optional().label(exports.estimateFields.state.label),
     phone: joi_1.default.string().required().label(exports.estimateFields.phone.label),
@@ -278,10 +278,10 @@ exports.$saveEstimateSchema = {
     id: joi_1.default.number().required().label('Partner Id'),
     firstName: joi_1.default.string().allow('').label(exports.estimateFields.firstName.label),
     lastName: joi_1.default.string().allow('').label(exports.estimateFields.lastName.label),
-    email: joi_1.default.string().optional().label(exports.estimateFields.email.label),
+    email: joi_1.default.string().required().label(exports.estimateFields.email.label),
     // @ts-ignore
     state: joi_1.default.string().optional().label(exports.estimateFields.state.label),
-    phone: joi_1.default.string().allow('').label(exports.estimateFields.phone.label),
+    phone: joi_1.default.string().required().label(exports.estimateFields.phone.label),
     addressType: joi_1.default.string().allow('').label(exports.estimateFields.addressType.label),
     address: joi_1.default.string().allow('').label(exports.estimateFields.address.label),
     vin: joi_1.default.string().allow('').label(exports.estimateFields.vin.label),

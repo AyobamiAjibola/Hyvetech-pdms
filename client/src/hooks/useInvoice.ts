@@ -208,6 +208,7 @@ export default function useInvoice() {
             parts,
             labours,
             status,
+            invoice
           }));
 
           setGrandTotal(draftInvoice.grandTotal);
@@ -245,6 +246,7 @@ export default function useInvoice() {
             parts,
             labours,
             status,
+            invoice
           }));
 
           setGrandTotal(invoice.grandTotal);
@@ -284,6 +286,7 @@ export default function useInvoice() {
             parts,
             labours,
             status,
+            invoice
           }));
 
           setGrandTotal(estimate.grandTotal);

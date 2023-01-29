@@ -10,6 +10,7 @@ const constants_1 = require("../config/constants");
 const notification_1 = require("../models/nosql/notification");
 const sequelize_1 = require("sequelize");
 const axios_1 = __importDefault(require("axios"));
+// import * as AxiosMain from 'axios';
 // import fetch from 'node-fetch';
 const PushNotificationService_1 = __importDefault(require("./PushNotificationService"));
 const Generic_1 = __importDefault(require("../utils/Generic"));
@@ -102,82 +103,65 @@ function eventManager(io) {
             const { estimate, customer, partner, vehicle } = props;
             const partnerContact = partner.contact.address;
             (async () => {
-                const notification = {
-                    seen: false,
-                    from: `${partner.name} ${partnerContact}`,
-                    to: `${customer.id}`,
-                    type: 'Estimate',
-                    subject: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
-                    message: `${estimate.id}`,
-                };
-                await notification_1.NotificationModel.create(notification);
-                const whichPushToken = Generic_1.default.whichPushToken(customer.pushToken);
-                // const whichPushToken = (customer.pushToken);
-                const title = `${partner.name} Estimate`;
-                const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
-                // try{
-                //   let token = ((whichPushToken).replace("[android]-", "")).replace("[ios]-", "");
-                //   const baseURL = "https://exp.host/--/api/v2/push/send";
-                //   const _res = await fetch(baseURL, {
-                //     method: "POST",
-                //     body: JSON.stringify({
-                //       to: token,
-                //       title: title,
-                //       body: message
-                //     }),
-                //     headers: {'Content-Type': 'application/json'}
-                //   })
-                // AxiosMain.default.defaults.baseURL = '';
-                // await AxiosMain.default.post(baseURL, {
-                //   to: token,
-                //   title: title,
-                //   body: message
-                // })
-                // console.log('sent', _res, token)
-                // }catch(e){
-                // console.log(e)
-                // }
-                io.to(customer.eventId).emit(constants_1.CREATED_ESTIMATE, { title, message });
-                if (whichPushToken.type === 'android') {
-                    const fcm = PushNotificationService_1.default.fcmMessaging.config({
-                        baseURL: process.env.GOOGLE_FCM_HOST,
-                        experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
-                        scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
-                        serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY,
-                        pushToken: whichPushToken.token,
-                    });
-                    const response = await fcm.sendToOne({
-                        title,
-                        message,
-                        sound: true,
-                        vibrate: true,
-                        priority: 'max',
-                    });
-                    console.log(response.data);
-                }
-                if (whichPushToken.type === 'ios') {
-                    const appleKey = process.env.APPLE_KEY;
-                    const appleKeyId = process.env.APPLE_KEY_ID;
-                    const appleTeamId = process.env.APPLE_TEAM_ID;
-                    const apns = PushNotificationService_1.default.apnMessaging.config({
-                        production: true,
-                        pushToken: whichPushToken.token,
-                        token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
-                        topic: 'com.jiffixproductmanager.autohyve',
-                    });
-                    const responses = await apns.sendToOne({
-                        alert: title,
-                        payload: { message },
-                    });
-                    if (responses.failed.length) {
-                        const final = await apns.sendToOne({
+                try {
+                    const notification = {
+                        seen: false,
+                        from: `${partner.name} ${partnerContact}`,
+                        to: `${customer.id}`,
+                        type: 'Estimate',
+                        subject: `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`,
+                        message: `${estimate.id}`,
+                    };
+                    await notification_1.NotificationModel.create(notification);
+                    const whichPushToken = Generic_1.default.whichPushToken(customer.pushToken);
+                    // const whichPushToken = (customer.pushToken);
+                    const title = `${partner.name} Estimate`;
+                    const message = `Estimate for your vehicle ${vehicle.make} ${vehicle.model} has been created`;
+                    io.to(customer.eventId).emit(constants_1.CREATED_ESTIMATE, { title, message });
+                    if (whichPushToken.type === 'android') {
+                        const fcm = PushNotificationService_1.default.fcmMessaging.config({
+                            baseURL: process.env.GOOGLE_FCM_HOST,
+                            experienceId: `@jiffixproductmanager/${customer.expoSlug}`,
+                            scopeKey: `@jiffixproductmanager/${customer.expoSlug}`,
+                            serverKey: process.env.AUTOHYVE_FCM_SERVER_KEY,
+                            pushToken: whichPushToken.token,
+                        });
+                        const response = await fcm.sendToOne({
+                            title,
+                            message,
+                            sound: true,
+                            vibrate: true,
+                            priority: 'max',
+                        });
+                        console.log(response.data);
+                    }
+                    if (whichPushToken.type === 'ios') {
+                        const appleKey = process.env.APPLE_KEY;
+                        const appleKeyId = process.env.APPLE_KEY_ID;
+                        const appleTeamId = process.env.APPLE_TEAM_ID;
+                        const apns = PushNotificationService_1.default.apnMessaging.config({
+                            production: true,
+                            pushToken: whichPushToken.token,
+                            token: { key: appleKey, keyId: appleKeyId, teamId: appleTeamId },
+                            topic: 'com.jiffixproductmanager.autohyve',
+                        });
+                        const responses = await apns.sendToOne({
                             alert: title,
                             payload: { message },
                         });
-                        console.log(final.failed);
+                        if (responses.failed.length) {
+                            const final = await apns.sendToOne({
+                                alert: title,
+                                payload: { message },
+                            });
+                            console.log(final.failed);
+                        }
+                        else
+                            console.log(responses.sent);
                     }
-                    else
-                        console.log(responses.sent);
+                }
+                catch (e) {
+                    console.log(e);
                 }
             })();
         });
