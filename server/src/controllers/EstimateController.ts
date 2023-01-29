@@ -359,7 +359,9 @@ export default class EstimateController {
     }
 
     const findCustomer = await dataSources.customerDAOService.findByAny({
-      where: { phone: value.phone },
+      where: {
+        email: value.email
+      },
       include: [Contact],
     });
 
@@ -499,7 +501,7 @@ export default class EstimateController {
           name: "AutoHyve",
           address: <string>process.env.SMTP_EMAIL_FROM,
         },
-        subject: `We've sent you an estimate on AutoHyve`,
+        subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
         bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
       },
@@ -576,7 +578,9 @@ export default class EstimateController {
     }
 
     const findCustomer = await dataSources.customerDAOService.findByAny({
-      where: { phone: value.phone },
+      where: {
+        email: value.email
+      },
       include: [Contact],
     });
 

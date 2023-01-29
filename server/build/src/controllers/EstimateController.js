@@ -293,7 +293,9 @@ class EstimateController {
             });
         }
         const findCustomer = await dao_1.default.customerDAOService.findByAny({
-            where: { phone: value.phone },
+            where: {
+                email: value.email
+            },
             include: [Contact_1.default],
         });
         if (!findCustomer) {
@@ -414,7 +416,7 @@ class EstimateController {
                     name: "AutoHyve",
                     address: process.env.SMTP_EMAIL_FROM,
                 },
-                subject: `We've sent you an estimate on AutoHyve`,
+                subject: `${partner.name} has sent you an estimate on AutoHyve`,
                 html: mail,
                 bcc: [process.env.SMTP_CUSTOMER_CARE_EMAIL, process.env.SMTP_EMAIL_FROM],
             },
@@ -474,7 +476,9 @@ class EstimateController {
             }
         }
         const findCustomer = await dao_1.default.customerDAOService.findByAny({
-            where: { phone: value.phone },
+            where: {
+                email: value.email
+            },
             include: [Contact_1.default],
         });
         if (!findCustomer) {
