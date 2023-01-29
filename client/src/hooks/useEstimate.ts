@@ -209,7 +209,7 @@ export default function useEstimate() {
       grandTotal: Math.round(grandTotal),
     };
 
-    // console.log("dataSent", data)
+    console.log(Object.keys(data), "realsentdata")
     // return
 
     dispatch(createEstimateAction(data));
@@ -248,6 +248,8 @@ export default function useEstimate() {
       laboursTotal: Math.round(labourTotal),
       grandTotal: Math.round(grandTotal),
     };
+
+    console.log(Object.keys(data), "realsentdata")
 
     dispatch(saveEstimateAction(data));
   };

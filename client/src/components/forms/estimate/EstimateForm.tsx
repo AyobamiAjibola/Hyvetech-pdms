@@ -1,13 +1,17 @@
 import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import { Autocomplete, Checkbox, CircularProgress, createFilterOptions, Divider, Grid, Typography } from '@mui/material';
+import {
+  Autocomplete,
+  // Checkbox,
+  CircularProgress, createFilterOptions, Divider, Grid, Typography
+} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send, SendAndArchive } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import TextInputField from '../fields/TextInputField';
-import { formatNumberToIntl, reload } from '../../../utils/generic';
+import { filterPhoneNumber, formatNumberToIntl, reload } from '../../../utils/generic';
 import SelectField, { ISelectData } from '../fields/SelectField';
 import WarrantyFields from './WarrantyFields';
 import QuantityFields from './QuantityFields';
@@ -77,9 +81,9 @@ function EstimateForm(props: IProps) {
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
   // @ts-ignore
-  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>((values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : false)
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>((values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : true) : true)
   // @ts-ignore
-  const [enableTaxPart, setEnableTaxPart] = useState<boolean>((values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? true : false) : false)
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>((values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? false : false) : false)
 
   useEffect(() => {
     setTimeout(() => {
@@ -87,10 +91,10 @@ function EstimateForm(props: IProps) {
       // @ts-ignore
       if (values.estimate != undefined) {
         // @ts-ignore
-        const _lab = (values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : true;
+        const _lab = (values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : true) : true;
         setEnableTaxLabor(_lab)
         // @ts-ignore
-        const _part = (values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? true : false) : true;
+        const _part = (values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? false : false) : false;
         setEnableTaxPart(_part)
 
         console.log(_lab, _part, "_lab, _part")
@@ -489,12 +493,29 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={2}>
+            {/* @ts-ignore */}
             <TextInputField
               type="tel"
-              onChange={handleChange}
+              onChange={(e) => {
+                console.log(e, "logger")
+                const _val = filterPhoneNumber(e.target.value);
+
+                if (_val.error) {
+                  setError({ message: _val?.message || "" })
+                }
+
+                handleChange({
+                  target: {
+                    name: e.target.name,
+                    value: _val.phone,
+                  }
+                })
+
+              }}
               label={fields.phone.label}
               value={values.phone}
               name={fields.phone.name}
+              placeholder='Phone e.g 080...'
             />
           </Grid>
           <Grid item container xs spacing={0.2}>
@@ -625,7 +646,7 @@ function EstimateForm(props: IProps) {
                       </IconButton>
                     </Grid>
                     <Grid item xs={12} container spacing={2} columns={13}>
-                      <Grid item xs={6} />
+                      <Grid item xs={8} />
                       <Grid item xs={4}>
                         {(enableTaxPart && (<TextField
                           name={fields.taxPart.name}
@@ -638,13 +659,12 @@ function EstimateForm(props: IProps) {
                         Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
 
-                      <Grid item style={{}}>
-                        {/* disable tax for labour */}
+                      {/* <Grid item style={{}}>
                         <div>
                           <span>Apply Tax</span>
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
-                      </Grid>
+                      </Grid> */}
 
                     </Grid>
                   </React.Fragment>
@@ -727,7 +747,7 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12} container spacing={2} columns={13}>
-            <Grid item xs={6} />
+            <Grid item xs={8} />
             <Grid item xs={4}>
               {(enableTaxLabor && (<TextField
                 name={fields.tax.name}
@@ -740,13 +760,12 @@ function EstimateForm(props: IProps) {
               <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
 
-            <Grid item style={{}}>
-              {/* disable tax for labour */}
+            {/* <Grid item style={{}}>
               <div>
                 <span>Apply Tax</span>
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
-            </Grid>
+            </Grid> */}
 
           </Grid>
           <Grid item xs={12}>
@@ -812,7 +831,9 @@ function EstimateForm(props: IProps) {
                   variant="contained"
                   color="secondary"
                   endIcon={<Save />}
-                  onClick={() => props.setSave(true)}>
+                  onClick={() => {
+                    props.setSave(true)
+                  }}>
                   {'Save'}
                 </LoadingButton>
                 <LoadingButton
@@ -820,7 +841,9 @@ function EstimateForm(props: IProps) {
                   type="submit"
                   loading={sendStatus}
                   disabled={values.status === ESTIMATE_STATUS.invoiced}
-                  onClick={() => props.setSave(false)}
+                  onClick={() => {
+                    props.setSave(false)
+                  }}
                   variant="contained"
                   color="success"
                   endIcon={values.status === ESTIMATE_STATUS.sent ? <SendAndArchive /> : <Send />}>

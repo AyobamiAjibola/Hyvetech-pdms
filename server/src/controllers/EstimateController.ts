@@ -44,11 +44,19 @@ export default class EstimateController {
   public async create(req: Request) {
     const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
 
-    await estimate.update({
-      status: ESTIMATE_STATUS.sent,
-    });
 
-    appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
+    try {
+      // console.log('before 1')
+      await estimate.update({
+        status: ESTIMATE_STATUS.sent,
+      });
+      // console.log('before 2')
+
+      appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
+      // console.log('before 3')
+    } catch (e) {
+      console.log(e)
+    }
 
     const response: HttpResponse<Estimate> = {
       code: HttpStatus.OK.code,
@@ -365,6 +373,17 @@ export default class EstimateController {
 
       customer = await dataSources.customerDAOService.create(data);
       await customer.$set('vehicles', [vehicle]);
+      // try to link a contact with this customer
+
+      const contactValue: any = {
+        label: "Home",
+        // @ts-ignore
+        state: value?.state || "Abuja (FCT)"
+      }
+
+      const contact = await dataSources.contactDAOService.create(contactValue);
+      await customer.$set('contacts', [contact]);
+
 
       // send email of user info
       // start
@@ -458,6 +477,7 @@ export default class EstimateController {
 
     await customer.$add('estimates', [estimate]);
 
+    console.log('reach0')
     // send mail
     let user: any = customer;
     const mail = new_estimate_template({
@@ -468,20 +488,24 @@ export default class EstimateController {
       vehichleData: `${value.modelYear} ${value.make} ${value.model}`
     })
 
+    console.log('reach1')
+
     //todo: Send email with credentials
     await QueueManager.publish({
       queue: QUEUE_EVENTS.name,
       data: {
         to: user.email,
         from: {
-          name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+          name: "AutoHyve",
           address: <string>process.env.SMTP_EMAIL_FROM,
         },
-        subject: `You Have a New Estimate`,
+        subject: `We've sent you an estimate on AutoHyve`,
         html: mail,
         bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
       },
     });
+
+    // console.log(estimate, customer, vehicle, partner, 'reach2')
 
     return { estimate, customer, vehicle, partner };
   }
@@ -525,15 +549,17 @@ export default class EstimateController {
         });
 
         // disable vin doesn't exist
-        // if (!vin)
-        //   return Promise.reject(
-        //     CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
-        //   );
+        if (!vin) {
+          // return Promise.reject(
+          //   CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+          // );
+        } else {
+          // @ts-ignore
+          await vin.update({
+            plateNumber: value.plateNumber,
+          });
+        }
 
-        // @ts-ignore
-        await vin.update({
-          plateNumber: value.plateNumber,
-        });
 
         vehicle = await dataSources.vehicleDAOService.create(data);
       } else {
@@ -559,10 +585,25 @@ export default class EstimateController {
         firstName: value.firstName,
         lastName: value.lastName,
         phone: value.phone,
+        email: value.email,
       };
 
       customer = await dataSources.customerDAOService.create(data);
       if (vehicle) await customer.$set('vehicles', [vehicle]);
+
+      try {
+        const contactValue: any = {
+          label: "Home",
+          // @ts-ignore
+          state: value?.state || "Abuja (FCT)"
+        }
+
+        const contact = await dataSources.contactDAOService.create(contactValue);
+        await customer.$set('contacts', [contact]);
+      } catch (e) {
+        console.log(e)
+      }
+
     } else {
       if (vehicle) await findCustomer.$add('vehicles', [vehicle]);
       customer = findCustomer;
@@ -591,7 +632,11 @@ export default class EstimateController {
 
     if (vehicle) await vehicle.$add('estimates', [estimate]);
 
-    await customer.$add('estimates', [estimate]);
+    try {
+      await customer.$add('estimates', [estimate]);
+    } catch (e) {
+      console.log(e)
+    }
 
     return { estimate, customer, vehicle, partner };
   }
