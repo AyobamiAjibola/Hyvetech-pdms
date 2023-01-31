@@ -235,7 +235,7 @@ export default class EstimateController {
         },
         subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
-        bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+        bcc: [<string>process.env.SMTP_EMAIL_FROM],
       },
     });
 
@@ -460,7 +460,7 @@ export default class EstimateController {
       //     },
       //     subject: `You Have a New Estimate`,
       //     html: mail,
-      //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      //     bcc: [<string>process.env.SMTP_EMAIL_FROM],
       //   },
       // });
       // stop
@@ -488,7 +488,7 @@ export default class EstimateController {
       //     },
       //     subject: `You Have a New Estimate`,
       //     html: mail,
-      //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      //     bcc: [<string>process.env.SMTP_EMAIL_FROM],
       //   },
       // });
     }
@@ -542,7 +542,7 @@ export default class EstimateController {
         },
         subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
-        bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+        bcc: [<string>process.env.SMTP_EMAIL_FROM],
       },
     });
 
