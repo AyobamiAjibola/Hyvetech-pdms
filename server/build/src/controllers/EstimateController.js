@@ -184,6 +184,27 @@ class EstimateController {
         await estimate.update({
             status: constants_1.ESTIMATE_STATUS.sent,
         });
+        let user = customer;
+        const mail = (0, new_estimate_1.default)({
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            partner,
+            estimate,
+            vehichleData: `${value.modelYear} ${value.make} ${value.model} `
+        });
+        await rabbitmq_email_manager_1.default.publish({
+            queue: constants_1.QUEUE_EVENTS.name,
+            data: {
+                to: user.email,
+                from: {
+                    name: "AutoHyve",
+                    address: process.env.SMTP_EMAIL_FROM,
+                },
+                subject: `${partner.name} has sent you an estimate on AutoHyve`,
+                html: mail,
+                bcc: [process.env.SMTP_EMAIL_FROM],
+            },
+        });
         AppEventEmitter_1.appEventEmitter.emit(constants_1.CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
         const response = {
             code: HttpStatus_1.default.OK.code,
@@ -359,7 +380,7 @@ class EstimateController {
             //     },
             //     subject: `You Have a New Estimate`,
             //     html: mail,
-            //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+            //     bcc: [<string>process.env.SMTP_EMAIL_FROM],
             //   },
             // });
             // stop
@@ -386,7 +407,7 @@ class EstimateController {
             //     },
             //     subject: `You Have a New Estimate`,
             //     html: mail,
-            //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+            //     bcc: [<string>process.env.SMTP_EMAIL_FROM],
             //   },
             // });
         }
@@ -418,7 +439,7 @@ class EstimateController {
             lastName: customer.lastName,
             partner,
             estimate,
-            vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+            vehichleData: `${value.modelYear} ${value.make} ${value.model} `
         });
         console.log('reach1');
         //todo: Send email with credentials
@@ -432,7 +453,7 @@ class EstimateController {
                 },
                 subject: `${partner.name} has sent you an estimate on AutoHyve`,
                 html: mail,
-                bcc: [process.env.SMTP_CUSTOMER_CARE_EMAIL, process.env.SMTP_EMAIL_FROM],
+                bcc: [process.env.SMTP_EMAIL_FROM],
             },
         });
         // console.log(estimate, customer, vehicle, partner, 'reach2')
