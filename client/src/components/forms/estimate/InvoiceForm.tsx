@@ -1,7 +1,7 @@
 import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import {
-  // Checkbox, 
+  Checkbox,
   Divider, Grid, Stack, Typography
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -83,7 +83,7 @@ function InvoiceForm(props: IProps) {
       // @ts-ignore
       if (values.invoice != undefined) {
         // @ts-ignore
-        const _lab = (values?.invoice?.tax !== undefined) ? (parseInt(values.invoice.tax) !== 0 ? true : true) : true;
+        const _lab = (values?.invoice?.tax !== undefined) ? (parseInt(values.invoice.tax) !== 0 ? true : false) : true;
         setEnableTaxLabor(_lab)
         // @ts-ignore
         const _part = (values?.invoice?.taxPart !== undefined) ? (parseInt(values.invoice.taxPart) !== 0 ? false : false) : false;
@@ -520,7 +520,7 @@ function InvoiceForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12} container spacing={2} columns={13}>
-            <Grid item xs={8} />
+            <Grid item xs={6} />
             <Grid item xs={4}>
               {((enableTaxLabor) && (<TextField
                 name={fields.tax.name}
@@ -533,12 +533,12 @@ function InvoiceForm(props: IProps) {
               <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
 
-            {/* <Grid item style={{}}>
+            <Grid item style={{}}>
               <div>
                 <span>Apply Tax</span>
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
-            </Grid> */}
+            </Grid>
 
           </Grid>
           <Grid item xs={12}>

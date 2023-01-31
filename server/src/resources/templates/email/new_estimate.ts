@@ -356,7 +356,9 @@ export default function new_estimate_template(config: MailTextConfig) {
 
         </table> -->
         <p class="btnContainer">
-            <a href='https://onelink.to/fh7uc5'><button class="btn">View Estimate</button> </a>
+            <a href="https://onelink.to/fh7uc5">
+                <button class="btn">View Estimate</button>
+            </a>
         </p>
 
         <center>

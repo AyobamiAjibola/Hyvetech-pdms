@@ -2,7 +2,7 @@ import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEff
 import { FieldArray, Form, useFormikContext } from 'formik';
 import {
   Autocomplete,
-  // Checkbox,
+  Checkbox,
   CircularProgress, createFilterOptions, Divider, Grid, Typography
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -81,7 +81,7 @@ function EstimateForm(props: IProps) {
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
   // @ts-ignore
-  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>((values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : true) : true)
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>((values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : true)
   // @ts-ignore
   const [enableTaxPart, setEnableTaxPart] = useState<boolean>((values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? false : false) : false)
 
@@ -91,7 +91,7 @@ function EstimateForm(props: IProps) {
       // @ts-ignore
       if (values.estimate != undefined) {
         // @ts-ignore
-        const _lab = (values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : true) : true;
+        const _lab = (values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : true;
         setEnableTaxLabor(_lab)
         // @ts-ignore
         const _part = (values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? false : false) : false;
@@ -747,7 +747,7 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12} container spacing={2} columns={13}>
-            <Grid item xs={8} />
+            <Grid item xs={6} />
             <Grid item xs={4}>
               {(enableTaxLabor && (<TextField
                 name={fields.tax.name}
@@ -760,12 +760,12 @@ function EstimateForm(props: IProps) {
               <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
 
-            {/* <Grid item style={{}}>
+            <Grid item style={{}}>
               <div>
                 <span>Apply Tax</span>
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
-            </Grid> */}
+            </Grid>
 
           </Grid>
           <Grid item xs={12}>

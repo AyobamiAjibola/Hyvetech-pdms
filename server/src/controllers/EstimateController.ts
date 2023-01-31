@@ -131,9 +131,25 @@ export default class EstimateController {
     if (!customer)
       return Promise.reject(CustomAPIError.response(`Customer does not found`, HttpStatus.BAD_REQUEST.code));
 
-    const vehicle = await estimate.$get('vehicle');
+    let vehicle = await estimate.$get('vehicle');
 
-    if (!vehicle) return Promise.reject(CustomAPIError.response(`Vehicle not found`, HttpStatus.BAD_REQUEST.code));
+    if (!vehicle) {
+      const value = req.body;
+      const data: any = {
+        vin: value.vin,
+        make: value.make,
+        model: value.model,
+        modelYear: value.modelYear,
+        plateNumber: value.plateNumber,
+        mileageValue: value.mileageValue,
+        mileageUnit: value.mileageUnit,
+      };
+
+      vehicle = await dataSources.vehicleDAOService.create(data);
+      await customer.$add('vehicles', [vehicle]);
+      await vehicle.$add('estimates', [estimate]);
+      // return Promise.reject(CustomAPIError.response(`Vehicle not found`, HttpStatus.BAD_REQUEST.code))
+    }
 
     const partner = await estimate.$get('partner', { include: [Contact] });
 
@@ -359,7 +375,9 @@ export default class EstimateController {
     }
 
     const findCustomer = await dataSources.customerDAOService.findByAny({
-      where: { phone: value.phone },
+      where: {
+        email: value.email
+      },
       include: [Contact],
     });
 
@@ -499,7 +517,7 @@ export default class EstimateController {
           name: "AutoHyve",
           address: <string>process.env.SMTP_EMAIL_FROM,
         },
-        subject: `We've sent you an estimate on AutoHyve`,
+        subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
         bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
       },
@@ -576,7 +594,9 @@ export default class EstimateController {
     }
 
     const findCustomer = await dataSources.customerDAOService.findByAny({
-      where: { phone: value.phone },
+      where: {
+        email: value.email
+      },
       include: [Contact],
     });
 
