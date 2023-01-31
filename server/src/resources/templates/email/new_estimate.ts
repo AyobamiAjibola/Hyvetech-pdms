@@ -340,7 +340,7 @@ export default function new_estimate_template(config: MailTextConfig) {
 
             <p class="priceWrapper">
                 <span class="priceBold">Grand Total #:</span>
-                <span class="price">₦ ${new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format((config.estimate?.grandTotal || ''))}</span>
+                <span class="price">₦ ${new Intl.NumberFormat('en-GB', { maximumSignificantDigits: 2 }).format((config.estimate?.grandTotal || ''))}</span>
             </p>
 
             <p class="priceWrapper">

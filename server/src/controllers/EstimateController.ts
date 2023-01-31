@@ -216,6 +216,29 @@ export default class EstimateController {
       status: ESTIMATE_STATUS.sent,
     });
 
+    let user: any = customer;
+    const mail = new_estimate_template({
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      partner,
+      estimate,
+      vehichleData: `${value.modelYear} ${value.make} ${value.model} `
+    })
+
+    await QueueManager.publish({
+      queue: QUEUE_EVENTS.name,
+      data: {
+        to: user.email,
+        from: {
+          name: "AutoHyve",
+          address: <string>process.env.SMTP_EMAIL_FROM,
+        },
+        subject: `${partner.name} has sent you an estimate on AutoHyve`,
+        html: mail,
+        bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      },
+    });
+
     appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
 
     const response: HttpResponse<Estimate> = {
@@ -503,7 +526,7 @@ export default class EstimateController {
       lastName: customer.lastName,
       partner,
       estimate,
-      vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+      vehichleData: `${value.modelYear} ${value.make} ${value.model} `
     })
 
     console.log('reach1')
