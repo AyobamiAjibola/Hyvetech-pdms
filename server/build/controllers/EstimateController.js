@@ -205,7 +205,7 @@ class EstimateController {
                 },
                 subject: `${partner.name} has sent you an estimate on AutoHyve`,
                 html: mail,
-                bcc: [process.env.SMTP_EMAIL_FROM2],
+                bcc: [process.env.SMTP_BCC],
             },
         });
         AppEventEmitter_1.appEventEmitter.emit(constants_1.CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
@@ -459,7 +459,7 @@ class EstimateController {
                 },
                 subject: `${partner.name} has sent you an estimate on AutoHyve`,
                 html: mail,
-                bcc: [process.env.SMTP_EMAIL_FROM2],
+                bcc: [process.env.SMTP_BCC],
             },
         });
         // console.log(estimate, customer, vehicle, partner, 'reach2')

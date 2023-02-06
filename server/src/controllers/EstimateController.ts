@@ -238,7 +238,7 @@ export default class EstimateController {
         },
         subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
-        bcc: [<string>process.env.SMTP_EMAIL_FROM2],
+        bcc: [<string>process.env.SMTP_BCC],
       },
     });
 
@@ -548,7 +548,7 @@ export default class EstimateController {
         },
         subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
-        bcc: [<string>process.env.SMTP_EMAIL_FROM2],
+        bcc: [<string>process.env.SMTP_BCC],
       },
     });
 
