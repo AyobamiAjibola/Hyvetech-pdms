@@ -229,13 +229,16 @@ export default class EstimateController {
       queue: QUEUE_EVENTS.name,
       data: {
         to: user.email,
+        replyTo: partner.email,
+        // @ts-ignore
+        'reply-to': partner.email,
         from: {
           name: "AutoHyve",
-          address: <string>process.env.SMTP_EMAIL_FROM,
+          address: <string>process.env.SMTP_EMAIL_FROM2,
         },
         subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
-        bcc: [<string>process.env.SMTP_EMAIL_FROM],
+        bcc: [<string>process.env.SMTP_EMAIL_FROM2],
       },
     });
 
@@ -536,13 +539,16 @@ export default class EstimateController {
       queue: QUEUE_EVENTS.name,
       data: {
         to: user.email,
+        replyTo: partner.email,
+        // @ts-ignore
+        'reply-to': partner.email,
         from: {
           name: "AutoHyve",
-          address: <string>process.env.SMTP_EMAIL_FROM,
+          address: <string>process.env.SMTP_EMAIL_FROM2,
         },
         subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
-        bcc: [<string>process.env.SMTP_EMAIL_FROM],
+        bcc: [<string>process.env.SMTP_EMAIL_FROM2],
       },
     });
 
