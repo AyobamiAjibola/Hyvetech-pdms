@@ -196,13 +196,16 @@ class EstimateController {
             queue: constants_1.QUEUE_EVENTS.name,
             data: {
                 to: user.email,
+                replyTo: partner.email,
+                // @ts-ignore
+                'reply-to': partner.email,
                 from: {
                     name: "AutoHyve",
-                    address: process.env.SMTP_EMAIL_FROM,
+                    address: process.env.SMTP_EMAIL_FROM2,
                 },
                 subject: `${partner.name} has sent you an estimate on AutoHyve`,
                 html: mail,
-                bcc: [process.env.SMTP_EMAIL_FROM],
+                bcc: [process.env.SMTP_BCC],
             },
         });
         AppEventEmitter_1.appEventEmitter.emit(constants_1.CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
@@ -340,6 +343,12 @@ class EstimateController {
                 phone: value.phone,
                 email: value.email,
             };
+            // check if it's not super admin
+            console.log(req?.user.partner?.id);
+            if (req?.user.partner?.id != 0) {
+                data.partnerId = req?.user.partner?.id;
+                console.log(req?.user.partner?.id, data);
+            }
             customer = await dao_1.default.customerDAOService.create(data);
             await customer.$set('vehicles', [vehicle]);
             // try to link a contact with this customer
@@ -447,13 +456,16 @@ class EstimateController {
             queue: constants_1.QUEUE_EVENTS.name,
             data: {
                 to: user.email,
+                replyTo: partner.email,
+                // @ts-ignore
+                'reply-to': partner.email,
                 from: {
                     name: "AutoHyve",
-                    address: process.env.SMTP_EMAIL_FROM,
+                    address: process.env.SMTP_EMAIL_FROM2,
                 },
                 subject: `${partner.name} has sent you an estimate on AutoHyve`,
                 html: mail,
-                bcc: [process.env.SMTP_EMAIL_FROM],
+                bcc: [process.env.SMTP_BCC],
             },
         });
         // console.log(estimate, customer, vehicle, partner, 'reach2')
@@ -523,6 +535,10 @@ class EstimateController {
                 phone: value.phone,
                 email: value.email,
             };
+            // check if it's not super admin
+            if (req?.user.partner?.id != 0) {
+                data.partnerId = req?.user.partner?.id;
+            }
             customer = await dao_1.default.customerDAOService.create(data);
             if (vehicle)
                 await customer.$set('vehicles', [vehicle]);

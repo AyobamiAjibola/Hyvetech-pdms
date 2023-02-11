@@ -343,6 +343,12 @@ class EstimateController {
                 phone: value.phone,
                 email: value.email,
             };
+            // check if it's not super admin
+            console.log(req?.user.partner?.id);
+            if (req?.user.partner?.id != 0) {
+                data.partnerId = req?.user.partner?.id;
+                console.log(req?.user.partner?.id, data);
+            }
             customer = await dao_1.default.customerDAOService.create(data);
             await customer.$set('vehicles', [vehicle]);
             // try to link a contact with this customer
@@ -529,6 +535,10 @@ class EstimateController {
                 phone: value.phone,
                 email: value.email,
             };
+            // check if it's not super admin
+            if (req?.user.partner?.id != 0) {
+                data.partnerId = req?.user.partner?.id;
+            }
             customer = await dao_1.default.customerDAOService.create(data);
             if (vehicle)
                 await customer.$set('vehicles', [vehicle]);

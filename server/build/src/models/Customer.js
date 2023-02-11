@@ -168,6 +168,14 @@ __decorate([
     __metadata("design:type", Date)
 ], Customer.prototype, "loginDate", void 0);
 __decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    __metadata("design:type", Number)
+], Customer.prototype, "partnerId", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", String)
+], Customer.prototype, "creditRating", void 0);
+__decorate([
     (0, sequelize_typescript_1.HasOne)(() => BillingInformation_1.default),
     __metadata("design:type", Object)
 ], Customer.prototype, "billingInformation", void 0);

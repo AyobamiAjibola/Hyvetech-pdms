@@ -21,6 +21,13 @@ const Vehicle_1 = __importDefault(require("../models/Vehicle"));
 const VehicleFault_1 = __importDefault(require("../models/VehicleFault"));
 const sequelize_1 = require("sequelize");
 const decorators_1 = require("../decorators");
+const Contact_1 = __importDefault(require("../models/Contact"));
+const settings_1 = __importDefault(require("../config/settings"));
+const PasswordEncoder_1 = __importDefault(require("../utils/PasswordEncoder"));
+const rabbitmq_email_manager_1 = __importDefault(require("rabbitmq-email-manager"));
+const constants_1 = require("../config/constants");
+const main_welcome_corporate_email_1 = __importDefault(require("../resources/templates/email/main_welcome_corporate_email"));
+const main_welcome_individual_email_1 = __importDefault(require("../resources/templates/email/main_welcome_individual_email"));
 const CUSTOMER_ID = 'Customer Id';
 class CustomerController {
     static async allCustomers() {
@@ -34,6 +41,168 @@ class CustomerController {
             code: HttpStatus_1.default.OK.code,
             message: HttpStatus_1.default.OK.value,
             results: customers,
+        };
+        return Promise.resolve(response);
+    }
+    static async allNewCustomers(req) {
+        // console.log(req)
+        // so let's process some information
+        // check if requester is a user admin
+        let customers;
+        if (req?.user?.id == 1) {
+            // user is admin
+            customers = await dao_1.default.customerDAOService.findAll({
+                attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
+                where: {
+                    [sequelize_1.Op.not]: { firstName: 'Anonymous' },
+                },
+            });
+        }
+        else {
+            // user created by workshop
+            customers = await dao_1.default.customerDAOService.findAll({
+                attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
+                where: {
+                    [sequelize_1.Op.not]: { firstName: 'Anonymous' },
+                    partnerId: req?.user?.partner.id
+                },
+                include: [Contact_1.default]
+            });
+        }
+        const response = {
+            code: HttpStatus_1.default.OK.code,
+            message: HttpStatus_1.default.OK.value,
+            results: customers.reverse(),
+        };
+        return Promise.resolve(response);
+    }
+    static async addCustomers(req) {
+        // console.log(req.body)
+        const { error, value } = joi_1.default.object({
+            firstName: joi_1.default.string().required().label("First Name"),
+            lastName: joi_1.default.string().required().label("Last Name"),
+            email: joi_1.default.string().required().label("Email"),
+            state: joi_1.default.string().required().label("State"),
+            district: joi_1.default.string().required().label("District"),
+            phone: joi_1.default.string().required().label("Phone"),
+            address: joi_1.default.string().optional().label("Address"),
+            creditRating: joi_1.default.string().optional().label("Credit Rating"),
+            companyName: joi_1.default.string().optional().label("Company Name"),
+            accountType: joi_1.default.string().optional().label("Account Type"),
+        }).validate(req.body);
+        if (error) {
+            return Promise.reject(CustomAPIError_1.default.response(error.details[0].message, HttpStatus_1.default.NOT_FOUND.code));
+        }
+        value.email = (value.email).toLowerCase();
+        // check if user exist
+        const customer = await dao_1.default.customerDAOService.findByAny({
+            where: {
+                [sequelize_1.Op.or]: [{ email: (value.email).toLowerCase() }, { phone: value.phone }],
+            },
+        });
+        if (customer) {
+            return Promise.reject(CustomAPIError_1.default.response("Customer already exist", HttpStatus_1.default.NOT_FOUND.code));
+        }
+        //find role by name
+        const role = await dao_1.default.roleDAOService.findByAny({
+            where: { slug: settings_1.default.roles[1] },
+        });
+        // const state = await dataSources.stateDAOService.findByAny({
+        //   where: { alias: value.state },
+        // });
+        // if (!state)
+        //   return Promise.reject(CustomAPIError.response(`State ${value.state} does not exist`, HttpStatus.NOT_FOUND.code));
+        if (!role)
+            return Promise.reject(CustomAPIError_1.default.response(`Role ${settings_1.default.roles[1]} does not exist`, HttpStatus_1.default.NOT_FOUND.code));
+        const passwordEncoder = new PasswordEncoder_1.default();
+        const payload = {
+            rawPassword: value.phone,
+            password: (await passwordEncoder.encode(value.phone)),
+            enabled: true,
+            active: true,
+            companyName: value.companyName,
+            firstName: value.firstName,
+            lastName: value.lastName,
+            email: value.email,
+            phone: value.phone,
+            partnerId: req?.user.partner?.id || null
+        };
+        const contactValues = {
+            label: 'Home',
+            state: value.state,
+            district: value.district,
+            address: value.address
+        };
+        const contact = await dao_1.default.contactDAOService.create(contactValues);
+        // @ts-ignore
+        const user = await dao_1.default.customerDAOService.create(payload);
+        //associate user with role
+        await user.$set('roles', [role]);
+        await user.$set('contacts', [contact]);
+        // send mail
+        let welcomeHtml;
+        const fullName = `${value.firstName} ${value.lastName}`;
+        if (value.companyName)
+            welcomeHtml = (0, main_welcome_corporate_email_1.default)(fullName);
+        else
+            welcomeHtml = (0, main_welcome_individual_email_1.default)(fullName);
+        // const passwordHtml = main_default_password_email(value.rawPassword);
+        const queuePayload = {
+            queue: constants_1.QUEUE_EVENTS.name,
+            data: {
+                to: user.email,
+                from: {
+                    name: process.env.SMTP_EMAIL_FROM_NAME,
+                    address: process.env.SMTP_EMAIL_FROM,
+                },
+                subject: `Welcome to AutoHyve`,
+                html: welcomeHtml,
+                bcc: [process.env.SMTP_BCC, process.env.SMTP_CONFIG_USERNAME],
+            },
+        };
+        await rabbitmq_email_manager_1.default.publish(queuePayload);
+        const response = {
+            code: HttpStatus_1.default.OK.code,
+            message: HttpStatus_1.default.OK.value
+        };
+        return Promise.resolve(response);
+    }
+    static async updateCustomers(req) {
+        console.log(req.body);
+        const { error, value } = joi_1.default.object({
+            id: joi_1.default.any().required().label("Customer Id"),
+            firstName: joi_1.default.string().optional().label("First Name"),
+            lastName: joi_1.default.string().optional().label("Last Name"),
+            phone: joi_1.default.string().optional().label("Phone"),
+            creditRating: joi_1.default.any().optional().label("Credit Rating"),
+            state: joi_1.default.string().optional().label("State"),
+            district: joi_1.default.string().optional().label("District"),
+        }).validate(req.body);
+        if (error) {
+            return Promise.reject(CustomAPIError_1.default.response(error.details[0].message, HttpStatus_1.default.NOT_FOUND.code));
+        }
+        // check if user exist
+        const customer = await dao_1.default.customerDAOService.findById(value.id);
+        if (!customer) {
+            return Promise.reject(CustomAPIError_1.default.response("Customer not found", HttpStatus_1.default.NOT_FOUND.code));
+        }
+        customer.phone = value.phone;
+        customer.firstName = value.firstName;
+        customer.lastName = value.lastName;
+        customer.creditRating = value.creditRating;
+        await customer.save();
+        await Contact_1.default.update({
+            district: value.district,
+            state: value.state,
+        }, {
+            where: {
+                // @ts-ignore
+                customerId: value.id
+            }
+        });
+        const response = {
+            code: HttpStatus_1.default.OK.code,
+            message: HttpStatus_1.default.OK.value
         };
         return Promise.resolve(response);
     }
@@ -154,6 +323,24 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CustomerController, "allCustomers", null);
+__decorate([
+    decorators_1.TryCatch,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CustomerController, "allNewCustomers", null);
+__decorate([
+    decorators_1.TryCatch,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CustomerController, "addCustomers", null);
+__decorate([
+    decorators_1.TryCatch,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CustomerController, "updateCustomers", null);
 __decorate([
     decorators_1.TryCatch,
     __metadata("design:type", Function),

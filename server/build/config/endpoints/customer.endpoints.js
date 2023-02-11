@@ -11,6 +11,12 @@ const customerEndpoints = [
     {
         name: 'customer',
         method: 'get',
+        path: '/new-customers',
+        handler: customerRoute_1.getNewCustomersHandler,
+    },
+    {
+        name: 'customer',
+        method: 'get',
         path: '/customer/:customerId',
         handler: customerRoute_1.getCustomerHandler,
     },
@@ -37,6 +43,18 @@ const customerEndpoints = [
         method: 'post',
         path: '/customers/:customerId/workshops',
         handler: customerRoute_1.suggestWorkshopHandler,
+    },
+    {
+        name: 'customer',
+        method: 'post',
+        path: '/update-customer',
+        handler: customerRoute_1.updateCustomersHandler,
+    },
+    {
+        name: 'customer',
+        method: 'post',
+        path: '/add-customer',
+        handler: customerRoute_1.addCustomersHandler,
     },
 ];
 exports.default = customerEndpoints;
