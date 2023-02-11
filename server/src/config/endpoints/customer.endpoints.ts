@@ -1,4 +1,5 @@
 import {
+  addCustomersHandler,
   getCustomerAppointmentsHandler,
   getCustomerHandler,
   getCustomersHandler,
@@ -60,6 +61,12 @@ const customerEndpoints: RouteEndpoints = [
     method: 'post',
     path: '/update-customer',
     handler: updateCustomersHandler,
+  },
+  {
+    name: 'customer',
+    method: 'post',
+    path: '/add-customer',
+    handler: addCustomersHandler,
   },
 ];
 

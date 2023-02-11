@@ -26,6 +26,7 @@ function ProfileNew() {
 const [states, setStates] = useState<ISelectData[]>([]);
 const [isLoading, setIsLoading] = useState<boolean>(false);
 const [error, setError] = useState<CustomHookMessage>();
+const [success, setSuccess] = useState<CustomHookMessage>();
   const [form, setForm] = useState<any>({
     firstName: "",
     email: "",
@@ -87,11 +88,13 @@ useEffect(()=>{
     if( customerReducer.updateCustomerStatus == 'completed' ){
         dispatch(clearUpdateCustomerStatus())
         setIsLoading(false)
-        setError({
+        setSuccess({
             message: "Edited Successfully"
         })
 
-        window.location.reload()
+        setTimeout(()=>{
+            window.history.back()
+        }, 1000)
     }
 
     if( customerReducer.updateCustomerStatus == 'failed' ){
@@ -102,7 +105,7 @@ useEffect(()=>{
         })
     }
 
-}, [customerReducer.updateCustomerStatus])
+}, [customerReducer.updateCustomerStatus, dispatch])
 
 const handleEdit = async ()=>{
     setIsLoading(true)
@@ -177,7 +180,7 @@ const handleEdit = async ()=>{
         <Stack direction={"row"} spacing={2}>
             <Select
                 onChange={e => {
-                console.log(e)
+                console.log(e, ' e')
                 }}
                 value={form.state}
                 name={"State"}
@@ -188,7 +191,11 @@ const handleEdit = async ()=>{
                         return (
                         <MenuItem
                             onClick={()=>{
-                                console.log(item)
+                                console.log(item, "item")
+                                setForm({
+                                    ...form,
+                                    state: item.value
+                                })
                             }}
                             key={index}
                             value={item.value}>
@@ -230,6 +237,13 @@ const handleEdit = async ()=>{
         show={undefined !== error}
         message={error?.message}
         onClose={() => setError(undefined)}
+      />
+
+      <AppAlert
+        alertType="success"
+        show={undefined !== success}
+        message={success?.message}
+        onClose={() => setSuccess(undefined)}
       />
     </Box>
   );
