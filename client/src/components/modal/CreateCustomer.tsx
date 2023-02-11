@@ -8,6 +8,10 @@ import AppAlert from '../alerts/AppAlert';
 import { ISelectData } from '../forms/fields/SelectField';
 import Joi from 'joi'
 import { filterPhoneNumber } from '../../utils/generic';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import useAppSelector from '../../hooks/useAppSelector';
+import { addCustomerAction } from '../../store/actions/customerActions';
+import { clearAddCustomerStatus } from '../../store/reducers/customerReducer';
 
 type Props = {
     callback?: any;
@@ -35,6 +39,24 @@ export default function CreateCustomerModal(props: Props) {
     const [error, setError] = useState<CustomHookMessage>();
     const [success, setSuccess] = useState<CustomHookMessage>();
 
+    useEffect(()=>{
+        setForm({
+            accountType: 'individual',
+            firstName: "",
+            email: "",
+            lastName: "",
+            companyName: "",
+            phone: "",
+            creditRating: "N/A",
+            state: "Abuja (FCT)",
+            district: "",
+            address: ""
+        })
+    }, [props.visible])
+
+    const dispatch = useAppDispatch()
+    const customerReducer = useAppSelector(state => state.customerReducer);
+
     useEffect(() => {
         const newStates = STATES.map(state => ({
           label: state.name,
@@ -43,6 +65,39 @@ export default function CreateCustomerModal(props: Props) {
     
         setStates(newStates);
     }, []);
+
+    // listen
+    // listen to edit event
+    useEffect(()=>{
+    
+        if( customerReducer.addCustomerStatus == 'idle' ){
+            setIsLoading(false)
+        }
+
+        if( customerReducer.addCustomerStatus == 'loading' ){
+            setIsLoading(true)
+        }
+
+        if( customerReducer.addCustomerStatus == 'completed' ){
+            dispatch(clearAddCustomerStatus())
+            setIsLoading(false)
+            setSuccess({
+                message: "Created Successfully"
+            })
+
+            props.callback(form)
+            props.setVisible(false)
+        }
+
+        if( customerReducer.addCustomerStatus == 'failed' ){
+            dispatch(clearAddCustomerStatus())
+            setIsLoading(false)
+            setError({
+                message: customerReducer?.addCustomerError || ""
+            })
+        }
+
+    }, [customerReducer.addCustomerStatus, dispatch])
 
     const handleCreate = async ()=>{
         // check if all entry are valid
@@ -78,6 +133,7 @@ export default function CreateCustomerModal(props: Props) {
         payload.phone = _val.phone;
 
         // send payload
+        dispatch(addCustomerAction(payload))
     }
 
     return (

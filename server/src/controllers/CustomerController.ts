@@ -75,7 +75,7 @@ export default class CustomerController {
     const response: HttpResponse<Customer> = {
       code: HttpStatus.OK.code,
       message: HttpStatus.OK.value,
-      results: customers,
+      results: customers.reverse(),
     };
 
     return Promise.resolve(response);
@@ -120,12 +120,12 @@ export default class CustomerController {
       where: { slug: settings.roles[1] },
     });
 
-    const state = await dataSources.stateDAOService.findByAny({
-      where: { alias: value.state },
-    });
+    // const state = await dataSources.stateDAOService.findByAny({
+    //   where: { alias: value.state },
+    // });
 
-    if (!state)
-      return Promise.reject(CustomAPIError.response(`State ${value.state} does not exist`, HttpStatus.NOT_FOUND.code));
+    // if (!state)
+    //   return Promise.reject(CustomAPIError.response(`State ${value.state} does not exist`, HttpStatus.NOT_FOUND.code));
 
     if (!role)
       return Promise.reject(
@@ -144,19 +144,20 @@ export default class CustomerController {
       lastName: value.lastName,
       email: value.email,
       phone: value.phone,
-      partnerId: req?.user.partner?.id
+      partnerId: req?.user.partner?.id || null
     }
 
     const contactValues: any = {
       label: 'Home',
-      state: state.name,
+      state: value.state,
       district: value.district,
       address: value.address
     };
 
     const contact = await dataSources.contactDAOService.create(contactValues);
 
-    const user = await dataSources.customerDAOService.create(value);
+    // @ts-ignore
+    const user = await dataSources.customerDAOService.create(payload);
 
     //associate user with role
     await user.$set('roles', [role]);

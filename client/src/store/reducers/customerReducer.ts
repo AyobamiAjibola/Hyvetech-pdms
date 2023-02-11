@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IThunkAPIStatus } from '@app-types';
 import {
+  addCustomerAction,
   getCustomerAction,
   getCustomerAppointmentsAction,
   getCustomersAction,
@@ -23,6 +24,10 @@ interface ICustomerState {
   getCustomerStatus: IThunkAPIStatus;
   getCustomerSuccess: string;
   getCustomerError?: string;
+
+  addCustomerStatus: IThunkAPIStatus;
+  addCustomerSuccess: string;
+  addCustomerError?: string;
 
   updateCustomerStatus: IThunkAPIStatus;
   updateCustomerSuccess: string;
@@ -62,6 +67,10 @@ const initialState: ICustomerState = {
   getCustomerSuccess: '',
   getCustomerStatus: 'idle',
 
+  addCustomerError: '',
+  addCustomerSuccess: '',
+  addCustomerStatus: 'idle',
+
   updateCustomerError: '',
   updateCustomerSuccess: '',
   updateCustomerStatus: 'idle',
@@ -100,6 +109,11 @@ const customerSlice = createSlice({
       state.updateCustomerStatus = 'idle';
       state.updateCustomerSuccess = '';
       state.updateCustomerError = '';
+    },
+    clearAddCustomerStatus(state: ICustomerState) {
+      state.addCustomerStatus = 'idle';
+      state.addCustomerSuccess = '';
+      state.addCustomerError = '';
     },
     clearGetNewCustomersStatus(state: ICustomerState) {
       state.getNewCustomersStatus = 'idle';
@@ -175,6 +189,23 @@ const customerSlice = createSlice({
       });
 
     builder
+      .addCase(addCustomerAction.pending, state => {
+        state.addCustomerStatus = 'loading';
+      })
+      .addCase(addCustomerAction.fulfilled, (state, action) => {
+        state.addCustomerStatus = 'completed';
+        state.addCustomerSuccess = action.payload.message;
+        state.customer = action.payload.result as ICustomer;
+      })
+      .addCase(addCustomerAction.rejected, (state, action) => {
+        state.addCustomerStatus = 'failed';
+
+        if (action.payload) {
+          state.addCustomerError = action.payload.message;
+        } else state.addCustomerError = action.error.message;
+      });
+
+    builder
       .addCase(getCustomerVehiclesAction.pending, state => {
         state.getCustomerVehiclesStatus = 'loading';
       })
@@ -227,6 +258,6 @@ const customerSlice = createSlice({
   },
 });
 
-export const { clearGetCustomersStatus, clearUpdateCustomerStatus, clearGetNewCustomersStatus } = customerSlice.actions;
+export const { clearGetCustomersStatus, clearAddCustomerStatus, clearUpdateCustomerStatus, clearGetNewCustomersStatus } = customerSlice.actions;
 
 export default customerSlice.reducer;

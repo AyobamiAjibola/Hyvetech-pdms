@@ -94,14 +94,14 @@ function CustomersPage() {
 // for tech
 const getPartnerTableColumn = (options?: any) =>
   [
-    {
-      field: 'id',
-      headerName: 'ID',
-      headerAlign: 'center',
-      align: 'center',
-      sortable: true,
-      type: 'number',
-    },
+    // {
+    //   field: 'id',
+    //   headerName: 'ID',
+    //   headerAlign: 'center',
+    //   align: 'center',
+    //   sortable: true,
+    //   // type: 'number',
+    // },
     {
       field: 'fullName',
       headerName: 'Full Name',
