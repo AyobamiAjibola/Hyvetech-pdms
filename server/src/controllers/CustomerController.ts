@@ -14,6 +14,7 @@ import { Op } from 'sequelize';
 import { TryCatch } from '../decorators';
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
+import Contact from '../models/Contact';
 
 const CUSTOMER_ID = 'Customer Id';
 
@@ -31,6 +32,101 @@ export default class CustomerController {
       code: HttpStatus.OK.code,
       message: HttpStatus.OK.value,
       results: customers,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  public static async allNewCustomers(req: Request) {
+
+    // console.log(req)
+
+    // so let's process some information
+    // check if requester is a user admin
+    let customers;
+
+    if(req?.user?.id == 1){
+      // user is admin
+      customers = await dataSources.customerDAOService.findAll({
+        attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
+        where: {
+          [Op.not]: { firstName: 'Anonymous' },
+        },
+      });
+    }else{
+      // user created by workshop
+      customers = await dataSources.customerDAOService.findAll({
+        attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
+        where: {
+          [Op.not]: { firstName: 'Anonymous' },
+          partnerId: req?.user?.partner.id
+        },
+        include: [Contact]
+      });
+    }
+
+    const response: HttpResponse<Customer> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      results: customers,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  public static async updateCustomers(req: Request) {
+    const {error, value} = Joi.object({
+      id: Joi.string().required().label("Customer Id"),
+      firstName: Joi.string().optional().label("First Name"),
+      lastName: Joi.string().optional().label("Last Name"),
+      phone: Joi.string().optional().label("Phone"),
+      creditRating: Joi.string().optional().label("Credit Rating"),
+      state: Joi.string().optional().label("State"),
+      district: Joi.string().optional().label("District"),
+    }).validate(req.body);
+    
+    if(error){
+      return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
+    }
+
+    // check if user exist
+    const customer = await dataSources.customerDAOService.findById(value.id);
+    
+    if (!customer) {
+      return Promise.reject(CustomAPIError.response("Customer not found", HttpStatus.NOT_FOUND.code));
+    }
+
+    customer.phone = value.phone;
+    customer.firstName = value.firstName;
+    customer.lastName = value.lastName;
+    customer.creditRating = value.creditRating;
+    await customer.save()
+
+    // update contact also
+    // await dataSources.contactDAOService.update({
+    //   district: value.district,
+    //   state: value.state,
+    // }, {
+    //   where: {
+        
+    //   }
+    // })
+
+    await Contact.update({
+      district: value.district,
+      state: value.state,
+    }, {
+      where: {
+        // @ts-ignore
+        customerId: value.id
+      }
+    })
+
+    const response: HttpResponse<Customer> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value
     };
 
     return Promise.resolve(response);

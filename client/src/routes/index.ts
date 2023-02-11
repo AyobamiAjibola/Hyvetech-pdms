@@ -30,6 +30,7 @@ const HomePage = React.lazy(() => import('../context/AppContextProvider'));
 export const sideNavs: ISideNav[] = [
   { tag: 'all', name: 'Dashboard', path: '/dashboard', Icon: Dashboard },
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
+  { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },
   {
     tag: 'super',
     name: 'Check Lists',

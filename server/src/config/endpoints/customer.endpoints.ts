@@ -4,7 +4,9 @@ import {
   getCustomersHandler,
   getCustomerTransactionsHandler,
   getCustomerVehiclesHandler,
+  getNewCustomersHandler,
   suggestWorkshopHandler,
+  updateCustomersHandler,
 } from '../../routes/customerRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -15,6 +17,12 @@ const customerEndpoints: RouteEndpoints = [
     method: 'get',
     path: '/customers',
     handler: getCustomersHandler,
+  },
+  {
+    name: 'customer',
+    method: 'get',
+    path: '/new-customers',
+    handler: getNewCustomersHandler,
   },
   {
     name: 'customer',
@@ -46,6 +54,12 @@ const customerEndpoints: RouteEndpoints = [
     method: 'post',
     path: '/customers/:customerId/workshops',
     handler: suggestWorkshopHandler,
+  },
+  {
+    name: 'customer',
+    method: 'post',
+    path: '/update-customers',
+    handler: updateCustomersHandler,
   },
 ];
 

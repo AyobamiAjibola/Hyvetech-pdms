@@ -5,6 +5,7 @@ import { ApiResponseSuccess } from '@app-interfaces';
 import { ICustomer } from '@app-models';
 
 const GET_CUSTOMERS = 'customer:GET_CUSTOMERS';
+const GET_NEW_CUSTOMERS = 'customer:GET_NEW_CUSTOMERS';
 const GET_CUSTOMER = 'customer:GET_CUSTOMER';
 const GET_CUSTOMER_VEHICLES = 'customer:GET_CUSTOMER_VEHICLES';
 const GET_CUSTOMER_APPOINTMENTS = 'customer:GET_CUSTOMER_APPOINTMENTS';
@@ -13,6 +14,11 @@ const API_ROOT = settings.api.rest;
 
 export const getCustomersAction = asyncThunkWrapper<any, void>(GET_CUSTOMERS, async () => {
   const response = await axiosClient.get(`${API_ROOT}/customers`);
+  return response.data;
+});
+
+export const getNewCustomersAction = asyncThunkWrapper<any, void>(GET_NEW_CUSTOMERS, async () => {
+  const response = await axiosClient.get(`${API_ROOT}/new-customers`);
   return response.data;
 });
 

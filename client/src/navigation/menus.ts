@@ -20,6 +20,12 @@ import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from '../config/constants';
 import TechniciansPage from '../pages/technician/TechniciansPage';
 import Estimate from '../components/partner/garage/Estimate';
 import VehicleOwner from '../components/partner/garage/VehicleOwner';
+import ProfileNew from '../components/customer/Profile';
+
+export const customerDetailTabsTechOnly: ITab[] = [
+  { name: 'Profile', Element: ProfileNew },
+  { name: 'Vehicles', Element: CustomerVehicles },
+];
 
 export const customerDetailTabs: ITab[] = [
   { name: 'Vehicles', Element: CustomerVehicles },

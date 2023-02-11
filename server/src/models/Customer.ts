@@ -1,5 +1,6 @@
 import {
   AutoIncrement,
+  BelongsTo,
   BelongsToMany,
   Column,
   DataType,
@@ -25,6 +26,7 @@ import CustomerPlanSubscription from './CustomerPlanSubscription';
 import Estimate from './Estimate';
 import BillingInformation from './BillingInformation';
 import CustomerWorkShop from './CustomerWorkShop';
+import Partner from './Partner';
 
 export const $customerSchema = {
   firstName: Joi.string().required().label('First Name'),
@@ -129,6 +131,15 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
 
   @Column(DataType.DATE)
   declare loginDate: Date;
+
+  @Column(DataType.INTEGER)
+  declare partnerId: number;
+
+  @Column(DataType.STRING)
+  declare creditRating: string;
+
+  // @BelongsTo(() => Partner)
+  // declare partner: Partner;
 
   @HasOne(() => BillingInformation)
   declare billingInformation: NonAttribute<BillingInformation>;
