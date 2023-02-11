@@ -77,12 +77,13 @@ export default class CustomerController {
 
   @TryCatch
   public static async updateCustomers(req: Request) {
+    console.log(req.body)
     const {error, value} = Joi.object({
-      id: Joi.string().required().label("Customer Id"),
+      id: Joi.any().required().label("Customer Id"),
       firstName: Joi.string().optional().label("First Name"),
       lastName: Joi.string().optional().label("Last Name"),
       phone: Joi.string().optional().label("Phone"),
-      creditRating: Joi.string().optional().label("Credit Rating"),
+      creditRating: Joi.any().optional().label("Credit Rating"),
       state: Joi.string().optional().label("State"),
       district: Joi.string().optional().label("District"),
     }).validate(req.body);

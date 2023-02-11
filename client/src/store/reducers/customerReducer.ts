@@ -7,6 +7,7 @@ import {
   getCustomerTransactionsAction,
   getCustomerVehiclesAction,
   getNewCustomersAction,
+  updateCustomerAction,
 } from '../actions/customerActions';
 import { IAppointment, IContact, ICustomer, ITransaction, IVehicle } from '@app-models';
 
@@ -22,6 +23,10 @@ interface ICustomerState {
   getCustomerStatus: IThunkAPIStatus;
   getCustomerSuccess: string;
   getCustomerError?: string;
+
+  updateCustomerStatus: IThunkAPIStatus;
+  updateCustomerSuccess: string;
+  updateCustomerError?: string;
 
   getCustomerVehiclesStatus: IThunkAPIStatus;
   getCustomerVehiclesSuccess: string;
@@ -57,6 +62,10 @@ const initialState: ICustomerState = {
   getCustomerSuccess: '',
   getCustomerStatus: 'idle',
 
+  updateCustomerError: '',
+  updateCustomerSuccess: '',
+  updateCustomerStatus: 'idle',
+
   getCustomerVehiclesStatus: 'idle',
   getCustomerVehiclesSuccess: '',
   getCustomerVehiclesError: '',
@@ -86,6 +95,11 @@ const customerSlice = createSlice({
       state.getCustomersStatus = 'idle';
       state.getCustomersSuccess = '';
       state.getCustomersError = '';
+    },
+    clearUpdateCustomerStatus(state: ICustomerState) {
+      state.updateCustomerStatus = 'idle';
+      state.updateCustomerSuccess = '';
+      state.updateCustomerError = '';
     },
     clearGetNewCustomersStatus(state: ICustomerState) {
       state.getNewCustomersStatus = 'idle';
@@ -144,6 +158,23 @@ const customerSlice = createSlice({
       });
 
     builder
+      .addCase(updateCustomerAction.pending, state => {
+        state.updateCustomerStatus = 'loading';
+      })
+      .addCase(updateCustomerAction.fulfilled, (state, action) => {
+        state.updateCustomerStatus = 'completed';
+        state.updateCustomerSuccess = action.payload.message;
+        state.customer = action.payload.result as ICustomer;
+      })
+      .addCase(updateCustomerAction.rejected, (state, action) => {
+        state.updateCustomerStatus = 'failed';
+
+        if (action.payload) {
+          state.updateCustomerError = action.payload.message;
+        } else state.updateCustomerError = action.error.message;
+      });
+
+    builder
       .addCase(getCustomerVehiclesAction.pending, state => {
         state.getCustomerVehiclesStatus = 'loading';
       })
@@ -196,6 +227,6 @@ const customerSlice = createSlice({
   },
 });
 
-export const { clearGetCustomersStatus, clearGetNewCustomersStatus } = customerSlice.actions;
+export const { clearGetCustomersStatus, clearUpdateCustomerStatus, clearGetNewCustomersStatus } = customerSlice.actions;
 
 export default customerSlice.reducer;

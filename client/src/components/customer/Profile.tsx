@@ -5,9 +5,13 @@ import { ISelectData } from '../forms/fields/SelectField'
 import { CustomerPageContext } from '../../pages/customer/CustomerPage';
 import { CustomerPageContextProps } from '@app-interfaces';
 import { LoadingButton } from '@mui/lab';
+import { updateCustomerAction } from '../../store/actions/customerActions';
 // import { Send } from '@mui/icons-material';
-// import useAppDispatch from '../../hooks/useAppDispatch';
-// import useAppSelector from '../../hooks/useAppSelector';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import useAppSelector from '../../hooks/useAppSelector';
+import { clearUpdateCustomerStatus } from '../../store/reducers/customerReducer';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../alerts/AppAlert';
 // import { getCustomerVehiclesAction } from '../../store/actions/customerActions';
 // import moment from 'moment';
 // import { IVehicle } from '@app-models';
@@ -21,6 +25,7 @@ function ProfileNew() {
 //   const [_vehicles, _setVehicles] = useState<IVehicle[]>([]);
 const [states, setStates] = useState<ISelectData[]>([]);
 const [isLoading, setIsLoading] = useState<boolean>(false);
+const [error, setError] = useState<CustomHookMessage>();
   const [form, setForm] = useState<any>({
     firstName: "",
     email: "",
@@ -62,15 +67,57 @@ const [isLoading, setIsLoading] = useState<boolean>(false);
     setIsLoading(false)
   }, [customer])
 
-//   const customerReducer = useAppSelector(state => state.customerReducer);
+  const customerReducer = useAppSelector(state => state.customerReducer);
 
-//   const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
 //   const navigate = useNavigate();
+
+// listen to edit event
+useEffect(()=>{
+    
+    if( customerReducer.updateCustomerStatus == 'idle' ){
+        setIsLoading(false)
+    }
+
+    if( customerReducer.updateCustomerStatus == 'loading' ){
+        setIsLoading(true)
+    }
+
+    if( customerReducer.updateCustomerStatus == 'completed' ){
+        dispatch(clearUpdateCustomerStatus())
+        setIsLoading(false)
+        setError({
+            message: "Edited Successfully"
+        })
+
+        window.location.reload()
+    }
+
+    if( customerReducer.updateCustomerStatus == 'failed' ){
+        dispatch(clearUpdateCustomerStatus())
+        setIsLoading(false)
+        setError({
+            message: customerReducer?.updateCustomerError || ""
+        })
+    }
+
+}, [customerReducer.updateCustomerStatus])
 
 const handleEdit = async ()=>{
     setIsLoading(true)
     const _id = customer?.id;
+    const payload = {
+        id: _id,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        phone: form.phone,
+        creditRating: form.creditRating,
+        state: form.state,
+        district: form.district,
+    }
+
+    dispatch(updateCustomerAction(payload))
 }
 
   return (
@@ -177,6 +224,13 @@ const handleEdit = async ()=>{
         </div>
         
       </Stack>
+
+      <AppAlert
+        alertType="error"
+        show={undefined !== error}
+        message={error?.message}
+        onClose={() => setError(undefined)}
+      />
     </Box>
   );
 }

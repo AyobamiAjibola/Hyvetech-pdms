@@ -58,7 +58,7 @@ const customerEndpoints: RouteEndpoints = [
   {
     name: 'customer',
     method: 'post',
-    path: '/update-customers',
+    path: '/update-customer',
     handler: updateCustomersHandler,
   },
 ];
