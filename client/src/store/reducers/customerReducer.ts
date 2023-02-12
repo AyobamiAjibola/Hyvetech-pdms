@@ -1,11 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IThunkAPIStatus } from '@app-types';
 import {
+  addCustomerAction,
   getCustomerAction,
   getCustomerAppointmentsAction,
   getCustomersAction,
   getCustomerTransactionsAction,
   getCustomerVehiclesAction,
+  getNewCustomersAction,
+  updateCustomerAction,
 } from '../actions/customerActions';
 import { IAppointment, IContact, ICustomer, ITransaction, IVehicle } from '@app-models';
 
@@ -14,9 +17,21 @@ interface ICustomerState {
   getCustomersSuccess: string;
   getCustomersError?: string;
 
+  getNewCustomersStatus: IThunkAPIStatus;
+  getNewCustomersSuccess: string;
+  getNewCustomersError?: string;
+
   getCustomerStatus: IThunkAPIStatus;
   getCustomerSuccess: string;
   getCustomerError?: string;
+
+  addCustomerStatus: IThunkAPIStatus;
+  addCustomerSuccess: string;
+  addCustomerError?: string;
+
+  updateCustomerStatus: IThunkAPIStatus;
+  updateCustomerSuccess: string;
+  updateCustomerError?: string;
 
   getCustomerVehiclesStatus: IThunkAPIStatus;
   getCustomerVehiclesSuccess: string;
@@ -32,6 +47,7 @@ interface ICustomerState {
 
   contacts: IContact[];
   customers: ICustomer[];
+  newCustomers: ICustomer[];
   customer: ICustomer | null;
   vehicles: IVehicle[];
   appointments: IAppointment[];
@@ -43,9 +59,21 @@ const initialState: ICustomerState = {
   getCustomersSuccess: '',
   getCustomersStatus: 'idle',
 
+  getNewCustomersError: '',
+  getNewCustomersSuccess: '',
+  getNewCustomersStatus: 'idle',
+
   getCustomerError: '',
   getCustomerSuccess: '',
   getCustomerStatus: 'idle',
+
+  addCustomerError: '',
+  addCustomerSuccess: '',
+  addCustomerStatus: 'idle',
+
+  updateCustomerError: '',
+  updateCustomerSuccess: '',
+  updateCustomerStatus: 'idle',
 
   getCustomerVehiclesStatus: 'idle',
   getCustomerVehiclesSuccess: '',
@@ -61,6 +89,7 @@ const initialState: ICustomerState = {
 
   contacts: [],
   customers: [],
+  newCustomers: [],
   customer: null,
   vehicles: [],
   appointments: [],
@@ -75,6 +104,21 @@ const customerSlice = createSlice({
       state.getCustomersStatus = 'idle';
       state.getCustomersSuccess = '';
       state.getCustomersError = '';
+    },
+    clearUpdateCustomerStatus(state: ICustomerState) {
+      state.updateCustomerStatus = 'idle';
+      state.updateCustomerSuccess = '';
+      state.updateCustomerError = '';
+    },
+    clearAddCustomerStatus(state: ICustomerState) {
+      state.addCustomerStatus = 'idle';
+      state.addCustomerSuccess = '';
+      state.addCustomerError = '';
+    },
+    clearGetNewCustomersStatus(state: ICustomerState) {
+      state.getNewCustomersStatus = 'idle';
+      state.getNewCustomersSuccess = '';
+      state.getNewCustomersError = '';
     },
   },
   extraReducers: builder => {
@@ -94,6 +138,22 @@ const customerSlice = createSlice({
         } else state.getCustomersError = action.error.message;
       });
 
+      builder
+      .addCase(getNewCustomersAction.pending, state => {
+        state.getNewCustomersStatus = 'loading';
+      })
+      .addCase(getNewCustomersAction.fulfilled, (state, action) => {
+        state.getNewCustomersStatus = 'completed';
+        state.getNewCustomersSuccess = action.payload.message;
+        state.customers = action.payload.results as ICustomer[];
+      })
+      .addCase(getNewCustomersAction.rejected, (state, action) => {
+        state.getNewCustomersStatus = 'failed';
+        if (action.payload) {
+          state.getNewCustomersError = action.payload.message;
+        } else state.getNewCustomersError = action.error.message;
+      });
+
     builder
       .addCase(getCustomerAction.pending, state => {
         state.getCustomerStatus = 'loading';
@@ -109,6 +169,40 @@ const customerSlice = createSlice({
         if (action.payload) {
           state.getCustomerError = action.payload.message;
         } else state.getCustomerError = action.error.message;
+      });
+
+    builder
+      .addCase(updateCustomerAction.pending, state => {
+        state.updateCustomerStatus = 'loading';
+      })
+      .addCase(updateCustomerAction.fulfilled, (state, action) => {
+        state.updateCustomerStatus = 'completed';
+        state.updateCustomerSuccess = action.payload.message;
+        state.customer = action.payload.result as ICustomer;
+      })
+      .addCase(updateCustomerAction.rejected, (state, action) => {
+        state.updateCustomerStatus = 'failed';
+
+        if (action.payload) {
+          state.updateCustomerError = action.payload.message;
+        } else state.updateCustomerError = action.error.message;
+      });
+
+    builder
+      .addCase(addCustomerAction.pending, state => {
+        state.addCustomerStatus = 'loading';
+      })
+      .addCase(addCustomerAction.fulfilled, (state, action) => {
+        state.addCustomerStatus = 'completed';
+        state.addCustomerSuccess = action.payload.message;
+        state.customer = action.payload.result as ICustomer;
+      })
+      .addCase(addCustomerAction.rejected, (state, action) => {
+        state.addCustomerStatus = 'failed';
+
+        if (action.payload) {
+          state.addCustomerError = action.payload.message;
+        } else state.addCustomerError = action.error.message;
       });
 
     builder
@@ -164,6 +258,6 @@ const customerSlice = createSlice({
   },
 });
 
-export const { clearGetCustomersStatus } = customerSlice.actions;
+export const { clearGetCustomersStatus, clearAddCustomerStatus, clearUpdateCustomerStatus, clearGetNewCustomersStatus } = customerSlice.actions;
 
 export default customerSlice.reducer;

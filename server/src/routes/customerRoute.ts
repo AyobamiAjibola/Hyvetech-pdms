@@ -6,6 +6,21 @@ export const getCustomersHandler = authenticateRouteWrapper(async (req, res) => 
   res.status(response.code).json(response);
 });
 
+export const getNewCustomersHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await CustomerController.allNewCustomers(req);
+  res.status(response.code).json(response);
+});
+
+export const addCustomersHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await CustomerController.addCustomers(req);
+  res.status(response.code).json(response);
+});
+
+export const updateCustomersHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await CustomerController.updateCustomers(req);
+  res.status(response.code).json(response);
+});
+
 export const getCustomerHandler = authenticateRouteWrapper(async (req, res) => {
   const customerId = req.params.customerId as string;
 

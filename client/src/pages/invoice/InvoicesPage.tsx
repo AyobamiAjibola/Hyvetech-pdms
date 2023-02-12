@@ -123,7 +123,7 @@ function InvoicesPage() {
           const estimate = param.row.estimate;
           const customer = estimate.customer;
 
-          return `${customer.firstName} ${customer.lastName}`;
+          return `${customer?.firstName || ''} ${customer?.lastName || ''}`;
         },
       },
       {
@@ -173,7 +173,7 @@ function InvoicesPage() {
           const estimate = param.row.estimate;
           const customer = estimate.customer;
 
-          return `${customer.phone}`;
+          return `${customer?.phone || ''}`;
         },
       },
       {

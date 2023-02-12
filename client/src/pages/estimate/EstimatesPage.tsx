@@ -97,7 +97,7 @@ function EstimatesPage() {
           const driver = param.row.rideShareDriver;
           const customer = param.row.customer;
 
-          return driver ? `${driver.firstName} ${driver.lastName}` : `${customer.firstName} ${customer.lastName}`;
+          return driver ? `${driver?.firstName || ''} ${driver?.lastName || ''}` : `${customer?.firstName || ''} ${customer?.lastName || ''}`;
         },
       },
       {
@@ -112,7 +112,7 @@ function EstimatesPage() {
           const driver = param.row.rideShareDriver;
           const customer = param.row.customer;
 
-          return driver ? `${driver.phone}` : `${customer.phone}`;
+          return driver ? `${driver?.phone || ''}` : `${customer?.phone || ''}`;
         },
       },
       {

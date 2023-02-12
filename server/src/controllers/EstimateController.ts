@@ -216,6 +216,32 @@ export default class EstimateController {
       status: ESTIMATE_STATUS.sent,
     });
 
+    let user: any = customer;
+    const mail = new_estimate_template({
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      partner,
+      estimate,
+      vehichleData: `${value.modelYear} ${value.make} ${value.model} `
+    })
+
+    await QueueManager.publish({
+      queue: QUEUE_EVENTS.name,
+      data: {
+        to: user.email,
+        replyTo: partner.email,
+        // @ts-ignore
+        'reply-to': partner.email,
+        from: {
+          name: "AutoHyve",
+          address: <string>process.env.SMTP_EMAIL_FROM2,
+        },
+        subject: `${partner.name} has sent you an estimate on AutoHyve`,
+        html: mail,
+        bcc: [<string>process.env.SMTP_BCC],
+      },
+    });
+
     appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
 
     const response: HttpResponse<Estimate> = {
@@ -389,6 +415,13 @@ export default class EstimateController {
         email: value.email,
       };
 
+      // check if it's not super admin
+      console.log(req?.user.partner?.id)
+      if(req?.user.partner?.id != 0){
+        data.partnerId = req?.user.partner?.id;
+        console.log(req?.user.partner?.id, data)
+      }
+
       customer = await dataSources.customerDAOService.create(data);
       await customer.$set('vehicles', [vehicle]);
       // try to link a contact with this customer
@@ -437,7 +470,7 @@ export default class EstimateController {
       //     },
       //     subject: `You Have a New Estimate`,
       //     html: mail,
-      //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      //     bcc: [<string>process.env.SMTP_EMAIL_FROM],
       //   },
       // });
       // stop
@@ -465,7 +498,7 @@ export default class EstimateController {
       //     },
       //     subject: `You Have a New Estimate`,
       //     html: mail,
-      //     bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+      //     bcc: [<string>process.env.SMTP_EMAIL_FROM],
       //   },
       // });
     }
@@ -503,7 +536,7 @@ export default class EstimateController {
       lastName: customer.lastName,
       partner,
       estimate,
-      vehichleData: `${value.modelYear} ${value.make} ${value.model}`
+      vehichleData: `${value.modelYear} ${value.make} ${value.model} `
     })
 
     console.log('reach1')
@@ -513,13 +546,16 @@ export default class EstimateController {
       queue: QUEUE_EVENTS.name,
       data: {
         to: user.email,
+        replyTo: partner.email,
+        // @ts-ignore
+        'reply-to': partner.email,
         from: {
           name: "AutoHyve",
-          address: <string>process.env.SMTP_EMAIL_FROM,
+          address: <string>process.env.SMTP_EMAIL_FROM2,
         },
         subject: `${partner.name} has sent you an estimate on AutoHyve`,
         html: mail,
-        bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+        bcc: [<string>process.env.SMTP_BCC],
       },
     });
 
@@ -607,6 +643,11 @@ export default class EstimateController {
         phone: value.phone,
         email: value.email,
       };
+
+      // check if it's not super admin
+      if(req?.user.partner?.id != 0){
+        data.partnerId = req?.user.partner?.id;
+      }
 
       customer = await dataSources.customerDAOService.create(data);
       if (vehicle) await customer.$set('vehicles', [vehicle]);

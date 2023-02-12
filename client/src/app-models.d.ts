@@ -426,6 +426,7 @@ declare module '@app-models' {
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
+    creditRating?: string;
   }
 
   interface ISchedule {
