@@ -391,6 +391,7 @@ function EstimateForm(props: IProps) {
                       filterOptions={filterOptions}
                       inputValue={inputValue}
                       value={value}
+                      openOnFocus={false}
                       loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
                       getOptionLabel={option => option.fullName}
                       isOptionEqualToValue={(option, value) => option.fullName === value.fullName}

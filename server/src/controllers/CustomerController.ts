@@ -87,13 +87,13 @@ export default class CustomerController {
     const {error, value} = Joi.object({
             firstName: Joi.string().required().label("First Name"),
             lastName: Joi.string().required().label("Last Name"),
-            email: Joi.string().required().label("Email"),
+            email: Joi.string().email().required().label("Email"),
             state: Joi.string().required().label("State"),
             district: Joi.string().required().label("District"),
             phone: Joi.string().required().label("Phone"),
             address: Joi.string().optional().label("Address"),
             creditRating: Joi.string().optional().label("Credit Rating"),
-            companyName: Joi.string().optional().label("Company Name"),
+            companyName: Joi.any().allow().label("Company Name"),
             accountType: Joi.string().optional().label("Account Type"),
     }).validate(req.body);
     

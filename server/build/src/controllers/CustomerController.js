@@ -81,13 +81,13 @@ class CustomerController {
         const { error, value } = joi_1.default.object({
             firstName: joi_1.default.string().required().label("First Name"),
             lastName: joi_1.default.string().required().label("Last Name"),
-            email: joi_1.default.string().required().label("Email"),
+            email: joi_1.default.string().email().required().label("Email"),
             state: joi_1.default.string().required().label("State"),
             district: joi_1.default.string().required().label("District"),
             phone: joi_1.default.string().required().label("Phone"),
             address: joi_1.default.string().optional().label("Address"),
             creditRating: joi_1.default.string().optional().label("Credit Rating"),
-            companyName: joi_1.default.string().optional().label("Company Name"),
+            companyName: joi_1.default.any().allow().label("Company Name"),
             accountType: joi_1.default.string().optional().label("Account Type"),
         }).validate(req.body);
         if (error) {

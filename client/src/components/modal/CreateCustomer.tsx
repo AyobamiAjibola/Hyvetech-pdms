@@ -33,7 +33,10 @@ export default function CreateCustomerModal(props: Props) {
         address: ""
     })
 
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
     const [states, setStates] = useState<ISelectData[]>([]);
+    const [district, setDistrict] = useState<ISelectData[]>([]);
     // @ts-ignore
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<CustomHookMessage>();
@@ -65,6 +68,22 @@ export default function CreateCustomerModal(props: Props) {
     
         setStates(newStates);
     }, []);
+
+    // listen to get district
+    useEffect(() => {
+        // find state
+        const _temp = (STATES.filter( v => (v.name == form.state) ))[0];
+
+
+
+        const newDistrict = _temp.districts.map(district => ({
+          label: district.name,
+          value: district.name,
+        }));
+    
+        setDistrict(newDistrict);
+    }, [form.state]);
+    
 
     // listen
     // listen to edit event
@@ -100,6 +119,7 @@ export default function CreateCustomerModal(props: Props) {
     }, [customerReducer.addCustomerStatus, dispatch])
 
     const handleCreate = async ()=>{
+        console.log(form, "form")
         // check if all entry are valid
         const {error} = Joi.object({
             firstName: Joi.string().required().label("First Name"),
@@ -110,13 +130,19 @@ export default function CreateCustomerModal(props: Props) {
             phone: Joi.string().required().label("Phone"),
             address: Joi.string().optional().label("Address"),
             creditRating: Joi.string().optional().label("Credit Rating"),
-            companyName: Joi.string().optional().label("Company Name"),
+            companyName: Joi.any().allow().label("Company Name"),
             accountType: Joi.string().optional().label("Account Type"),
         }).validate(form)
 
         // console.log(error)
         if(error){
             setError({message: error.message})
+            return
+        }
+
+        // check if corporate n company name isset
+        if( (form.accountType === 'corporate') && ((form.companyName).length < 1) ){
+            setError({message: "Company Name is required"})
             return
         }
 
@@ -149,7 +175,7 @@ export default function CreateCustomerModal(props: Props) {
                 >
                 <Box
                 
-                bgcolor={'black'} 
+                // bgcolor={'black'} 
                 sx={{ 
                     // color: 'black'
                     borderColor: 'blue',
@@ -166,8 +192,11 @@ export default function CreateCustomerModal(props: Props) {
                     padding: 20,
                     borderRadius: 8,
                     borderColor: 'blue',
-                    borderWidth: 1
-                    // backgroundColor: 'white'
+                    borderWidth: 1,
+                    // backgroundColor: 'grey'
+                    backgroundColor: prefersDark ? 'black' : 'white',
+                    overflow: 'auto',
+                    maxHeight: window.screen.availHeight * 0.9
                 }}>
                     <Grid container justifyContent="space-between" alignItems="center">
                         <Grid item xs={5}>
@@ -217,20 +246,23 @@ export default function CreateCustomerModal(props: Props) {
                         </Stack>
                         <br />
 
+                        {( (form.accountType === 'corporate') && (
                         <Stack direction={"row"} spacing={2}>
                             <TextField
                                 label='Company Name'
                                 onChange={val => setForm({...form, companyName: val.target.value})}
                                 value={form.companyName}
                                 fullWidth={true} />
-                                
+                            <br />
+                            <br />
                         </Stack>
-                        <br />
+                        ))}
                             
                         <TextField
                             label='Email'
                             onChange={val => setForm({...form, email: val.target.value})}
                             value={form.email}
+                            type="email"
                             fullWidth={true} />
                         <br />
                         <br />
@@ -238,7 +270,32 @@ export default function CreateCustomerModal(props: Props) {
                         <Stack direction={"row"} spacing={2}>
                             <TextField
                                 label='Phone'
-                                onChange={val => setForm({...form, phone: val.target.value})}
+                                onChange={val => {
+                                    // check length
+                                    if((val.target.value).length > 11){
+                                        setError({
+                                            message: "phone number can't be more than 11"
+                                        })
+                                        return
+                                    }
+
+                                    // check alphabet
+                                    if( /[A-Za-z]/g.test(val.target.value) ){
+                                        setError({
+                                            message: "phone number can't be alphabetical"
+                                        })
+                                        return
+                                    }
+
+                                    const _val = filterPhoneNumber(val.target.value)
+                                    if(_val.error){
+                                        setError({
+                                            message: _val.message
+                                        })
+                                    }
+                                    setForm({...form, phone: _val.phone})
+                                }}
+                                type="tel"
                                 value={form.phone}
                                 fullWidth={true} />
                                 
@@ -286,11 +343,38 @@ export default function CreateCustomerModal(props: Props) {
                                     })}
                             </Select>
 
-                            <TextField
+                            <Select
+                                onChange={e => {
+                                console.log(e, ' e')
+                                }}
+                                value={form.district}
+                                name={"District"}
+                                label={"District"}
+                                fullWidth
+                                >
+                                    {district.map((item, index) => {
+                                        return (
+                                        <MenuItem
+                                            onClick={()=>{
+                                                console.log(item, "item")
+                                                setForm({
+                                                    ...form,
+                                                    district: item.value
+                                                })
+                                            }}
+                                            key={index}
+                                            value={item.value}>
+                                            {item.label}
+                                        </MenuItem>
+                                        );
+                                    })}
+                            </Select>
+
+                            {/* <TextField
                                 label='District'
                                 onChange={val => setForm({...form, district: val.target.value})}
                                 value={form.district}
-                                fullWidth={true} />
+                                fullWidth={true} /> */}
                         </Stack>
                         <br />
 

@@ -12,12 +12,12 @@ import DriverProfile from '../components/driver/Profile';
 import GarageVehicles from '../components/partner/garage/DriverVehicles';
 import OwnerVehicles from '../components/partner/garage/CustomerVehicles';
 import GarageProfileAndSetting from '../components/partner/garage/GarageProfileAndSetting';
-import RideShareDriver from '../components/partner/garage/RideShareDriver';
+// import RideShareDriver from '../components/partner/garage/RideShareDriver';
 import PaymentPlans from '../components/partner/rideShare/PaymentPlans';
 import Plans from '../components/partner/rideShare/Plans';
 import RideShareSettings from '../components/partner/rideShare/RideShareSettings';
 import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from '../config/constants';
-import TechniciansPage from '../pages/technician/TechniciansPage';
+// import TechniciansPage from '../pages/technician/TechniciansPage';
 import Estimate from '../components/partner/garage/Estimate';
 import VehicleOwner from '../components/partner/garage/VehicleOwner';
 import ProfileNew from '../components/customer/Profile';
@@ -58,21 +58,21 @@ export const partnerDetailTabs: ITab[] = [
     name: 'Auto Hyve',
     Element: VehicleOwner,
   },
-  {
-    tag: GARAGE_CATEGORY,
-    name: 'Ride Share Hyve',
-    Element: RideShareDriver,
-  },
+  // {
+  //   tag: GARAGE_CATEGORY,
+  //   name: 'Ride Share Hyve',
+  //   Element: RideShareDriver,
+  // },
   {
     tag: GARAGE_CATEGORY,
     name: 'Garage Profile & Settings',
     Element: GarageProfileAndSetting,
   },
-  {
-    tag: GARAGE_CATEGORY,
-    name: 'Technician Management',
-    Element: TechniciansPage,
-  },
+  // {
+  //   tag: GARAGE_CATEGORY,
+  //   name: 'Technician Management',
+  //   Element: TechniciansPage,
+  // },
 ];
 
 export const driverSearchResultTabs: ITab[] = [

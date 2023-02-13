@@ -4,7 +4,7 @@ import {
   Garage,
   Groups,
   Handshake,
-  HomeRepairService,
+  // HomeRepairService,
   Payments,
   PlaylistAddCheck,
   Receipt,
@@ -29,6 +29,12 @@ const HomePage = React.lazy(() => import('../context/AppContextProvider'));
 
 export const sideNavs: ISideNav[] = [
   { tag: 'all', name: 'Dashboard', path: '/dashboard', Icon: Dashboard },
+  {
+    tag: 'techs',
+    name: 'Dasboard',
+    path: '/garage',
+    Icon: Garage,
+  },
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
   { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },
   {
@@ -50,18 +56,12 @@ export const sideNavs: ISideNav[] = [
     Icon: Receipt,
   },
   { tag: 'drivers', name: 'Drivers', path: '/drivers', Icon: TaxiAlert },
-  {
-    tag: 'techs',
-    name: 'Home',
-    path: '/garage',
-    Icon: Garage,
-  },
-  {
-    tag: 'techs',
-    name: 'Technicians',
-    path: '/technicians',
-    Icon: HomeRepairService,
-  },
+  // {
+  //   tag: 'techs',
+  //   name: 'Technicians',
+  //   path: '/technicians',
+  //   Icon: HomeRepairService,
+  // },
   { tag: 'super', name: 'Partners', path: '/partners', Icon: Handshake },
   {
     tag: 'super',

@@ -24,7 +24,9 @@ import AppAlert from '../alerts/AppAlert';
 function ProfileNew() {
 //   const [_vehicles, _setVehicles] = useState<IVehicle[]>([]);
 const [states, setStates] = useState<ISelectData[]>([]);
+const [district, setDistrict] = useState<ISelectData[]>([]);
 const [isLoading, setIsLoading] = useState<boolean>(false);
+const [isEditing, setIsEditing] = useState<boolean>(false);
 const [error, setError] = useState<CustomHookMessage>();
 const [success, setSuccess] = useState<CustomHookMessage>();
   const [form, setForm] = useState<any>({
@@ -47,6 +49,30 @@ const [success, setSuccess] = useState<CustomHookMessage>();
 
     setStates(newStates);
   }, []);
+
+  // listen to get district
+  useEffect(() => {
+    // find state
+    try{
+        const _temp = (STATES.filter( v => (v.name == form.state) ))[0];
+
+        if(_temp == undefined){
+            return
+        }
+
+        // @ts-ignore
+        const newDistrict = (_temp.districts).map(district => ({
+        label: district.name,
+        value: district.name,
+        }));
+
+        console.log(newDistrict)
+
+        setDistrict(newDistrict);
+    }catch(e){
+        console.log(e)
+    }
+}, [form.state]);
 
   const { customer } = useContext(CustomerPageContext) as CustomerPageContextProps;
 
@@ -132,12 +158,14 @@ const handleEdit = async ()=>{
                 label='First Name'
                 onChange={val => setForm({...form, firstName: val.target.value})}
                 value={form.firstName}
+                disabled={!isEditing}
                 fullWidth={true} />
                 
             <TextField
                 label='Last Name'
                 onChange={val => setForm({...form, lastName: val.target.value})}
                 value={form.lastName}
+                disabled={!isEditing}
                 fullWidth={true} />
         </Stack>
 
@@ -146,12 +174,13 @@ const handleEdit = async ()=>{
                 label='Company Name'
                 onChange={val => setForm({...form, companyName: val.target.value})}
                 value={form.companyName}
+                disabled={!isEditing}
                 fullWidth={true} />
                 
             <TextField
                 label='Account Type'
                 onChange={val => setForm({...form, accountType: val.target.value})}
-                disabled={true}
+                disabled={true && !isEditing}
                 value={form.accountType}
                 fullWidth={true} />
         </Stack>
@@ -159,7 +188,7 @@ const handleEdit = async ()=>{
         <TextField
             label='Email'
             onChange={val => setForm({...form, email: val.target.value})}
-            disabled={true}
+            disabled={true && !isEditing}
             value={form.email}
             fullWidth={true} />
 
@@ -168,12 +197,14 @@ const handleEdit = async ()=>{
                 label='Phone'
                 onChange={val => setForm({...form, phone: val.target.value})}
                 value={form.phone}
+                disabled={!isEditing}
                 fullWidth={true} />
                 
             <TextField
                 label='Credit Rating'
                 onChange={val => setForm({...form, creditRating: val.target.value})}
                 value={form.creditRating}
+                disabled={!isEditing}
                 fullWidth={true} />
         </Stack>
 
@@ -184,6 +215,7 @@ const handleEdit = async ()=>{
                 }}
                 value={form.state}
                 name={"State"}
+                disabled={!isEditing}
                 label={"State"}
                 fullWidth
                 >
@@ -205,15 +237,43 @@ const handleEdit = async ()=>{
                     })}
             </Select>
 
-            <TextField
+            <Select
+                onChange={e => {
+                console.log(e, ' e')
+                }}
+                value={form.district}
+                name={"District"}
+                label={"District"}
+                disabled={!isEditing}
+                fullWidth
+                >
+                    {district.map((item, index) => {
+                        return (
+                        <MenuItem
+                            onClick={()=>{
+                                console.log(item, "item")
+                                setForm({
+                                    ...form,
+                                    district: item.value
+                                })
+                            }}
+                            key={index}
+                            value={item.value}>
+                            {item.label}
+                        </MenuItem>
+                        );
+                    })}
+            </Select>
+
+            {/* <TextField
                 label='District'
                 onChange={val => setForm({...form, district: val.target.value})}
                 value={form.district}
-                fullWidth={true} />
+                fullWidth={true} /> */}
         </Stack>
         
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <LoadingButton
+            {( isEditing && (<LoadingButton
                 // sx={{ ml: 2 }}
                 type="submit"
                 loading={isLoading}
@@ -227,7 +287,24 @@ const handleEdit = async ()=>{
                 // endIcon={<Send />}
                 >
                 Update
-            </LoadingButton>
+            </LoadingButton>))}
+
+            {
+                (!isEditing && (
+                    <LoadingButton
+                        // sx={{ ml: 2 }}
+                        type="button"
+                        onClick={() => {
+                            // 
+                            setIsEditing(true)
+                        }}
+                        variant="contained"
+                        color="success"
+                        >
+                        Edit
+                    </LoadingButton>
+                ))
+            }
         </div>
         
       </Stack>
