@@ -24,10 +24,6 @@ const decorators_1 = require("../decorators");
 const Contact_1 = __importDefault(require("../models/Contact"));
 const settings_1 = __importDefault(require("../config/settings"));
 const PasswordEncoder_1 = __importDefault(require("../utils/PasswordEncoder"));
-const rabbitmq_email_manager_1 = __importDefault(require("rabbitmq-email-manager"));
-const constants_1 = require("../config/constants");
-const main_welcome_corporate_email_1 = __importDefault(require("../resources/templates/email/main_welcome_corporate_email"));
-const main_welcome_individual_email_1 = __importDefault(require("../resources/templates/email/main_welcome_individual_email"));
 const CUSTOMER_ID = 'Customer Id';
 class CustomerController {
     static async allCustomers() {
@@ -140,27 +136,25 @@ class CustomerController {
         await user.$set('roles', [role]);
         await user.$set('contacts', [contact]);
         // send mail
-        let welcomeHtml;
-        const fullName = `${value.firstName} ${value.lastName}`;
-        if (value.companyName)
-            welcomeHtml = (0, main_welcome_corporate_email_1.default)(fullName);
-        else
-            welcomeHtml = (0, main_welcome_individual_email_1.default)(fullName);
+        // let welcomeHtml;
+        // const fullName = `${value.firstName} ${value.lastName}`;
+        // if (value.companyName) welcomeHtml = main_welcome_corporate_email(fullName);
+        // else welcomeHtml = main_welcome_individual_email(fullName);
         // const passwordHtml = main_default_password_email(value.rawPassword);
-        const queuePayload = {
-            queue: constants_1.QUEUE_EVENTS.name,
-            data: {
-                to: user.email,
-                from: {
-                    name: process.env.SMTP_EMAIL_FROM_NAME,
-                    address: process.env.SMTP_EMAIL_FROM,
-                },
-                subject: `Welcome to AutoHyve`,
-                html: welcomeHtml,
-                bcc: [process.env.SMTP_BCC, process.env.SMTP_CONFIG_USERNAME],
-            },
-        };
-        await rabbitmq_email_manager_1.default.publish(queuePayload);
+        // const queuePayload = {
+        //   queue: QUEUE_EVENTS.name,
+        //   data: {
+        //     to: user.email,
+        //     from: {
+        //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+        //       address: <string>process.env.SMTP_EMAIL_FROM,
+        //     },
+        //     subject: `Welcome to AutoHyve`,
+        //     html: welcomeHtml,
+        //     bcc: [<string>process.env.SMTP_BCC, <string>process.env.SMTP_CONFIG_USERNAME],
+        //   },
+        // };
+        // await QueueManager.publish(queuePayload);
         const response = {
             code: HttpStatus_1.default.OK.code,
             message: HttpStatus_1.default.OK.value
@@ -175,6 +169,7 @@ class CustomerController {
             lastName: joi_1.default.string().optional().label("Last Name"),
             phone: joi_1.default.string().optional().label("Phone"),
             creditRating: joi_1.default.any().optional().label("Credit Rating"),
+            address: joi_1.default.string().optional().label("Address"),
             state: joi_1.default.string().optional().label("State"),
             district: joi_1.default.string().optional().label("District"),
         }).validate(req.body);
@@ -194,6 +189,7 @@ class CustomerController {
         await Contact_1.default.update({
             district: value.district,
             state: value.state,
+            address: value.address,
         }, {
             where: {
                 // @ts-ignore

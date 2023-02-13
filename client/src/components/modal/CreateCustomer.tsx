@@ -154,6 +154,12 @@ export default function CreateCustomerModal(props: Props) {
             return
         }
 
+        // check if phone number isn't valid
+        if( _val.phone.length !== 11 ){
+            setError({ message: "Phone number must be of 11 digit" })
+            return
+        }
+
         const payload = form;
 
         payload.phone = _val.phone;

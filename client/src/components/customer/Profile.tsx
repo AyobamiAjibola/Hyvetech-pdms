@@ -38,7 +38,8 @@ const [success, setSuccess] = useState<CustomHookMessage>();
     phone: "",
     creditRating: "",
     state: "",
-    district: ""
+    district: "",
+    address: "",
   });
 
   useEffect(() => {
@@ -84,11 +85,12 @@ const [success, setSuccess] = useState<CustomHookMessage>();
         email: customer?.email,
         lastName: customer?.lastName,
         companyName: customer?.companyName,
-        accountType: (customer?.companyName != null) ? "Corporate" : "Individual",
+        accountType: ((customer?.companyName || '').length > 2) ? "Corporate" : "Individual",
         phone: customer?.phone,
         creditRating: customer?.creditRating || "",
         state: customer?.contacts[0]?.state || "",
-        district: customer?.contacts[0]?.district || ""
+        district: customer?.contacts[0]?.district || "",
+        address: customer?.contacts[0]?.address || ""
     })
 
     setIsLoading(false)
@@ -144,6 +146,7 @@ const handleEdit = async ()=>{
         creditRating: form.creditRating,
         state: form.state,
         district: form.district,
+        address: form.address,
     }
 
     dispatch(updateCustomerAction(payload))
@@ -207,6 +210,13 @@ const handleEdit = async ()=>{
                 disabled={!isEditing}
                 fullWidth={true} />
         </Stack>
+
+        <TextField
+            label='Address'
+            onChange={val => setForm({...form, address: val.target.value})}
+            disabled={!isEditing}
+            value={form.address}
+            fullWidth={true} />
 
         <Stack direction={"row"} spacing={2}>
             <Select

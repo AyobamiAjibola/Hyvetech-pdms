@@ -164,29 +164,29 @@ export default class CustomerController {
     await user.$set('contacts', [contact]);
 
     // send mail
-    let welcomeHtml;
-    const fullName = `${value.firstName} ${value.lastName}`;
+    // let welcomeHtml;
+    // const fullName = `${value.firstName} ${value.lastName}`;
 
-    if (value.companyName) welcomeHtml = main_welcome_corporate_email(fullName);
-    else welcomeHtml = main_welcome_individual_email(fullName);
+    // if (value.companyName) welcomeHtml = main_welcome_corporate_email(fullName);
+    // else welcomeHtml = main_welcome_individual_email(fullName);
 
     // const passwordHtml = main_default_password_email(value.rawPassword);
 
-    const queuePayload = {
-      queue: QUEUE_EVENTS.name,
-      data: {
-        to: user.email,
-        from: {
-          name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-          address: <string>process.env.SMTP_EMAIL_FROM,
-        },
-        subject: `Welcome to AutoHyve`,
-        html: welcomeHtml,
-        bcc: [<string>process.env.SMTP_BCC, <string>process.env.SMTP_CONFIG_USERNAME],
-      },
-    };
+    // const queuePayload = {
+    //   queue: QUEUE_EVENTS.name,
+    //   data: {
+    //     to: user.email,
+    //     from: {
+    //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+    //       address: <string>process.env.SMTP_EMAIL_FROM,
+    //     },
+    //     subject: `Welcome to AutoHyve`,
+    //     html: welcomeHtml,
+    //     bcc: [<string>process.env.SMTP_BCC, <string>process.env.SMTP_CONFIG_USERNAME],
+    //   },
+    // };
 
-    await QueueManager.publish(queuePayload);
+    // await QueueManager.publish(queuePayload);
 
 
     const response: HttpResponse<Customer> = {
@@ -206,6 +206,7 @@ export default class CustomerController {
       lastName: Joi.string().optional().label("Last Name"),
       phone: Joi.string().optional().label("Phone"),
       creditRating: Joi.any().optional().label("Credit Rating"),
+      address: Joi.string().optional().label("Address"),
       state: Joi.string().optional().label("State"),
       district: Joi.string().optional().label("District"),
     }).validate(req.body);
@@ -230,6 +231,7 @@ export default class CustomerController {
     await Contact.update({
       district: value.district,
       state: value.state,
+      address: value.address,
     }, {
       where: {
         // @ts-ignore
