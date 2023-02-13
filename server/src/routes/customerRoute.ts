@@ -16,6 +16,11 @@ export const addCustomersHandler = authenticateRouteWrapper(async (req, res) => 
   res.status(response.code).json(response);
 });
 
+export const importCustomersHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await CustomerController.importCustomers(req);
+  res.status(response.code).json(response);
+});
+
 export const updateCustomersHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await CustomerController.updateCustomers(req);
   res.status(response.code).json(response);

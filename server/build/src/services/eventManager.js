@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_1 = __importDefault(require("moment"));
-const dao_1 = __importDefault(require("../services/dao"));
+const dao_1 = __importDefault(require("./dao"));
 const AppEventEmitter_1 = require("./AppEventEmitter");
 const constants_1 = require("../config/constants");
 const notification_1 = require("../models/nosql/notification");

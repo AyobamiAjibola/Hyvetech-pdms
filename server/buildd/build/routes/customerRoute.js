@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.suggestWorkshopHandler = exports.getCustomerTransactionsHandler = exports.getCustomerAppointmentsHandler = exports.getCustomerVehiclesHandler = exports.getCustomerHandler = exports.updateCustomersHandler = exports.addCustomersHandler = exports.getNewCustomersHandler = exports.getCustomersHandler = void 0;
+exports.suggestWorkshopHandler = exports.getCustomerTransactionsHandler = exports.getCustomerAppointmentsHandler = exports.getCustomerVehiclesHandler = exports.getCustomerHandler = exports.updateCustomersHandler = exports.importCustomersHandler = exports.addCustomersHandler = exports.getNewCustomersHandler = exports.getCustomersHandler = void 0;
 const authenticateRouteWrapper_1 = __importDefault(require("../middleware/authenticateRouteWrapper"));
 const CustomerController_1 = __importDefault(require("../controllers/CustomerController"));
 exports.getCustomersHandler = (0, authenticateRouteWrapper_1.default)(async (req, res) => {
@@ -16,6 +16,10 @@ exports.getNewCustomersHandler = (0, authenticateRouteWrapper_1.default)(async (
 });
 exports.addCustomersHandler = (0, authenticateRouteWrapper_1.default)(async (req, res) => {
     const response = await CustomerController_1.default.addCustomers(req);
+    res.status(response.code).json(response);
+});
+exports.importCustomersHandler = (0, authenticateRouteWrapper_1.default)(async (req, res) => {
+    const response = await CustomerController_1.default.importCustomers(req);
     res.status(response.code).json(response);
 });
 exports.updateCustomersHandler = (0, authenticateRouteWrapper_1.default)(async (req, res) => {

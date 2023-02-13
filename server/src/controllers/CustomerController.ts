@@ -120,13 +120,6 @@ export default class CustomerController {
       where: { slug: settings.roles[1] },
     });
 
-    // const state = await dataSources.stateDAOService.findByAny({
-    //   where: { alias: value.state },
-    // });
-
-    // if (!state)
-    //   return Promise.reject(CustomAPIError.response(`State ${value.state} does not exist`, HttpStatus.NOT_FOUND.code));
-
     if (!role)
       return Promise.reject(
         CustomAPIError.response(`Role ${settings.roles[1]} does not exist`, HttpStatus.NOT_FOUND.code),
@@ -163,31 +156,90 @@ export default class CustomerController {
     await user.$set('roles', [role]);
     await user.$set('contacts', [contact]);
 
-    // send mail
-    // let welcomeHtml;
-    // const fullName = `${value.firstName} ${value.lastName}`;
+    const response: HttpResponse<Customer> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value
+    };
 
-    // if (value.companyName) welcomeHtml = main_welcome_corporate_email(fullName);
-    // else welcomeHtml = main_welcome_individual_email(fullName);
+    return Promise.resolve(response);
+  }
 
-    // const passwordHtml = main_default_password_email(value.rawPassword);
+  // start
+  @TryCatch
+  public static async importCustomers(req: Request) {
+    // console.log(req.body)
+    const {error, value: newValue} = Joi.object({
+      accounts: Joi.array().required().label("Account Object"),
+    }).validate(req.body);
+    
+    if(error){
+      return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
+    }
 
-    // const queuePayload = {
-    //   queue: QUEUE_EVENTS.name,
-    //   data: {
-    //     to: user.email,
-    //     from: {
-    //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-    //       address: <string>process.env.SMTP_EMAIL_FROM,
-    //     },
-    //     subject: `Welcome to AutoHyve`,
-    //     html: welcomeHtml,
-    //     bcc: [<string>process.env.SMTP_BCC, <string>process.env.SMTP_CONFIG_USERNAME],
-    //   },
-    // };
+    for (let i = 0; i < (newValue.accounts).length; i++) {
+      const value = (newValue.accounts)[i];
 
-    // await QueueManager.publish(queuePayload);
+      console.log(value)
 
+      value.email = (value.email).toLowerCase();
+
+    // check if user exist
+    const customer = await dataSources.customerDAOService.findByAny({
+      where: {
+        [Op.or]: [{ email: (value.email).toLowerCase() }, { phone: value.phone }],
+      },
+    });
+    
+    if (customer) {
+      continue;
+      // return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
+    }
+
+
+    //find role by name
+    const role = await dataSources.roleDAOService.findByAny({
+      where: { slug: settings.roles[1] },
+    });
+
+    if (!role){
+      continue;
+    }
+      // return Promise.reject(
+      //   CustomAPIError.response(`Role ${settings.roles[1]} does not exist`, HttpStatus.NOT_FOUND.code),
+      // );
+
+      const passwordEncoder = new PasswordEncoder();
+
+      const payload = {
+        rawPassword: value.phone,
+        password: (await passwordEncoder.encode(value.phone)),
+        enabled: true,
+        active: true,
+        companyName: value.companyName,
+        firstName: value.firstName,
+        lastName: value.lastName,
+        email: value.email,
+        phone: value.phone,
+        partnerId: req?.user.partner?.id || null
+      }
+
+      const contactValues: any = {
+        label: 'Home',
+        state: value.state,
+        district: value.district,
+        address: value?.address || ""
+      };
+
+      const contact = await dataSources.contactDAOService.create(contactValues);
+
+      // @ts-ignore
+      const user = await dataSources.customerDAOService.create(payload);
+
+      //associate user with role
+      await user.$set('roles', [role]);
+      await user.$set('contacts', [contact]);
+      
+    }
 
     const response: HttpResponse<Customer> = {
       code: HttpStatus.OK.code,
@@ -196,6 +248,7 @@ export default class CustomerController {
 
     return Promise.resolve(response);
   }
+  // stop
 
   @TryCatch
   public static async updateCustomers(req: Request) {

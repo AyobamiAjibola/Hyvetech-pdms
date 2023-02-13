@@ -6,6 +6,7 @@ import {
   getCustomerTransactionsHandler,
   getCustomerVehiclesHandler,
   getNewCustomersHandler,
+  importCustomersHandler,
   suggestWorkshopHandler,
   updateCustomersHandler,
 } from '../../routes/customerRoute';
@@ -67,6 +68,12 @@ const customerEndpoints: RouteEndpoints = [
     method: 'post',
     path: '/add-customer',
     handler: addCustomersHandler,
+  },
+  {
+    name: 'customer',
+    method: 'post',
+    path: '/import-customer',
+    handler: importCustomersHandler,
   },
 ];
 

@@ -56,5 +56,11 @@ const customerEndpoints = [
         path: '/add-customer',
         handler: customerRoute_1.addCustomersHandler,
     },
+    {
+        name: 'customer',
+        method: 'post',
+        path: '/import-customer',
+        handler: customerRoute_1.importCustomersHandler,
+    },
 ];
 exports.default = customerEndpoints;
