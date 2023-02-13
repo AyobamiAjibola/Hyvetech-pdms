@@ -66,7 +66,9 @@ function EstimateForm(props: IProps) {
 
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
   const [inputValue, setInputValue] = React.useState('');
+  // @ts-ignore
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
+  const [showDrop, setShowDrop] = useState<boolean>(false);
   const [vinOptions, setvinOptions] = useState<any>([]);
 
   // @ts-ignore
@@ -407,10 +409,19 @@ function EstimateForm(props: IProps) {
                           reload();
                         }
                       }}
+                      noOptionsText="Click Enter to Initialize Search"
                       renderInput={props => (
                         <TextField
                           {...props}
                           label="Search customer by First name, last name, car plate number."
+                          onKeyDown={e => {
+                            if(e.key === 'Enter'){
+                              setShowDrop(true)
+                            }
+                          }}
+                          onBlur={()=>{
+                            setShowDrop(false)
+                          }}
                           InputProps={{
                             ...props.InputProps,
                             endAdornment: (
@@ -424,7 +435,8 @@ function EstimateForm(props: IProps) {
                           }}
                         />
                       )}
-                      options={options}
+                      options={showDrop ? options : []}
+                      // options={[]}
                     />
                   </Grid>
                 </Grid>

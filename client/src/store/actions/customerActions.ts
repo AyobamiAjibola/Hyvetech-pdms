@@ -8,6 +8,7 @@ const GET_CUSTOMERS = 'customer:GET_CUSTOMERS';
 const GET_NEW_CUSTOMERS = 'customer:GET_NEW_CUSTOMERS';
 const GET_CUSTOMER = 'customer:GET_CUSTOMER';
 const UPDATE_CUSTOMER = 'customer:UPDATE_CUSTOMER';
+const IMPORT_CUSTOMER = 'customer:IMPORT_CUSTOMER';
 const ADD_CUSTOMER = 'customer:ADD_CUSTOMER';
 const GET_CUSTOMER_VEHICLES = 'customer:GET_CUSTOMER_VEHICLES';
 const GET_CUSTOMER_APPOINTMENTS = 'customer:GET_CUSTOMER_APPOINTMENTS';
@@ -31,6 +32,11 @@ export const getCustomerAction = asyncThunkWrapper<ApiResponseSuccess<ICustomer>
 
 export const addCustomerAction = asyncThunkWrapper<ApiResponseSuccess<ICustomer>, any>(ADD_CUSTOMER, async payload => {
   const response = await axiosClient.post(`${API_ROOT}/add-customer`, payload);
+  return response.data;
+});
+
+export const importCustomerAction = asyncThunkWrapper<ApiResponseSuccess<ICustomer>, any>(IMPORT_CUSTOMER, async payload => {
+  const response = await axiosClient.post(`${API_ROOT}/import-customer`, payload);
   return response.data;
 });
 

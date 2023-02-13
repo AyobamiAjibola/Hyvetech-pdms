@@ -1,7 +1,7 @@
 import {
   BookOnline,
   Dashboard,
-  Garage,
+  // Garage,
   Groups,
   Handshake,
   // HomeRepairService,
@@ -33,7 +33,7 @@ export const sideNavs: ISideNav[] = [
     tag: 'techs',
     name: 'Dasboard',
     path: '/garage',
-    Icon: Garage,
+    Icon: Dashboard,
   },
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
   { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },

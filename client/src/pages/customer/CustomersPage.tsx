@@ -12,10 +12,12 @@ import { AppContextProps } from '@app-interfaces';
 import useNewCustomer from '../../hooks/useNewCustomer';
 import useAdmin from '../../hooks/useAdmin';
 import CreateCustomerModal from '../../components/modal/CreateCustomer';
+import ImportCustomerModal from '../../components/modal/ImportCustomer';
 
 function CustomersPage() {
   const { setCustomer } = useContext(AppContext) as AppContextProps;
   const [createModal, setCreateModal] = useState(false)
+  const [inviteModal, setInviteModal] = useState(false)
 
   const customer = useNewCustomer();
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ function CustomersPage() {
     <Box>
 
       <Grid container justifyContent="space-between" alignItems="center">
-        <Grid item xs={10}>
+        <Grid item xs={9}>
           <Typography variant="h4" gutterBottom>
             Customers
           </Typography>
@@ -45,9 +47,19 @@ function CustomersPage() {
             // s
             setCreateModal(true)
           }}>
-            CREATE
+            ADD CUSTOMER
           </Button>
         </Grid>
+
+        <Grid item hidden={!isTechAdmin}>
+          <Button variant="outlined" color="success" size="small" onClick={() => {
+            // s
+            setInviteModal(true)
+          }}>
+            IMPORT CUSTOMER
+          </Button>
+        </Grid>
+
       </Grid>
 
       <Stack
@@ -87,6 +99,12 @@ function CustomersPage() {
         console.log(e);
         window.location.reload()
       }} visible={createModal} setVisible={setCreateModal} />
+
+      {/* @ts-ignore */}
+      <ImportCustomerModal callback={(e) => {
+        console.log(e);
+        window.location.reload()
+      }} visible={inviteModal} setVisible={setInviteModal} />
     </Box>
   );
 }

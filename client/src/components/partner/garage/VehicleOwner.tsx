@@ -38,6 +38,7 @@ export default function VehicleOwner() {
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
+  const [showDrop, setShowDrop] = useState<boolean>(false);
   const [customer, setCustomer] = useState<ICustomer>();
   const [tabs, setTabs] = useState<ITab[]>(customerSearchResultTabs);
 
@@ -139,10 +140,19 @@ export default function VehicleOwner() {
                   reload();
                 }
               }}
+              noOptionsText="Click Enter to Initialize Search"
               renderInput={props => (
                 <TextField
                   {...props}
                   label="Search customer by First name, last name, car plate number."
+                  onKeyDown={e => {
+                    if(e.key === 'Enter'){
+                      setShowDrop(true)
+                    }
+                  }}
+                  onBlur={()=>{
+                    setShowDrop(false)
+                  }}
                   InputProps={{
                     ...props.InputProps,
                     endAdornment: (
@@ -156,7 +166,7 @@ export default function VehicleOwner() {
                   }}
                 />
               )}
-              options={options}
+              options={showDrop ? options : []}
             />
           </Grid>
         </Grid>
