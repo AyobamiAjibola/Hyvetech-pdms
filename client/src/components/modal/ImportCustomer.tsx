@@ -13,6 +13,7 @@ import useAppSelector from '../../hooks/useAppSelector';
 // import { addCustomerAction } from '../../store/actions/customerActions';
 import { clearImportCustomerStatus } from '../../store/reducers/customerReducer';
 import { importCustomerAction } from '../../store/actions/customerActions';
+import * as XLSX from 'xlsx';
 
 type Props = {
     callback?: any;
@@ -98,12 +99,13 @@ export default function ImportCustomerModal(props: Props) {
         setIsLoading(true)
 
         const fileReader = new FileReader(); 
-        fileReader.readAsText(file); 
+        fileReader.readAsText(file, "utf-8"); 
         fileReader.onload = function() {
-            const _item = (fileReader?.result?.toString() || '').split("\n");
+            
             // const temp = [];
 
             try{
+                const _item = (fileReader?.result?.toString() || '').split("\n");
                 const _temp = _item.map((_res)=>{
                     const _object = _res.split(',');
                     return {
@@ -119,8 +121,10 @@ export default function ImportCustomerModal(props: Props) {
     
                 console.log(_temp);
                 setForm({...form, accounts: _temp})
-            }catch(e){
-                setError({message: "CSV file not supported"})
+            }catch(error){
+                console.log(fileReader?.result);
+                tryMethodTwo(e)
+                // setError({message: "CSV file not supported"})
             }
 
             setIsLoading(false)
@@ -129,6 +133,52 @@ export default function ImportCustomerModal(props: Props) {
             setIsLoading(false)
             alert(fileReader.error);
         };
+    }
+
+    const tryMethodTwo = async (e: any)=>{
+        const file = (e.target.files[0]);
+        setIsLoading(true)
+
+        const fileReader = new FileReader(); 
+        fileReader.readAsBinaryString(file); 
+
+        fileReader.onload = (evt) => { // evt = on_file_select event
+            /* Parse data */
+            // @ts-ignore
+            const bstr = evt.target.result;
+            const wb = XLSX.read(bstr, {type:'binary'});
+            /* Get first worksheet */
+            const wsname = wb.SheetNames[0];
+            const ws = wb.Sheets[wsname];
+            /* Convert array of arrays */
+            const data = XLSX.utils.sheet_to_csv(ws);
+            /* Update state */
+            // console.log("Data>>>"+data);
+
+            try{
+                const _item = (data.toString() || '').split("\n");
+                const _temp = _item.map((_res)=>{
+                    const _object = _res.split(',');
+                    return {
+                        firstName: _object[0],
+                        lastName: _object[1],
+                        email: _object[2],
+                        phone: filterPhoneNumber(_object[3]).phone,
+                        companyName: _object[4],
+                        state: _object[5],
+                        district: _object[6],
+                    }
+                })
+    
+                console.log(_temp);
+                setForm({...form, accounts: _temp})
+            }catch(error){
+                console.log(fileReader?.result);
+                tryMethodTwo(e)
+                // setError({message: "CSV file not supported"})
+            }
+        };
+
     }
 
     return (
@@ -185,7 +235,7 @@ export default function ImportCustomerModal(props: Props) {
                     }}>
                         <Stack direction={"row"} spacing={2}>
                             <Typography>
-                                We advise our template be downloaded as a guide on what is required.
+                                We advise our template be downloaded as a guide on what is required, re-fill with real data only.
                             </Typography>
                             <a download href={require("../../assets/template11.csv")}>
                                 <Button type='button'>

@@ -148,6 +148,8 @@ export default function VehicleOwner() {
                   onKeyDown={e => {
                     if(e.key === 'Enter'){
                       setShowDrop(true)
+                    }else{
+                      setShowDrop(false)
                     }
                   }}
                   onBlur={()=>{
