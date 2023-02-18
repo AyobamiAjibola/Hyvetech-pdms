@@ -16,7 +16,7 @@ async function startup(io) {
     dataStore_1.default.init();
     await database_1.default.init();
     const mongodb = await database_1.default.mongodb();
-    await database_1.default.sequelize.sync({ alter: true });
+    // await database.sequelize.sync({ alter: true });
     // console.log('reac0')
     // await CommandLineRunner.run();
     // console.log('reac')

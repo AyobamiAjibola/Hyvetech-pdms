@@ -148,6 +148,15 @@ class CustomerController {
         for (let i = 0; i < (newValue.accounts).length; i++) {
             const value = (newValue.accounts)[i];
             console.log(value);
+            const { error: error2 } = joi_1.default.object({
+                email: joi_1.default.string().email().required().label("Email"),
+            }).validate(value);
+            if (error2) {
+                continue;
+            }
+            if ((value?.phone || '').length != 11) {
+                continue;
+            }
             value.email = (value.email).toLowerCase();
             // check if user exist
             const customer = await dao_1.default.customerDAOService.findByAny({

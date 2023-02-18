@@ -35,6 +35,7 @@ export default function CreateCustomerModal(props: Props) {
 
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+    const [__payload, __setpayload] = useState<any>([]);
     const [states, setStates] = useState<ISelectData[]>([]);
     const [district, setDistrict] = useState<ISelectData[]>([]);
     // @ts-ignore
@@ -104,7 +105,7 @@ export default function CreateCustomerModal(props: Props) {
                 message: "Created Successfully"
             })
 
-            props.callback(form)
+            props.callback(__payload)
             props.setVisible(false)
         }
 
@@ -165,6 +166,7 @@ export default function CreateCustomerModal(props: Props) {
         payload.phone = _val.phone;
 
         // send payload
+        __setpayload(payload)
         dispatch(addCustomerAction(payload))
     }
 

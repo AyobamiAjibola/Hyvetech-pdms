@@ -147,7 +147,11 @@ export default function VehicleOwner() {
                   label="Search customer by First name, last name, car plate number."
                   onKeyDown={e => {
                     if(e.key === 'Enter'){
-                      setShowDrop(true)
+                      if( (inputValue || '').length == 0 ){
+                        setShowDrop(false)
+                      }else{
+                        setShowDrop(true)
+                      }
                     }else{
                       setShowDrop(false)
                     }

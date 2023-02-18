@@ -11,6 +11,7 @@ import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import TextInputField from '../fields/TextInputField';
+// @ts-ignore
 import { filterPhoneNumber, formatNumberToIntl, reload } from '../../../utils/generic';
 import SelectField, { ISelectData } from '../fields/SelectField';
 import WarrantyFields from './WarrantyFields';
@@ -29,6 +30,8 @@ import useAdmin from '../../../hooks/useAdmin';
 import { getCustomerAction } from '../../../store/actions/customerActions';
 import { useParams } from 'react-router-dom';
 import { getOwnersFilterDataAction, getPartnerAction } from '../../../store/actions/partnerActions';
+import { FaPlus } from 'react-icons/fa';
+import CreateCustomerModal from '../../modal/CreateCustomer';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -60,6 +63,8 @@ const filterOptions = createFilterOptions({
 function EstimateForm(props: IProps) {
 
   const [vat, setVat] = useState<number>(0);
+  const [createModal, setCreateModal] = useState(false)
+  const [activeId, setactiveId] = useState<number>(0);
   const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
@@ -327,24 +332,22 @@ function EstimateForm(props: IProps) {
       const _customer: any = customerReducer.customer;
       console.log(_customer, "_customer")
 
-      // upto-populate info
-      setFieldValue(fields.firstName.name, _customer.firstName);
-      setFieldValue(fields.lastName.name, _customer.lastName);
-      setFieldValue(fields.phone.name, _customer.phone);
-      setFieldValue(fields.email.name, _customer.email);
-      setFieldValue(fields.state.name, _customer.contacts[0]?.state || '');
+      if(_customer != undefined){
+        // upto-populate info
+        setFieldValue(fields.firstName.name, _customer.firstName);
+        setFieldValue(fields.lastName.name, _customer.lastName);
+        setFieldValue(fields.phone.name, _customer.phone);
+        setFieldValue(fields.email.name, _customer.email);
+        setFieldValue(fields.state.name, _customer.contacts[0]?.state || 'Abuja (FCT)');
+        setFieldValue(fields.address.name, _customer.contacts[0]?.address || ' .');
+        setFieldValue(fields.addressType.name, "Home");
+        setactiveId(_customer.id)
+        const vinList = (_customer.vehicles).map((_data: any) => (_data?.vin || ""));
+        setvinOptions(vinList)
+        // alert(_customer.lastName)
+      }
 
-      // handleChange({
-      //   target: {
-      //     name: fields.state.name,
-      //     value: _customer.contacts[0]?.state || ''
-      //   }
-      // })
-      // alert(_customer.contacts[0]?.state || '..')
-
-      const vinList = (_customer.vehicles).map((_data: any) => (_data?.vin || ""));
-      setvinOptions(vinList)
-      // alert(_customer.lastName)
+      
     }
     // }
   }, [value, customerReducer.getCustomerStatus])
@@ -388,7 +391,7 @@ function EstimateForm(props: IProps) {
                 <div style={{ marginTop: 10, paddingTop: 15, paddingBottom: 15, width: '100%' }}></div>
 
                 <Grid container justifyContent="center" alignItems="center">
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={8} md={6}>
                     <Autocomplete
                       filterOptions={filterOptions}
                       inputValue={inputValue}
@@ -398,14 +401,12 @@ function EstimateForm(props: IProps) {
                       getOptionLabel={option => option.fullName}
                       isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
                       onChange={(_: any, newValue: IDriversFilterData | null) => {
-                        // console.log(newValue);
                         setValue(newValue);
                         handleGetDriverInfo(newValue?.id);
                       }}
                       onInputChange={(_, newInputValue, reason) => {
                         setInputValue(newInputValue);
                         if (reason === 'clear') {
-                          // setCustomer(undefined);
                           reload();
                         }
                       }}
@@ -416,7 +417,11 @@ function EstimateForm(props: IProps) {
                           label="Search customer by First name, last name, car plate number."
                           onKeyDown={e => {
                             if(e.key === 'Enter'){
-                              setShowDrop(true)
+                              if( (inputValue || '').length == 0 ){
+                                setShowDrop(false)
+                              }else{
+                                setShowDrop(true)
+                              }
                             }else{
                               setShowDrop(false)
                             }
@@ -441,6 +446,18 @@ function EstimateForm(props: IProps) {
                       // options={[]}
                     />
                   </Grid>
+
+                  <Grid item>
+                    <Typography onClick={()=> setCreateModal(true)} color={'lightskyblue'} style={{
+                      marginLeft: 20,
+                      display: 'flex',
+                      alignItems: 'center',
+                      cursor: 'pointer'
+                    }}>
+                        <FaPlus style={{marginRight: 8}} />
+                        New Customer
+                      </Typography>
+                  </Grid>
                 </Grid>
 
                 <Divider orientation="horizontal" />
@@ -454,7 +471,7 @@ function EstimateForm(props: IProps) {
             </Typography>
             <Divider orientation="horizontal" />
           </Grid>
-
+{/* 
           <Grid item xs={4}>
             <TextInputField
               onChange={handleChange}
@@ -508,7 +525,6 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={2}>
-            {/* @ts-ignore */}
             <TextInputField
               type="tel"
               onChange={(e) => {
@@ -555,7 +571,42 @@ function EstimateForm(props: IProps) {
                 label={fields.address.label}
               />
             </Grid>
+          </Grid> */}
+
+          <Grid style={{padding: 20}} xs={12} container>
+            
+            <Grid item xs={11}>
+              <Grid xs={12} container>
+                <Typography>{ (values?.firstName || "First Name & ")} {(values?.lastName || "Last Name")}</Typography> <br />
+              </Grid>
+              
+              <Grid xs={12} container>
+                <Typography>{ values?.email || "Email"}</Typography> <br />
+              </Grid>
+
+              <Grid xs={12} container>
+                <Typography>{ values?.phone || "Phone"}</Typography> <br />
+              </Grid>
+
+              <Grid xs={12} container>
+                <Typography>{ values?.address || "Address"}</Typography> <br />
+              </Grid>
+
+              <Grid xs={12} container>
+                <Typography>{ values?.state || "State"}</Typography> <br />
+              </Grid>
+            </Grid>
+
+            <Grid>
+              <Typography>
+                {
+                  (activeId != 0 && <a style={{color: 'lightskyblue', textDecoration: 'none'}} target={"_self"} href={"/customers/"+activeId}>Edit</a>  )
+                }
+              </Typography> <br />
+            </Grid>
+
           </Grid>
+
           <VehicleInformationFields vinOptions={vinOptions} values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
@@ -874,6 +925,21 @@ function EstimateForm(props: IProps) {
         message={error?.message}
         onClose={() => setError(undefined)}
       />
+
+      {/* @ts-ignore */}
+      <CreateCustomerModal callback={(e) => {
+        console.log(e);
+        
+        setFieldValue(fields.firstName.name, e.firstName);
+        setFieldValue(fields.lastName.name, e.lastName);
+        setFieldValue(fields.phone.name, e.phone);
+        setFieldValue(fields.email.name, e.email);
+        setFieldValue(fields.state.name, e.state || 'Abuja (FCT)');
+        setFieldValue(fields.address.name, e.address || ' .');
+        setFieldValue(fields.addressType.name, "Home");
+        // setactiveId(e.id)
+      }} visible={createModal} setVisible={setCreateModal} />
+
     </React.Fragment>
   );
 }

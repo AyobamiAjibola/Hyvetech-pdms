@@ -181,6 +181,17 @@ export default class CustomerController {
 
       console.log(value)
 
+      const {error: error2} = Joi.object({
+        email: Joi.string().email().required().label("Email"),
+      }).validate(value);
+      if(error2){
+        continue;
+      }
+
+      if( (value?.phone || '').length != 11 ){
+        continue;
+      }
+
       value.email = (value.email).toLowerCase();
 
     // check if user exist

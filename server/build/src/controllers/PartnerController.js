@@ -695,7 +695,7 @@ class PartnerController {
             for (let i = 0; i < drivers.length; i++) {
                 const driver = drivers[i];
                 // const fullName = `${driver.firstName} ${driver.lastName} ${driver.email} ${driver.companyName}`;
-                const fullName = `${driver.firstName} ${driver.lastName} ${driver.phone} ${driver.email} ${driver.companyName}`;
+                const fullName = `${driver.firstName} ${driver.lastName} ${driver?.companyName || ""} ${driver.email} ${driver.phone}`;
                 const email = driver.email;
                 const vehicles = await drivers[i].$get('vehicles');
                 console.log(vehicles.length, " vehicles");
