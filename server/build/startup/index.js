@@ -17,9 +17,9 @@ async function startup(io) {
     await database_1.default.init();
     const mongodb = await database_1.default.mongodb();
     // await database.sequelize.sync({ alter: true });
-    // console.log('reac0')
+    console.log('reac0');
     // await CommandLineRunner.run();
-    // console.log('reac')
+    console.log('reac');
     await rabbitmq_email_manager_1.QueueManager.init({
         queueClient: queue_1.default.client,
         queue: constants_1.QUEUE_EVENTS.name,

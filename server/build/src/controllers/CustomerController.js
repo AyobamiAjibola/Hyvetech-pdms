@@ -85,6 +85,7 @@ class CustomerController {
             creditRating: joi_1.default.string().optional().label("Credit Rating"),
             companyName: joi_1.default.any().allow().label("Company Name"),
             accountType: joi_1.default.string().optional().label("Account Type"),
+            isEditing: joi_1.default.any().optional().label("Is Editing")
         }).validate(req.body);
         if (error) {
             return Promise.reject(CustomAPIError_1.default.response(error.details[0].message, HttpStatus_1.default.NOT_FOUND.code));
@@ -97,7 +98,31 @@ class CustomerController {
             },
         });
         if (customer) {
-            return Promise.reject(CustomAPIError_1.default.response("Customer already exist", HttpStatus_1.default.NOT_FOUND.code));
+            if (value.isEditing) {
+                customer.phone = value.phone;
+                customer.firstName = value.firstName;
+                customer.lastName = value.lastName;
+                customer.creditRating = value.creditRating;
+                await customer.save();
+                await Contact_1.default.update({
+                    district: value.district,
+                    state: value.state,
+                    address: value.address,
+                }, {
+                    where: {
+                        // @ts-ignore
+                        customerId: customer.id
+                    }
+                });
+                const response = {
+                    code: HttpStatus_1.default.OK.code,
+                    message: HttpStatus_1.default.OK.value
+                };
+                return Promise.resolve(response);
+            }
+            else {
+                return Promise.reject(CustomAPIError_1.default.response("Customer already exist", HttpStatus_1.default.NOT_FOUND.code));
+            }
         }
         //find role by name
         const role = await dao_1.default.roleDAOService.findByAny({

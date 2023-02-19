@@ -95,6 +95,7 @@ export default class CustomerController {
             creditRating: Joi.string().optional().label("Credit Rating"),
             companyName: Joi.any().allow().label("Company Name"),
             accountType: Joi.string().optional().label("Account Type"),
+            isEditing: Joi.any().optional().label("Is Editing")
     }).validate(req.body);
     
     if(error){
@@ -111,7 +112,35 @@ export default class CustomerController {
     });
     
     if (customer) {
-      return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
+      if(value.isEditing){
+        
+        customer.phone = value.phone;
+        customer.firstName = value.firstName;
+        customer.lastName = value.lastName;
+        customer.creditRating = value.creditRating;
+        await customer.save()
+
+        await Contact.update({
+          district: value.district,
+          state: value.state,
+          address: value.address,
+        }, {
+          where: {
+            // @ts-ignore
+            customerId: customer.id
+          }
+        })
+
+        const response: HttpResponse<Customer> = {
+          code: HttpStatus.OK.code,
+          message: HttpStatus.OK.value
+        };
+    
+        return Promise.resolve(response);
+
+      }else{
+        return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
+      }
     }
 
 

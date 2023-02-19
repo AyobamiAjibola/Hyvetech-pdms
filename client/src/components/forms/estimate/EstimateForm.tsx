@@ -64,6 +64,26 @@ function EstimateForm(props: IProps) {
 
   const [vat, setVat] = useState<number>(0);
   const [createModal, setCreateModal] = useState(false)
+  const [editModal, setEditModal] = useState(false)
+
+  // @ts-ignore
+  const [inputStack, setInputStack] = useState<any>("")
+  // @ts-ignore
+  const [rawOption, setRawOption] = useState<any>("")
+
+  const [userInfo, setUserInfo] = useState({
+    accountType: 'individual',
+    firstName: "",
+    email: "",
+    lastName: "",
+    companyName: "",
+    phone: "",
+    creditRating: "N/A",
+    state: "Abuja (FCT)",
+    district: "",
+    address: ""
+  })
+
   const [activeId, setactiveId] = useState<number>(0);
   const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
@@ -139,6 +159,7 @@ function EstimateForm(props: IProps) {
   useEffect(() => {
     if (partnerReducer.getOwnersFilterDataStatus === 'completed') {
       setOptions(partnerReducer.ownersFilterData);
+      setRawOption(partnerReducer.ownersFilterData);
     }
   }, [partnerReducer.ownersFilterData, partnerReducer.getOwnersFilterDataStatus]);
 
@@ -344,7 +365,19 @@ function EstimateForm(props: IProps) {
         setactiveId(_customer.id)
         const vinList = (_customer.vehicles).map((_data: any) => (_data?.vin || ""));
         setvinOptions(vinList)
-        // alert(_customer.lastName)
+        
+        setUserInfo({
+          accountType: ((_customer?.companyName || "").length === 0) ? 'individual' : "corporate",
+          email: _customer.email,
+          firstName: _customer.firstName,
+          lastName: _customer.lastName,
+          companyName: _customer.companyName,
+          phone: _customer.phone,
+          creditRating: _customer.creditRating,
+          state: _customer.contacts[0]?.state || 'Abuja (FCT)',
+          district: _customer.contacts[0]?.district || 'Abuja (FCT)',
+          address: _customer.contacts[0]?.address || 'Abuja (FCT)',
+        });
       }
 
       
@@ -378,12 +411,19 @@ function EstimateForm(props: IProps) {
     setStates(newStates);
   }, []);
 
-  // console.log(values, "fieldsfields")
+  console.log(options, "optionsoptions")
 
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }}>
+
+          <Grid item xs={12}>
+            <Typography gutterBottom variant="subtitle1" component="h1">
+              Customer Information
+            </Typography>
+            <Divider orientation="horizontal" />
+          </Grid>
 
           {
             ((isTechAdmin) && (props?.isPopUp || false) && (
@@ -415,6 +455,9 @@ function EstimateForm(props: IProps) {
                         <TextField
                           {...props}
                           label="Search customer by First name, last name, car plate number."
+                          onChange={e => {
+                            setInputStack(e.target.value)
+                          }}
                           onKeyDown={e => {
                             if(e.key === 'Enter'){
                               if( (inputValue || '').length == 0 ){
@@ -448,7 +491,7 @@ function EstimateForm(props: IProps) {
                   </Grid>
 
                   <Grid item>
-                    <Typography onClick={()=> setCreateModal(true)} color={'lightskyblue'} style={{
+                    <Typography onClick={()=> setCreateModal(true)} color={'skyblue'} style={{
                       marginLeft: 20,
                       display: 'flex',
                       alignItems: 'center',
@@ -460,17 +503,11 @@ function EstimateForm(props: IProps) {
                   </Grid>
                 </Grid>
 
-                <Divider orientation="horizontal" />
+                {/* <Divider orientation="horizontal" /> */}
               </Grid>
             ))
           }
 
-          <Grid item xs={12}>
-            <Typography gutterBottom variant="subtitle1" component="h1">
-              Customer Information
-            </Typography>
-            <Divider orientation="horizontal" />
-          </Grid>
 {/* 
           <Grid item xs={4}>
             <TextInputField
@@ -573,12 +610,21 @@ function EstimateForm(props: IProps) {
             </Grid>
           </Grid> */}
 
-          <Grid style={{padding: 20}} xs={12} container>
+          {
+          ( ((userInfo.firstName).length != 0) && (<Grid style={{padding: 20}} xs={12} container>
             
             <Grid item xs={11}>
               <Grid xs={12} container>
-                <Typography>{ (values?.firstName || "First Name & ")} {(values?.lastName || "Last Name")}</Typography> <br />
+                <Typography>{ (values?.firstName || "First Name & ")} {' '} {(values?.lastName || "Last Name")}</Typography> <br />
               </Grid>
+
+              {
+                (((userInfo?.companyName || "").length != 0) && (
+                  <Grid xs={12} container>
+                    <Typography>{ (userInfo?.companyName || "First Name & ")}</Typography> <br />
+                  </Grid>
+                ))
+              }
               
               <Grid xs={12} container>
                 <Typography>{ values?.email || "Email"}</Typography> <br />
@@ -598,14 +644,22 @@ function EstimateForm(props: IProps) {
             </Grid>
 
             <Grid>
-              <Typography>
+              <Typography onClick={()=>{
+                setEditModal(true)
+              }}>
                 {
-                  (activeId != 0 && <a style={{color: 'lightskyblue', textDecoration: 'none'}} target={"_self"} href={"/customers/"+activeId}>Edit</a>  )
+                  (activeId != 0 && <span style={{color: 'skyblue', textDecoration: 'none', cursor: 'pointer'}} >Edit</span>  )
                 }
               </Typography> <br />
             </Grid>
 
-          </Grid>
+          </Grid>))
+          }
+
+          <Typography>
+            {'\n'}
+            <br />
+          </Typography>
 
           <VehicleInformationFields vinOptions={vinOptions} values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
           <Grid item xs={12}>
@@ -929,6 +983,10 @@ function EstimateForm(props: IProps) {
       {/* @ts-ignore */}
       <CreateCustomerModal callback={(e) => {
         console.log(e);
+
+        if(e.email === undefined){
+          return null;
+        }
         
         setFieldValue(fields.firstName.name, e.firstName);
         setFieldValue(fields.lastName.name, e.lastName);
@@ -937,8 +995,50 @@ function EstimateForm(props: IProps) {
         setFieldValue(fields.state.name, e.state || 'Abuja (FCT)');
         setFieldValue(fields.address.name, e.address || ' .');
         setFieldValue(fields.addressType.name, "Home");
-        // setactiveId(e.id)
+
+        setUserInfo({
+          accountType: (e.companyName === "individual") ? 'individual' : "corporate",
+          email: e.email,
+          firstName: e.firstName,
+          lastName: e.lastName,
+          companyName: e.companyName,
+          phone: e.phone,
+          creditRating: e.creditRating,
+          state: e?.state || 'Abuja (FCT)',
+          district: e?.district || 'Abuja (FCT)',
+          address: e?.address || 'Abuja (FCT)',
+        });
       }} visible={createModal} setVisible={setCreateModal} />
+
+      {/* @ts-ignore */}
+      <CreateCustomerModal callback={(e) => {
+        console.log(e);
+
+        if(e.email === undefined){
+          return null;
+        }
+        
+        setFieldValue(fields.firstName.name, e.firstName);
+        setFieldValue(fields.lastName.name, e.lastName);
+        setFieldValue(fields.phone.name, e.phone);
+        setFieldValue(fields.email.name, e.email);
+        setFieldValue(fields.state.name, e.state || 'Abuja (FCT)');
+        setFieldValue(fields.address.name, e.address || ' .');
+        setFieldValue(fields.addressType.name, "Home");
+
+        setUserInfo({
+          accountType: (e.companyName === "individual") ? 'individual' : "corporate",
+          email: e.email,
+          firstName: e.firstName,
+          lastName: e.lastName,
+          companyName: e.companyName,
+          phone: e.phone,
+          creditRating: e.creditRating,
+          state: e?.state || 'Abuja (FCT)',
+          district: e?.district || '',
+          address: e?.address || ' .',
+        });
+      }} data={userInfo} visible={editModal} setVisible={setEditModal} />
 
     </React.Fragment>
   );

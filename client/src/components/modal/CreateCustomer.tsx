@@ -15,6 +15,7 @@ import { clearAddCustomerStatus } from '../../store/reducers/customerReducer';
 
 type Props = {
     callback?: any;
+    data?: any;
     visible: boolean;
     setVisible?: any;
 }
@@ -44,19 +45,40 @@ export default function CreateCustomerModal(props: Props) {
     const [success, setSuccess] = useState<CustomHookMessage>();
 
     useEffect(()=>{
-        setForm({
-            accountType: 'individual',
-            firstName: "",
-            email: "",
-            lastName: "",
-            companyName: "",
-            phone: "",
-            creditRating: "N/A",
-            state: "Abuja (FCT)",
-            district: "",
-            address: ""
-        })
-    }, [props.visible])
+        if((props.data == null) || (props.data == undefined)){
+            setForm({
+                accountType: 'individual',
+                firstName: "",
+                email: "",
+                lastName: "",
+                companyName: "",
+                phone: "",
+                creditRating: "N/A",
+                state: "Abuja (FCT)",
+                district: "",
+                address: ""
+            })
+        }
+    }, [props.visible, props.data])
+
+    useEffect(()=>{
+        if((props.data != null) && (props.data != undefined)){
+            setTimeout(()=>{
+                setForm({
+                    accountType: props.data?.accountType || "individual",
+                    firstName: props.data?.firstName || "",
+                    email: props.data?.email || "",
+                    lastName: props.data?.lastName || "",
+                    companyName: props.data?.companyName || "",
+                    phone: props.data?.phone || "",
+                    creditRating: props.data?.creditRating || "N/A",
+                    state: props.data?.state || "Abuja (FCT)",
+                    district: props.data?.district || "",
+                    address: props.data?.address || ""
+                })
+            }, 500)
+        }
+    }, [props.data])
 
     const dispatch = useAppDispatch()
     const customerReducer = useAppSelector(state => state.customerReducer);
@@ -102,7 +124,7 @@ export default function CreateCustomerModal(props: Props) {
             dispatch(clearAddCustomerStatus())
             setIsLoading(false)
             setSuccess({
-                message: "Created Successfully"
+                message: ( props.data !== null ? "Updated" : "Created" )+" Successfully"
             })
 
             props.callback(__payload)
@@ -164,6 +186,8 @@ export default function CreateCustomerModal(props: Props) {
         const payload = form;
 
         payload.phone = _val.phone;
+        // @ts-ignore
+        payload.isEditing = (props.data !== null);
 
         // send payload
         __setpayload(payload)
@@ -208,8 +232,12 @@ export default function CreateCustomerModal(props: Props) {
                 }}>
                     <Grid container justifyContent="space-between" alignItems="center">
                         <Grid item xs={5}>
+                            {/* @ts-ignore */}
                             <h2>
-                                Create Customer
+                                {
+                                    (props.data == null) ? "Create " : "Edit "
+                                }
+                                 Customer
                             </h2>
                         </Grid>
                         
@@ -399,7 +427,10 @@ export default function CreateCustomerModal(props: Props) {
                                 color="success"
                                 // endIcon={<Send />}
                                 >
-                                Create
+                                    {
+                                        (props.data !== null) ? "Edit" : "Create"
+                                    }
+                                
                             </LoadingButton>
                             <Typography style={{ width: '50%' }}>
                                 Customer should sign in on AutoHyve App with email and phone number as password
