@@ -116,6 +116,7 @@ export default class CustomerController {
         
         customer.phone = value.phone;
         customer.firstName = value.firstName;
+        customer.companyName = value.companyName;
         customer.lastName = value.lastName;
         customer.creditRating = value.creditRating;
         await customer.save()
@@ -299,6 +300,7 @@ export default class CustomerController {
       lastName: Joi.string().optional().label("Last Name"),
       phone: Joi.string().optional().label("Phone"),
       creditRating: Joi.any().optional().label("Credit Rating"),
+      companyName: Joi.any().allow().label("Company Name"),
       address: Joi.string().optional().label("Address"),
       state: Joi.string().optional().label("State"),
       district: Joi.string().optional().label("District"),
@@ -317,6 +319,7 @@ export default class CustomerController {
 
     customer.phone = value.phone;
     customer.firstName = value.firstName;
+    customer.companyName = value.companyName;
     customer.lastName = value.lastName;
     customer.creditRating = value.creditRating;
     await customer.save()

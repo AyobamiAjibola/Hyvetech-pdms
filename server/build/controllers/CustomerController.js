@@ -101,6 +101,7 @@ class CustomerController {
             if (value.isEditing) {
                 customer.phone = value.phone;
                 customer.firstName = value.firstName;
+                customer.companyName = value.companyName;
                 customer.lastName = value.lastName;
                 customer.creditRating = value.creditRating;
                 await customer.save();
@@ -244,6 +245,7 @@ class CustomerController {
             lastName: joi_1.default.string().optional().label("Last Name"),
             phone: joi_1.default.string().optional().label("Phone"),
             creditRating: joi_1.default.any().optional().label("Credit Rating"),
+            companyName: joi_1.default.any().allow().label("Company Name"),
             address: joi_1.default.string().optional().label("Address"),
             state: joi_1.default.string().optional().label("State"),
             district: joi_1.default.string().optional().label("District"),
@@ -258,6 +260,7 @@ class CustomerController {
         }
         customer.phone = value.phone;
         customer.firstName = value.firstName;
+        customer.companyName = value.companyName;
         customer.lastName = value.lastName;
         customer.creditRating = value.creditRating;
         await customer.save();
