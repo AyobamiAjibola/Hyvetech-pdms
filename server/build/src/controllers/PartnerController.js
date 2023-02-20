@@ -703,6 +703,13 @@ class PartnerController {
                     id: driver.id,
                     fullName,
                     query: `${email} ${fullName}`,
+                    raw: {
+                        email: email,
+                        firstName: driver.firstName,
+                        lastName: driver.lastName,
+                        companyName: driver.companyName,
+                        phone: driver.phone,
+                    }
                 };
                 for (let j = 0; j < vehicles.length; j++) {
                     const vehicle = vehicles[j];

@@ -83,6 +83,13 @@ export interface IDriverFilterProps {
   id?: number;
   fullName?: string;
   query?: string;
+  raw?: {
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    companyName?: string;
+    phone?: string;
+  }
 }
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
@@ -916,6 +923,13 @@ export default class PartnerController {
           id: driver.id,
           fullName,
           query: `${email} ${fullName}`,
+          raw: {
+            email: email,
+            firstName: driver.firstName,
+            lastName: driver.lastName,
+            companyName: driver.companyName,
+            phone: driver.phone,
+          }
         };
 
         for (let j = 0; j < vehicles.length; j++) {

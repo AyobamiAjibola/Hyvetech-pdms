@@ -67,9 +67,9 @@ function EstimateForm(props: IProps) {
   const [editModal, setEditModal] = useState(false)
 
   // @ts-ignore
-  const [inputStack, setInputStack] = useState<any>("")
+  // const [inputStack, setInputStack] = useState<any>("")
   // @ts-ignore
-  const [rawOption, setRawOption] = useState<any>("")
+  const [rawOption, setRawOption] = useState<any>([])
 
   const [userInfo, setUserInfo] = useState({
     accountType: 'individual',
@@ -88,6 +88,7 @@ function EstimateForm(props: IProps) {
   const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
+  const [noOptionsText, setNoOptionsText]= useState<any>("Click Enter to Initialize Search");
 
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
   const [inputValue, setInputValue] = React.useState('');
@@ -158,7 +159,7 @@ function EstimateForm(props: IProps) {
 
   useEffect(() => {
     if (partnerReducer.getOwnersFilterDataStatus === 'completed') {
-      setOptions(partnerReducer.ownersFilterData);
+      // setOptions(partnerReducer.ownersFilterData);
       setRawOption(partnerReducer.ownersFilterData);
     }
   }, [partnerReducer.ownersFilterData, partnerReducer.getOwnersFilterDataStatus]);
@@ -411,7 +412,40 @@ function EstimateForm(props: IProps) {
     setStates(newStates);
   }, []);
 
-  console.log(options, "optionsoptions")
+  // console.log(options, "optionsoptions")
+
+  const filterData = (text: string)=>{
+    // 
+    // console.log(text)
+    setNoOptionsText("Click Enter to Initialize Search")
+
+    const _temp: any = [];
+    rawOption.map((_item : any) =>{
+
+      // filter logic
+
+      if( (_item?.raw?.email) == text){
+        // check if it's an exact match to email
+        _temp.push(_item);
+      }else if( (_item?.raw?.phone) == text){
+        // check if it's an exact match to phone
+        _temp.push(_item);
+      }else if( (_item?.raw?.companyName) == text){
+        // check if it's an exact match to phone
+        _temp.push(_item);
+      }else if( (_item?.raw?.firstName) == text){
+        // check if it's an exact match to phone
+        _temp.push(_item);
+      }else if( (_item?.raw?.lastName) == text){
+        // check if it's an exact match to phone
+        _temp.push(_item);
+      }
+    })
+
+    console.log(_temp)
+
+    setOptions(_temp);
+  }
 
   return (
     <React.Fragment>
@@ -450,19 +484,21 @@ function EstimateForm(props: IProps) {
                           reload();
                         }
                       }}
-                      noOptionsText="Click Enter to Initialize Search"
+                      noOptionsText={noOptionsText}
                       renderInput={props => (
                         <TextField
                           {...props}
                           label="Search customer by First name, last name, car plate number."
                           onChange={e => {
-                            setInputStack(e.target.value)
+                            // setInputStack(e.target.value)
+                            filterData(e.target.value)
                           }}
                           onKeyDown={e => {
                             if(e.key === 'Enter'){
                               if( (inputValue || '').length == 0 ){
                                 setShowDrop(false)
                               }else{
+                                setNoOptionsText("No result Found");
                                 setShowDrop(true)
                               }
                             }else{
