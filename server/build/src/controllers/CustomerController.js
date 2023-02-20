@@ -173,16 +173,40 @@ class CustomerController {
         }
         for (let i = 0; i < (newValue.accounts).length; i++) {
             const value = (newValue.accounts)[i];
-            console.log(value);
             const { error: error2 } = joi_1.default.object({
                 email: joi_1.default.string().email().required().label("Email"),
+                firstName: joi_1.default.string().optional().label("First Name"),
+                lastName: joi_1.default.string().optional().label("Last Name"),
+                phone: joi_1.default.string().optional().label("Phone"),
+                companyName: joi_1.default.any().allow().label("Company Name"),
+                state: joi_1.default.string().optional().label("State"),
+                district: joi_1.default.string().optional().label("District"),
             }).validate(value);
             if (error2) {
+                console.log(error2.message, value);
                 continue;
+            }
+            // validate phone
+            const firstChar = (value?.phone || "")[0];
+            if (firstChar != "0") {
+                // logic to function on phone
+                if (firstChar == '+') {
+                    // 
+                    value.phone = (value.phone).replaceAll("+234", "0");
+                }
+                else if (firstChar == '2') {
+                    // 
+                    value.phone = (value.phone).replaceAll("234", "0");
+                }
+                else {
+                    // 
+                    value.phone = '0' + (value.phone);
+                }
             }
             if ((value?.phone || '').length != 11) {
                 continue;
             }
+            console.log('reac-code-2');
             value.email = (value.email).toLowerCase();
             // check if user exist
             const customer = await dao_1.default.customerDAOService.findByAny({
@@ -194,6 +218,7 @@ class CustomerController {
                 continue;
                 // return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
             }
+            console.log('reac-code-3');
             //find role by name
             const role = await dao_1.default.roleDAOService.findByAny({
                 where: { slug: settings_1.default.roles[1] },
@@ -201,6 +226,7 @@ class CustomerController {
             if (!role) {
                 continue;
             }
+            console.log('reac-code-4');
             // return Promise.reject(
             //   CustomAPIError.response(`Role ${settings.roles[1]} does not exist`, HttpStatus.NOT_FOUND.code),
             // );

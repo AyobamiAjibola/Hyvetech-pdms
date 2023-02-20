@@ -16,7 +16,7 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "outDir": "./build",
+    "outDir": "./build/src",
     "rootDir": "./src",
     "strict": true,
     "skipLibCheck": true,

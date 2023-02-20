@@ -428,7 +428,7 @@ export default function CreateCustomerModal(props: Props) {
                                 // endIcon={<Send />}
                                 >
                                     {
-                                        (props.data !== null) ? "Edit" : "Create"
+                                        (props.data != null) ? "Edit" : "Create"
                                     }
                                 
                             </LoadingButton>
