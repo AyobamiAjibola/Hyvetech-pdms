@@ -142,9 +142,12 @@ function InvoiceForm(props: IProps) {
   }, [partTotal, setFieldValue]);
 
   useEffect(() => {
-    const _grandTotal = vat + vatPart + partTotal + labourTotal;
+    // const _grandTotal = vat + vatPart + partTotal + labourTotal;
+    const _grandTotal = vat + partTotal + labourTotal;
     const _depositAmount = parseInt(values.depositAmount);
     const _dueBalance = _grandTotal - _depositAmount;
+
+    console.log(_grandTotal, "_grandTotal_grandTotal")
 
     setGrandTotal(_grandTotal);
     setDueBalance(_dueBalance);
