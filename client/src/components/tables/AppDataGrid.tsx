@@ -23,8 +23,8 @@ function AppDataGrid(props: IProps) {
         loading={props.loading}
         pagination
         autoHeight
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pageSize={50}
+        rowsPerPageOptions={[50]}
         components={{
           Pagination: CustomSquarePagination,
           LoadingOverlay: CustomLoadingOverlay,

@@ -121,7 +121,8 @@ export default function VehicleOwner() {
     }
   };
 
-  const filterData = (text: string)=>{
+  const filterData = (_text: string)=>{
+    const text = _text.toLowerCase();
     // 
     // console.log(text)
     setNoOptionsText("Click Enter to Initialize Search")
@@ -131,19 +132,19 @@ export default function VehicleOwner() {
 
       // filter logic
 
-      if( (_item?.raw?.email) == text){
+      if( (_item?.raw?.email || "").toLowerCase() == text){
         // check if it's an exact match to email
         _temp.push(_item);
-      }else if( (_item?.raw?.phone) == text){
+      }else if( (_item?.raw?.phone || "").toLowerCase() == text){
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.companyName) == text){
+      }else if( (_item?.raw?.companyName || "").toLowerCase() == text){
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.firstName) == text){
+      }else if( (_item?.raw?.firstName || "").toLowerCase() == text){
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.lastName) == text){
+      }else if( (_item?.raw?.lastName || "").toLowerCase() == text){
         // check if it's an exact match to phone
         _temp.push(_item);
       }
