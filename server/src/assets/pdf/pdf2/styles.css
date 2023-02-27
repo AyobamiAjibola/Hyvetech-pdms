@@ -1,0 +1,335 @@
+* {
+    margin: 0;
+    padding: 0,
+}
+
+body {
+    box-sizing: border-box;
+    border-color: #ffff;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.page {
+    display: block;
+    margin: 0 auto;
+    position: relative;
+
+
+}
+
+.page[size="A4"] {
+    width: 21cm;
+    height: 34.7cm;
+    overflow: hidden;
+
+}
+
+.top-section {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 30px;
+    /* background-color: red; */
+}
+
+.image {
+    width: 120px;
+    height: 110px;
+    display: inline-block;
+    margin-left: 45px;
+}
+
+.header-section {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.estimate-name {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    color: #263238;
+}
+
+.estimate-num,
+.estimate-date {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    color: #263238;
+
+}
+
+.addres-head {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    color: #263238;
+    text-align: right;
+}
+
+.addres-location {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    color: #263238;
+    text-align: right;
+    margin-bottom: 15px;
+    margin-top: 5px;
+}
+
+.addres-phone,
+.addres-website {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    color: #263238;
+    text-align: right;
+}
+
+.lineImage {
+    display: block;
+    margin-top: 20px;
+}
+
+.second-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.left-side span {
+    display: inline-block;
+}
+
+.info-container {
+    display: flex;
+}
+
+.bill-to {
+    font-weight: 700;
+    font-size: 14px;
+    color: #263238;
+    margin-bottom: 7px;
+}
+
+.bill-to-address {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    color: #263238;
+    text-align: left;
+    width: 300px;
+    line-height: 20px;
+}
+
+.bill-to-name {
+    font-weight: 700;
+    font-size: 12px;
+    color: #263238;
+    margin-bottom: 7px;
+    margin-top: 10px;
+}
+
+.vehicle-title {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    color: #263238;
+    width: 70px;
+    margin-bottom: 15px;
+}
+
+.info {
+    font-weight: 400;
+    font-size: 12px;
+    color: #263238;
+}
+
+.vehicle-inforTitle {
+    font-weight: 700;
+    font-size: 14px;
+    color: #263238;
+    display: inline-block;
+    margin-bottom: 20px;
+
+}
+
+.item-container {
+    margin-top: 20px;
+}
+
+.item-header {
+    display: flex;
+    background: #E8E8E8;
+    padding: 20px 10px;
+    justify-content: space-between;
+}
+
+.item-header-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 10px;
+    border-bottom: 1px solid #000000;
+}
+
+.item-header-item-total {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.count-num {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.item-descrip {
+    /* margin-right: 60px; */
+    font-weight: 600;
+    font-size: 12px;
+    margin-left: -80px;
+}
+
+.item-warranty {
+    /* margin-right: 30px; */
+    font-weight: 600;
+    font-size: 12px;
+
+    width: 100px;
+    text-align: right;
+}
+
+.item-cost {
+    /* margin-right: 60px; */
+    font-weight: 600;
+    font-size: 12px;
+    position: relative;
+    left: 20px;
+    text-align: right;
+}
+
+.item-amount {
+    font-weight: 600;
+    font-size: 12px;
+    /* margin-left: 100px; */
+}
+
+.count-num-item,
+.item-descrip-item,
+.item-warranty-item {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.item-descrip-item {
+    margin-left: -35px;
+    width: 200px;
+}
+
+.item-warranty-item {
+    /* background-color: red; */
+    /* width: 110px; */
+    text-align: right;
+    margin-right: 40px;
+}
+
+.item-cost-item-sub {
+    font-size: 12px;
+    font-weight: 500;
+
+    width: 380px;
+    text-align: right;
+    /* margin-bottom: 20px; */
+    padding: 10px 10px;
+    /* flex: 1; */
+}
+
+.item-cost-item {
+    font-size: 12px;
+}
+
+.item-amount-item {
+    font-size: 13px;
+}
+
+.item-amount-item-amount {
+    font-size: 12px;
+    font-weight: 400;
+    width: 120px;
+    text-align: right;
+    padding: 10px 10px;
+}
+
+.first {
+    margin-top: 15px;
+}
+
+.total {
+    font-weight: 700;
+}
+
+.bold-2 {
+    font-weight: 700;
+}
+
+.total-flex {
+    display: flex;
+    justify-content: space-between;
+    background-color: #E8E8E8;
+    width: 330px;
+    margin: 15px 0;
+
+    /* padding-left: 80px; */
+}
+
+.item-cost-item-sub-total {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 10px;
+    padding-left: 125px;
+    display: inline-block;
+    /* margin-right: 50px; */
+}
+
+.terms-header {
+    font-size: 12px;
+    font-style: italic;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.payment {
+    font-style: normal;
+    font-weight: 700;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.how-top-pay-text {
+    display: flex;
+    margin-bottom: 25px;
+}
+
+.how-top-pay-text span {
+    font-size: 15px;
+    padding-right: 20px;
+    font-weight: 700;
+}
+
+.how-top-pay-text p {
+    font-size: 13px;
+}
+
+.scan-img {
+    width: 100px;
+    height: 130.24px;
+}
+
+.parerntWrapper {
+    display: flex;
+    justify-content: space-between;
+}

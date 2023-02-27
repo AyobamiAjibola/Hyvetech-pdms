@@ -104,5 +104,11 @@ const partnerEndpoints = [
         path: '/partners-toggle/:partnerId',
         handler: partnerHandler_1.togglePartnerHandler,
     },
+    {
+        name: 'pdf downloader',
+        method: 'post',
+        path: '/request-pdf',
+        handler: partnerHandler_1.requestPdfHandler,
+    },
 ];
 exports.default = partnerEndpoints;

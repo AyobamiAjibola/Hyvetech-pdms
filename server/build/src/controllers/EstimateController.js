@@ -55,6 +55,7 @@ const sequelize_1 = require("sequelize");
 const rabbitmq_email_manager_1 = __importDefault(require("rabbitmq-email-manager"));
 const User_1 = __importDefault(require("../models/User"));
 const new_estimate_1 = __importDefault(require("../resources/templates/email/new_estimate"));
+const sendMail_1 = require("../utils/sendMail");
 class EstimateController {
     async create(req) {
         const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
@@ -271,7 +272,7 @@ class EstimateController {
     }
     async doCreateEstimate(req) {
         const { error, value } = joi_1.default.object(Estimate_1.$createEstimateSchema).validate(req.body);
-        console.log(error);
+        // console.log(error)
         if (error)
             return Promise.reject(CustomAPIError_1.default.response(error.details[0].message, HttpStatus_1.default.BAD_REQUEST.code));
         if (!value)
@@ -440,7 +441,7 @@ class EstimateController {
         await partner.$add('estimates', [estimate]);
         await vehicle.$add('estimates', [estimate]);
         await customer.$add('estimates', [estimate]);
-        console.log('reach0');
+        // console.log('reach0')
         // send mail
         let user = customer;
         const mail = (0, new_estimate_1.default)({
@@ -450,24 +451,37 @@ class EstimateController {
             estimate,
             vehichleData: `${value.modelYear} ${value.make} ${value.model} `
         });
-        console.log('reach1');
+        // console.log('reach1')
         //todo: Send email with credentials
-        await rabbitmq_email_manager_1.default.publish({
-            queue: constants_1.QUEUE_EVENTS.name,
-            data: {
-                to: user.email,
-                replyTo: partner.email,
-                // @ts-ignore
-                'reply-to': partner.email,
-                from: {
-                    name: "AutoHyve",
-                    address: process.env.SMTP_EMAIL_FROM2,
-                },
-                subject: `${partner.name} has sent you an estimate on AutoHyve`,
-                html: mail,
-                bcc: [process.env.SMTP_BCC],
+        await (0, sendMail_1.sendMail)({
+            to: user.email,
+            replyTo: partner.email,
+            // @ts-ignore
+            'reply-to': partner.email,
+            from: {
+                name: "AutoHyve",
+                address: process.env.SMTP_EMAIL_FROM2,
             },
+            subject: `${partner.name} has sent you an estimate on AutoHyve`,
+            html: mail,
+            bcc: [process.env.SMTP_BCC],
         });
+        // await QueueManager.publish({
+        //   queue: QUEUE_EVENTS.name,
+        //   data: {
+        //     to: user.email,
+        //     replyTo: partner.email,
+        //     // @ts-ignore
+        //     'reply-to': partner.email,
+        //     from: {
+        //       name: "AutoHyve",
+        //       address: <string>process.env.SMTP_EMAIL_FROM2,
+        //     },
+        //     subject: `${partner.name} has sent you an estimate on AutoHyve`,
+        //     html: mail,
+        //     bcc: [<string>process.env.SMTP_BCC],
+        //   },
+        // });
         // console.log(estimate, customer, vehicle, partner, 'reach2')
         return { estimate, customer, vehicle, partner };
     }

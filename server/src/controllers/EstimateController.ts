@@ -38,6 +38,7 @@ import QueueManager from 'rabbitmq-email-manager';
 import create_customer_from_estimate from '../resources/templates/email/create_customer_from_estimate';
 import User from '../models/User';
 import new_estimate_template from '../resources/templates/email/new_estimate';
+import { sendMail } from '../utils/sendMail';
 
 export default class EstimateController {
   @TryCatch
@@ -321,7 +322,7 @@ export default class EstimateController {
   private async doCreateEstimate(req: Request) {
     const { error, value } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
 
-    console.log(error)
+    // console.log(error)
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -528,7 +529,7 @@ export default class EstimateController {
 
     await customer.$add('estimates', [estimate]);
 
-    console.log('reach0')
+    // console.log('reach0')
     // send mail
     let user: any = customer;
     const mail = new_estimate_template({
@@ -539,25 +540,38 @@ export default class EstimateController {
       vehichleData: `${value.modelYear} ${value.make} ${value.model} `
     })
 
-    console.log('reach1')
+    // console.log('reach1')
 
     //todo: Send email with credentials
-    await QueueManager.publish({
-      queue: QUEUE_EVENTS.name,
-      data: {
-        to: user.email,
-        replyTo: partner.email,
-        // @ts-ignore
-        'reply-to': partner.email,
-        from: {
-          name: "AutoHyve",
-          address: <string>process.env.SMTP_EMAIL_FROM2,
-        },
-        subject: `${partner.name} has sent you an estimate on AutoHyve`,
-        html: mail,
-        bcc: [<string>process.env.SMTP_BCC],
+    await sendMail({
+      to: user.email,
+      replyTo: partner.email,
+      // @ts-ignore
+      'reply-to': partner.email,
+      from: {
+        name: "AutoHyve",
+        address: <string>process.env.SMTP_EMAIL_FROM2,
       },
-    });
+      subject: `${partner.name} has sent you an estimate on AutoHyve`,
+      html: mail,
+      bcc: [<string>process.env.SMTP_BCC],
+    })
+    // await QueueManager.publish({
+    //   queue: QUEUE_EVENTS.name,
+    //   data: {
+    //     to: user.email,
+    //     replyTo: partner.email,
+    //     // @ts-ignore
+    //     'reply-to': partner.email,
+    //     from: {
+    //       name: "AutoHyve",
+    //       address: <string>process.env.SMTP_EMAIL_FROM2,
+    //     },
+    //     subject: `${partner.name} has sent you an estimate on AutoHyve`,
+    //     html: mail,
+    //     bcc: [<string>process.env.SMTP_BCC],
+    //   },
+    // });
 
     // console.log(estimate, customer, vehicle, partner, 'reach2')
 

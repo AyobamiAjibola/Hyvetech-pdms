@@ -13,6 +13,7 @@ import {
   getPaymentPlansHandler,
   getPlansHandler,
   partnerJobsHandler,
+  requestPdfHandler,
   togglePartnerHandler,
 } from '../../routes/partnerHandler';
 import { appCommonTypes } from '../../@types/app-common';
@@ -122,6 +123,12 @@ const partnerEndpoints: RouteEndpoints = [
     method: 'post',
     path: '/partners-toggle/:partnerId',
     handler: togglePartnerHandler,
+  },
+  {
+    name: 'pdf downloader',
+    method: 'post',
+    path: '/request-pdf',
+    handler: requestPdfHandler,
   },
 ];
 

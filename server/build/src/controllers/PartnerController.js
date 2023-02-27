@@ -49,6 +49,7 @@ const rabbitmq_email_manager_1 = require("rabbitmq-email-manager");
 const formidable_1 = __importDefault(require("formidable"));
 const garage_partner_welcome_email_1 = __importDefault(require("../resources/templates/email/garage_partner_welcome_email"));
 const ride_share_partner_welcome_email_1 = __importDefault(require("../resources/templates/email/ride_share_partner_welcome_email"));
+const pdf_1 = require("../utils/pdf");
 const form = (0, formidable_1.default)({ uploadDir: constants_1.UPLOAD_BASE_PATH });
 class PartnerController {
     constructor(passwordEncoder) {
@@ -773,6 +774,31 @@ class PartnerController {
             return Promise.reject({
                 code: HttpStatus_1.default.BAD_REQUEST.code,
                 message: HttpStatus_1.default.BAD_REQUEST.value,
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+    async requestPdf(req) {
+        // ..
+        try {
+            const { type, id } = req.body;
+            let html = '';
+            switch (type) {
+                case "ESTIMATE":
+                    html = await (0, pdf_1.generateEstimateHtml)(id);
+                    break;
+                case "INVOICE":
+                    break;
+                default:
+                    break;
+            }
+            const rName = await (0, pdf_1.generatePdf)(html);
+            return Promise.resolve({
+                code: HttpStatus_1.default.CREATED.code,
+                message: HttpStatus_1.default.CREATED.value,
+                name: rName
             });
         }
         catch (e) {

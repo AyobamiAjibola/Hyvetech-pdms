@@ -27,6 +27,7 @@ import garage_partner_welcome_email from '../resources/templates/email/garage_pa
 import ride_share_partner_welcome_email from '../resources/templates/email/ride_share_partner_welcome_email';
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
+import { generateEstimateHtml, generatePdf } from '../utils/pdf';
 
 interface IPaymentPlanModelDescription {
   value: string;
@@ -1016,6 +1017,38 @@ export default class PartnerController {
         message: HttpStatus.BAD_REQUEST.value,
       } as HttpResponse<any>);
     } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public async requestPdf(req: Request) {
+    // ..
+    try{
+      const {type, id} = req.body;
+
+      let html: string | null = ''; 
+
+      switch (type) {
+        case "ESTIMATE":
+          html = await generateEstimateHtml(id)
+          break;
+
+        case "INVOICE":
+        
+          break;
+      
+        default:
+          break;
+      }
+
+      const rName = await generatePdf(html);
+
+      return Promise.resolve({
+        code: HttpStatus.CREATED.code,
+        message: HttpStatus.CREATED.value,
+        name: rName
+      } as HttpResponse<any>);
+    }catch(e){
       return Promise.reject(e);
     }
   }
