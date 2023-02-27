@@ -68,8 +68,10 @@ function EstimatePage() {
       console.log(e)
     }
 
-    setDownloading(false)
-    window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`)
+    setTimeout(()=>{
+      setDownloading(false)
+      window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`)
+    }, 3000)
   }
 
   if (!estimate)
