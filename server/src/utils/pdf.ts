@@ -68,7 +68,11 @@ export const generatePdf = async (html: string|null)=>{
         //   path.join(__dirname, "../assets/pdf/pdf"),
         //   path.join(__dirname, "assets", "custom-margin.css"),
         ],
-        renderDelay: 4000
+        renderDelay: 4000,
+        launchOptions: {
+          args: ['--no-sandbox'],
+          headless: true,
+        }
       })
      
       await html5ToPDF.start()
