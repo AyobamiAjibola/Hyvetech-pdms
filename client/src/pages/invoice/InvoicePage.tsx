@@ -21,6 +21,7 @@ function InvoicePage() {
   const [owner, setOwner] = useState<string>('');
   const [parts, setParts] = useState<IPart[]>([]);
   const [labours, setLabours] = useState<ILabour[]>([]);
+  const [_driver, setDriver] = useState<any>(null);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   const location = useLocation();
 
@@ -55,6 +56,7 @@ function InvoicePage() {
       }
 
       setParts(_parts);
+      setDriver(driver || customer)
       setLabours(_labours);
       setOwner(capitalize.words(_owner));
       setBillingInformation(customer.billingInformation);
@@ -123,6 +125,12 @@ function InvoicePage() {
                 </Typography>
               ) : (
                 <Typography variant="body1" gutterBottom>
+                  <p>
+                    {_driver?.email || ""}
+                  </p>
+                  <p>
+                    {_driver?.phone || ""}
+                  </p>
                   {estimate.address}
                 </Typography>
               )}

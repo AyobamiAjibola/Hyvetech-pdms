@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { IBillingInformation, IEstimate } from '@app-models';
 import { useLocation } from 'react-router-dom';
-import { Alert, Avatar, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Avatar, Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
 import { formatNumberToIntl } from '../../utils/generic';
 import settings from '../../config/settings';
 import { ArrowBackIosNew } from '@mui/icons-material';
+import axiosClient from '../../config/axiosClient';
 
+const API_ROOT = settings.api.rest;
 interface ILocationState {
   estimate?: IEstimate;
 }
@@ -18,8 +20,11 @@ function EstimatePage() {
   const [owner, setOwner] = useState<string>('');
   const [parts, setParts] = useState<IPart[]>([]);
   const [labours, setLabours] = useState<ILabour[]>([]);
+  const [_driver, setDriver] = useState<any>(null);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   const location = useLocation();
+  // @ts-ignore
+  const [downloading, setDownloading] = useState<any>(false);
 
   useEffect(() => {
     if (location.state) {
@@ -37,12 +42,32 @@ function EstimatePage() {
       const _labours = estimate.labours as unknown as ILabour[];
 
       const _owner = driver ? `${driver.firstName} ${driver.lastName}` : `${customer.firstName} ${customer.lastName}`;
+      setDriver(driver || customer)
       setOwner(capitalize.words(_owner));
       setBillingInformation(customer.billingInformation);
       setParts(_parts);
       setLabours(_labours);
     }
   }, [estimate]);
+
+  const generateDownload = async ()=>{
+    // @ts-ignore
+    const payload = {
+      type: "ESTIMATE",
+      id: estimate?.id || -1
+    }
+    setDownloading(true)
+
+    try{
+      const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
+      console.log(response.data);
+      window.open(`${settings.api.baseURL}/uploads/pdf/${response.data.name}`)
+    }catch(e){
+      console.log(e)
+    }
+
+    setDownloading(false)
+  }
 
   if (!estimate)
     return (
@@ -70,6 +95,12 @@ function EstimatePage() {
           #{estimate.code}
         </Typography>
 
+        <div style={{ display: 'flex', justifyContent: 'flex-end'  }}>
+          <Button variant="outlined" color="success" size="small" onClick={()=> generateDownload()}>
+              {downloading ? "Downloading..." : "Download"}
+          </Button>
+        </div>
+
         <Grid container my={3} justifyContent="space-between" alignItems="center">
           <Grid item xs>
             <Typography variant="h6" gutterBottom>
@@ -90,6 +121,12 @@ function EstimatePage() {
                 </Typography>
               ) : (
                 <Typography variant="body1" gutterBottom>
+                  <p>
+                    {_driver?.email || ""}
+                  </p>
+                  <p>
+                    {_driver?.phone || ""}
+                  </p>
                   {estimate.address}
                 </Typography>
               )}
