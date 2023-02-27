@@ -58,11 +58,11 @@ export const generatePdf = async (html: string|null, rName?: string)=>{
 
     rName = rName || (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
     
-    await fs.mkdir(path.join(__dirname, "../../uploads/", "pdf"), { recursive: true }, (e)=>{console.log(e)});
+    await fs.mkdir(path.join(__dirname, "../../../uploads/", "pdf"), { recursive: true }, (e)=>{console.log(e)});
 
     const html5ToPDF = new HTML5ToPDF({
         inputBody: html,
-        outputPath: path.join(__dirname, "../../uploads/", "pdf", rName),
+        outputPath: path.join(__dirname, "../../../uploads/", "pdf", rName),
         // templatePath: path.join(__dirname, "templates", "basic"),
         include: [
         //   path.join(__dirname, "../assets/pdf/pdf"),
