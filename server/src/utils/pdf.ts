@@ -11,6 +11,10 @@ import { estimatePdfTemplate } from './estimatePdf';
 // import pdf from 'pdf-node'
 import path from 'path'
 import fs from 'fs'
+import Invoice from '../models/Invoice';
+import { invoicePdfTemplate } from './invoicePdf';
+import DraftInvoice from '../models/DraftInvoice';
+import Transaction from '../models/Transaction';
 
 const pdf = require("pdf-creator-node");
 const HTML5ToPDF = require("html5-to-pdf")
@@ -35,6 +39,39 @@ export const generateEstimateHtml = async (id: any)=>{
     estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
 
     return estimatePdfTemplate(estimate)
+
+}
+
+export const generateInvoiceHtml = async (id: any, partnerId: any)=>{
+
+    const invoice: Invoice | null = await dataSources.invoiceDAOService.findById(id, {
+        include: [
+          {
+            model: Estimate,
+            where: { partnerId: partnerId },
+            include: [
+              { model: Customer, include: [BillingInformation, Contact], paranoid: false },
+              Vehicle,
+              {
+                model: Partner,
+                include: [Contact],
+              },
+            ],
+          },
+          Transaction,
+          DraftInvoice,
+        ]
+    });
+
+    if(!invoice) return null;
+
+    const parts = invoice.estimate.parts;
+    const labours = invoice.estimate.labours;
+
+    invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+    invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+
+    return invoicePdfTemplate(invoice)
 
 }
 
@@ -72,6 +109,9 @@ export const generatePdf = async (html: string|null, rName?: string)=>{
         launchOptions: {
           args: ['--no-sandbox'],
           headless: true,
+        },
+        options: {
+          printBackground: true
         }
       })
      

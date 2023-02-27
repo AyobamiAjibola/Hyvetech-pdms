@@ -63,7 +63,7 @@ function EstimatePage() {
     try{
       const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
       console.log(response.data);
-      window.open(`${settings.api.baseURL}/uploads/pdf/${response.data.name}`)
+      // window.open(`${settings.api.baseURL}/uploads/pdf/${response.data.name}`)
     }catch(e){
       console.log(e)
     }
@@ -102,7 +102,7 @@ function EstimatePage() {
 
         <div style={{ display: 'flex', justifyContent: 'flex-end'  }}>
           <Button variant="outlined" color="success" size="small" onClick={()=> generateDownload()}>
-              {downloading ? "Downloading..." : "Download"}
+              {downloading ? "Downloading..." : "Download Pdf"}
           </Button>
         </div>
 

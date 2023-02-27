@@ -2,6 +2,7 @@ import Estimate from "../models/Estimate";
 import path from 'path'
 import "dotenv/config"
 import fs from 'fs'
+import Invoice from "../models/Invoice";
 
 export function formatNumberToIntl(amount: number) {
     return new Intl.NumberFormat('en-GB', {
@@ -16,7 +17,7 @@ function base64_encode(file: string) {
     return new Buffer(bitmap).toString('base64');
 }
 
-export const estimatePdfTemplate = (estimate: Estimate) => {
+export const invoicePdfTemplate = ({estimate}: Invoice) => {
     // console.log((estimate.customer), "estimate")
     const logo = `${estimate.partner.logo}`;
     const partner = estimate.partner;

@@ -1,38 +1,39 @@
-import Estimate from "../models/Estimate";
-import path from 'path'
-import "dotenv/config"
-import fs from 'fs'
-
-export function formatNumberToIntl(amount: number) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.invoicePdfTemplate = exports.formatNumberToIntl = void 0;
+const path_1 = __importDefault(require("path"));
+require("dotenv/config");
+const fs_1 = __importDefault(require("fs"));
+function formatNumberToIntl(amount) {
     return new Intl.NumberFormat('en-GB', {
-      minimumFractionDigits: 2,
+        minimumFractionDigits: 2,
     }).format(amount);
-  }
-
-function base64_encode(file: string) {
+}
+exports.formatNumberToIntl = formatNumberToIntl;
+function base64_encode(file) {
     // read binary data
-    const bitmap = fs.readFileSync(file);
+    const bitmap = fs_1.default.readFileSync(file);
     // convert binary data to base64 encoded string
     return new Buffer(bitmap).toString('base64');
 }
-
-export const estimatePdfTemplate = (estimate: Estimate) => {
+const invoicePdfTemplate = ({ estimate }) => {
     // console.log((estimate.customer), "estimate")
     const logo = `${estimate.partner.logo}`;
     const partner = estimate.partner;
     const customer = estimate.customer;
     const vehicle = estimate.vehicle;
     // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
-
     // convert image to base 64
     let mainUrl = '';
-    
-    try{
-        mainUrl = 'data:image/png;base64,'+base64_encode(path.join(__dirname, "../../../", partner.logo));
-    }catch(e){
-        console.log(e)
+    try {
+        mainUrl = 'data:image/png;base64,' + base64_encode(path_1.default.join(__dirname, "../../../", partner.logo));
     }
-
+    catch (e) {
+        console.log(e);
+    }
     // console.log(mainUrl, "mainUrl");
     // @ts-ignore
     return `
@@ -465,11 +466,9 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                     <span class="item-amount">Amount</span>
                 </div>
                 
-                ${
-                    estimate.parts.map((part: any, idx1)=> {
-                        const amount = formatNumberToIntl(parseInt(part?.amount || 0));
-                        return (
-                            `
+                ${estimate.parts.map((part, idx1) => {
+        const amount = formatNumberToIntl(parseInt(part?.amount || 0));
+        return (`
                             <div class="item-header-item">
                     <span class="count-num-item">${idx1 + 1}</span>
                     <span class="item-descrip-item">${part.name}</span>
@@ -477,16 +476,12 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                     <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part.quantity.quantity} ${part.quantity.unit}</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
-                            `
-                        )
-                    })
-                }
+                            `);
+    })}
                 
-                ${
-                    estimate.labours.map((labour: any, idx1)=> {
-                        const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
-                        return (
-                            `
+                ${estimate.labours.map((labour, idx1) => {
+        const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
+        return (`
                             <div class="item-header-item">
                     <span class="count-num-item">${(estimate.parts).length + 1 + idx1}</span>
                     <span class="item-descrip-item">${labour.title}</span>
@@ -494,10 +489,8 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                     <span class="item-cost-item">₦ ${amount} x 1 pcs</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
-                            `
-                        )
-                    })
-                }
+                            `);
+    })}
                 
                 <div class="item-header-item-total first">
                     <span class="count-num-item"></span>
@@ -519,9 +512,8 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">VAT (7.5%):</span>
                     <span class="item-amount-item-amount">₦ ${
-                        // @ts-ignore
-                        formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
-                    }</span>
+    // @ts-ignore
+    formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -591,4 +583,5 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
     
     </html>
     `;
-}
+};
+exports.invoicePdfTemplate = invoicePdfTemplate;

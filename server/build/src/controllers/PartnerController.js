@@ -785,11 +785,14 @@ class PartnerController {
         try {
             const { type, id } = req.body;
             let html = '';
+            let partner = null;
             switch (type) {
                 case "ESTIMATE":
                     html = await (0, pdf_1.generateEstimateHtml)(id);
                     break;
                 case "INVOICE":
+                    partner = req.user.partner;
+                    html = await (0, pdf_1.generateInvoiceHtml)(id, partner.id);
                     break;
                 default:
                     break;

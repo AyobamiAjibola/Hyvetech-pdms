@@ -3,10 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.estimatePdfTemplate = void 0;
+exports.estimatePdfTemplate = exports.formatNumberToIntl = void 0;
 const path_1 = __importDefault(require("path"));
 require("dotenv/config");
 const fs_1 = __importDefault(require("fs"));
+function formatNumberToIntl(amount) {
+    return new Intl.NumberFormat('en-GB', {
+        minimumFractionDigits: 2,
+    }).format(amount);
+}
+exports.formatNumberToIntl = formatNumberToIntl;
 function base64_encode(file) {
     // read binary data
     const bitmap = fs_1.default.readFileSync(file);
@@ -85,6 +91,7 @@ const estimatePdfTemplate = (estimate) => {
         height: 110px;
         display: inline-block;
         margin-left: 45px;
+        resize-mode: contain;
     }
     
     .header-section {
@@ -171,7 +178,6 @@ const estimatePdfTemplate = (estimate) => {
         color: #263238;
         text-align: left;
         width: 300px;
-        line-height: 20px;
     }
     
     .bill-to-name {
@@ -188,7 +194,7 @@ const estimatePdfTemplate = (estimate) => {
         font-size: 12px;
         color: #263238;
         width: 70px;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
     }
     
     .info {
@@ -221,7 +227,7 @@ const estimatePdfTemplate = (estimate) => {
         display: flex;
         justify-content: space-between;
         padding: 20px 10px;
-        border-bottom: 1px solid #000000;
+        border-bottom: 0.71px solid rgba(0, 0, 0, 0.51);
     }
     
     .item-header-item-total {
@@ -309,7 +315,7 @@ const estimatePdfTemplate = (estimate) => {
         font-weight: 400;
         width: 120px;
         text-align: right;
-        padding: 10px 10px;
+        padding: 5px 10px;
     }
     
     .first {
@@ -327,7 +333,7 @@ const estimatePdfTemplate = (estimate) => {
     .total-flex {
         display: flex;
         justify-content: space-between;
-        background-color: #E8E8E8;
+        background: #E8E8E8;
         width: 330px;
         margin: 15px 0;
     
@@ -360,17 +366,18 @@ const estimatePdfTemplate = (estimate) => {
     
     .how-top-pay-text {
         display: flex;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
+        align-items: center;
     }
     
     .how-top-pay-text span {
-        font-size: 15px;
+        font-size: 12.3px;
         padding-right: 20px;
         font-weight: 700;
     }
     
     .how-top-pay-text p {
-        font-size: 13px;
+        font-size: 12px;
     }
     
     .scan-img {
@@ -381,6 +388,7 @@ const estimatePdfTemplate = (estimate) => {
     .parerntWrapper {
         display: flex;
         justify-content: space-between;
+        align-items: flex-end;
     }
 
     body{
@@ -411,7 +419,10 @@ const estimatePdfTemplate = (estimate) => {
                 </div>
     
             </div>
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACGkAAAABCAYAAABn5mFIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAiSURBVHgB7cAxAQAACMCg2T+0pvCDqTYAAAAAAAAAAD7NAcSZAQJ8yV57AAAAAElFTkSuQmCC" alt="" class="lineImage">
+            
+            <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACGkAAAABCAYAAABn5mFIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAiSURBVHgB7cAxAQAACMCg2T+0pvCDqTYAAAAAAAAAAD7NAcSZAQJ8yV57AAAAAElFTkSuQmCC" alt="" class="lineImage"> -->
+
+            <div class="lineImage" style="border-top: 0.61px solid rgba(0, 0, 0, 0.61); height: 1px;">&nbsp;</div>
     
             <div class="second-section">
                 <div class="left-side">
@@ -456,26 +467,26 @@ const estimatePdfTemplate = (estimate) => {
                 </div>
                 
                 ${estimate.parts.map((part, idx1) => {
-        const amount = (parseInt(part?.amount || 0));
+        const amount = formatNumberToIntl(parseInt(part?.amount || 0));
         return (`
                             <div class="item-header-item">
-                    <span class="count-num-item">#</span>
+                    <span class="count-num-item">${idx1 + 1}</span>
                     <span class="item-descrip-item">${part.name}</span>
                     <span class="item-warranty-item">${part.warranty.warranty} ${part.warranty.interval}</span>
-                    <span class="item-cost-item">₦ ${part.price} x ${part.quantity.quantity} ${part.quantity.unit}</span>
+                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part.quantity.quantity} ${part.quantity.unit}</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
                             `);
     })}
                 
                 ${estimate.labours.map((labour, idx1) => {
-        const amount = (parseInt(labour?.cost || 0));
+        const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
         return (`
                             <div class="item-header-item">
-                    <span class="count-num-item">#</span>
+                    <span class="count-num-item">${(estimate.parts).length + 1 + idx1}</span>
                     <span class="item-descrip-item">${labour.title}</span>
                     <span class="item-warranty-item"> - </span>
-                    <span class="item-cost-item">₦ ${amount} x 1</span>
+                    <span class="item-cost-item">₦ ${amount} x 1 pcs</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
                             `);
@@ -486,7 +497,7 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Subtotal:</span>
-                    <span class="item-amount-item-amount">₦ ${estimate.partsTotal + estimate.laboursTotal}</span>
+                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -502,15 +513,15 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-cost-item-sub">VAT (7.5%):</span>
                     <span class="item-amount-item-amount">₦ ${
     // @ts-ignore
-    parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0)}</span>
+    formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
-                    <div class="total-flex">
+                    <div class="total-flex" style="background: #E8E8E8;">
                         <span class="item-cost-item-sub-total">Total:</span>
-                        <span class="item-amount-item-amount total">₦ ${estimate.grandTotal}</span>
+                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(estimate.grandTotal)}</span>
                     </div>
     
                 </div>
@@ -532,7 +543,9 @@ const estimatePdfTemplate = (estimate) => {
                 </div> -->
     
                 <p class="terms-header">E-Sides Auto Care Terms & Conditions Appy</p>
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACGkAAAABCAYAAABn5mFIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAiSURBVHgB7cAxAQAACMCg2T+0pvCDqTYAAAAAAAAAAD7NAcSZAQJ8yV57AAAAAElFTkSuQmCC" alt="">
+                <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACGkAAAABCAYAAABn5mFIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAiSURBVHgB7cAxAQAACMCg2T+0pvCDqTYAAAAAAAAAAD7NAcSZAQJ8yV57AAAAAElFTkSuQmCC" alt=""> -->
+
+                <div class="lineImage" style="border-top: 0.61px solid rgba(0, 0, 0, 0.61); height: 1px;">&nbsp;</div>
 
                 <br />
                 <br />
@@ -544,7 +557,7 @@ const estimatePdfTemplate = (estimate) => {
                             <span>Step 1:</span>
     
                             <p>Open the <a href="">AutoHyve mobile app</a> or visit/click <a
-                                    href="http://www.app.myautohyve.com/">www.app.myautohyve.com</a> </p>
+                                    href="http://app.myautohyve.com/">app.myautohyve.com</a> </p>
                         </div>
                         <div class="how-top-pay-text">
                             <span>Step 2:</span>

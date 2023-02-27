@@ -27,7 +27,7 @@ import garage_partner_welcome_email from '../resources/templates/email/garage_pa
 import ride_share_partner_welcome_email from '../resources/templates/email/ride_share_partner_welcome_email';
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
-import { generateEstimateHtml, generatePdf } from '../utils/pdf';
+import { generateEstimateHtml, generateInvoiceHtml, generatePdf } from '../utils/pdf';
 
 interface IPaymentPlanModelDescription {
   value: string;
@@ -1027,6 +1027,7 @@ export default class PartnerController {
       const {type, id} = req.body;
 
       let html: string | null = ''; 
+      let partner = null;
 
       switch (type) {
         case "ESTIMATE":
@@ -1034,7 +1035,8 @@ export default class PartnerController {
           break;
 
         case "INVOICE":
-        
+          partner = req.user.partner;
+          html = await generateInvoiceHtml(id, partner.id)
           break;
       
         default:

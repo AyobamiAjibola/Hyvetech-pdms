@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IBillingInformation, IEstimate, IInvoice } from '@app-models';
 import { useLocation } from 'react-router-dom';
-import { Alert, Avatar, Box, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -9,7 +9,9 @@ import { formatNumberToIntl } from '../../utils/generic';
 import settings from '../../config/settings';
 import { INVOICE_STATUS } from '../../config/constants';
 import { ArrowBackIosNew } from '@mui/icons-material';
+import axiosClient from '../../config/axiosClient';
 
+const API_ROOT = settings.api.rest;
 interface ILocationState {
   estimate?: IEstimate;
   invoice?: IInvoice;
@@ -24,6 +26,9 @@ function InvoicePage() {
   const [_driver, setDriver] = useState<any>(null);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   const location = useLocation();
+
+  // @ts-ignore
+  const [downloading, setDownloading] = useState<any>(false);
 
   useEffect(() => {
     if (location.state) {
@@ -80,6 +85,30 @@ function InvoicePage() {
     return 0;
   }, [estimate, invoice]);
 
+  const generateDownload = async ()=>{
+    const rName = (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
+    // @ts-ignore
+    const payload = {
+      type: "INVOICE",
+      id: invoice?.id || -1,
+      rName
+    }
+    setDownloading(true)
+
+    try{
+      const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
+      console.log(response.data);
+      // window.open(`${settings.api.baseURL}/uploads/pdf/${response.data.name}`)
+    }catch(e){
+      console.log(e)
+    }
+
+    setTimeout(()=>{
+      setDownloading(false)
+      window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`)
+    }, 3000)
+  }
+
   if (!estimate || !invoice)
     return (
       <Grid container justifyContent="center" alignItems="center">
@@ -105,6 +134,13 @@ function InvoicePage() {
         <Typography mb={3} textAlign="center" display="block" variant="subtitle1">
           #{invoice.code}
         </Typography>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end'  }}>
+          <Button variant="outlined" color="success" size="small" onClick={()=> generateDownload()}>
+              {downloading ? "Downloading..." : "Download Pdf"}
+          </Button>
+        </div>
+
         <Grid container my={3} justifyContent="space-between" alignItems="center">
           <Grid item xs>
             <Typography variant="h6" gutterBottom>
