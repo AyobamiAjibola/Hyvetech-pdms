@@ -1,5 +1,14 @@
 import Estimate from "../models/Estimate";
+import path from 'path'
 import "dotenv/config"
+import fs from 'fs'
+
+function base64_encode(file: string) {
+    // read binary data
+    const bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
 
 export const estimatePdfTemplate = (estimate: Estimate) => {
     // console.log((estimate.customer), "estimate")
@@ -7,8 +16,18 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
     const partner = estimate.partner;
     const customer = estimate.customer;
     const vehicle = estimate.vehicle;
-    const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
-    console.log(mainUrl, "mainUrl")
+    // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
+
+    // convert image to base 64
+    let mainUrl = '';
+    
+    try{
+        mainUrl = 'data:image/png;base64,'+base64_encode(path.join(__dirname, "../../../", partner.logo));
+    }catch(e){
+        console.log(e)
+    }
+
+    // console.log(mainUrl, "mainUrl");
     // @ts-ignore
     return `
     <!DOCTYPE html>

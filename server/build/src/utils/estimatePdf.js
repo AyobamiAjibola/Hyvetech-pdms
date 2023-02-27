@@ -1,15 +1,34 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.estimatePdfTemplate = void 0;
+const path_1 = __importDefault(require("path"));
 require("dotenv/config");
+const fs_1 = __importDefault(require("fs"));
+function base64_encode(file) {
+    // read binary data
+    const bitmap = fs_1.default.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
 const estimatePdfTemplate = (estimate) => {
     // console.log((estimate.customer), "estimate")
     const logo = `${estimate.partner.logo}`;
     const partner = estimate.partner;
     const customer = estimate.customer;
     const vehicle = estimate.vehicle;
-    const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
-    console.log(mainUrl, "mainUrl");
+    // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
+    // convert image to base 64
+    let mainUrl = '';
+    try {
+        mainUrl = 'data:image/png;base64,' + base64_encode(path_1.default.join(__dirname, "../../../", partner.logo));
+    }
+    catch (e) {
+        console.log(e);
+    }
+    // console.log(mainUrl, "mainUrl");
     // @ts-ignore
     return `
     <!DOCTYPE html>
