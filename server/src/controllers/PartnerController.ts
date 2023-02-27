@@ -1041,7 +1041,8 @@ export default class PartnerController {
           break;
       }
 
-      const rName = await generatePdf(html);
+      const rName = req.body.rName;
+      await generatePdf(html, rName);
       console.log(rName)
 
       return Promise.resolve({

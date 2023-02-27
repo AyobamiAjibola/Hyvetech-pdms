@@ -794,7 +794,8 @@ class PartnerController {
                 default:
                     break;
             }
-            const rName = await (0, pdf_1.generatePdf)(html);
+            const rName = req.body.rName;
+            await (0, pdf_1.generatePdf)(html, rName);
             console.log(rName);
             return Promise.resolve({
                 code: 200,

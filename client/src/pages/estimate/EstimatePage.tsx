@@ -51,10 +51,12 @@ function EstimatePage() {
   }, [estimate]);
 
   const generateDownload = async ()=>{
+    const rName = (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
     // @ts-ignore
     const payload = {
       type: "ESTIMATE",
-      id: estimate?.id || -1
+      id: estimate?.id || -1,
+      rName
     }
     setDownloading(true)
 
@@ -67,6 +69,7 @@ function EstimatePage() {
     }
 
     setDownloading(false)
+    window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`)
   }
 
   if (!estimate)

@@ -36,7 +36,7 @@ const generateEstimateHtml = async (id) => {
     return (0, estimatePdf_1.estimatePdfTemplate)(estimate);
 };
 exports.generateEstimateHtml = generateEstimateHtml;
-const generatePdf = async (html) => {
+const generatePdf = async (html, rName) => {
     // const options = {
     //     format: "Tabloid",
     //     orientation: "portrait",
@@ -51,7 +51,7 @@ const generatePdf = async (html) => {
     //     type: "pdf",
     // };
     // const pdfGenerated = await pdf.create(document);
-    const rName = (Math.ceil(((Math.random() * 999) + 1100))) + '.pdf';
+    rName = rName || (Math.ceil(((Math.random() * 999) + 1100))) + '.pdf';
     await fs_1.default.mkdir(path_1.default.join(__dirname, "../../uploads/", "pdf"), { recursive: true }, (e) => { console.log(e); });
     const html5ToPDF = new HTML5ToPDF({
         inputBody: html,

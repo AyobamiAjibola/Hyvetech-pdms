@@ -38,7 +38,7 @@ export const generateEstimateHtml = async (id: any)=>{
 
 }
 
-export const generatePdf = async (html: string|null)=>{
+export const generatePdf = async (html: string|null, rName?: string)=>{
     // const options = {
     //     format: "Tabloid",
     //     orientation: "portrait",
@@ -56,7 +56,7 @@ export const generatePdf = async (html: string|null)=>{
 
     // const pdfGenerated = await pdf.create(document);
 
-    const rName = (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
+    rName = rName || (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
     
     await fs.mkdir(path.join(__dirname, "../../uploads/", "pdf"), { recursive: true }, (e)=>{console.log(e)});
 
