@@ -1,12 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.estimatePdfTemplate = void 0;
+require("dotenv/config");
 const estimatePdfTemplate = (estimate) => {
     console.log((estimate.customer), "estimate");
     const logo = `${estimate.partner.logo}`;
     const partner = estimate.partner;
     const customer = estimate.customer;
     const vehicle = estimate.vehicle;
+    const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}`;
     // @ts-ignore
     return `
     <!DOCTYPE html>
@@ -377,7 +379,7 @@ const estimatePdfTemplate = (estimate) => {
                 </div>
     
                 <div class="header-section">
-                    <img src="https://pdms.jiffixtech.com/uploads/partners/${partner.logo}" alt="" class="image">
+                    <img src="${mainUrl}${partner.logo}" alt="" class="image">
                     <br />
                 </div>
     

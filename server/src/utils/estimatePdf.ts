@@ -7,7 +7,7 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
     const partner = estimate.partner;
     const customer = estimate.customer;
     const vehicle = estimate.vehicle;
-    const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}uploads/partners/`;
+    const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}`;
     // @ts-ignore
     return `
     <!DOCTYPE html>
