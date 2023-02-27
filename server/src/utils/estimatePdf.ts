@@ -1,4 +1,5 @@
 import Estimate from "../models/Estimate";
+import "dotenv/config"
 
 export const estimatePdfTemplate = (estimate: Estimate) => {
     console.log((estimate.customer), "estimate")
@@ -6,6 +7,7 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
     const partner = estimate.partner;
     const customer = estimate.customer;
     const vehicle = estimate.vehicle;
+    const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}uploads/partners/`;
     // @ts-ignore
     return `
     <!DOCTYPE html>
@@ -376,7 +378,7 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                 </div>
     
                 <div class="header-section">
-                    <img src="https://pdms.jiffixtech.com/uploads/partners/${partner.logo}" alt="" class="image">
+                    <img src="${mainUrl}${partner.logo}" alt="" class="image">
                     <br />
                 </div>
     
