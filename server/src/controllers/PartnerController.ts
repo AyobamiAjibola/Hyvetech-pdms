@@ -1042,9 +1042,10 @@ export default class PartnerController {
       }
 
       const rName = await generatePdf(html);
+      console.log(rName)
 
       return Promise.resolve({
-        code: HttpStatus.CREATED.code,
+        code: 200,
         message: HttpStatus.CREATED.value,
         name: rName
       } as HttpResponse<any>);

@@ -795,8 +795,9 @@ class PartnerController {
                     break;
             }
             const rName = await (0, pdf_1.generatePdf)(html);
+            console.log(rName);
             return Promise.resolve({
-                code: HttpStatus_1.default.CREATED.code,
+                code: 200,
                 message: HttpStatus_1.default.CREATED.value,
                 name: rName
             });

@@ -59,7 +59,8 @@ exports.corsOptions = {
 };
 app.use((0, helmet_1.default)());
 app.use((0, cookie_parser_1.default)(settings_1.default.cookie.secret));
-app.use((0, cors_1.default)(exports.corsOptions)); //handle cors operations
+// app.use(cors(corsOptions)); //handle cors operations
+app.use((0, cors_1.default)()); //handle cors operations
 app.use((0, express_1.json)()); // Parse incoming requests data
 app.use((0, morgan_1.default)('dev')); //Route debugger
 app.use('/uploads', (0, express_1.static)(path_1.default.resolve('uploads')));
