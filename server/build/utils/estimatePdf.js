@@ -29,7 +29,7 @@ const estimatePdfTemplate = (estimate) => {
     // convert image to base 64
     let mainUrl = '';
     try {
-        mainUrl = 'data:image/png;base64,' + base64_encode(path_1.default.join(__dirname, "../../../", partner.logo));
+        mainUrl = 'data:image/png;base64,' + base64_encode(path_1.default.join(__dirname, "../../", partner.logo));
     }
     catch (e) {
         console.log(e);
