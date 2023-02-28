@@ -427,7 +427,7 @@ export const invoicePdfTemplate = ({estimate}: Invoice) => {
             <div class="second-section">
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
-                    <p class="bill-to-name">${`${customer.firstName} ${customer.lastName}`}</p>
+                    <p class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</p>
                     <p class="bill-to-address">${customer.contacts[0].address}, ${customer.contacts[0]?.city || ""} ${customer.contacts[0].district}, ${customer.contacts[0].state}</p>
                     <p class="bill-to-address">${customer.phone}</p>
                 </div>
@@ -551,7 +551,7 @@ export const invoicePdfTemplate = ({estimate}: Invoice) => {
                     <span class="item-amount-item-amount">24/02/2023</span>
                 </div> -->
     
-                <p class="terms-header">E-Sides Auto Care Terms & Conditions Appy</p>
+                <p class="terms-header">${partner.name} Terms & Conditions Appy</p>
                 <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACGkAAAABCAYAAABn5mFIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAiSURBVHgB7cAxAQAACMCg2T+0pvCDqTYAAAAAAAAAAD7NAcSZAQJ8yV57AAAAAElFTkSuQmCC" alt=""> -->
 
                 <div class="lineImage" style="border-top: 0.61px solid rgba(0, 0, 0, 0.61); height: 1px;">&nbsp;</div>
@@ -565,7 +565,7 @@ export const invoicePdfTemplate = ({estimate}: Invoice) => {
                         <div class="how-top-pay-text">
                             <span>Step 1:</span>
     
-                            <p>Open the <a href="">AutoHyve mobile app</a> or visit/click <a
+                            <p>Open the <a href="https://onelink.to/fh7uc5">AutoHyve mobile app</a> or visit/click <a
                                     href="http://app.myautohyve.com/">app.myautohyve.com</a> </p>
                         </div>
                         <div class="how-top-pay-text">

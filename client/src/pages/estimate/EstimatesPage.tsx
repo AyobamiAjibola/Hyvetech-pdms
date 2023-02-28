@@ -307,18 +307,18 @@ function EstimatesPage() {
           ) : null;
         },
       },
-      {
-        field: 'createdAt',
-        headerName: 'Date Created',
-        headerAlign: 'center',
-        align: 'center',
-        width: 200,
-        type: 'string',
-        valueFormatter: ({ value }) => {
-          return value ? moment(value).format('LLL') : '-';
-        },
-        sortable: true,
-      },
+      // {
+      //   field: 'createdAt',
+      //   headerName: 'Date Created',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   width: 200,
+      //   type: 'string',
+      //   valueFormatter: ({ value }) => {
+      //     return value ? moment(value).format('LLL') : '-';
+      //   },
+      //   sortable: true,
+      // },
       {
         field: 'actions',
         type: 'actions',
