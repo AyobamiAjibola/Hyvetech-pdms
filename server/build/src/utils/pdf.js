@@ -84,10 +84,10 @@ const generatePdf = async (html, rName) => {
     // };
     // const pdfGenerated = await pdf.create(document);
     rName = rName || (Math.ceil(((Math.random() * 999) + 1100))) + '.pdf';
-    await fs_1.default.mkdir(path_1.default.join(__dirname, "../../../uploads/", "pdf"), { recursive: true }, (e) => { console.log(e); });
+    await fs_1.default.mkdir(path_1.default.join(__dirname, "../../uploads/", "pdf"), { recursive: true }, (e) => { console.log(e); });
     const html5ToPDF = new HTML5ToPDF({
         inputBody: html,
-        outputPath: path_1.default.join(__dirname, "../../../uploads/", "pdf", rName),
+        outputPath: path_1.default.join(__dirname, "../../uploads/", "pdf", rName),
         // templatePath: path.join(__dirname, "templates", "basic"),
         include: [
         //   path.join(__dirname, "../assets/pdf/pdf"),
