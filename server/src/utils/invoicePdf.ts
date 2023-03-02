@@ -591,7 +591,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                         <div class="how-top-pay-text">
                             <span>Step 3:</span>
     
-                            <p>Open <span>Estimate #${estimate.code}</span>, and click on <span>“Approve & Pay Deposit”</span></p>
+                            <p>Open <span>Estimate #${invoice.code}</span>, and click on <span>“Approve & Pay Deposit”</span></p>
                         </div>
                         <div class="how-top-pay-text">
                             <span>Step 4:</span>
