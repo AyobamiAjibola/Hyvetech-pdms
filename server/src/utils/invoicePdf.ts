@@ -398,10 +398,10 @@ export const invoicePdfTemplate = ({estimate}: Invoice) => {
     
     <body>
     
-        <div class="page" size="A4">
+        <div class="page">
             <div class="top-section">
                 <div class="header-section">
-                    <span class="estimate-name">Estimate</span>
+                    <span class="estimate-name">Invoice</span>
                     <span class="estimate-num">#${estimate.code}</span>
                     <span class="estimate-date">Date: ${(new Date(estimate.updatedAt)).toDateString()}</span>
                 </div>
@@ -467,7 +467,7 @@ export const invoicePdfTemplate = ({estimate}: Invoice) => {
                 </div>
                 
                 ${
-                    estimate.parts.map((part: any, idx1)=> {
+                    (estimate.parts.map((part: any, idx1)=> {
                         const amount = formatNumberToIntl(parseInt(part?.amount || 0));
                         return (
                             `
@@ -480,11 +480,11 @@ export const invoicePdfTemplate = ({estimate}: Invoice) => {
                 </div>
                             `
                         )
-                    })
+                    })).join().replaceAll(' ,', '')
                 }
                 
                 ${
-                    estimate.labours.map((labour: any, idx1)=> {
+                    (estimate.labours.map((labour: any, idx1)=> {
                         const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
                         return (
                             `
@@ -497,7 +497,7 @@ export const invoicePdfTemplate = ({estimate}: Invoice) => {
                 </div>
                             `
                         )
-                    })
+                    })).join().replaceAll(' ,', '')
                 }
                 
                 <div class="item-header-item-total first">

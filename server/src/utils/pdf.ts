@@ -76,6 +76,11 @@ export const generateInvoiceHtml = async (id: any, partnerId: any)=>{
 }
 
 export const generatePdf = async (html: string|null, rName?: string)=>{
+    rName = rName || (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
+    await fs.mkdir(path.join(__dirname, "../../uploads/", "pdf"), { recursive: true }, (e)=>{console.log(e)});
+
+    await fs.writeFileSync(path.join(__dirname, "../../uploads/", "pdf", '000.html'), `${html}`);
+
     // const options = {
     //     format: "Tabloid",
     //     orientation: "portrait",
@@ -87,15 +92,12 @@ export const generatePdf = async (html: string|null, rName?: string)=>{
     //     data: {
     //     //   users: users,
     //     },
-    //     path: "./pdf/output.pdf",
+    //     path: path.join(__dirname, "../../uploads/", "pdf", '000'+rName),
     //     type: "pdf",
     // };
 
     // const pdfGenerated = await pdf.create(document);
-
-    rName = rName || (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
     
-    await fs.mkdir(path.join(__dirname, "../../uploads/", "pdf"), { recursive: true }, (e)=>{console.log(e)});
 
     const html5ToPDF = new HTML5ToPDF({
         inputBody: html,
@@ -111,7 +113,7 @@ export const generatePdf = async (html: string|null, rName?: string)=>{
           headless: true,
         },
         options: {
-          printBackground: true
+          printBackground: true,
         }
       })
      

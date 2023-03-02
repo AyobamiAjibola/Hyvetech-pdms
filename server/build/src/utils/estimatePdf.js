@@ -29,7 +29,7 @@ const estimatePdfTemplate = (estimate) => {
     // convert image to base 64
     let mainUrl = '';
     try {
-        mainUrl = 'data:image/png;base64,' + base64_encode(path_1.default.join(__dirname, "../../../", partner.logo));
+        mainUrl = 'data:image/png;base64,' + base64_encode(path_1.default.join(__dirname, "../../", partner.logo));
     }
     catch (e) {
         console.log(e);
@@ -398,7 +398,7 @@ const estimatePdfTemplate = (estimate) => {
     
     <body>
     
-        <div class="page" size="A4">
+        <div class="page">
             <div class="top-section">
                 <div class="header-section">
                     <span class="estimate-name">Estimate</span>
@@ -466,7 +466,7 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-amount">Amount</span>
                 </div>
                 
-                ${estimate.parts.map((part, idx1) => {
+                ${(estimate.parts.map((part, idx1) => {
         const amount = formatNumberToIntl(parseInt(part?.amount || 0));
         return (`
                             <div class="item-header-item">
@@ -477,9 +477,9 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
                             `);
-    })}
+    })).join().replaceAll(' ,', '')}
                 
-                ${estimate.labours.map((labour, idx1) => {
+                ${(estimate.labours.map((labour, idx1) => {
         const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
         return (`
                             <div class="item-header-item">
@@ -490,7 +490,7 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
                             `);
-    })}
+    })).join().replaceAll(' ,', '')}
                 
                 <div class="item-header-item-total first">
                     <span class="count-num-item"></span>

@@ -397,7 +397,7 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
     
     <body>
     
-        <div class="page" size="A4">
+        <div class="page">
             <div class="top-section">
                 <div class="header-section">
                     <span class="estimate-name">Estimate</span>
@@ -466,7 +466,7 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                 </div>
                 
                 ${
-                    estimate.parts.map((part: any, idx1)=> {
+                    (estimate.parts.map((part: any, idx1)=> {
                         const amount = formatNumberToIntl(parseInt(part?.amount || 0));
                         return (
                             `
@@ -479,11 +479,11 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                 </div>
                             `
                         )
-                    })
+                    })).join().replaceAll(' ,', '')
                 }
                 
                 ${
-                    estimate.labours.map((labour: any, idx1)=> {
+                    (estimate.labours.map((labour: any, idx1)=> {
                         const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
                         return (
                             `
@@ -496,7 +496,7 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                 </div>
                             `
                         )
-                    })
+                    })).join().replaceAll(' ,', '')
                 }
                 
                 <div class="item-header-item-total first">
