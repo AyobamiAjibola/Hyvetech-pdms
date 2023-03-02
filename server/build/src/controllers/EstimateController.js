@@ -453,19 +453,24 @@ class EstimateController {
         });
         // console.log('reach1')
         //todo: Send email with credentials
-        await (0, sendMail_1.sendMail)({
-            to: user.email,
-            replyTo: partner.email,
-            // @ts-ignore
-            'reply-to': partner.email,
-            from: {
-                name: "AutoHyve",
-                address: process.env.SMTP_EMAIL_FROM2,
-            },
-            subject: `${partner.name} has sent you an estimate on AutoHyve`,
-            html: mail,
-            bcc: [process.env.SMTP_BCC],
-        });
+        try {
+            await (0, sendMail_1.sendMail)({
+                to: user.email,
+                replyTo: partner.email,
+                // @ts-ignore
+                'reply-to': partner.email,
+                from: {
+                    name: "AutoHyve",
+                    address: process.env.SMTP_EMAIL_FROM2,
+                },
+                subject: `${partner.name} has sent you an estimate on AutoHyve`,
+                html: mail,
+                bcc: [process.env.SMTP_BCC],
+            });
+        }
+        catch (e) {
+            console.log(e);
+        }
         // await QueueManager.publish({
         //   queue: QUEUE_EVENTS.name,
         //   data: {
