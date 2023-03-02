@@ -103,8 +103,8 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
     
     .estimate-name {
         font-style: normal;
-        font-weight: 400;
-        font-size: 14px;
+        font-weight: 700;
+        font-size: 17px;
         color: #263238;
     }
     
@@ -416,7 +416,6 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="addres-head">${partner.name}</span>
                     <span class="addres-location">${partner?.contact?.address || ""} ${partner?.contact?.city || ""} ${partner?.contact?.district || ""}<br /> ${partner.contact.state}</span>
                     <span class="addres-phone">${partner.phone}</span>
-                    <span class="addres-website">${partner?.googleMap || ""}</span>
                 </div>
     
             </div>
@@ -540,14 +539,14 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Paid:</span>
-                    <span class="item-amount-item-amount">${invoice.paidAmount}</span>
+                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(invoice.paidAmount)}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Balance Due:</span>
-                    <span class="item-amount-item-amount">${invoice.dueAmount}</span>
+                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(invoice.dueAmount)}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -591,7 +590,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                         <div class="how-top-pay-text">
                             <span>Step 3:</span>
     
-                            <p>Open <span>Estimate #${invoice.code}</span>, and click on <span>“Approve & Pay Deposit”</span></p>
+                            <p>Open <span>Invoice #${invoice.code}</span>, and click on <span>“Make Payment”</span></p>
                         </div>
                         <div class="how-top-pay-text">
                             <span>Step 4:</span>
