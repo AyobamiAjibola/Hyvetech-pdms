@@ -71,7 +71,7 @@ exports.generateInvoiceHtml = generateInvoiceHtml;
 const generatePdf = async (html, rName) => {
     rName = rName || (Math.ceil(((Math.random() * 999) + 1100))) + '.pdf';
     await fs_1.default.mkdir(path_1.default.join(__dirname, "../../uploads/", "pdf"), { recursive: true }, (e) => { console.log(e); });
-    await fs_1.default.writeFileSync(path_1.default.join(__dirname, "../../uploads/", "pdf", '000.html'), `${html}`);
+    // await fs.writeFileSync(path.join(__dirname, "../../uploads/", "pdf", '000.html'), `${html}`);
     // const options = {
     //     format: "Tabloid",
     //     orientation: "portrait",

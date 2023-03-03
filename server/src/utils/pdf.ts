@@ -79,7 +79,7 @@ export const generatePdf = async (html: string|null, rName?: string)=>{
     rName = rName || (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
     await fs.mkdir(path.join(__dirname, "../../uploads/", "pdf"), { recursive: true }, (e)=>{console.log(e)});
 
-    await fs.writeFileSync(path.join(__dirname, "../../uploads/", "pdf", '000.html'), `${html}`);
+    // await fs.writeFileSync(path.join(__dirname, "../../uploads/", "pdf", '000.html'), `${html}`);
 
     // const options = {
     //     format: "Tabloid",

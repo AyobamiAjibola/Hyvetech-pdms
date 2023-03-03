@@ -56,6 +56,8 @@ const rabbitmq_email_manager_1 = __importDefault(require("rabbitmq-email-manager
 const User_1 = __importDefault(require("../models/User"));
 const new_estimate_1 = __importDefault(require("../resources/templates/email/new_estimate"));
 const sendMail_1 = require("../utils/sendMail");
+const pdf_1 = require("../utils/pdf");
+const path = require("path");
 class EstimateController {
     async create(req) {
         const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
@@ -443,6 +445,7 @@ class EstimateController {
         await customer.$add('estimates', [estimate]);
         // console.log('reach0')
         // send mail
+        // @ts-ignore
         let user = customer;
         const mail = (0, new_estimate_1.default)({
             firstName: customer.firstName,
@@ -454,19 +457,40 @@ class EstimateController {
         // console.log('reach1')
         //todo: Send email with credentials
         try {
-            await (0, sendMail_1.sendMail)({
-                to: user.email,
-                replyTo: partner.email,
-                // @ts-ignore
-                'reply-to': partner.email,
-                from: {
-                    name: "AutoHyve",
-                    address: process.env.SMTP_EMAIL_FROM2,
-                },
-                subject: `${partner.name} has sent you an estimate on AutoHyve`,
-                html: mail,
-                bcc: [process.env.SMTP_BCC],
-            });
+            // create pdf before sending
+            const html = await (0, pdf_1.generateEstimateHtml)(estimate.id);
+            const rName = (Math.ceil(((Math.random() * 999) + 1100))) + '.pdf';
+            await (0, pdf_1.generatePdf)(html, rName);
+            // set seperate listener to send mail after 6 seconds
+            setTimeout(() => {
+                (async () => {
+                    try {
+                        await (0, sendMail_1.sendMail)({
+                            to: user.email,
+                            replyTo: partner.email,
+                            // @ts-ignore
+                            'reply-to': partner.email,
+                            from: {
+                                name: "AutoHyve",
+                                address: process.env.SMTP_EMAIL_FROM2,
+                            },
+                            subject: `${partner.name} has sent you an estimate on AutoHyve`,
+                            html: mail,
+                            bcc: [process.env.SMTP_BCC],
+                            attachments: [
+                                {
+                                    filename: rName,
+                                    path: path.join(__dirname, "../../uploads/", "pdf", rName),
+                                    cid: rName
+                                }
+                            ]
+                        });
+                    }
+                    catch (err) {
+                        console.log(err);
+                    }
+                })();
+            }, 5000);
         }
         catch (e) {
             console.log(e);
