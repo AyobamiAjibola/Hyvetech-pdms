@@ -49,6 +49,7 @@ const rabbitmq_email_manager_1 = require("rabbitmq-email-manager");
 const formidable_1 = __importDefault(require("formidable"));
 const garage_partner_welcome_email_1 = __importDefault(require("../resources/templates/email/garage_partner_welcome_email"));
 const ride_share_partner_welcome_email_1 = __importDefault(require("../resources/templates/email/ride_share_partner_welcome_email"));
+const pdf_1 = require("../utils/pdf");
 const form = (0, formidable_1.default)({ uploadDir: constants_1.UPLOAD_BASE_PATH });
 class PartnerController {
     constructor(passwordEncoder) {
@@ -695,7 +696,7 @@ class PartnerController {
             for (let i = 0; i < drivers.length; i++) {
                 const driver = drivers[i];
                 // const fullName = `${driver.firstName} ${driver.lastName} ${driver.email} ${driver.companyName}`;
-                const fullName = `${driver.firstName} ${driver.lastName} ${driver.phone} ${driver.email} ${driver.companyName}`;
+                const fullName = `${driver.firstName} ${driver.lastName} ${driver?.companyName || ""} ${driver.email} ${driver.phone}`;
                 const email = driver.email;
                 const vehicles = await drivers[i].$get('vehicles');
                 console.log(vehicles.length, " vehicles");
@@ -703,6 +704,13 @@ class PartnerController {
                     id: driver.id,
                     fullName,
                     query: `${email} ${fullName}`,
+                    raw: {
+                        email: email,
+                        firstName: driver.firstName,
+                        lastName: driver.lastName,
+                        companyName: driver.companyName,
+                        phone: driver.phone,
+                    }
                 };
                 for (let j = 0; j < vehicles.length; j++) {
                     const vehicle = vehicles[j];
@@ -766,6 +774,36 @@ class PartnerController {
             return Promise.reject({
                 code: HttpStatus_1.default.BAD_REQUEST.code,
                 message: HttpStatus_1.default.BAD_REQUEST.value,
+            });
+        }
+        catch (e) {
+            return Promise.reject(e);
+        }
+    }
+    async requestPdf(req) {
+        // ..
+        try {
+            const { type, id } = req.body;
+            let html = '';
+            let partner = null;
+            switch (type) {
+                case "ESTIMATE":
+                    html = await (0, pdf_1.generateEstimateHtml)(id);
+                    break;
+                case "INVOICE":
+                    partner = req.user.partner;
+                    html = await (0, pdf_1.generateInvoiceHtml)(id, partner.id);
+                    break;
+                default:
+                    break;
+            }
+            const rName = req.body.rName;
+            await (0, pdf_1.generatePdf)(html, rName);
+            console.log(rName);
+            return Promise.resolve({
+                code: 200,
+                message: HttpStatus_1.default.CREATED.value,
+                name: rName
             });
         }
         catch (e) {

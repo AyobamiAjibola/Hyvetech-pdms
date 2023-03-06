@@ -217,6 +217,153 @@ function EstimatesPage() {
     ] as GridColDef<IEstimate>[];
   }, [isTechAdmin, dispatch, navigate, estimate]);
 
+  const techColumns = useMemo(() => {
+    return [
+      {
+        field: 'updatedAt',
+        headerName: 'Date Modified',
+        headerAlign: 'center',
+        align: 'center',
+        width: 200,
+        type: 'string',
+        valueFormatter: ({ value }) => {
+          return value ? moment(value).format('LLL') : '-';
+        },
+        sortable: true,
+        sortingOrder: ["desc"]
+      },
+      {
+        field: 'code',
+        headerName: 'Estimate',
+        headerAlign: 'center',
+        align: 'center',
+        sortable: true,
+        type: 'string',
+        renderCell: params => {
+          return (
+            <span
+              style={{ color: 'skyblue', cursor: 'pointer' }}
+              onClick={()=>{
+                void dispatch(getEstimatesAction());
+                navigate(`/estimates/${params.row.id}`, { state: { estimate: params.row } });
+              }}
+              >{params.row.code}</span>
+          )
+        }
+      },
+      {
+        field: 'fullName',
+        headerName: 'Full Name',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 250,
+        sortable: true,
+        valueGetter: param => {
+          const driver = param.row.rideShareDriver;
+          const customer = param.row.customer;
+
+          return driver ? `${driver?.firstName || ''} ${driver?.lastName || ''}` : `${customer?.firstName || ''} ${customer?.lastName || ''}`;
+        },
+      },
+      {
+        field: 'model',
+        headerName: 'Vehicle',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 200,
+        sortable: true,
+        valueGetter: param => {
+          const vehicle = param.row.vehicle;
+
+          return vehicle ? `${vehicle?.modelYear} ${vehicle?.make} ${vehicle?.model} (${vehicle.plateNumber})` : '-';
+        },
+      },
+      {
+        field: 'grandTotal',
+        headerName: 'Grand Total',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 150,
+        sortable: true,
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 100,
+        sortable: true,
+        renderCell: params => {
+          return params.row.status === ESTIMATE_STATUS.sent ? (
+            <Chip label={ESTIMATE_STATUS.sent} size="small" color="info" />
+          ) : params.row.status === ESTIMATE_STATUS.draft ? (
+            <Chip label={ESTIMATE_STATUS.draft} size="small" color="warning" />
+          ) : params.row.status === ESTIMATE_STATUS.invoiced ? (
+            <Chip label={ESTIMATE_STATUS.invoiced} size="small" color="success" />
+          ) : null;
+        },
+      },
+      // {
+      //   field: 'createdAt',
+      //   headerName: 'Date Created',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   width: 200,
+      //   type: 'string',
+      //   valueFormatter: ({ value }) => {
+      //     return value ? moment(value).format('LLL') : '-';
+      //   },
+      //   sortable: true,
+      // },
+      {
+        field: 'actions',
+        type: 'actions',
+        headerAlign: 'center',
+        align: 'center',
+        getActions: (params: any) => {
+          const row = params.row as IEstimate;
+
+          return [
+            // <GridActionsCellItem
+            //   key={0}
+            //   icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+            //   onClick={() => {
+            //     void dispatch(getEstimatesAction());
+            //     navigate(`/estimates/${row.id}`, { state: { estimate: row } });
+            //   }}
+            //   label="View"
+            //   showInMenu={false}
+            // />,
+
+            <GridActionsCellItem
+              sx={{ display: isTechAdmin ? 'block' : 'none' }}
+              key={1}
+              icon={<Edit sx={{ color: 'limegreen' }} />}
+              onClick={() => estimate.onEdit(row.id)}
+              //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
+              disabled={!isTechAdmin}
+              label="Edit"
+              showInMenu={false}
+            />,
+            <GridActionsCellItem
+              sx={{ display: isTechAdmin ? 'block' : 'none' }}
+              key={2}
+              icon={<Cancel sx={{ color: 'indianred' }} />}
+              onClick={() => estimate.onDelete(row.id)}
+              label="Delete"
+              disabled={row.status === ESTIMATE_STATUS.invoiced}
+              showInMenu={false}
+            />,
+          ];
+        },
+      },
+    ] as GridColDef<IEstimate>[];
+  }, [isTechAdmin, dispatch, navigate, estimate]);
+
   useEffect(() => {
     return () => {
       dispatch(clearCreateEstimateStatus());
@@ -255,7 +402,7 @@ function EstimatesPage() {
         <Grid item xs={12}>
           <AppDataGrid
             rows={(estimate.estimates)}
-            columns={columns}
+            columns={isTechAdmin ? techColumns : columns}
             showToolbar
             loading={estimateReducer.getEstimatesStatus === 'loading'}
           />

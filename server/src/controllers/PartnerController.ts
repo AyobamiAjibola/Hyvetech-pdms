@@ -27,6 +27,7 @@ import garage_partner_welcome_email from '../resources/templates/email/garage_pa
 import ride_share_partner_welcome_email from '../resources/templates/email/ride_share_partner_welcome_email';
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
+import { generateEstimateHtml, generateInvoiceHtml, generatePdf } from '../utils/pdf';
 
 interface IPaymentPlanModelDescription {
   value: string;
@@ -83,6 +84,13 @@ export interface IDriverFilterProps {
   id?: number;
   fullName?: string;
   query?: string;
+  raw?: {
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    companyName?: string;
+    phone?: string;
+  }
 }
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
@@ -905,7 +913,7 @@ export default class PartnerController {
       for (let i = 0; i < drivers.length; i++) {
         const driver = drivers[i];
         // const fullName = `${driver.firstName} ${driver.lastName} ${driver.email} ${driver.companyName}`;
-        const fullName = `${driver.firstName} ${driver.lastName} ${driver.phone} ${driver.email} ${driver.companyName}`;
+        const fullName = `${driver.firstName} ${driver.lastName} ${driver?.companyName || ""} ${driver.email} ${driver.phone}`;
         const email = driver.email;
 
         const vehicles = await drivers[i].$get('vehicles');
@@ -916,6 +924,13 @@ export default class PartnerController {
           id: driver.id,
           fullName,
           query: `${email} ${fullName}`,
+          raw: {
+            email: email,
+            firstName: driver.firstName,
+            lastName: driver.lastName,
+            companyName: driver.companyName,
+            phone: driver.phone,
+          }
         };
 
         for (let j = 0; j < vehicles.length; j++) {
@@ -1002,6 +1017,42 @@ export default class PartnerController {
         message: HttpStatus.BAD_REQUEST.value,
       } as HttpResponse<any>);
     } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public async requestPdf(req: Request) {
+    // ..
+    try{
+      const {type, id} = req.body;
+
+      let html: string | null = ''; 
+      let partner = null;
+
+      switch (type) {
+        case "ESTIMATE":
+          html = await generateEstimateHtml(id)
+          break;
+
+        case "INVOICE":
+          partner = req.user.partner;
+          html = await generateInvoiceHtml(id, partner.id)
+          break;
+      
+        default:
+          break;
+      }
+
+      const rName = req.body.rName;
+      await generatePdf(html, rName);
+      console.log(rName)
+
+      return Promise.resolve({
+        code: 200,
+        message: HttpStatus.CREATED.value,
+        name: rName
+      } as HttpResponse<any>);
+    }catch(e){
       return Promise.reject(e);
     }
   }

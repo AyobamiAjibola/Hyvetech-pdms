@@ -38,6 +38,9 @@ import QueueManager from 'rabbitmq-email-manager';
 import create_customer_from_estimate from '../resources/templates/email/create_customer_from_estimate';
 import User from '../models/User';
 import new_estimate_template from '../resources/templates/email/new_estimate';
+import { sendMail } from '../utils/sendMail';
+import { generateEstimateHtml, generatePdf } from '../utils/pdf';
+import path = require('path');
 
 export default class EstimateController {
   @TryCatch
@@ -321,7 +324,7 @@ export default class EstimateController {
   private async doCreateEstimate(req: Request) {
     const { error, value } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
 
-    console.log(error)
+    // console.log(error)
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -528,8 +531,9 @@ export default class EstimateController {
 
     await customer.$add('estimates', [estimate]);
 
-    console.log('reach0')
+    // console.log('reach0')
     // send mail
+    // @ts-ignore
     let user: any = customer;
     const mail = new_estimate_template({
       firstName: customer.firstName,
@@ -539,25 +543,65 @@ export default class EstimateController {
       vehichleData: `${value.modelYear} ${value.make} ${value.model} `
     })
 
-    console.log('reach1')
+    // console.log('reach1')
 
     //todo: Send email with credentials
-    await QueueManager.publish({
-      queue: QUEUE_EVENTS.name,
-      data: {
-        to: user.email,
-        replyTo: partner.email,
-        // @ts-ignore
-        'reply-to': partner.email,
-        from: {
-          name: "AutoHyve",
-          address: <string>process.env.SMTP_EMAIL_FROM2,
-        },
-        subject: `${partner.name} has sent you an estimate on AutoHyve`,
-        html: mail,
-        bcc: [<string>process.env.SMTP_BCC],
-      },
-    });
+    try{
+      // create pdf before sending
+      const html = await generateEstimateHtml(estimate.id);
+      const rName = (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
+      await generatePdf(html, rName);      
+
+      // set seperate listener to send mail after 6 seconds
+      setTimeout(()=>{
+        (async()=>{
+          
+          try{
+            await sendMail({
+              to: user.email,
+              replyTo: partner.email,
+              // @ts-ignore
+              'reply-to': partner.email,
+              from: {
+                name: "AutoHyve",
+                address: <string>process.env.SMTP_EMAIL_FROM2,
+              },
+              subject: `${partner.name} has sent you an estimate on AutoHyve`,
+              html: mail,
+              bcc: [<string>process.env.SMTP_BCC],
+              attachments: [
+                {
+                  filename: rName,
+                  path: path.join(__dirname, "../../uploads/", "pdf", rName),
+                  cid: rName 
+                }
+              ]
+            })
+          }catch(err){
+            console.log(err)
+          }
+        })()
+      }, 5000)
+
+    }catch(e){
+      console.log(e)
+    }
+    // await QueueManager.publish({
+    //   queue: QUEUE_EVENTS.name,
+    //   data: {
+    //     to: user.email,
+    //     replyTo: partner.email,
+    //     // @ts-ignore
+    //     'reply-to': partner.email,
+    //     from: {
+    //       name: "AutoHyve",
+    //       address: <string>process.env.SMTP_EMAIL_FROM2,
+    //     },
+    //     subject: `${partner.name} has sent you an estimate on AutoHyve`,
+    //     html: mail,
+    //     bcc: [<string>process.env.SMTP_BCC],
+    //   },
+    // });
 
     // console.log(estimate, customer, vehicle, partner, 'reach2')
 

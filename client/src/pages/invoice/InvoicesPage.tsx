@@ -299,6 +299,192 @@ function InvoicesPage() {
     ] as GridColDef<IInvoice>[];
   }, [dispatch, invoice, isTechAdmin, navigate]);
 
+  const techColumns = useMemo(() => {
+    return [
+      // {
+      //   field: 'updateStatus',
+      //   headerName: 'Update Status',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   sortable: true,
+      //   type: 'string',
+      //   width: 180,
+      //   renderCell: params => {
+      //     return params.row.updateStatus === INVOICE_STATUS.update.sent ? (
+      //       <Chip label={INVOICE_STATUS.update.sent} size="small" color="success" />
+      //     ) : params.row.updateStatus === INVOICE_STATUS.update.draft ? (
+      //       <Chip label={INVOICE_STATUS.update.draft} size="small" color="info" />
+      //     ) : params.row.updateStatus === INVOICE_STATUS.update.refund ? (
+      //       <Chip label={INVOICE_STATUS.update.refund} size="small" color="error" />
+      //     ) : null;
+      //   },
+      // },
+      {
+        field: 'updatedAt',
+        headerName: 'Modified Date',
+        headerAlign: 'center',
+        align: 'center',
+        width: 200,
+        type: 'string',
+        valueFormatter: ({ value }) => {
+          return value ? moment(value).format('LLL') : '-';
+        },
+        sortable: true,
+      },
+      {
+        field: 'code',
+        headerName: 'Invoice',
+        headerAlign: 'center',
+        align: 'center',
+        sortable: true,
+        type: 'string',
+        renderCell: params => {
+          return (
+            <span
+              style={{ color: 'skyblue', cursor: 'pointer' }}
+              onClick={()=>{
+                void dispatch(getInvoicesAction());
+                const invoice = params.row as IInvoice;
+                const estimate = invoice.estimate;
+
+                navigate(`/invoices/${invoice.id}`, { state: { invoice, estimate } });
+              }}
+              >{params.row.code}</span>
+          )
+        }
+      },
+      {
+        field: 'fullName',
+        headerName: 'Full Name',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 250,
+        sortable: true,
+        valueGetter: param => {
+          const estimate = param.row.estimate;
+          const customer = estimate.customer;
+
+          return `${customer?.firstName || ''} ${customer?.lastName || ''}`;
+        },
+      },
+      {
+        field: 'model',
+        headerName: 'Vehicle',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 200,
+        sortable: true,
+        valueGetter: param => {
+          const estimate = param.row.estimate;
+          const vehicle = estimate.vehicle;
+
+          return `${vehicle.modelYear} ${vehicle.make} ${vehicle.model} (${vehicle.plateNumber})`;
+        },
+      },
+      {
+        field: 'grandTotal',
+        headerName: 'Grand Total',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 150,
+        sortable: true,
+      },
+      {
+        field: 'depositAmount',
+        headerName: 'Deposit Amount',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 150,
+        sortable: true,
+      },
+      {
+        field: 'dueAmount',
+        headerName: 'Due Amount',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 150,
+        sortable: true,
+        valueFormatter: ({ value }) => {
+          return value ? (Math.sign(value) === -1 ? 0 : value) : 0;
+        },
+      },
+      {
+        field: 'refundable',
+        headerName: 'Due Refund',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 150,
+        sortable: true,
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        headerAlign: 'center',
+        align: 'center',
+        sortable: true,
+        type: 'string',
+        renderCell: params => {
+          return params.row.status === INVOICE_STATUS.paid ? (
+            <Chip label={INVOICE_STATUS.paid} size="small" color="success" />
+          ) : params.row.status === INVOICE_STATUS.deposit ? (
+            <Chip label={INVOICE_STATUS.deposit} size="small" color="warning" />
+          ) : params.row.status === INVOICE_STATUS.overDue ? (
+            <Chip label={INVOICE_STATUS.overDue} size="small" color="error" />
+          ) : null;
+        },
+      },
+      {
+        field: 'actions',
+        type: 'actions',
+        headerAlign: 'center',
+        align: 'center',
+        getActions: (params: any) => [
+          // <GridActionsCellItem
+          //   key={0}
+          //   icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+          //   onClick={() => {
+          //     void dispatch(getInvoicesAction());
+          //     const invoice = params.row as IInvoice;
+          //     const estimate = invoice.estimate;
+
+          //     navigate(`/invoices/${invoice.id}`, { state: { invoice, estimate } });
+          //   }}
+          //   label="View"
+          //   showInMenu={false}
+          // />,
+          <GridActionsCellItem
+            key={2}
+            icon={<Edit sx={{ display: isTechAdmin ? 'block' : 'none', color: 'limegreen' }} />}
+            disabled={!isTechAdmin}
+            onClick={() => {
+              const _invoice = params.row as IInvoice;
+
+              invoice.onEdit(_invoice.id);
+            }}
+            label="Edit"
+            showInMenu={false}
+          />,
+          <GridActionsCellItem
+            key={2}
+            icon={<Cancel sx={{ color: 'indianred' }} />}
+            onClick={() => {
+              //
+            }}
+            label="Delete"
+            showInMenu={false}
+          />,
+        ],
+      },
+    ] as GridColDef<IInvoice>[];
+  }, [dispatch, invoice, isTechAdmin, navigate]);
+
+
   useEffect(() => {
     return () => {
       dispatch(clearSaveInvoiceStatus());
@@ -319,7 +505,8 @@ function InvoicesPage() {
         <Grid item xs={12}>
           <AppDataGrid
             rows={invoice.invoices}
-            columns={columns}
+            // columns={columns}
+            columns={isTechAdmin ? techColumns : columns}
             showToolbar
             loading={invoiceReducer.getInvoicesStatus === 'loading'}
           />

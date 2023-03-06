@@ -36,6 +36,7 @@ export const corsOptions = {
 app.use(helmet());
 app.use(cookieParser(settings.cookie.secret));
 app.use(cors(corsOptions)); //handle cors operations
+// app.use(cors()); //handle cors operations
 app.use(json()); // Parse incoming requests data
 app.use(morgan('dev')); //Route debugger
 

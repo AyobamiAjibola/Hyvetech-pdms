@@ -38,6 +38,9 @@ export default function VehicleOwner() {
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
+  // @ts-ignore
+  const [rawOption, setRawOption] = useState<any>([])
+  const [noOptionsText, setNoOptionsText]= useState<any>("Click Enter to Initialize Search");
   const [showDrop, setShowDrop] = useState<boolean>(false);
   const [customer, setCustomer] = useState<ICustomer>();
   const [tabs, setTabs] = useState<ITab[]>(customerSearchResultTabs);
@@ -93,7 +96,8 @@ export default function VehicleOwner() {
 
   useEffect(() => {
     if (partnerReducer.getOwnersFilterDataStatus === 'completed') {
-      setOptions(partnerReducer.ownersFilterData);
+      // setOptions(partnerReducer.ownersFilterData);
+      setRawOption(partnerReducer.ownersFilterData);
     }
   }, [partnerReducer.ownersFilterData, partnerReducer.getOwnersFilterDataStatus]);
 
@@ -116,6 +120,40 @@ export default function VehicleOwner() {
       dispatch(getCustomerAction(id));
     }
   };
+
+  const filterData = (_text: string)=>{
+    const text = _text.toLowerCase();
+    // 
+    // console.log(text)
+    setNoOptionsText("Click Enter to Initialize Search")
+
+    const _temp: any = [];
+    rawOption.map((_item : any) =>{
+
+      // filter logic
+
+      if( (_item?.raw?.email || "").toLowerCase() == text){
+        // check if it's an exact match to email
+        _temp.push(_item);
+      }else if( (_item?.raw?.phone || "").toLowerCase() == text){
+        // check if it's an exact match to phone
+        _temp.push(_item);
+      }else if( (_item?.raw?.companyName || "").toLowerCase() == text){
+        // check if it's an exact match to phone
+        _temp.push(_item);
+      }else if( (_item?.raw?.firstName || "").toLowerCase() == text){
+        // check if it's an exact match to phone
+        _temp.push(_item);
+      }else if( (_item?.raw?.lastName || "").toLowerCase() == text){
+        // check if it's an exact match to phone
+        _temp.push(_item);
+      }
+    })
+
+    console.log(_temp)
+
+    setOptions(_temp);
+  }
 
   return (
     <CustomerPageContext.Provider value={{ customer, setCustomer }}>
@@ -140,14 +178,24 @@ export default function VehicleOwner() {
                   reload();
                 }
               }}
-              noOptionsText="Click Enter to Initialize Search"
+              // noOptionsText="Click Enter to Initialize Search"
+              noOptionsText={noOptionsText}
               renderInput={props => (
                 <TextField
                   {...props}
                   label="Search customer by First name, last name, car plate number."
+                  onChange={e => {
+                    // setInputStack(e.target.value)
+                    filterData(e.target.value)
+                  }}
                   onKeyDown={e => {
                     if(e.key === 'Enter'){
-                      setShowDrop(true)
+                      if( (inputValue || '').length == 0 ){
+                        setShowDrop(false)
+                      }else{
+                        setNoOptionsText("No result Found");
+                        setShowDrop(true)
+                      }
                     }else{
                       setShowDrop(false)
                     }

@@ -109,3 +109,10 @@ export const deletePlanHandler = authenticateRouteWrapper(async (req: Request, r
 
   res.status(result.code).json(result);
 });
+
+export const requestPdfHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
+  const result = await partnerController.requestPdf(req);
+
+  // @ts-ignore
+  res.status(result.code).json(result);
+});

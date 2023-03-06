@@ -144,6 +144,7 @@ const handleEdit = async ()=>{
         lastName: form.lastName,
         phone: form.phone,
         creditRating: form.creditRating,
+        companyName: form.companyName,
         state: form.state,
         district: form.district,
         address: form.address,

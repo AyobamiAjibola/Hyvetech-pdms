@@ -95,6 +95,7 @@ export default class CustomerController {
             creditRating: Joi.string().optional().label("Credit Rating"),
             companyName: Joi.any().allow().label("Company Name"),
             accountType: Joi.string().optional().label("Account Type"),
+            isEditing: Joi.any().optional().label("Is Editing")
     }).validate(req.body);
     
     if(error){
@@ -111,7 +112,36 @@ export default class CustomerController {
     });
     
     if (customer) {
-      return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
+      if(value.isEditing){
+        
+        customer.phone = value.phone;
+        customer.firstName = value.firstName;
+        customer.companyName = value.companyName;
+        customer.lastName = value.lastName;
+        customer.creditRating = value.creditRating;
+        await customer.save()
+
+        await Contact.update({
+          district: value.district,
+          state: value.state,
+          address: value.address,
+        }, {
+          where: {
+            // @ts-ignore
+            customerId: customer.id
+          }
+        })
+
+        const response: HttpResponse<Customer> = {
+          code: HttpStatus.OK.code,
+          message: HttpStatus.OK.value
+        };
+    
+        return Promise.resolve(response);
+
+      }else{
+        return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
+      }
     }
 
 
@@ -179,7 +209,41 @@ export default class CustomerController {
     for (let i = 0; i < (newValue.accounts).length; i++) {
       const value = (newValue.accounts)[i];
 
-      console.log(value)
+      const {error: error2} = Joi.object({
+        email: Joi.string().email().required().label("Email"),
+        firstName: Joi.string().optional().label("First Name"),
+        lastName: Joi.string().optional().label("Last Name"),
+        phone: Joi.string().optional().label("Phone"),
+        companyName: Joi.any().allow().label("Company Name"),
+        state: Joi.string().optional().label("State"),
+        district: Joi.string().optional().label("District"),
+      }).validate(value);
+      if(error2){
+        console.log(error2.message, value);
+        continue;
+      }
+
+      // validate phone
+      const firstChar = (value?.phone || "")[0];
+      if( firstChar != "0"){
+        // logic to function on phone
+        if(firstChar == '+'){
+          // 
+          value.phone = (value.phone).replaceAll("+234", "0");
+        }else if(firstChar == '2'){
+          // 
+          value.phone = (value.phone).replaceAll("234", "0");
+        }else{
+          // 
+          value.phone = '0'+(value.phone);
+        }
+      }
+
+      if( (value?.phone || '').length != 11 ){
+        continue;
+      }
+
+      console.log('reac-code-2')
 
       value.email = (value.email).toLowerCase();
 
@@ -195,6 +259,8 @@ export default class CustomerController {
       // return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
     }
 
+    console.log('reac-code-3')
+
 
     //find role by name
     const role = await dataSources.roleDAOService.findByAny({
@@ -204,6 +270,8 @@ export default class CustomerController {
     if (!role){
       continue;
     }
+
+    console.log('reac-code-4')
       // return Promise.reject(
       //   CustomAPIError.response(`Role ${settings.roles[1]} does not exist`, HttpStatus.NOT_FOUND.code),
       // );
@@ -259,6 +327,7 @@ export default class CustomerController {
       lastName: Joi.string().optional().label("Last Name"),
       phone: Joi.string().optional().label("Phone"),
       creditRating: Joi.any().optional().label("Credit Rating"),
+      companyName: Joi.any().allow().label("Company Name"),
       address: Joi.string().optional().label("Address"),
       state: Joi.string().optional().label("State"),
       district: Joi.string().optional().label("District"),
@@ -277,6 +346,7 @@ export default class CustomerController {
 
     customer.phone = value.phone;
     customer.firstName = value.firstName;
+    customer.companyName = value.companyName;
     customer.lastName = value.lastName;
     customer.creditRating = value.creditRating;
     await customer.save()
