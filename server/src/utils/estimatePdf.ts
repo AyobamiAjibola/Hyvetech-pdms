@@ -427,8 +427,8 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
                     <p class="bill-to-name">${ customer?.companyName || `${customer.firstName} ${customer.lastName}`}</p>
-                    <p class="bill-to-address">${customer.contacts[0].address}, ${customer.contacts[0]?.city || ""} ${customer.contacts[0].district}, ${customer.contacts[0].state}</p>
-                    <p class="bill-to-address">${customer.phone}</p>
+                    <p class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</p>
+                    <p class="bill-to-address">${customer?.phone || ""}</p>
                 </div>
                 <div>
                     <span class="vehicle-inforTitle">Vehicle Information:</span>
