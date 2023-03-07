@@ -296,27 +296,28 @@ export default class Generic {
     const android = 'android';
     const response: { type: string; token: string } = { token: '', type: '' };
 
-    try{
+    try {
       if (token.match(/ios/)?.input) {
         response.type = ios;
         response.token = token.replace(`[${ios}]-`, '');
       }
-  
+
       if (token.match(/android/)?.input) {
         response.type = android;
         response.token = token.replace(`[${android}]-`, '');
       }
-    }catch(e){
+    } catch (e) {
       response.type = ios;
       response.token = token;
     }
 
-    try{
+    try {
       response.type = android;
-      response.token = (response.token).replace(`[${android}]-`, '');
-      response.token = (response.token).replace(`[${ios}]-`, '');
-    }catch(e){}
-    
+      response.token = response.token.replace(`[${android}]-`, '');
+      response.token = response.token.replace(`[${ios}]-`, '');
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+
     return response;
   }
 }

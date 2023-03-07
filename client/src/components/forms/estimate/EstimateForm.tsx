@@ -1,9 +1,26 @@
-import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  ChangeEvent,
+  Dispatch,
+  memo,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import {
   Autocomplete,
   Checkbox,
-  CircularProgress, createFilterOptions, Divider, Grid, Typography
+  CircularProgress,
+  createFilterOptions,
+  Divider,
+  FormControlLabel,
+  Grid,
+  Radio,
+  RadioGroup,
+  Typography,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send, SendAndArchive } from '@mui/icons-material';
@@ -45,6 +62,8 @@ interface IProps {
   showEdit?: boolean;
   isPopUp?: boolean;
   setSave: Dispatch<SetStateAction<boolean>>;
+  setDiscount?: Dispatch<SetStateAction<number>>;
+  setDiscountType?: Dispatch<SetStateAction<string>>;
 }
 
 const { fields } = estimateModel;
@@ -61,34 +80,33 @@ const filterOptions = createFilterOptions({
 });
 
 function EstimateForm(props: IProps) {
-
   const [vat, setVat] = useState<number>(0);
-  const [createModal, setCreateModal] = useState(false)
-  const [editModal, setEditModal] = useState(false)
+  const [createModal, setCreateModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
 
   // @ts-ignore
   // const [inputStack, setInputStack] = useState<any>("")
   // @ts-ignore
-  const [rawOption, setRawOption] = useState<any>([])
+  const [rawOption, setRawOption] = useState<any>([]);
 
   const [userInfo, setUserInfo] = useState({
     accountType: 'individual',
-    firstName: "",
-    email: "",
-    lastName: "",
-    companyName: "",
-    phone: "",
-    creditRating: "N/A",
-    state: "Abuja (FCT)",
-    district: "",
-    address: ""
-  })
+    firstName: '',
+    email: '',
+    lastName: '',
+    companyName: '',
+    phone: '',
+    creditRating: 'N/A',
+    state: 'Abuja (FCT)',
+    district: '',
+    address: '',
+  });
 
   const [activeId, setactiveId] = useState<number>(0);
   const [vatPart, setVatPart] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
-  const [noOptionsText, setNoOptionsText]= useState<any>("Click Enter to Initialize Search");
+  const [noOptionsText, setNoOptionsText] = useState<any>('Click Enter to Initialize Search');
 
   const [value, setValue] = React.useState<IDriversFilterData | null>(null);
   const [inputValue, setInputValue] = React.useState('');
@@ -109,28 +127,26 @@ function EstimateForm(props: IProps) {
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
   // @ts-ignore
-  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>((values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : true)
-  // @ts-ignore
-  const [enableTaxPart, setEnableTaxPart] = useState<boolean>((values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? false : false) : false)
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(false);
 
   useEffect(() => {
-    setTimeout(() => {
+    if (values?.estimate?.tax !== undefined || parseInt(values?.estimate?.tax) !== 0) {
+      setEnableTaxLabor(true);
+    } else {
+      setEnableTaxLabor(false);
+    }
+  }, [values.estimate?.tax]);
 
-      // @ts-ignore
-      if (values.estimate != undefined) {
-        // @ts-ignore
-        const _lab = (values?.estimate?.tax !== undefined) ? (parseInt(values.estimate.tax) !== 0 ? true : false) : true;
-        setEnableTaxLabor(_lab)
-        // @ts-ignore
-        const _part = (values?.estimate?.taxPart !== undefined) ? (parseInt(values.estimate.taxPart) !== 0 ? false : false) : false;
-        setEnableTaxPart(_part)
+  // @ts-ignore
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(false);
 
-        console.log(_lab, _part, "_lab, _part")
-      } else {
-        console.log("did not reach", "_lab, _part")
-      }
-    }, 3000)
-  }, [props?.isPopUp, props, customerReducer.getCustomerStatus])
+  useEffect(() => {
+    if (values?.estimate?.taxPart !== undefined || parseInt(values?.estimate?.taxPart) !== 0) {
+      setEnableTaxPart(true);
+    } else {
+      setEnableTaxPart(false);
+    }
+  }, [values.estimate]);
 
   const { setGrandTotal, setPartTotal, setLabourTotal, showCreate, showEdit, grandTotal, labourTotal, partTotal } =
     props;
@@ -204,44 +220,46 @@ function EstimateForm(props: IProps) {
     setVatPart(tax);
   }, [partTotal, setFieldValue, enableTaxPart]);
 
-  useEffect(() => {
+  const calculateTaxLabour = useCallback(() => {
     if (!enableTaxLabor) {
       setVat(0);
-      return
+      return;
     }
     const vat = 7.5 * 0.01;
     const tax = labourTotal * vat;
 
     setFieldValue('tax', formatNumberToIntl(tax));
     setVat(tax);
-  }, [labourTotal, setFieldValue, enableTaxLabor]);
+  }, [enableTaxLabor, labourTotal, setFieldValue]);
+
+  useLayoutEffect(() => {
+    calculateTaxLabour();
+  }, [calculateTaxLabour]);
+
+  const [subTotal, setSubTotal] = useState(0);
+  const [vatTotal, setVatTotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState('exact');
 
   useEffect(() => {
-
     let gT = 0;
+    setSubTotal(partTotal + labourTotal);
+    setVatTotal(vat + vatPart);
     if (!enableTaxLabor) {
-      gT = (vatPart + partTotal + labourTotal);
-      console.log(vatPart + partTotal + labourTotal)
-
+      gT = vatPart + partTotal + labourTotal;
     }
 
     if (!enableTaxPart) {
-      gT = (vat + partTotal + labourTotal);
-      console.log(vat + partTotal + labourTotal)
-
+      gT = vat + partTotal + labourTotal;
     }
 
     if (enableTaxPart && enableTaxLabor) {
-      gT = (vat + vatPart + partTotal + labourTotal);
-      console.log(vat + vatPart + partTotal + labourTotal)
+      gT = vat + vatPart + partTotal + labourTotal;
     } else if (!enableTaxPart && !enableTaxLabor) {
-      gT = (partTotal + labourTotal);
-      console.log(partTotal + labourTotal)
+      gT = partTotal + labourTotal;
     }
 
-    setGrandTotal(gT)
-    console.log(gT)
-
+    setGrandTotal(gT);
   }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
@@ -323,14 +341,19 @@ function EstimateForm(props: IProps) {
 
   useEffect(() => {
     if (
-
-      (estimateReducer.saveEstimateStatus == 'completed') ||
-      (estimateReducer.updateEstimateStatus == 'completed') ||
-      (estimateReducer.createEstimateStatus == 'completed') ||
-      (estimateReducer.sendDraftEstimateStatus == 'completed')) {
-      reload()
+      estimateReducer.saveEstimateStatus == 'completed' ||
+      estimateReducer.updateEstimateStatus == 'completed' ||
+      estimateReducer.createEstimateStatus == 'completed' ||
+      estimateReducer.sendDraftEstimateStatus == 'completed'
+    ) {
+      reload();
     }
-  }, [estimateReducer.saveEstimateStatus, estimateReducer.updateEstimateStatus, estimateReducer.createEstimateStatus, estimateReducer.sendDraftEstimateStatus])
+  }, [
+    estimateReducer.saveEstimateStatus,
+    estimateReducer.updateEstimateStatus,
+    estimateReducer.createEstimateStatus,
+    estimateReducer.sendDraftEstimateStatus,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -350,11 +373,10 @@ function EstimateForm(props: IProps) {
     // @ts-ignore
     // if (true) {
     // console.log(value)
-    if (customerReducer.getCustomerStatus === "completed") {
+    if (customerReducer.getCustomerStatus === 'completed') {
       const _customer: any = customerReducer.customer;
-      console.log(_customer, "_customer")
 
-      if(_customer != undefined){
+      if (_customer != undefined) {
         // upto-populate info
         setFieldValue(fields.firstName.name, _customer.firstName);
         setFieldValue(fields.lastName.name, _customer.lastName);
@@ -362,13 +384,13 @@ function EstimateForm(props: IProps) {
         setFieldValue(fields.email.name, _customer.email);
         setFieldValue(fields.state.name, _customer.contacts[0]?.state || 'Abuja (FCT)');
         setFieldValue(fields.address.name, _customer.contacts[0]?.address || ' .');
-        setFieldValue(fields.addressType.name, "Home");
-        setactiveId(_customer.id)
-        const vinList = (_customer.vehicles).map((_data: any) => (_data?.vin || ""));
-        setvinOptions(vinList)
-        
+        setFieldValue(fields.addressType.name, 'Home');
+        setactiveId(_customer.id);
+        const vinList = _customer.vehicles.map((_data: any) => _data?.vin || '');
+        setvinOptions(vinList);
+
         setUserInfo({
-          accountType: ((_customer?.companyName || "").length === 0) ? 'individual' : "corporate",
+          accountType: (_customer?.companyName || '').length === 0 ? 'individual' : 'corporate',
           email: _customer.email,
           firstName: _customer.firstName,
           lastName: _customer.lastName,
@@ -380,28 +402,24 @@ function EstimateForm(props: IProps) {
           address: _customer.contacts[0]?.address || 'Abuja (FCT)',
         });
       }
-
-      
     }
     // }
-  }, [value, customerReducer.getCustomerStatus])
+  }, [value, customerReducer.getCustomerStatus]);
 
   // listen for tax changes and adjust
   useEffect(() => {
     // check for labor
     if (!enableTaxLabor) {
-      setFieldValue(fields.tax.name, 0)
+      setFieldValue(fields.tax.name, 0);
       // setVat(0)
-      console.log('making labor 0', "mainLog1")
     }
 
     // check for part
     if (!enableTaxPart) {
-      setFieldValue(fields.taxPart.name, 0)
+      setFieldValue(fields.taxPart.name, 0);
       // setVatPart(0)
-      console.log('making part 0', "mainLog1")
     }
-  }, [enableTaxLabor, enableTaxPart])
+  }, [enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
     const newStates = STATES.map(state => ({
@@ -414,45 +432,70 @@ function EstimateForm(props: IProps) {
 
   // console.log(options, "optionsoptions")
 
-  const filterData = (_text: string)=>{
+  const filterData = (_text: string) => {
     const text = _text.toLowerCase();
-    // 
+    //
     // console.log(text)
-    setNoOptionsText("Click Enter to Initialize Search")
+    setNoOptionsText('Click Enter to Initialize Search');
 
     const _temp: any = [];
-    rawOption.map((_item : any) =>{
-
+    rawOption.map((_item: any) => {
       // filter logic
 
-      if( (_item?.raw?.email || "").toLowerCase() == text){
+      if ((_item?.raw?.email || '').toLowerCase() == text) {
         // check if it's an exact match to email
         _temp.push(_item);
-      }else if( (_item?.raw?.phone || "").toLowerCase() == text){
+      } else if ((_item?.raw?.phone || '').toLowerCase() == text) {
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.companyName || "").toLowerCase() == text){
+      } else if ((_item?.raw?.companyName || '').toLowerCase() == text) {
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.firstName || "").toLowerCase() == text){
+      } else if ((_item?.raw?.firstName || '').toLowerCase() == text) {
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.lastName || "").toLowerCase() == text){
+      } else if ((_item?.raw?.lastName || '').toLowerCase() == text) {
         // check if it's an exact match to phone
         _temp.push(_item);
       }
-    })
-
-    console.log(_temp)
+    });
 
     setOptions(_temp);
-  }
+  };
+
+  useEffect(() => {
+    if (isNaN(discount)) return setGrandTotal(subTotal + vatTotal);
+    if (discount < 0 || discount > grandTotal) return setGrandTotal(subTotal + vatTotal);
+
+    let discountValue = discount;
+    const total = subTotal + vatTotal;
+
+    if (discountType === 'exact') setGrandTotal(total - discountValue);
+    else {
+      if (discount < 0.1 || discount > 99) return setGrandTotal(total);
+
+      discountValue = 1 - discountValue / 100;
+      setGrandTotal(total * discountValue);
+    }
+  }, [discount, discountType]);
+
+  useEffect(() => {
+    const total = subTotal + vatTotal;
+    if (total === grandTotal) {
+      if (values.estimate && values?.estimate?.discount) {
+        setDiscount(values?.estimate?.discount);
+      }
+
+      if (values.estimate && values?.estimate?.discountType) {
+        setDiscountType(values?.estimate?.discountType);
+      }
+    }
+  }, [grandTotal, values.estimate, subTotal, vatTotal]);
 
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ p: 1 }}>
-
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               Customer Information
@@ -460,92 +503,93 @@ function EstimateForm(props: IProps) {
             <Divider orientation="horizontal" />
           </Grid>
 
-          {
-            ((isTechAdmin) && (props?.isPopUp || false) && (
-              <Grid style={{ width: '100%' }}>
-                <div style={{ marginTop: 10, paddingTop: 15, paddingBottom: 15, width: '100%' }}></div>
+          {isTechAdmin && (props?.isPopUp || false) && (
+            <Grid style={{ width: '100%' }}>
+              <div style={{ marginTop: 10, paddingTop: 15, paddingBottom: 15, width: '100%' }}></div>
 
-                <Grid container justifyContent="center" alignItems="center">
-                  <Grid item xs={8} md={6}>
-                    <Autocomplete
-                      filterOptions={filterOptions}
-                      inputValue={inputValue}
-                      value={value}
-                      openOnFocus={false}
-                      loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
-                      getOptionLabel={option => option.fullName}
-                      isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
-                      onChange={(_: any, newValue: IDriversFilterData | null) => {
-                        setValue(newValue);
-                        handleGetDriverInfo(newValue?.id);
-                      }}
-                      onInputChange={(_, newInputValue, reason) => {
-                        setInputValue(newInputValue);
-                        if (reason === 'clear') {
-                          reload();
-                        }
-                      }}
-                      noOptionsText={noOptionsText}
-                      renderInput={props => (
-                        <TextField
-                          {...props}
-                          label="Search customer by First name, last name, car plate number."
-                          onChange={e => {
-                            // setInputStack(e.target.value)
-                            filterData(e.target.value)
-                          }}
-                          onKeyDown={e => {
-                            if(e.key === 'Enter'){
-                              if( (inputValue || '').length == 0 ){
-                                setShowDrop(false)
-                              }else{
-                                setNoOptionsText("No result Found");
-                                setShowDrop(true)
-                              }
-                            }else{
-                              setShowDrop(false)
+              <Grid container justifyContent="center" alignItems="center">
+                <Grid item xs={8} md={6}>
+                  <Autocomplete
+                    filterOptions={filterOptions}
+                    inputValue={inputValue}
+                    value={value}
+                    openOnFocus={false}
+                    loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
+                    getOptionLabel={option => option.fullName}
+                    isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
+                    onChange={(_: any, newValue: IDriversFilterData | null) => {
+                      setValue(newValue);
+                      handleGetDriverInfo(newValue?.id);
+                    }}
+                    onInputChange={(_, newInputValue, reason) => {
+                      setInputValue(newInputValue);
+                      if (reason === 'clear') {
+                        reload();
+                      }
+                    }}
+                    noOptionsText={noOptionsText}
+                    renderInput={props => (
+                      <TextField
+                        {...props}
+                        label="Search customer by First name, last name, car plate number."
+                        onChange={e => {
+                          // setInputStack(e.target.value)
+                          filterData(e.target.value);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            if ((inputValue || '').length == 0) {
+                              setShowDrop(false);
+                            } else {
+                              setNoOptionsText('No result Found');
+                              setShowDrop(true);
                             }
-                          }}
-                          onBlur={()=>{
-                            setShowDrop(false)
-                          }}
-                          InputProps={{
-                            ...props.InputProps,
-                            endAdornment: (
-                              <React.Fragment>
-                                {partnerReducer.getDriversFilterDataStatus === 'loading' ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {props.InputProps.endAdornment}
-                              </React.Fragment>
-                            ),
-                          }}
-                        />
-                      )}
-                      options={showDrop ? options : []}
-                      // options={[]}
-                    />
-                  </Grid>
+                          } else {
+                            setShowDrop(false);
+                          }
+                        }}
+                        onBlur={() => {
+                          setShowDrop(false);
+                        }}
+                        InputProps={{
+                          ...props.InputProps,
+                          endAdornment: (
+                            <React.Fragment>
+                              {partnerReducer.getDriversFilterDataStatus === 'loading' ? (
+                                <CircularProgress color="inherit" size={20} />
+                              ) : null}
+                              {props.InputProps.endAdornment}
+                            </React.Fragment>
+                          ),
+                        }}
+                      />
+                    )}
+                    options={showDrop ? options : []}
+                    // options={[]}
+                  />
+                </Grid>
 
-                  <Grid item>
-                    <Typography onClick={()=> setCreateModal(true)} color={'skyblue'} style={{
+                <Grid item>
+                  <Typography
+                    onClick={() => setCreateModal(true)}
+                    color={'skyblue'}
+                    style={{
                       marginLeft: 20,
                       display: 'flex',
                       alignItems: 'center',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
                     }}>
-                        <FaPlus style={{marginRight: 8}} />
-                        New Customer
-                      </Typography>
-                  </Grid>
+                    <FaPlus style={{ marginRight: 8 }} />
+                    New Customer
+                  </Typography>
                 </Grid>
-
-                {/* <Divider orientation="horizontal" /> */}
               </Grid>
-            ))
-          }
 
-{/* 
+              {/* <Divider orientation="horizontal" /> */}
+            </Grid>
+          )}
+
+          {/* 
           <Grid item xs={4}>
             <TextInputField
               onChange={handleChange}
@@ -647,58 +691,64 @@ function EstimateForm(props: IProps) {
             </Grid>
           </Grid> */}
 
-          {
-          ( ((userInfo.firstName).length != 0) && (<Grid style={{padding: 20}} xs={12} container>
-            
-            <Grid item xs={11}>
-              <Grid xs={12} container>
-                <Typography>{ (values?.firstName || "First Name & ")} {' '} {(values?.lastName || "Last Name")}</Typography> <br />
-              </Grid>
+          {userInfo.firstName.length != 0 && (
+            <Grid style={{ padding: 20 }} xs={12} container>
+              <Grid item xs={11}>
+                <Grid xs={12} container>
+                  <Typography>
+                    {values?.firstName || 'First Name & '} {values?.lastName || 'Last Name'}
+                  </Typography>{' '}
+                  <br />
+                </Grid>
 
-              {
-                (((userInfo?.companyName || "").length != 0) && (
+                {(userInfo?.companyName || '').length != 0 && (
                   <Grid xs={12} container>
-                    <Typography>{ (userInfo?.companyName || "First Name & ")}</Typography> <br />
+                    <Typography>{userInfo?.companyName || 'First Name & '}</Typography> <br />
                   </Grid>
-                ))
-              }
-              
-              <Grid xs={12} container>
-                <Typography>{ values?.email || "Email"}</Typography> <br />
+                )}
+
+                <Grid xs={12} container>
+                  <Typography>{values?.email || 'Email'}</Typography> <br />
+                </Grid>
+
+                <Grid xs={12} container>
+                  <Typography>{values?.phone || 'Phone'}</Typography> <br />
+                </Grid>
+
+                <Grid xs={12} container>
+                  <Typography>{values?.address || 'Address'}</Typography> <br />
+                </Grid>
+
+                <Grid xs={12} container>
+                  <Typography>{values?.state || 'State'}</Typography> <br />
+                </Grid>
               </Grid>
 
-              <Grid xs={12} container>
-                <Typography>{ values?.phone || "Phone"}</Typography> <br />
-              </Grid>
-
-              <Grid xs={12} container>
-                <Typography>{ values?.address || "Address"}</Typography> <br />
-              </Grid>
-
-              <Grid xs={12} container>
-                <Typography>{ values?.state || "State"}</Typography> <br />
+              <Grid>
+                <Typography
+                  onClick={() => {
+                    setEditModal(true);
+                  }}>
+                  {activeId != 0 && (
+                    <span style={{ color: 'skyblue', textDecoration: 'none', cursor: 'pointer' }}>Edit</span>
+                  )}
+                </Typography>{' '}
+                <br />
               </Grid>
             </Grid>
-
-            <Grid>
-              <Typography onClick={()=>{
-                setEditModal(true)
-              }}>
-                {
-                  (activeId != 0 && <span style={{color: 'skyblue', textDecoration: 'none', cursor: 'pointer'}} >Edit</span>  )
-                }
-              </Typography> <br />
-            </Grid>
-
-          </Grid>))
-          }
+          )}
 
           <Typography>
             {'\n'}
             <br />
           </Typography>
 
-          <VehicleInformationFields vinOptions={vinOptions} values={values} handleChange={handleChange} handleChangeVIN={_handleChangeVIN} />
+          <VehicleInformationFields
+            vinOptions={vinOptions}
+            values={values}
+            handleChange={handleChange}
+            handleChangeVIN={_handleChangeVIN}
+          />
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               {fields.parts.label}
@@ -805,15 +855,17 @@ function EstimateForm(props: IProps) {
                     <Grid item xs={12} container spacing={2} columns={13}>
                       <Grid item xs={8} />
                       <Grid item xs={4}>
-                        {(enableTaxPart && (<TextField
-                          name={fields.taxPart.name}
-                          value={values.taxPart}
-                          label={`${fields.taxPart.label} (VAT 7.5%)`}
-                          variant="outlined"
-                          fullWidth
-                          sx={{ mb: 2 }}
-                        />))}
-                        Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
+                        {enableTaxPart && (
+                          <TextField
+                            name={fields.taxPart.name}
+                            value={values.taxPart}
+                            label={`${fields.taxPart.label} (VAT 7.5%)`}
+                            variant="outlined"
+                            fullWidth
+                            sx={{ mb: 2 }}
+                          />
+                        )}
+                        Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
 
                       {/* <Grid item style={{}}>
@@ -822,7 +874,6 @@ function EstimateForm(props: IProps) {
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
                       </Grid> */}
-
                     </Grid>
                   </React.Fragment>
                 );
@@ -906,15 +957,17 @@ function EstimateForm(props: IProps) {
           <Grid item xs={12} container spacing={2} columns={13}>
             <Grid item xs={6} />
             <Grid item xs={4}>
-              {(enableTaxLabor && (<TextField
-                name={fields.tax.name}
-                value={values.tax}
-                label={`${fields.tax.label} (VAT 7.5%)`}
-                variant="outlined"
-                fullWidth
-                sx={{ mb: 2 }}
-              />))}
-              <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
+              {enableTaxLabor && (
+                <TextField
+                  name={fields.tax.name}
+                  value={values.tax}
+                  label={`${fields.tax.label} (VAT 7.5%)`}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
+              <Typography> Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
 
             <Grid item style={{}}>
@@ -923,7 +976,6 @@ function EstimateForm(props: IProps) {
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
             </Grid>
-
           </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
@@ -931,83 +983,150 @@ function EstimateForm(props: IProps) {
             </Typography>
             <Divider flexItem orientation="horizontal" />
           </Grid>
-          <Grid item xs={4} alignSelf="center">
-            <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+          <Grid item xs={6} alignSelf="center">
+            <Grid item>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Typography variant="h6">Sub-Total:</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="h6">₦{formatNumberToIntl(subTotal)}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <br />
+            <Grid container spacing={0}>
+              <Grid item xs={2}>
+                <Typography variant="h6">Discount:</Typography>
+              </Grid>
+              <Grid container xs={10} spacing={2}>
+                <Grid item>
+                  <TextInputField
+                    onChange={e => setDiscount(parseInt(e.target.value))}
+                    value={discount}
+                    name="discount.value"
+                    label={fields.discount.label}
+                    type="number"
+                    inputProps={
+                      discountType === 'exact'
+                        ? {
+                            min: '0',
+                          }
+                        : {
+                            min: '0',
+                            max: '99',
+                          }
+                    }
+                  />
+                </Grid>
+                <Grid item>
+                  <RadioGroup row value={discountType} onChange={e => setDiscountType(e.target.value)}>
+                    <FormControlLabel value="exact" control={<Radio />} label="₦" />
+                    <FormControlLabel value="percent" control={<Radio />} label="%" />
+                  </RadioGroup>
+                </Grid>
+              </Grid>
+            </Grid>
+            <br />
+            <Grid item>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Typography variant="h6">VAT(7.5%):</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="h6">₦{formatNumberToIntl(vatTotal)}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Typography variant="h6">Grand Total:</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="h6">₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <TextInputField
-              onChange={handleChange}
-              value={values.depositAmount}
-              name={fields.depositAmount.name}
-              label={fields.depositAmount.label}
-              type="number"
-              inputProps={{
-                min: '0',
-              }}
-            />
-          </Grid>
-          <Grid item xs={4} container spacing={0.5}>
-            <Grid item xs={8}>
+          <Grid item xs={6}>
+            <Grid item xs={12} container spacing={0.5}>
+              <Grid item xs={8}>
+                <TextInputField
+                  onChange={handleChange}
+                  value={values.jobDuration.count}
+                  name="jobDuration.count"
+                  label={fields.jobDuration.label}
+                  type="number"
+                  inputProps={{
+                    min: '0',
+                  }}
+                />
+              </Grid>
+              <Grid item xs>
+                <SelectField
+                  data={[
+                    { label: 'day', value: 'day' },
+                    { label: 'week', value: 'week' },
+                    { label: 'month', value: 'month' },
+                    { label: 'year', value: 'year' },
+                  ]}
+                  onChange={handleChange}
+                  value={values.jobDuration.interval}
+                  name="jobDuration.interval"
+                  label="Interval"
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+            <br />
+            <Grid item xs={12}>
               <TextInputField
                 onChange={handleChange}
-                value={values.jobDuration.count}
-                name="jobDuration.count"
-                label={fields.jobDuration.label}
+                value={values.depositAmount}
+                name={fields.depositAmount.name}
+                label={fields.depositAmount.label}
                 type="number"
                 inputProps={{
                   min: '0',
                 }}
               />
             </Grid>
-            <Grid item xs>
-              <SelectField
-                data={[
-                  { label: 'day', value: 'day' },
-                  { label: 'week', value: 'week' },
-                  { label: 'month', value: 'month' },
-                  { label: 'year', value: 'year' },
-                ]}
-                onChange={handleChange}
-                value={values.jobDuration.interval}
-                name="jobDuration.interval"
-                label="Interval"
-                fullWidth
-              />
-            </Grid>
           </Grid>
-          {
-            ((parseInt(values.depositAmount) > 0) && (parseInt(values.depositAmount) <= grandTotal) &&
-              (<Grid item xs={12}>
-                <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
-                <LoadingButton
-                  type="submit"
-                  loading={saveStatus}
-                  disabled={
-                    saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
-                  }
-                  variant="contained"
-                  color="secondary"
-                  endIcon={<Save />}
-                  onClick={() => {
-                    props.setSave(true)
-                  }}>
-                  {'Save'}
-                </LoadingButton>
-                <LoadingButton
-                  sx={{ ml: 2 }}
-                  type="submit"
-                  loading={sendStatus}
-                  disabled={values.status === ESTIMATE_STATUS.invoiced}
-                  onClick={() => {
-                    props.setSave(false)
-                  }}
-                  variant="contained"
-                  color="success"
-                  endIcon={values.status === ESTIMATE_STATUS.sent ? <SendAndArchive /> : <Send />}>
-                  {values.status === ESTIMATE_STATUS.sent ? 'Save & Send' : 'Send'}
-                </LoadingButton>
-              </Grid>))
-          }
+          {parseInt(values.depositAmount) > 0 && parseInt(values.depositAmount) <= grandTotal && (
+            <Grid item xs={12}>
+              <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
+              <LoadingButton
+                type="submit"
+                loading={saveStatus}
+                disabled={
+                  saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
+                }
+                variant="contained"
+                color="secondary"
+                endIcon={<Save />}
+                onClick={() => {
+                  props.setSave(true);
+                }}>
+                {'Save'}
+              </LoadingButton>
+              <LoadingButton
+                sx={{ ml: 2 }}
+                type="submit"
+                loading={sendStatus}
+                disabled={values.status === ESTIMATE_STATUS.invoiced}
+                onClick={() => {
+                  props.setDiscountType && props.setDiscountType(discountType);
+                  props.setDiscount && props.setDiscount(discount);
+                  props.setSave(false);
+                }}
+                variant="contained"
+                color="success"
+                endIcon={values.status === ESTIMATE_STATUS.sent ? <SendAndArchive /> : <Send />}>
+                {values.status === ESTIMATE_STATUS.sent ? 'Save & Send' : 'Send'}
+              </LoadingButton>
+            </Grid>
+          )}
         </Grid>
       </Form>
       <AppAlert
@@ -1018,65 +1137,73 @@ function EstimateForm(props: IProps) {
       />
 
       {/* @ts-ignore */}
-      <CreateCustomerModal callback={(e) => {
-        console.log(e);
+      <CreateCustomerModal
+        callback={(e: any) => {
+          console.log(e);
 
-        if(e.email === undefined){
-          return null;
-        }
-        
-        setFieldValue(fields.firstName.name, e.firstName);
-        setFieldValue(fields.lastName.name, e.lastName);
-        setFieldValue(fields.phone.name, e.phone);
-        setFieldValue(fields.email.name, e.email);
-        setFieldValue(fields.state.name, e.state || 'Abuja (FCT)');
-        setFieldValue(fields.address.name, e.address || ' .');
-        setFieldValue(fields.addressType.name, "Home");
+          if (e.email === undefined) {
+            return null;
+          }
 
-        setUserInfo({
-          accountType: (e.companyName === "individual") ? 'individual' : "corporate",
-          email: e.email,
-          firstName: e.firstName,
-          lastName: e.lastName,
-          companyName: e.companyName,
-          phone: e.phone,
-          creditRating: e.creditRating,
-          state: e?.state || 'Abuja (FCT)',
-          district: e?.district || 'Abuja (FCT)',
-          address: e?.address || 'Abuja (FCT)',
-        });
-      }} visible={createModal} setVisible={setCreateModal} />
+          setFieldValue(fields.firstName.name, e.firstName);
+          setFieldValue(fields.lastName.name, e.lastName);
+          setFieldValue(fields.phone.name, e.phone);
+          setFieldValue(fields.email.name, e.email);
+          setFieldValue(fields.state.name, e.state || 'Abuja (FCT)');
+          setFieldValue(fields.address.name, e.address || ' .');
+          setFieldValue(fields.addressType.name, 'Home');
+
+          setUserInfo({
+            accountType: e.companyName === 'individual' ? 'individual' : 'corporate',
+            email: e.email,
+            firstName: e.firstName,
+            lastName: e.lastName,
+            companyName: e.companyName,
+            phone: e.phone,
+            creditRating: e.creditRating,
+            state: e?.state || 'Abuja (FCT)',
+            district: e?.district || 'Abuja (FCT)',
+            address: e?.address || 'Abuja (FCT)',
+          });
+        }}
+        visible={createModal}
+        setVisible={setCreateModal}
+      />
 
       {/* @ts-ignore */}
-      <CreateCustomerModal callback={(e) => {
-        console.log(e);
+      <CreateCustomerModal
+        callback={(e: any) => {
+          console.log(e);
 
-        if(e.email === undefined){
-          return null;
-        }
-        
-        setFieldValue(fields.firstName.name, e.firstName);
-        setFieldValue(fields.lastName.name, e.lastName);
-        setFieldValue(fields.phone.name, e.phone);
-        setFieldValue(fields.email.name, e.email);
-        setFieldValue(fields.state.name, e.state || 'Abuja (FCT)');
-        setFieldValue(fields.address.name, e.address || ' .');
-        setFieldValue(fields.addressType.name, "Home");
+          if (e.email === undefined) {
+            return null;
+          }
 
-        setUserInfo({
-          accountType: (e.companyName === "individual") ? 'individual' : "corporate",
-          email: e.email,
-          firstName: e.firstName,
-          lastName: e.lastName,
-          companyName: e.companyName,
-          phone: e.phone,
-          creditRating: e.creditRating,
-          state: e?.state || 'Abuja (FCT)',
-          district: e?.district || '',
-          address: e?.address || ' .',
-        });
-      }} data={userInfo} visible={editModal} setVisible={setEditModal} />
+          setFieldValue(fields.firstName.name, e.firstName);
+          setFieldValue(fields.lastName.name, e.lastName);
+          setFieldValue(fields.phone.name, e.phone);
+          setFieldValue(fields.email.name, e.email);
+          setFieldValue(fields.state.name, e.state || 'Abuja (FCT)');
+          setFieldValue(fields.address.name, e.address || ' .');
+          setFieldValue(fields.addressType.name, 'Home');
 
+          setUserInfo({
+            accountType: e.companyName === 'individual' ? 'individual' : 'corporate',
+            email: e.email,
+            firstName: e.firstName,
+            lastName: e.lastName,
+            companyName: e.companyName,
+            phone: e.phone,
+            creditRating: e.creditRating,
+            state: e?.state || 'Abuja (FCT)',
+            district: e?.district || '',
+            address: e?.address || ' .',
+          });
+        }}
+        data={userInfo}
+        visible={editModal}
+        setVisible={setEditModal}
+      />
     </React.Fragment>
   );
 }
