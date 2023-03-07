@@ -274,6 +274,8 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   depositAmount: Joi.any().required().label(estimateFields.depositAmount.label),
   jobDurationValue: Joi.any().required().label(estimateFields.jobDurationValue.label),
   jobDurationUnit: Joi.string().required().label(estimateFields.jobDurationUnit.label),
+  discount: Joi.number().label('discount'),
+  discountType: Joi.string().label('discountType'),
 };
 
 export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
@@ -305,6 +307,8 @@ export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   depositAmount: Joi.any().allow('').label(estimateFields.depositAmount.label),
   jobDurationValue: Joi.any().allow('').label(estimateFields.jobDurationValue.label),
   jobDurationUnit: Joi.string().allow('').label(estimateFields.jobDurationUnit.label),
+  discount: Joi.number().label('discount'),
+  discountType: Joi.string().label('discountType'),
 };
 
 export const $updateEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
@@ -380,6 +384,12 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
   @ForeignKey(() => Customer)
   @Column(DataType.INTEGER)
   declare customerId: NonAttribute<number>;
+
+  @Column(DataType.INTEGER)
+  declare discount: number;
+
+  @Column(DataType.STRING)
+  declare discountType: string;
 
   @BelongsTo(() => RideShareDriver, { onDelete: 'CASCADE' })
   declare rideShareDriver: NonAttribute<RideShareDriver>;
