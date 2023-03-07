@@ -852,9 +852,13 @@ function EstimateForm(props: IProps) {
                         <Add />
                       </IconButton>
                     </Grid>
+
                     <Grid item xs={12} container spacing={2} columns={13}>
-                      <Grid item xs={8} />
+                      <Grid item xs={6} />
                       <Grid item xs={4}>
+                        <Typography style={{ marginBottom: 10 }}>
+                          Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
+                        </Typography>
                         {enableTaxPart && (
                           <TextField
                             name={fields.taxPart.name}
@@ -865,15 +869,14 @@ function EstimateForm(props: IProps) {
                             sx={{ mb: 2 }}
                           />
                         )}
-                        Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
                       </Grid>
 
-                      {/* <Grid item style={{}}>
+                      <Grid item style={{}}>
                         <div>
                           <span>Apply Tax</span>
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
-                      </Grid> */}
+                      </Grid>
                     </Grid>
                   </React.Fragment>
                 );
@@ -957,6 +960,9 @@ function EstimateForm(props: IProps) {
           <Grid item xs={12} container spacing={2} columns={13}>
             <Grid item xs={6} />
             <Grid item xs={4}>
+              <Typography style={{ marginBottom: 10 }}>
+                Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}
+              </Typography>
               {enableTaxLabor && (
                 <TextField
                   name={fields.tax.name}
@@ -967,7 +973,6 @@ function EstimateForm(props: IProps) {
                   sx={{ mb: 2 }}
                 />
               )}
-              <Typography> Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
             </Grid>
 
             <Grid item style={{}}>
