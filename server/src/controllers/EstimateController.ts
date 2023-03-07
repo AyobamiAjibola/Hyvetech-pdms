@@ -47,7 +47,6 @@ export default class EstimateController {
   public async create(req: Request) {
     const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
 
-
     try {
       // console.log('before 1')
       await estimate.update({
@@ -58,7 +57,7 @@ export default class EstimateController {
       appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
       // console.log('before 3')
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
 
     const response: HttpResponse<Estimate> = {
@@ -225,8 +224,8 @@ export default class EstimateController {
       lastName: customer.lastName,
       partner,
       estimate,
-      vehichleData: `${value.modelYear} ${value.make} ${value.model} `
-    })
+      vehichleData: `${value.modelYear} ${value.make} ${value.model} `,
+    });
 
     await QueueManager.publish({
       queue: QUEUE_EVENTS.name,
@@ -236,7 +235,7 @@ export default class EstimateController {
         // @ts-ignore
         'reply-to': partner.email,
         from: {
-          name: "AutoHyve",
+          name: 'AutoHyve',
           address: <string>process.env.SMTP_EMAIL_FROM2,
         },
         subject: `${partner.name} has sent you an estimate on AutoHyve`,
@@ -285,12 +284,11 @@ export default class EstimateController {
 
     // sort by date updated
     for (let i = 1; i < estimates.length; i++) {
-
       for (let j = i; j > 0; j--) {
         const _t1: any = estimates[j];
         const _t0: any = estimates[j - 1];
 
-        if (((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime())) {
+        if (new Date(_t1.updatedAt).getTime() > new Date(_t0.updatedAt).getTime()) {
           estimates[j] = _t0;
           estimates[j - 1] = _t1;
 
@@ -298,11 +296,10 @@ export default class EstimateController {
         } else {
           // console.log('no sorted')
         }
-
       }
     }
 
-    estimates = (estimates).map(estimate => {
+    estimates = estimates.map(estimate => {
       const parts = estimate.parts;
       const labours = estimate.labours;
 
@@ -342,12 +339,10 @@ export default class EstimateController {
 
     // check if partner is active
     try {
-      if ((!(partner?.users[0]?.active || true) || false)) {
-        return Promise.reject(
-          CustomAPIError.response(`Partner Account Inactive`, HttpStatus.NOT_FOUND.code),
-        );
+      if (!(partner?.users[0]?.active || true) || false) {
+        return Promise.reject(CustomAPIError.response(`Partner Account Inactive`, HttpStatus.NOT_FOUND.code));
       }
-    } catch (_e: any) { }
+    } catch (_e: any) {}
 
     const findVehicle = await dataSources.vehicleDAOService.findByVIN(value.vin);
 
@@ -372,7 +367,9 @@ export default class EstimateController {
 
       if (isVinExistMandatory) {
         if (!vin)
-          return Promise.reject(CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code));
+          return Promise.reject(
+            CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+          );
 
         await vin.update({
           plateNumber: value.plateNumber,
@@ -405,7 +402,7 @@ export default class EstimateController {
 
     const findCustomer = await dataSources.customerDAOService.findByAny({
       where: {
-        email: value.email
+        email: value.email,
       },
       include: [Contact],
     });
@@ -419,10 +416,10 @@ export default class EstimateController {
       };
 
       // check if it's not super admin
-      console.log(req?.user.partner?.id)
-      if(req?.user.partner?.id != 0){
+      console.log(req?.user.partner?.id);
+      if (req?.user.partner?.id != 0) {
         data.partnerId = req?.user.partner?.id;
-        console.log(req?.user.partner?.id, data)
+        console.log(req?.user.partner?.id, data);
       }
 
       customer = await dataSources.customerDAOService.create(data);
@@ -430,14 +427,13 @@ export default class EstimateController {
       // try to link a contact with this customer
 
       const contactValue: any = {
-        label: "Home",
+        label: 'Home',
         // @ts-ignore
-        state: value?.state || "Abuja (FCT)"
-      }
+        state: value?.state || 'Abuja (FCT)',
+      };
 
       const contact = await dataSources.contactDAOService.create(contactValue);
       await customer.$set('contacts', [contact]);
-
 
       // send email of user info
       // start
@@ -540,30 +536,29 @@ export default class EstimateController {
       lastName: customer.lastName,
       partner,
       estimate,
-      vehichleData: `${value.modelYear} ${value.make} ${value.model} `
-    })
+      vehichleData: `${value.modelYear} ${value.make} ${value.model} `,
+    });
 
     // console.log('reach1')
 
     //todo: Send email with credentials
-    try{
+    try {
       // create pdf before sending
       const html = await generateEstimateHtml(estimate.id);
-      const rName = (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
-      await generatePdf(html, rName);      
+      const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+      await generatePdf(html, rName);
 
       // set seperate listener to send mail after 6 seconds
-      setTimeout(()=>{
-        (async()=>{
-          
-          try{
+      setTimeout(() => {
+        (async () => {
+          try {
             await sendMail({
               to: user.email,
               replyTo: partner.email,
               // @ts-ignore
               'reply-to': partner.email,
               from: {
-                name: "AutoHyve",
+                name: 'AutoHyve',
                 address: <string>process.env.SMTP_EMAIL_FROM2,
               },
               subject: `${partner.name} has sent you an estimate on AutoHyve`,
@@ -572,19 +567,18 @@ export default class EstimateController {
               attachments: [
                 {
                   filename: rName,
-                  path: path.join(__dirname, "../../uploads/", "pdf", rName),
-                  cid: rName 
-                }
-              ]
-            })
-          }catch(err){
-            console.log(err)
+                  path: path.join(__dirname, '../../uploads/', 'pdf', rName),
+                  cid: rName,
+                },
+              ],
+            });
+          } catch (err) {
+            console.log(err);
           }
-        })()
-      }, 5000)
-
-    }catch(e){
-      console.log(e)
+        })();
+      }, 5000);
+    } catch (e) {
+      console.log(e);
     }
     // await QueueManager.publish({
     //   queue: QUEUE_EVENTS.name,
@@ -658,7 +652,6 @@ export default class EstimateController {
           });
         }
 
-
         vehicle = await dataSources.vehicleDAOService.create(data);
       } else {
         vehicle = await findVehicle.update({
@@ -675,7 +668,7 @@ export default class EstimateController {
 
     const findCustomer = await dataSources.customerDAOService.findByAny({
       where: {
-        email: value.email
+        email: value.email,
       },
       include: [Contact],
     });
@@ -689,7 +682,7 @@ export default class EstimateController {
       };
 
       // check if it's not super admin
-      if(req?.user.partner?.id != 0){
+      if (req?.user.partner?.id != 0) {
         data.partnerId = req?.user.partner?.id;
       }
 
@@ -698,17 +691,16 @@ export default class EstimateController {
 
       try {
         const contactValue: any = {
-          label: "Home",
+          label: 'Home',
           // @ts-ignore
-          state: value?.state || "Abuja (FCT)"
-        }
+          state: value?.state || 'Abuja (FCT)',
+        };
 
         const contact = await dataSources.contactDAOService.create(contactValue);
         await customer.$set('contacts', [contact]);
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
-
     } else {
       if (vehicle) await findCustomer.$add('vehicles', [vehicle]);
       customer = findCustomer;
@@ -740,7 +732,7 @@ export default class EstimateController {
     try {
       await customer.$add('estimates', [estimate]);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
 
     return { estimate, customer, vehicle, partner };
@@ -810,6 +802,8 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
+      discount: value.discount,
+      discountType: value.discountType,
     };
 
     await estimate.update(estimateValues);

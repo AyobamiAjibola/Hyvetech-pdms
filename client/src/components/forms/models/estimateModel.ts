@@ -40,6 +40,7 @@ export interface IEstimateValues {
   status?: string;
   additionalDeposit: string;
   paidAmount: string;
+  estimate?: any;
 }
 
 const fields = {
@@ -117,7 +118,7 @@ const fields = {
   },
   discount: {
     name: 'discount',
-    label: 'Discount (%)',
+    label: 'Discount',
     error: {
       invalid: 'Discount is invalid',
       required: 'Discount is required',

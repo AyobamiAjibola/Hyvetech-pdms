@@ -403,6 +403,7 @@ export declare namespace appModelTypes {
     phone: string;
     depositAmount: string;
     jobDuration: { count: string; interval: string };
+    estimate: any;
   }
 
   interface IPayStackBank {

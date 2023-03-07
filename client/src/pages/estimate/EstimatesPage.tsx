@@ -31,13 +31,13 @@ import { getEstimatesAction } from '../../store/actions/estimateActions';
 function EstimatesPage() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
   const dispatch = useAppDispatch();
-  const [_estimate, _seEstimate] = useState<any>([])
+  const [_estimate, _seEstimate] = useState<any>([]);
 
   const estimate = useEstimate();
   const { isTechAdmin } = useAdmin();
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     // sort estimate and return sorted
     // console.log(estimate.estimates)
 
@@ -46,8 +46,7 @@ function EstimatesPage() {
     const _temp01 = estimate.estimates;
 
     _seEstimate(_temp01);
-
-  }, [estimate.estimates])
+  }, [estimate.estimates]);
 
   const columns = useMemo(() => {
     return [
@@ -97,7 +96,9 @@ function EstimatesPage() {
           const driver = param.row.rideShareDriver;
           const customer = param.row.customer;
 
-          return driver ? `${driver?.firstName || ''} ${driver?.lastName || ''}` : `${customer?.firstName || ''} ${customer?.lastName || ''}`;
+          return driver
+            ? `${driver?.firstName || ''} ${driver?.lastName || ''}`
+            : `${customer?.firstName || ''} ${customer?.lastName || ''}`;
         },
       },
       {
@@ -170,7 +171,7 @@ function EstimatesPage() {
           return value ? moment(value).format('LLL') : '-';
         },
         sortable: true,
-        sortingOrder: ["desc"]
+        sortingOrder: ['desc'],
       },
       {
         field: 'actions',
@@ -230,7 +231,7 @@ function EstimatesPage() {
           return value ? moment(value).format('LLL') : '-';
         },
         sortable: true,
-        sortingOrder: ["desc"]
+        sortingOrder: ['desc'],
       },
       {
         field: 'code',
@@ -243,13 +244,14 @@ function EstimatesPage() {
           return (
             <span
               style={{ color: 'skyblue', cursor: 'pointer' }}
-              onClick={()=>{
+              onClick={() => {
                 void dispatch(getEstimatesAction());
                 navigate(`/estimates/${params.row.id}`, { state: { estimate: params.row } });
-              }}
-              >{params.row.code}</span>
-          )
-        }
+              }}>
+              {params.row.code}
+            </span>
+          );
+        },
       },
       {
         field: 'fullName',
@@ -263,7 +265,9 @@ function EstimatesPage() {
           const driver = param.row.rideShareDriver;
           const customer = param.row.customer;
 
-          return driver ? `${driver?.firstName || ''} ${driver?.lastName || ''}` : `${customer?.firstName || ''} ${customer?.lastName || ''}`;
+          return driver
+            ? `${driver?.firstName || ''} ${driver?.lastName || ''}`
+            : `${customer?.firstName || ''} ${customer?.lastName || ''}`;
         },
       },
       {
@@ -401,7 +405,7 @@ function EstimatesPage() {
       <Grid container>
         <Grid item xs={12}>
           <AppDataGrid
-            rows={(estimate.estimates)}
+            rows={estimate.estimates}
             columns={isTechAdmin ? techColumns : columns}
             showToolbar
             loading={estimateReducer.getEstimatesStatus === 'loading'}
@@ -420,71 +424,77 @@ function EstimatesPage() {
         message={estimate.error?.message}
         onClose={() => estimate.setError(undefined)}
       />
-      <AppModal
-        fullWidth
-        size="xl"
-        show={estimate.showCreate}
-        Content={
-          <Formik
-            initialValues={estimate.initialValues}
-            validationSchema={estimateModel.schema}
-            validateOnChange
-            onSubmit={(values, formikHelpers) => {
-              if (estimate.save) {
-                estimate.handleSaveEstimate(values, formikHelpers);
-              } else estimate.handleCreateEstimate(values, formikHelpers);
-            }}>
-            <EstimateForm
-              showCreate={estimate.showCreate}
-              isPopUp={true}
-              setLabourTotal={estimate.setLabourTotal}
-              setPartTotal={estimate.setPartTotal}
-              setGrandTotal={estimate.setGrandTotal}
-              labourTotal={estimate.labourTotal}
-              partTotal={estimate.partTotal}
-              grandTotal={estimate.grandTotal}
-              isSubmitting={
-                estimateReducer.createEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading'
-              }
-              setSave={estimate.setSave}
-            />
-          </Formik>
-        }
-        onClose={() => estimate.setShowCreate(false)}
-      />
-      <AppModal
-        fullWidth
-        size="xl"
-        show={estimate.showEdit}
-        Content={
-          <Formik
-            initialValues={estimate.initialValues}
-            validationSchema={estimateModel.schema}
-            onSubmit={(values, formikHelpers) => {
-              if (estimate.save) estimate.handleUpdateEstimate(values, formikHelpers);
-              if (!estimate.save) estimate.handleSendDraftEstimate(values, formikHelpers);
-            }}
-            enableReinitialize
-            validateOnChange>
-            <EstimateForm
-              showEdit={estimate.showEdit}
-              isPopUp={true}
-              setLabourTotal={estimate.setLabourTotal}
-              setPartTotal={estimate.setPartTotal}
-              setGrandTotal={estimate.setGrandTotal}
-              labourTotal={estimate.labourTotal}
-              partTotal={estimate.partTotal}
-              grandTotal={estimate.grandTotal}
-              isSubmitting={
-                estimateReducer.updateEstimateStatus === 'loading' ||
-                estimateReducer.sendDraftEstimateStatus === 'loading'
-              }
-              setSave={estimate.setSave}
-            />
-          </Formik>
-        }
-        onClose={() => estimate.setShowEdit(false)}
-      />
+      {estimate.showCreate && (
+        <AppModal
+          fullWidth
+          size="xl"
+          show={estimate.showCreate}
+          Content={
+            <Formik
+              initialValues={estimate.initialValues}
+              validationSchema={estimateModel.schema}
+              validateOnChange
+              onSubmit={(values, formikHelpers) => {
+                if (estimate.save) {
+                  estimate.handleSaveEstimate(values, formikHelpers);
+                } else estimate.handleCreateEstimate(values, formikHelpers);
+              }}>
+              <EstimateForm
+                showCreate={estimate.showCreate}
+                isPopUp={true}
+                setLabourTotal={estimate.setLabourTotal}
+                setPartTotal={estimate.setPartTotal}
+                setGrandTotal={estimate.setGrandTotal}
+                labourTotal={estimate.labourTotal}
+                partTotal={estimate.partTotal}
+                grandTotal={estimate.grandTotal}
+                isSubmitting={
+                  estimateReducer.createEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading'
+                }
+                setSave={estimate.setSave}
+              />
+            </Formik>
+          }
+          onClose={() => estimate.setShowCreate(false)}
+        />
+      )}
+      {estimate.showEdit && (
+        <AppModal
+          fullWidth
+          size="xl"
+          show={estimate.showEdit}
+          Content={
+            <Formik
+              initialValues={estimate.initialValues}
+              validationSchema={estimateModel.schema}
+              onSubmit={(values, formikHelpers) => {
+                if (estimate.save) estimate.handleUpdateEstimate(values, formikHelpers);
+                if (!estimate.save) estimate.handleSendDraftEstimate(values, formikHelpers);
+              }}
+              enableReinitialize
+              validateOnChange>
+              <EstimateForm
+                showEdit={estimate.showEdit}
+                setDiscount={estimate.setDiscount}
+                setDiscountType={estimate.setDiscountType}
+                isPopUp={true}
+                setLabourTotal={estimate.setLabourTotal}
+                setPartTotal={estimate.setPartTotal}
+                setGrandTotal={estimate.setGrandTotal}
+                labourTotal={estimate.labourTotal}
+                partTotal={estimate.partTotal}
+                grandTotal={estimate.grandTotal}
+                isSubmitting={
+                  estimateReducer.updateEstimateStatus === 'loading' ||
+                  estimateReducer.sendDraftEstimateStatus === 'loading'
+                }
+                setSave={estimate.setSave}
+              />
+            </Formik>
+          }
+          onClose={() => estimate.setShowEdit(false)}
+        />
+      )}
       <AppModal
         fullWidth
         show={estimate.showDelete}

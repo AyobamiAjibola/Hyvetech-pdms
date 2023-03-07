@@ -44,6 +44,9 @@ export default function useEstimate() {
   const [estimateId, setEstimateId] = useState<number>();
   const [partnerId, setPartnerId] = useState<number>();
   const [save, setSave] = useState<boolean>(false);
+  const [discount, setDiscount] = useState(0);
+
+  const [discountType, setDiscountType] = useState('exact');
 
   const estimateReducer = useAppSelector(state => state.estimateReducer);
   const dispatch = useAppDispatch();
@@ -114,7 +117,7 @@ export default function useEstimate() {
       setSuccess({ message: estimateReducer.saveEstimateSuccess });
       handleReset();
       dispatch(getEstimatesAction());
-      reload()
+      reload();
     }
   }, [dispatch, estimateReducer.saveEstimateStatus, estimateReducer.saveEstimateSuccess, handleReset]);
 
@@ -207,9 +210,11 @@ export default function useEstimate() {
       partsTotal: Math.round(partTotal),
       laboursTotal: Math.round(labourTotal),
       grandTotal: Math.round(grandTotal),
+      discount,
+      discountType,
     };
 
-    console.log(Object.keys(data), "realsentdata")
+    console.log(Object.keys(data), 'realsentdata');
     // return
 
     dispatch(createEstimateAction(data));
@@ -247,9 +252,11 @@ export default function useEstimate() {
       partsTotal: Math.round(partTotal),
       laboursTotal: Math.round(labourTotal),
       grandTotal: Math.round(grandTotal),
+      discount,
+      discountType,
     };
 
-    console.log(Object.keys(data), "realsentdata")
+    console.log(Object.keys(data), 'realsentdata');
 
     dispatch(saveEstimateAction(data));
   };
@@ -286,7 +293,11 @@ export default function useEstimate() {
       partsTotal: Math.round(partTotal),
       laboursTotal: Math.round(labourTotal),
       grandTotal: Math.round(grandTotal),
+      discount,
+      discountType,
     };
+
+    console.log(1, data);
 
     void dispatch(updateEstimateAction(data));
   };
@@ -341,6 +352,8 @@ export default function useEstimate() {
       partsTotal: Math.round(partTotal),
       laboursTotal: Math.round(labourTotal),
       grandTotal: Math.round(grandTotal),
+      discount,
+      discountType,
     };
 
     void dispatch(sendDraftEstimateAction(data));
@@ -386,7 +399,7 @@ export default function useEstimate() {
           parts,
           labours,
           status: estimate.status,
-          estimate
+          estimate: { ...estimate },
         }));
 
         setGrandTotal(estimate.grandTotal);
@@ -450,5 +463,9 @@ export default function useEstimate() {
     setShowDelete,
     onDelete,
     handleDelete,
+    discount,
+    setDiscountType,
+    setDiscount,
+    discountType,
   };
 }
