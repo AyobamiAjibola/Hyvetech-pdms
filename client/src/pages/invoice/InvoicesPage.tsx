@@ -342,16 +342,17 @@ function InvoicesPage() {
           return (
             <span
               style={{ color: 'skyblue', cursor: 'pointer' }}
-              onClick={()=>{
+              onClick={() => {
                 void dispatch(getInvoicesAction());
                 const invoice = params.row as IInvoice;
                 const estimate = invoice.estimate;
 
                 navigate(`/invoices/${invoice.id}`, { state: { invoice, estimate } });
-              }}
-              >{params.row.code}</span>
-          )
-        }
+              }}>
+              {params.row.code}
+            </span>
+          );
+        },
       },
       {
         field: 'fullName',
@@ -484,7 +485,6 @@ function InvoicesPage() {
     ] as GridColDef<IInvoice>[];
   }, [dispatch, invoice, isTechAdmin, navigate]);
 
-
   useEffect(() => {
     return () => {
       dispatch(clearSaveInvoiceStatus());
@@ -524,42 +524,44 @@ function InvoicesPage() {
         message={invoice.error?.message}
         onClose={() => invoice.setError(undefined)}
       />
-      <AppModal
-        fullWidth
-        fullScreen
-        show={invoice.showEdit}
-        Content={
-          <Formik
-            initialValues={invoice.initialValues}
-            validationSchema={estimateModel.schema}
-            onSubmit={values => {
-              if (invoice.save) invoice.handleSaveInvoice(values);
-              if (!invoice.save) invoice.handleSendInvoice(values);
-            }}
-            validateOnChange
-            enableReinitialize>
-            <InvoiceForm
-              showEdit={invoice.showEdit}
-              setLabourTotal={invoice.setLabourTotal}
-              setPartTotal={invoice.setPartTotal}
-              setGrandTotal={invoice.setGrandTotal}
-              labourTotal={invoice.labourTotal}
-              partTotal={invoice.partTotal}
-              grandTotal={invoice.grandTotal}
-              dueBalance={invoice.dueBalance}
-              setDueBalance={invoice.setDueBalance}
-              refundable={invoice.refundable}
-              setRefundable={invoice.setRefundable}
-              showRefund={invoice.showRefund}
-              setShowRefund={invoice.setShowRefund}
-              onInitiateRefund={invoice.handleInitiateRefund}
-              setSave={invoice.setSave}
-              invoice={invoice.invoice}
-            />
-          </Formik>
-        }
-        onClose={() => invoice.handleCloseEdit()}
-      />
+      {invoice.showEdit && (
+        <AppModal
+          fullWidth
+          fullScreen
+          show={invoice.showEdit}
+          Content={
+            <Formik
+              initialValues={invoice.initialValues}
+              validationSchema={estimateModel.schema}
+              onSubmit={values => {
+                if (invoice.save) invoice.handleSaveInvoice(values);
+                if (!invoice.save) invoice.handleSendInvoice(values);
+              }}
+              validateOnChange
+              enableReinitialize>
+              <InvoiceForm
+                showEdit={invoice.showEdit}
+                setLabourTotal={invoice.setLabourTotal}
+                setPartTotal={invoice.setPartTotal}
+                setGrandTotal={invoice.setGrandTotal}
+                labourTotal={invoice.labourTotal}
+                partTotal={invoice.partTotal}
+                grandTotal={invoice.grandTotal}
+                dueBalance={invoice.dueBalance}
+                setDueBalance={invoice.setDueBalance}
+                refundable={invoice.refundable}
+                setRefundable={invoice.setRefundable}
+                showRefund={invoice.showRefund}
+                setShowRefund={invoice.setShowRefund}
+                onInitiateRefund={invoice.handleInitiateRefund}
+                setSave={invoice.setSave}
+                invoice={invoice.invoice}
+              />
+            </Formik>
+          }
+          onClose={() => invoice.handleCloseEdit()}
+        />
+      )}
       <PaymentGateway
         show={transactionReducer.openTransactionPopup}
         authUrl={transactionReducer.authorizationUrl}

@@ -61,7 +61,7 @@ function InvoicePage() {
       }
 
       setParts(_parts);
-      setDriver(driver || customer)
+      setDriver(driver || customer);
       setLabours(_labours);
       setOwner(capitalize.words(_owner));
       setBillingInformation(customer.billingInformation);
@@ -85,29 +85,53 @@ function InvoicePage() {
     return 0;
   }, [estimate, invoice]);
 
-  const generateDownload = async ()=>{
-    const rName = (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
+  const generateDownload = async () => {
+    const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
     // @ts-ignore
     const payload = {
-      type: "INVOICE",
+      type: 'INVOICE',
       id: invoice?.id || -1,
-      rName
-    }
-    setDownloading(true)
+      rName,
+    };
+    setDownloading(true);
 
-    try{
+    try {
       const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
       console.log(response.data);
       // window.open(`${settings.api.baseURL}/uploads/pdf/${response.data.name}`)
-    }catch(e){
-      console.log(e)
+    } catch (e) {
+      console.log(e);
     }
 
-    setTimeout(()=>{
-      setDownloading(false)
-      window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`)
-    }, 3000)
-  }
+    setTimeout(() => {
+      setDownloading(false);
+      window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
+    }, 3000);
+  };
+
+  const calculateDiscount = ({
+    total,
+    discount,
+    discountType,
+  }: {
+    total: number;
+    discount: number | undefined;
+    discountType: string | undefined;
+  }) => {
+    if (!discount) return 0;
+    if (!discountType) return 0;
+
+    if (discountType === 'exact') {
+      return discount;
+    }
+    return Math.ceil(total * (discount / 100));
+  };
+
+  const calculateTaxTotal = (estimate: IEstimate | undefined) => {
+    if (!estimate) return 0;
+
+    return parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+  };
 
   if (!estimate || !invoice)
     return (
@@ -122,22 +146,22 @@ function InvoicePage() {
   else
     return (
       <React.Fragment>
-
         <Grid>
-
           <Grid>
-            <ArrowBackIosNew onClick={() => window.history.back()} style={{ position: 'absolute', cursor: 'pointer' }} />
+            <ArrowBackIosNew
+              onClick={() => window.history.back()}
+              style={{ position: 'absolute', cursor: 'pointer' }}
+            />
           </Grid>
-
         </Grid>
 
         <Typography mb={3} textAlign="center" display="block" variant="subtitle1">
           #{invoice.code}
         </Typography>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end'  }}>
-          <Button variant="outlined" color="success" size="small" onClick={()=> generateDownload()}>
-              {downloading ? "Downloading..." : "Download Pdf"}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
+            {downloading ? 'Downloading...' : 'Download Pdf'}
           </Button>
         </div>
 
@@ -161,12 +185,8 @@ function InvoicePage() {
                 </Typography>
               ) : (
                 <Typography variant="body1" gutterBottom>
-                  <p>
-                    {_driver?.email || ""}
-                  </p>
-                  <p>
-                    {_driver?.phone || ""}
-                  </p>
+                  <p>{_driver?.email || ''}</p>
+                  <p>{_driver?.phone || ''}</p>
                   {estimate.address}
                 </Typography>
               )}
@@ -261,78 +281,108 @@ function InvoicePage() {
           {!parts.length
             ? null
             : parts.map((part, idx1) => {
-              const amount = formatNumberToIntl(parseInt(part.amount));
+                const amount = formatNumberToIntl(parseInt(part.amount));
 
-              return (
-                <Grid
-                  key={idx1}
-                  item
-                  container
-                  justifyContent="center"
-                  alignItems="center"
-                  columns={14}
-                  sx={{ pb: 2.5 }}
-                  borderBottom="0.01px solid"
-                  borderColor="#676767">
-                  <Grid item xs={2} />
-                  <Grid item xs={3}>
-                    {part.name}
+                return (
+                  <Grid
+                    key={idx1}
+                    item
+                    container
+                    justifyContent="center"
+                    alignItems="center"
+                    columns={14}
+                    sx={{ pb: 2.5 }}
+                    borderBottom="0.01px solid"
+                    borderColor="#676767">
+                    <Grid item xs={2} />
+                    <Grid item xs={3}>
+                      {part.name}
+                    </Grid>
+                    <Grid item xs={3}>
+                      {part.warranty.warranty} {part.warranty.interval}
+                    </Grid>
+                    <Grid item xs={3}>
+                      {formatNumberToIntl(+part.price)} x {part.quantity.quantity}${part.quantity.unit}
+                    </Grid>
+                    <Grid item xs={3}>
+                      {amount}
+                    </Grid>
                   </Grid>
-                  <Grid item xs={3}>
-                    {part.warranty.warranty} {part.warranty.interval}
-                  </Grid>
-                  <Grid item xs={3}>
-                    {formatNumberToIntl(+part.price)} x {part.quantity.quantity}${part.quantity.unit}
-                  </Grid>
-                  <Grid item xs={3}>
-                    {amount}
-                  </Grid>
-                </Grid>
-              );
-            })}
+                );
+              })}
           {!labours.length
             ? null
             : labours.map((labour, idx1) => {
-              return (
-                <Grid
-                  key={idx1}
-                  item
-                  container
-                  justifyContent="center"
-                  alignItems="center"
-                  columns={14}
-                  sx={{ pb: 2.5 }}
-                  borderBottom="0.01px solid"
-                  borderColor="#676767">
-                  <Grid item xs={2} />
-                  <Grid item xs={3}>
-                    {labour.title}
+                return (
+                  <Grid
+                    key={idx1}
+                    item
+                    container
+                    justifyContent="center"
+                    alignItems="center"
+                    columns={14}
+                    sx={{ pb: 2.5 }}
+                    borderBottom="0.01px solid"
+                    borderColor="#676767">
+                    <Grid item xs={2} />
+                    <Grid item xs={3}>
+                      {labour.title}
+                    </Grid>
+                    <Grid item xs={3}>
+                      -
+                    </Grid>
+                    <Grid item xs={3}>
+                      {formatNumberToIntl(+labour.cost)} x 1
+                    </Grid>
+                    <Grid item xs={3}>
+                      {formatNumberToIntl(+labour.cost)}
+                    </Grid>
                   </Grid>
-                  <Grid item xs={3}>
-                    -
-                  </Grid>
-                  <Grid item xs={3}>
-                    {formatNumberToIntl(+labour.cost)} x 1
-                  </Grid>
-                  <Grid item xs={3}>
-                    {formatNumberToIntl(+labour.cost)}
-                  </Grid>
-                </Grid>
-              );
-            })}
+                );
+              })}
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
             <Typography gutterBottom>Subtotal: {formatNumberToIntl(subTotal)}</Typography>
             {/* @ts-ignore */}
-            <Typography gutterBottom>VAT(7.5%): {formatNumberToIntl((parseFloat(estimate?.tax || 0)) + (parseFloat(estimate?.taxPart || 0)))}</Typography>
+            <Typography gutterBottom>
+              VAT(7.5%):{' '}
+              {
+                // @ts-ignore
+                formatNumberToIntl(calculateTaxTotal(estimate))
+              }
+            </Typography>
+            <Typography gutterBottom>
+              Discount:
+              {
+                // @ts-ignore
+                formatNumberToIntl(
+                  calculateDiscount({
+                    total: estimate.partsTotal + estimate.laboursTotal,
+                    discount: estimate.discount,
+                    discountType: estimate.discountType,
+                  }),
+                )
+              }
+            </Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>TOTAL: {formatNumberToIntl(grandTotal)}</Typography>
+            <Typography gutterBottom>
+              TOTAL:{' '}
+              {formatNumberToIntl(
+                grandTotal -
+                  calculateDiscount({
+                    total: estimate.partsTotal + estimate.laboursTotal,
+                    discount: estimate.discount,
+                    discountType: estimate.discountType,
+                  }) +
+                  calculateTaxTotal(estimate),
+              )}
+            </Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" mt={1} mb={2}>

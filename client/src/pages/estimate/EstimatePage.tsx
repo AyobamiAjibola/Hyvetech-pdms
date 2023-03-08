@@ -42,7 +42,7 @@ function EstimatePage() {
       const _labours = estimate.labours as unknown as ILabour[];
 
       const _owner = driver ? `${driver.firstName} ${driver.lastName}` : `${customer.firstName} ${customer.lastName}`;
-      setDriver(driver || customer)
+      setDriver(driver || customer);
       setOwner(capitalize.words(_owner));
       setBillingInformation(customer.billingInformation);
       setParts(_parts);
@@ -50,29 +50,53 @@ function EstimatePage() {
     }
   }, [estimate]);
 
-  const generateDownload = async ()=>{
-    const rName = (Math.ceil( ((Math.random() * 999) + 1100) ))+'.pdf';
+  const generateDownload = async () => {
+    const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
     // @ts-ignore
     const payload = {
-      type: "ESTIMATE",
+      type: 'ESTIMATE',
       id: estimate?.id || -1,
-      rName
-    }
-    setDownloading(true)
+      rName,
+    };
+    setDownloading(true);
 
-    try{
+    try {
       const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
       console.log(response.data);
       // window.open(`${settings.api.baseURL}/uploads/pdf/${response.data.name}`)
-    }catch(e){
-      console.log(e)
+    } catch (e) {
+      console.log(e);
     }
 
-    setTimeout(()=>{
-      setDownloading(false)
-      window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`)
-    }, 3000)
-  }
+    setTimeout(() => {
+      setDownloading(false);
+      window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
+    }, 3000);
+  };
+
+  const calculateDiscount = ({
+    total,
+    discount,
+    discountType,
+  }: {
+    total: number;
+    discount: number | undefined;
+    discountType: string | undefined;
+  }) => {
+    if (!discount) return 0;
+    if (!discountType) return 0;
+
+    if (discountType === 'exact') {
+      return discount;
+    }
+    return Math.ceil(total * (discount / 100));
+  };
+
+  const calculateTaxTotal = (estimate: IEstimate | undefined) => {
+    if (!estimate) return 0;
+
+    return parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+  };
 
   if (!estimate)
     return (
@@ -87,22 +111,22 @@ function EstimatePage() {
   else
     return (
       <React.Fragment>
-
         <Grid>
-
           <Grid>
-            <ArrowBackIosNew onClick={() => window.history.back()} style={{ position: 'absolute', cursor: 'pointer' }} />
+            <ArrowBackIosNew
+              onClick={() => window.history.back()}
+              style={{ position: 'absolute', cursor: 'pointer' }}
+            />
           </Grid>
-
         </Grid>
 
         <Typography mb={3} textAlign="center" display="block" variant="subtitle1">
           #{estimate.code}
         </Typography>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end'  }}>
-          <Button variant="outlined" color="success" size="small" onClick={()=> generateDownload()}>
-              {downloading ? "Downloading..." : "Download Pdf"}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
+            {downloading ? 'Downloading...' : 'Download Pdf'}
           </Button>
         </div>
 
@@ -126,12 +150,8 @@ function EstimatePage() {
                 </Typography>
               ) : (
                 <Typography variant="body1" gutterBottom>
-                  <p>
-                    {_driver?.email || ""}
-                  </p>
-                  <p>
-                    {_driver?.phone || ""}
-                  </p>
+                  <p>{_driver?.email || ''}</p>
+                  <p>{_driver?.phone || ''}</p>
                   {estimate.address}
                 </Typography>
               )}
@@ -298,7 +318,20 @@ function EstimatePage() {
               VAT(7.5%):
               {
                 // @ts-ignore
-                formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
+                formatNumberToIntl(calculateTaxTotal(estimate))
+              }
+            </Typography>
+            <Typography gutterBottom>
+              Discount:
+              {
+                // @ts-ignore
+                formatNumberToIntl(
+                  calculateDiscount({
+                    total: estimate.partsTotal + estimate.laboursTotal,
+                    discount: estimate.discount,
+                    discountType: estimate.discountType,
+                  }),
+                )
               }
             </Typography>
             {/* <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography> */}
@@ -307,7 +340,18 @@ function EstimatePage() {
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>TOTAL: {formatNumberToIntl(estimate.grandTotal)}</Typography>
+            <Typography gutterBottom>
+              TOTAL:{' '}
+              {formatNumberToIntl(
+                estimate.grandTotal -
+                  calculateDiscount({
+                    total: estimate.partsTotal + estimate.laboursTotal,
+                    discount: estimate.discount,
+                    discountType: estimate.discountType,
+                  }) +
+                  calculateTaxTotal(estimate),
+              )}
+            </Typography>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>

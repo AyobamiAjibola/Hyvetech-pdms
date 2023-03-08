@@ -17,6 +17,7 @@ export interface ILabour {
 }
 
 export interface IEstimateValues {
+  invoice?: any;
   id?: number;
   parts: IPart[];
   labours: ILabour[];

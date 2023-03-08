@@ -404,6 +404,7 @@ export declare namespace appModelTypes {
     depositAmount: string;
     jobDuration: { count: string; interval: string };
     estimate: any;
+    invoice?: any;
   }
 
   interface IPayStackBank {
