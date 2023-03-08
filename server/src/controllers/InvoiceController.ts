@@ -256,12 +256,11 @@ export default class InvoiceController {
 
     // sort by date updated
     for (let i = 1; i < invoices.length; i++) {
-
       for (let j = i; j > 0; j--) {
         const _t1: any = invoices[j];
         const _t0: any = invoices[j - 1];
 
-        if (((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime())) {
+        if (new Date(_t1.updatedAt).getTime() > new Date(_t0.updatedAt).getTime()) {
           invoices[j] = _t0;
           invoices[j - 1] = _t1;
 
@@ -269,11 +268,10 @@ export default class InvoiceController {
         } else {
           // console.log('no sorted')
         }
-
       }
     }
 
-    invoices = (invoices).map(invoice => {
+    invoices = invoices.map(invoice => {
       const parts = invoice.estimate.parts;
       const labours = invoice.estimate.labours;
 
@@ -542,6 +540,7 @@ export default class InvoiceController {
 
   @TryCatch
   public static async saveInvoice(req: Request) {
+    console.log('called to saved');
     const { error, value } = Joi.object<InvoiceSchemaType>($saveInvoiceSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));

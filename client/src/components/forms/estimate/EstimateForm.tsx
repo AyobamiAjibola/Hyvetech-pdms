@@ -1111,6 +1111,7 @@ function EstimateForm(props: IProps) {
                 color="secondary"
                 endIcon={<Save />}
                 onClick={() => {
+                  console.log('called> ', discountType, discount);
                   props.setDiscountType && props.setDiscountType(discountType);
                   props.setDiscount && props.setDiscount(discount);
                   props.setSave(true);

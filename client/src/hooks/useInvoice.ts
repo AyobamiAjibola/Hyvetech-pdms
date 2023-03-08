@@ -160,6 +160,8 @@ export default function useInvoice() {
 
       const invoice = invoices.find(invoice => invoice.id === id);
 
+      console.log('invoice> ', invoice);
+
       if (invoice && invoice.estimate) {
         const driver = invoice.estimate.rideShareDriver;
         const customer = invoice.estimate.customer;
@@ -208,7 +210,7 @@ export default function useInvoice() {
             parts,
             labours,
             status,
-            invoice
+            invoice,
           }));
 
           setGrandTotal(draftInvoice.grandTotal);
@@ -246,7 +248,7 @@ export default function useInvoice() {
             parts,
             labours,
             status,
-            invoice
+            invoice,
           }));
 
           setGrandTotal(invoice.grandTotal);
@@ -286,7 +288,7 @@ export default function useInvoice() {
             parts,
             labours,
             status,
-            invoice
+            invoice,
           }));
 
           setGrandTotal(estimate.grandTotal);
