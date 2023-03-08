@@ -707,14 +707,14 @@ function InvoiceForm(props: IProps) {
               <Grid item>
                 <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
               </Grid>
+              <Grid item justifyContent="space-around" alignItems="center">
+                <Typography variant="h6">Amount Paid: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
+              </Grid>
               <Grid item>
                 <Typography variant="h6">Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
               </Grid>
               <Grid item justifyContent="space-around" alignItems="center">
                 <Typography variant="h6">Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
-              </Grid>
-              <Grid item justifyContent="space-around" alignItems="center">
-                <Typography variant="h6">Deposited Amount: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
               </Grid>
             </Grid>
 

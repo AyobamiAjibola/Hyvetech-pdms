@@ -357,13 +357,13 @@ function InvoicePage() {
               Discount:
               {
                 // @ts-ignore
-                formatNumberToIntl(
+                `(${formatNumberToIntl(
                   calculateDiscount({
                     total: estimate.partsTotal + estimate.laboursTotal,
                     discount: estimate.discount,
                     discountType: estimate.discountType,
                   }),
-                )
+                )})`
               }
             </Typography>
           </Grid>
