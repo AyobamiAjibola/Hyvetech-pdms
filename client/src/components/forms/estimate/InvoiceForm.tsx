@@ -1,9 +1,6 @@
 import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import {
-  Checkbox,
-  Divider, Grid, Stack, Typography
-} from '@mui/material';
+import { Checkbox, Divider, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send } from '@mui/icons-material';
 import estimateModel, { IEstimateValues } from '../models/estimateModel';
@@ -52,8 +49,13 @@ function InvoiceForm(props: IProps) {
   const [timer, setTimer] = useState<NodeJS.Timer>();
   const [error, setError] = useState<CustomHookMessage>();
 
-  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(false)
-  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(false)
+  const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(false);
+  const [enableTaxPart, setEnableTaxPart] = useState<boolean>(false);
+
+  const [subTotal, setSubTotal] = useState(0);
+  const [vatTotal, setVatTotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState('exact');
 
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
 
@@ -79,22 +81,44 @@ function InvoiceForm(props: IProps) {
 
   useEffect(() => {
     setTimeout(() => {
-      console.log(Object.keys(values), "_lab, _part")
+      console.log(Object.keys(values), '_lab, _part');
       // @ts-ignore
       if (values.invoice != undefined) {
         // @ts-ignore
-        const _lab = (values?.invoice?.tax !== undefined) ? (parseInt(values.invoice.tax) !== 0 ? true : false) : true;
-        setEnableTaxLabor(_lab)
+        const _lab = values?.invoice?.tax !== undefined ? (parseInt(values.invoice.tax) !== 0 ? true : false) : true;
+        setEnableTaxLabor(_lab);
         // @ts-ignore
-        const _part = (values?.invoice?.taxPart !== undefined) ? (parseInt(values.invoice.taxPart) !== 0 ? false : false) : false;
-        setEnableTaxPart(_part)
+        const _part =
+          values?.invoice?.taxPart !== undefined ? (parseInt(values.invoice.taxPart) !== 0 ? false : false) : false;
+        setEnableTaxPart(_part);
 
-        console.log(_lab, _part, "_lab, _part")
+        console.log(_lab, _part, '_lab, _part');
       } else {
-        console.log("did not reach", "_lab, _part")
+        console.log('did not reach', '_lab, _part');
       }
-    }, 3000)
-  }, [props, values.email])
+    }, 3000);
+  }, [props, values.email]);
+
+  useEffect(() => {
+    let gT = 0;
+    setSubTotal(partTotal + labourTotal);
+    setVatTotal(vat + vatPart);
+    if (!enableTaxLabor) {
+      gT = vatPart + partTotal + labourTotal;
+    }
+
+    if (!enableTaxPart) {
+      gT = vat + partTotal + labourTotal;
+    }
+
+    if (enableTaxPart && enableTaxLabor) {
+      gT = vat + vatPart + partTotal + labourTotal;
+    } else if (!enableTaxPart && !enableTaxLabor) {
+      gT = partTotal + labourTotal;
+    }
+
+    setGrandTotal(gT);
+  }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -147,7 +171,7 @@ function InvoiceForm(props: IProps) {
     const _depositAmount = parseInt(values.depositAmount);
     const _dueBalance = _grandTotal - _depositAmount;
 
-    console.log(_grandTotal, "_grandTotal_grandTotal")
+    console.log(_grandTotal, '_grandTotal_grandTotal');
 
     setGrandTotal(_grandTotal);
     setDueBalance(_dueBalance);
@@ -158,7 +182,17 @@ function InvoiceForm(props: IProps) {
     } else {
       setRefundable(0);
     }
-  }, [vat, vatPart, partTotal, labourTotal, setGrandTotal, setDueBalance, grandTotal, values.depositAmount, setRefundable]);
+  }, [
+    vat,
+    vatPart,
+    partTotal,
+    labourTotal,
+    setGrandTotal,
+    setDueBalance,
+    grandTotal,
+    values.depositAmount,
+    setRefundable,
+  ]);
 
   const _handleChangeVIN = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,6 +208,22 @@ function InvoiceForm(props: IProps) {
     },
     [dispatch, setFieldValue],
   );
+
+  useEffect(() => {
+    if (isNaN(discount)) return setGrandTotal(subTotal + vatTotal);
+    if (discount < 0 || discount > grandTotal) return setGrandTotal(subTotal + vatTotal);
+
+    let discountValue = discount;
+    const total = subTotal + vatTotal;
+
+    if (discountType === 'exact') setGrandTotal(total - discountValue);
+    else {
+      if (discount < 0.1 || discount > 99) return setGrandTotal(total);
+
+      discountValue = 1 - discountValue / 100;
+      setGrandTotal(total * discountValue);
+    }
+  }, [discount, discountType]);
 
   const handleChangeQtyAndPrice = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number) => {
@@ -227,25 +277,25 @@ function InvoiceForm(props: IProps) {
   useEffect(() => {
     // check for labor
     if (!enableTaxLabor) {
-      setFieldValue(fields.tax.name, 0)
+      setFieldValue(fields.tax.name, 0);
       // setVat(0)
-      console.log('making labor 0', "mainLog1")
+      console.log('making labor 0', 'mainLog1');
     }
 
     // check for part
     if (!enableTaxPart) {
-      setFieldValue(fields.taxPart.name, 0)
+      setFieldValue(fields.taxPart.name, 0);
       // setVatPart(0)
-      console.log('making part 0', "mainLog1")
+      console.log('making part 0', 'mainLog1');
     }
-  }, [enableTaxLabor, enableTaxPart])
+  }, [enableTaxLabor, enableTaxPart]);
 
   // listen for reload
   useEffect(() => {
-    if ((invoiceReducer.saveInvoiceStatus == 'completed') || (invoiceReducer.sendInvoiceStatus == 'completed')) {
-      reload()
+    if (invoiceReducer.saveInvoiceStatus == 'completed' || invoiceReducer.sendInvoiceStatus == 'completed') {
+      reload();
     }
-  }, [invoiceReducer.saveInvoiceStatus, invoiceReducer.sendInvoiceSuccess])
+  }, [invoiceReducer.saveInvoiceStatus, invoiceReducer.sendInvoiceSuccess]);
 
   return (
     <React.Fragment>
@@ -422,17 +472,19 @@ function InvoiceForm(props: IProps) {
                     <Grid item xs={12} container spacing={2} columns={13}>
                       <Grid item xs={8} />
                       <Grid item xs={4}>
-
-                        {((enableTaxPart) && (<TextField
-                          name={fields.taxPart.name}
-                          value={values.taxPart}
-                          label={`${fields.taxPart.label} (VAT 7.5%)`}
-                          variant="outlined"
-                          fullWidth
-                          sx={{ mb: 2 }}
-                        />))}
-
-                        Sub Total: ₦{formatNumberToIntl(Math.round(partTotal))}
+                        <Typography style={{ marginBottom: 10 }}>
+                          Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
+                        </Typography>
+                        {enableTaxPart && (
+                          <TextField
+                            name={fields.taxPart.name}
+                            value={values.taxPart}
+                            label={`${fields.taxPart.label} (VAT 7.5%)`}
+                            variant="outlined"
+                            fullWidth
+                            sx={{ mb: 2 }}
+                          />
+                        )}
                       </Grid>
 
                       {/* <Grid item style={{}}>
@@ -441,7 +493,31 @@ function InvoiceForm(props: IProps) {
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
                       </Grid> */}
+                    </Grid>
+                    <Grid item xs={12} container spacing={2} columns={13}>
+                      <Grid item xs={6} />
+                      <Grid item xs={4}>
+                        <Typography style={{ marginBottom: 10 }}>
+                          Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
+                        </Typography>
+                        {enableTaxPart && (
+                          <TextField
+                            name={fields.taxPart.name}
+                            value={values.taxPart}
+                            label={`${fields.taxPart.label} (VAT 7.5%)`}
+                            variant="outlined"
+                            fullWidth
+                            sx={{ mb: 2 }}
+                          />
+                        )}
+                      </Grid>
 
+                      <Grid item style={{}}>
+                        <div>
+                          <span>Apply Tax</span>
+                          <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
+                        </div>
+                      </Grid>
                     </Grid>
                   </React.Fragment>
                 );
@@ -525,15 +601,17 @@ function InvoiceForm(props: IProps) {
           <Grid item xs={12} container spacing={2} columns={13}>
             <Grid item xs={6} />
             <Grid item xs={4}>
-              {((enableTaxLabor) && (<TextField
-                name={fields.tax.name}
-                value={values.tax}
-                label={`${fields.tax.label} (VAT 7.5%)`}
-                variant="outlined"
-                fullWidth
-                sx={{ mb: 2 }}
-              />))}
-              <Typography> Sub Total: ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
+              <Typography> Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
+              {enableTaxLabor && (
+                <TextField
+                  name={fields.tax.name}
+                  value={values.tax}
+                  label={`${fields.tax.label} (VAT 7.5%)`}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                />
+              )}
             </Grid>
 
             <Grid item style={{}}>
@@ -542,13 +620,66 @@ function InvoiceForm(props: IProps) {
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
             </Grid>
-
           </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               Job Information
             </Typography>
             <Divider flexItem orientation="horizontal" />
+          </Grid>
+          <Grid item>
+            <Grid container spacing={2}>
+              <Grid item>
+                <Typography variant="h6">Sub-Total:</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="h6">₦{formatNumberToIntl(subTotal)}</Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+          <br />
+          <Grid container spacing={0}>
+            <Grid item xs={2}>
+              <Typography variant="h6">Discount:</Typography>
+            </Grid>
+            <Grid container xs={10} spacing={2}>
+              <Grid item>
+                <TextInputField
+                  onChange={e => setDiscount(parseInt(e.target.value))}
+                  value={discount}
+                  name="discount.value"
+                  label={fields.discount.label}
+                  type="number"
+                  inputProps={
+                    discountType === 'exact'
+                      ? {
+                          min: '0',
+                        }
+                      : {
+                          min: '0',
+                          max: '99',
+                        }
+                  }
+                />
+              </Grid>
+              <Grid item>
+                <RadioGroup row value={discountType} onChange={e => setDiscountType(e.target.value)}>
+                  <FormControlLabel value="exact" control={<Radio />} label="₦" />
+                  <FormControlLabel value="percent" control={<Radio />} label="%" />
+                </RadioGroup>
+              </Grid>
+            </Grid>
+          </Grid>
+          <br />
+          <Grid item>
+            <Grid container spacing={2}>
+              <Grid item>
+                <Typography variant="h6">VAT(7.5%):</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="h6">₦{formatNumberToIntl(vatTotal)}</Typography>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item xs={2} alignSelf="center">
             <Typography variant="body1">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
