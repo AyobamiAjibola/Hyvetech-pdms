@@ -48,6 +48,8 @@ interface IProps {
   setSave?: Dispatch<SetStateAction<boolean>>;
   onInitiateRefund: () => void;
   invoice?: IInvoice;
+  setDiscount?: Dispatch<SetStateAction<number>>;
+  setDiscountType?: Dispatch<SetStateAction<string>>;
 }
 
 const { fields } = estimateModel;
@@ -116,10 +118,10 @@ function InvoiceForm(props: IProps) {
     }
   }, [values.invoice?.tax]);
 
-  useEffect(() => {
-    setDiscount(values.invoice?.discount || 0);
-    setDiscountType(values.invoice?.discountType || 'exact');
-  }, [values.invoice?.discount, values.invoice?.discountType]);
+  // useEffect(() => {
+  //   setDiscount(values.invoice?.discount || 0);
+  //   setDiscountType(values.invoice?.discountType || 'exact');
+  // }, [values.invoice?.discount, values.invoice?.discountType]);
 
   useEffect(() => {
     if (values?.invoice?.taxPart !== undefined || parseInt(values?.invoice?.taxPart) !== 0) {
@@ -130,33 +132,52 @@ function InvoiceForm(props: IProps) {
   }, [values.invoice?.taxPart]);
 
   useEffect(() => {
-    let gT = 0;
     setSubTotal(partTotal + labourTotal);
+  }, [partTotal, labourTotal]);
 
-    if (!enableTaxLabor) {
-      gT = vatPart + partTotal + labourTotal;
-      setVatTotal(vatPart);
-      setGrandTotal(gT);
-    }
+  useEffect(() => {
+    setGrandTotal(subTotal - calculateDiscount(subTotal));
+  }, [subTotal]);
 
-    if (!enableTaxPart) {
-      gT = vat + partTotal + labourTotal;
-      setVatTotal(vat);
-      setGrandTotal(gT);
-    }
+  useEffect(() => {
+    const totalVat = vat + vatPart;
 
-    if (enableTaxPart && enableTaxLabor) {
-      gT = vat + vatPart + partTotal + labourTotal;
-      console.log('gt> ', gT);
-      setVatTotal(vat + vatPart);
+    setVatTotal(totalVat);
+  }, [vat, vatPart]);
 
-      setGrandTotal(gT);
-    } else if (!enableTaxPart && !enableTaxLabor) {
-      gT = partTotal + labourTotal;
-      setVatTotal(0);
-      setGrandTotal(gT);
-    }
-  }, [vat, partTotal, vatPart, labourTotal, enableTaxLabor, enableTaxPart]);
+  useEffect(() => {
+    setGrandTotal(subTotal + vatTotal - calculateDiscount(subTotal));
+  }, [vatTotal]);
+
+  // useEffect(() => {
+  //   let gT = 0;
+  //   const totalSub = partTotal + labourTotal;
+  //   setSubTotal(totalSub);
+  //   setGrandTotal(totalSub);
+
+  //   if (!enableTaxLabor) {
+  //     gT = vatPart + subTotal - discount;
+  //     setVatTotal(vatPart);
+  //   }
+
+  //   if (!enableTaxPart) {
+  //     gT = vat + totalSub - discount;
+  //     setVatTotal(vat);
+  //   }
+
+  //   if (enableTaxPart && enableTaxLabor) {
+  //     gT = vat + vatPart + totalSub - discount;
+  //     setVatTotal(vatPart + vat);
+  //   } else if (!enableTaxPart && !enableTaxLabor) {
+  //     gT = totalSub - discount;
+
+  //     setVatTotal(0);
+  //   }
+
+  //   setTimeout(() => {
+  //     setGrandTotal(gT);
+  //   }, 1500);
+  // }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -196,12 +217,16 @@ function InvoiceForm(props: IProps) {
   }, [labourTotal, setFieldValue]);
 
   useEffect(() => {
+    if (!enableTaxPart) {
+      setVatPart(0);
+      return;
+    }
     const vat = 7.5 * 0.01;
     const tax = partTotal * vat;
 
     setFieldValue('taxPart', formatNumberToIntl(tax));
     setVatPart(tax);
-  }, [partTotal, setFieldValue]);
+  }, [partTotal, setFieldValue, enableTaxPart]);
 
   useEffect(() => {
     // const _grandTotal = vat + vatPart + partTotal + labourTotal;
@@ -237,20 +262,25 @@ function InvoiceForm(props: IProps) {
   );
 
   useEffect(() => {
-    if (isNaN(discount)) return setGrandTotal(subTotal + vatTotal);
-    if (discount < 0 || discount > grandTotal) return setGrandTotal(subTotal + vatTotal);
-
-    let discountValue = discount;
-    const total = subTotal + vatTotal;
-
-    if (discountType === 'exact') setGrandTotal(total - discountValue);
-    else {
-      if (discount < 0.1 || discount > 99) return setGrandTotal(total);
-
-      discountValue = 1 - discountValue / 100;
-      setGrandTotal(total * discountValue);
-    }
+    setGrandTotal(subTotal + vatTotal - calculateDiscount(subTotal));
   }, [discount, discountType]);
+
+  const calculateDiscount = useCallback(
+    (total: number) => {
+      console.log('total> ', total, 'dicount, ', discount);
+      if (discountType === 'exact') {
+        return discount;
+      } else {
+        return Math.ceil(total * (discount / 100));
+      }
+    },
+    [discount, discountType],
+  );
+
+  useEffect(() => {
+    setDiscount(values?.invoice?.discount || 0);
+    setDiscountType(values?.invoice?.discountType || 'exact');
+  }, []);
 
   const handleChangeQtyAndPrice = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number) => {
@@ -301,20 +331,22 @@ function InvoiceForm(props: IProps) {
   }, [setSave]);
 
   // listen for tax changes and adjust
-  // useEffect(() => {
-  //   // check for labor
-  //   // if (!enableTaxLabor) {
-  //   //   setFieldValue(fields.tax.name, 0);
-  //   //   // setVat(0)
-  //   //   console.log('making labor 0', 'mainLog1');
-  //   // }
-  //   // // check for part
-  //   // if (!enableTaxPart) {
-  //   //   setFieldValue(fields.taxPart.name, 0);
-  //   //   // setVatPart(0)
-  //   //   console.log('making part 0', 'mainLog1');
-  //   // }
-  // }, [enableTaxLabor, enableTaxPart]);
+  useEffect(() => {
+    // check for labor
+    if (!enableTaxLabor) {
+      // setFieldValue(fields.tax.name, 0);
+      // setVat(0)
+      values.tax = '0';
+    }
+
+    // check for part
+    if (!enableTaxPart) {
+      //setFieldValue(fields.taxPart.name, 0);
+      setVatPart(0);
+
+      values.taxPart = '0';
+    }
+  }, [enableTaxLabor, enableTaxPart]);
 
   const calculateTaxLabour = useCallback(() => {
     if (!enableTaxLabor) {
@@ -758,7 +790,11 @@ function InvoiceForm(props: IProps) {
             <Stack direction="row" spacing={2}>
               <LoadingButton
                 // disabled={values.status === ESTIMATE_STATUS.invoiced}
-                onClick={onSave}
+                onClick={() => {
+                  props.setDiscountType && props.setDiscountType(discountType);
+                  props.setDiscount && props.setDiscount(discount);
+                  onSave();
+                }}
                 sx={{ ml: 2 }}
                 type="submit"
                 variant="contained"

@@ -544,6 +544,8 @@ function InvoicesPage() {
                 setLabourTotal={invoice.setLabourTotal}
                 setPartTotal={invoice.setPartTotal}
                 setGrandTotal={invoice.setGrandTotal}
+                setDiscount={invoice.setDiscount}
+                setDiscountType={invoice.setDiscountType}
                 labourTotal={invoice.labourTotal}
                 partTotal={invoice.partTotal}
                 grandTotal={invoice.grandTotal}

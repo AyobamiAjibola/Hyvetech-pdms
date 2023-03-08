@@ -710,6 +710,8 @@ export default class EstimateController {
       customer = findCustomer;
     }
 
+    console.log('values> ', value);
+
     const estimateValues: Partial<Estimate> = {
       jobDurationUnit: value.jobDurationUnit,
       labours: value.labours.map(value => JSON.stringify(value)),
