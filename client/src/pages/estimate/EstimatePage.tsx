@@ -325,13 +325,13 @@ function EstimatePage() {
               Discount:
               {
                 // @ts-ignore
-                formatNumberToIntl(
+                `(${formatNumberToIntl(
                   calculateDiscount({
                     total: estimate.partsTotal + estimate.laboursTotal,
                     discount: estimate.discount,
                     discountType: estimate.discountType,
                   }),
-                )
+                )})`
               }
             </Typography>
             {/* <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography> */}

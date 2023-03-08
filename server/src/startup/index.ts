@@ -14,7 +14,7 @@ export default async function startup(io: SocketServer) {
   dataStore.init();
   await database.init();
   const mongodb = await database.mongodb();
-  // await database.sequelize.sync({ alter: true });
+  await database.sequelize.sync({ alter: true });
   console.log('reac0');
   // await CommandLineRunner.run();
   console.log('reac');

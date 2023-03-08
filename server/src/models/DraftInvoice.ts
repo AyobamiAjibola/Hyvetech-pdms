@@ -82,6 +82,12 @@ export default class DraftInvoice extends Model<InferAttributes<DraftInvoice>, I
   @Column(DataType.BOOLEAN)
   declare edited: boolean;
 
+  @Column(DataType.INTEGER)
+  declare discount?: number;
+
+  @Column(DataType.STRING)
+  declare discountType?: string;
+
   @BelongsTo(() => Invoice)
   declare invoice: NonAttribute<Invoice>;
 

@@ -445,6 +445,8 @@ function EstimatesPage() {
                 setLabourTotal={estimate.setLabourTotal}
                 setPartTotal={estimate.setPartTotal}
                 setGrandTotal={estimate.setGrandTotal}
+                setDiscount={estimate.setDiscount}
+                setDiscountType={estimate.setDiscountType}
                 labourTotal={estimate.labourTotal}
                 partTotal={estimate.partTotal}
                 grandTotal={estimate.grandTotal}

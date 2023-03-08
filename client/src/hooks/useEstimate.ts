@@ -256,6 +256,8 @@ export default function useEstimate() {
       discountType,
     };
 
+    console.log(data);
+
     console.log(Object.keys(data), 'realsentdata');
 
     dispatch(saveEstimateAction(data));
