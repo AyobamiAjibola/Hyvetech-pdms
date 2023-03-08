@@ -57,8 +57,8 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   jobDurationValue: Joi.string().allow('').label(estimateFields.jobDurationValue.label),
   jobDurationUnit: Joi.string().allow('').label(estimateFields.jobDurationUnit.label),
   dueAmount: Joi.number().allow().label('Due Amount'),
-  discount: Joi.number().allow().label('dicount'),
-  discountType: Joi.number().allow().label('dicount'),
+  discount: Joi.number().label('discount'),
+  discountType: Joi.string().label('discountType'),
 };
 
 @Table({ tableName: 'invoices', timestamps: true, paranoid: true })

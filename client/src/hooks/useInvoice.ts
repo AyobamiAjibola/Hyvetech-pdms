@@ -55,6 +55,9 @@ export default function useInvoice() {
   const [estimateId, setEstimateId] = useState<number>();
   const [invoiceId, setInvoiceId] = useState<number>();
   const [save, setSave] = useState<boolean>(false);
+  const [discount, setDiscount] = useState(0);
+
+  const [discountType, setDiscountType] = useState('exact');
 
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
   const dispatch = useAppDispatch();
@@ -327,7 +330,7 @@ export default function useInvoice() {
     const data = getUpdateData(invoiceId, values, partTotal, labourTotal, grandTotal, refundable, dueBalance);
 
     setSave(false);
-    void dispatch(saveInvoiceAction(data));
+    void dispatch(saveInvoiceAction({ ...data, discount, discountType }));
   };
 
   const handleSendInvoice = (values: IEstimateValues) => {
@@ -386,5 +389,7 @@ export default function useInvoice() {
     handleSendInvoice,
     handleCloseEdit,
     invoice,
+    setDiscountType,
+    setDiscount,
   };
 }
