@@ -357,6 +357,8 @@ export default class EstimateController {
         plateNumber: value.plateNumber,
         mileageValue: value.mileageValue,
         mileageUnit: value.mileageUnit,
+        disount: value.discount,
+        discountType: value.discountType,
       };
 
       const vin = await dataSources.vinDAOService.findByAny({
@@ -517,6 +519,8 @@ export default class EstimateController {
       taxPart: value.taxPart,
       code: Generic.randomize({ count: 6, number: true }),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
+      discount: value.discount,
+      discountType: value.discountType,
     };
 
     const estimate = await dataSources.estimateDAOService.create(estimateValues as CreationAttributes<Estimate>);
@@ -721,6 +725,8 @@ export default class EstimateController {
       taxPart: value.taxPart,
       code: Generic.randomize({ count: 6, number: true }),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
+      discount: value.discount,
+      discountType: value.discountType,
     };
 
     const estimate = await dataSources.estimateDAOService.create(estimateValues as CreationAttributes<Estimate>);
