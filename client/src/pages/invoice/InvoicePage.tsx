@@ -79,8 +79,10 @@ function InvoicePage() {
   }, [estimate, invoice]);
 
   const grandTotal = useMemo(() => {
+    console.log('edited> ', invoice?.edited);
     if (invoice && estimate) {
-      return invoice.edited ? invoice.grandTotal : estimate.grandTotal;
+      // return invoice.edited ? invoice.grandTotal : estimate.partsTotal + estimate.laboursTotal;
+      return estimate.partsTotal + estimate.laboursTotal;
     }
     return 0;
   }, [estimate, invoice]);

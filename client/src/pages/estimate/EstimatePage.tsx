@@ -89,10 +89,15 @@ function EstimatePage() {
     if (discountType === 'exact') {
       return discount;
     }
+    console.log('discount>', Math.ceil(total * (discount / 100)));
     return Math.ceil(total * (discount / 100));
   };
 
   const calculateTaxTotal = (estimate: IEstimate | undefined) => {
+    console.log(
+      'tax total, ',
+      parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join('')),
+    );
     if (!estimate) return 0;
 
     return parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
@@ -343,7 +348,8 @@ function EstimatePage() {
             <Typography gutterBottom>
               TOTAL:{' '}
               {formatNumberToIntl(
-                estimate.grandTotal -
+                estimate.partsTotal +
+                  estimate.laboursTotal -
                   calculateDiscount({
                     total: estimate.partsTotal + estimate.laboursTotal,
                     discount: estimate.discount,
