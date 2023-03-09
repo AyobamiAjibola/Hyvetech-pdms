@@ -1,4 +1,13 @@
-import React, { ChangeEvent, Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  Dispatch,
+  memo,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Checkbox, Divider, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -39,6 +48,8 @@ interface IProps {
   setSave?: Dispatch<SetStateAction<boolean>>;
   onInitiateRefund: () => void;
   invoice?: IInvoice;
+  setDiscount?: Dispatch<SetStateAction<number>>;
+  setDiscountType?: Dispatch<SetStateAction<string>>;
 }
 
 const { fields } = estimateModel;
@@ -79,46 +90,98 @@ function InvoiceForm(props: IProps) {
     setSave,
   } = props;
 
-  useEffect(() => {
-    setTimeout(() => {
-      console.log(Object.keys(values), '_lab, _part');
-      // @ts-ignore
-      if (values.invoice != undefined) {
-        // @ts-ignore
-        const _lab = values?.invoice?.tax !== undefined ? (parseInt(values.invoice.tax) !== 0 ? true : false) : true;
-        setEnableTaxLabor(_lab);
-        // @ts-ignore
-        const _part =
-          values?.invoice?.taxPart !== undefined ? (parseInt(values.invoice.taxPart) !== 0 ? false : false) : false;
-        setEnableTaxPart(_part);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     console.log(Object.keys(values), '_lab, _part');
+  //     // @ts-ignore
+  //     if (values.invoice != undefined) {
+  //       // @ts-ignore
+  //       const _lab = values?.invoice?.tax !== undefined ? (parseInt(values.invoice.tax) !== 0 ? true : false) : true;
+  //       setEnableTaxLabor(_lab);
+  //       // @ts-ignore
+  //       const _part =
+  //         values?.invoice?.taxPart !== undefined ? (parseInt(values.invoice.taxPart) !== 0 ? false : false) : false;
+  //       setEnableTaxPart(_part);
 
-        console.log(_lab, _part, '_lab, _part');
-      } else {
-        console.log('did not reach', '_lab, _part');
-      }
-    }, 3000);
-  }, [props, values.email]);
+  //       console.log(_lab, _part, '_lab, _part');
+  //     } else {
+  //       console.log('did not reach', '_lab, _part');
+  //     }
+  //   }, 3000);
+  // }, [props, values.email]);
 
   useEffect(() => {
-    let gT = 0;
+    if (values?.invoice?.tax !== undefined && values?.invoice?.tax !== null && parseInt(values?.invoice?.tax) !== 0) {
+      setEnableTaxLabor(true);
+    } else {
+      setEnableTaxLabor(false);
+    }
+  }, [values.invoice?.tax]);
+
+  // useEffect(() => {
+  //   setDiscount(values.invoice?.discount || 0);
+  //   setDiscountType(values.invoice?.discountType || 'exact');
+  // }, [values.invoice?.discount, values.invoice?.discountType]);
+
+  useEffect(() => {
+    if (
+      values?.invoice?.taxPart !== undefined &&
+      values?.invoice?.taxPart !== null &&
+      parseInt(values?.invoice?.taxPart) !== 0
+    ) {
+      setEnableTaxPart(true);
+    } else {
+      setEnableTaxPart(false);
+    }
+  }, [values.invoice?.taxPart]);
+
+  useEffect(() => {
     setSubTotal(partTotal + labourTotal);
-    setVatTotal(vat + vatPart);
-    if (!enableTaxLabor) {
-      gT = vatPart + partTotal + labourTotal;
-    }
+  }, [partTotal, labourTotal]);
 
-    if (!enableTaxPart) {
-      gT = vat + partTotal + labourTotal;
-    }
+  useEffect(() => {
+    setGrandTotal(subTotal - calculateDiscount(subTotal));
+  }, [subTotal]);
 
-    if (enableTaxPart && enableTaxLabor) {
-      gT = vat + vatPart + partTotal + labourTotal;
-    } else if (!enableTaxPart && !enableTaxLabor) {
-      gT = partTotal + labourTotal;
-    }
+  useEffect(() => {
+    const totalVat = vat + vatPart;
 
-    setGrandTotal(gT);
-  }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
+    setVatTotal(totalVat);
+  }, [vat, vatPart]);
+
+  useEffect(() => {
+    setGrandTotal(subTotal + vatTotal - calculateDiscount(subTotal));
+  }, [vatTotal]);
+
+  // useEffect(() => {
+  //   let gT = 0;
+  //   const totalSub = partTotal + labourTotal;
+  //   setSubTotal(totalSub);
+  //   setGrandTotal(totalSub);
+
+  //   if (!enableTaxLabor) {
+  //     gT = vatPart + subTotal - discount;
+  //     setVatTotal(vatPart);
+  //   }
+
+  //   if (!enableTaxPart) {
+  //     gT = vat + totalSub - discount;
+  //     setVatTotal(vat);
+  //   }
+
+  //   if (enableTaxPart && enableTaxLabor) {
+  //     gT = vat + vatPart + totalSub - discount;
+  //     setVatTotal(vatPart + vat);
+  //   } else if (!enableTaxPart && !enableTaxLabor) {
+  //     gT = totalSub - discount;
+
+  //     setVatTotal(0);
+  //   }
+
+  //   setTimeout(() => {
+  //     setGrandTotal(gT);
+  //   }, 1500);
+  // }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -158,41 +221,35 @@ function InvoiceForm(props: IProps) {
   }, [labourTotal, setFieldValue]);
 
   useEffect(() => {
+    if (!enableTaxPart) {
+      setVatPart(0);
+      return;
+    }
     const vat = 7.5 * 0.01;
     const tax = partTotal * vat;
 
     setFieldValue('taxPart', formatNumberToIntl(tax));
+
     setVatPart(tax);
-  }, [partTotal, setFieldValue]);
+  }, [partTotal, setFieldValue, enableTaxPart]);
 
   useEffect(() => {
     // const _grandTotal = vat + vatPart + partTotal + labourTotal;
-    const _grandTotal = vat + partTotal + labourTotal;
+
     const _depositAmount = parseInt(values.depositAmount);
-    const _dueBalance = _grandTotal - _depositAmount;
+    const _dueBalance = grandTotal - _depositAmount;
 
-    console.log(_grandTotal, '_grandTotal_grandTotal');
+    console.log(grandTotal, '_grandTotal_grandTotal');
 
-    setGrandTotal(_grandTotal);
     setDueBalance(_dueBalance);
 
-    if (_depositAmount > _grandTotal) {
-      setRefundable(_depositAmount - _grandTotal);
+    if (_depositAmount > grandTotal) {
+      setRefundable(_depositAmount - grandTotal);
       setDueBalance(0);
     } else {
       setRefundable(0);
     }
-  }, [
-    vat,
-    vatPart,
-    partTotal,
-    labourTotal,
-    setGrandTotal,
-    setDueBalance,
-    grandTotal,
-    values.depositAmount,
-    setRefundable,
-  ]);
+  }, [grandTotal]);
 
   const _handleChangeVIN = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -210,20 +267,24 @@ function InvoiceForm(props: IProps) {
   );
 
   useEffect(() => {
-    if (isNaN(discount)) return setGrandTotal(subTotal + vatTotal);
-    if (discount < 0 || discount > grandTotal) return setGrandTotal(subTotal + vatTotal);
-
-    let discountValue = discount;
-    const total = subTotal + vatTotal;
-
-    if (discountType === 'exact') setGrandTotal(total - discountValue);
-    else {
-      if (discount < 0.1 || discount > 99) return setGrandTotal(total);
-
-      discountValue = 1 - discountValue / 100;
-      setGrandTotal(total * discountValue);
-    }
+    setGrandTotal(subTotal + vatTotal - calculateDiscount(subTotal));
   }, [discount, discountType]);
+
+  const calculateDiscount = useCallback(
+    (total: number) => {
+      if (discountType === 'exact') {
+        return discount;
+      } else {
+        return Math.ceil(total * (discount / 100));
+      }
+    },
+    [discount, discountType],
+  );
+
+  useEffect(() => {
+    setDiscount(values?.invoice?.discount || 0);
+    setDiscountType(values?.invoice?.discountType || 'exact');
+  }, []);
 
   const handleChangeQtyAndPrice = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number) => {
@@ -277,18 +338,35 @@ function InvoiceForm(props: IProps) {
   useEffect(() => {
     // check for labor
     if (!enableTaxLabor) {
-      setFieldValue(fields.tax.name, 0);
-      // setVat(0)
-      console.log('making labor 0', 'mainLog1');
+      // setFieldValue(fields.tax.name, 0);
+      setVat(0);
+      values.tax = '0';
     }
 
     // check for part
     if (!enableTaxPart) {
-      setFieldValue(fields.taxPart.name, 0);
-      // setVatPart(0)
-      console.log('making part 0', 'mainLog1');
+      //setFieldValue(fields.taxPart.name, 0);
+      setVatPart(0);
+
+      values.taxPart = '0';
     }
   }, [enableTaxLabor, enableTaxPart]);
+
+  const calculateTaxLabour = useCallback(() => {
+    if (!enableTaxLabor) {
+      setVat(0);
+      return;
+    }
+    const vat = 7.5 * 0.01;
+    const tax = labourTotal * vat;
+
+    setFieldValue('tax', formatNumberToIntl(tax));
+    setVat(tax);
+  }, [enableTaxLabor, labourTotal, setFieldValue]);
+
+  useLayoutEffect(() => {
+    calculateTaxLabour();
+  }, [calculateTaxLabour]);
 
   // listen for reload
   useEffect(() => {
@@ -470,31 +548,6 @@ function InvoiceForm(props: IProps) {
                       </IconButton>
                     </Grid>
                     <Grid item xs={12} container spacing={2} columns={13}>
-                      <Grid item xs={8} />
-                      <Grid item xs={4}>
-                        <Typography style={{ marginBottom: 10 }}>
-                          Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
-                        </Typography>
-                        {enableTaxPart && (
-                          <TextField
-                            name={fields.taxPart.name}
-                            value={values.taxPart}
-                            label={`${fields.taxPart.label} (VAT 7.5%)`}
-                            variant="outlined"
-                            fullWidth
-                            sx={{ mb: 2 }}
-                          />
-                        )}
-                      </Grid>
-
-                      {/* <Grid item style={{}}>
-                        <div>
-                          <span>Apply Tax</span>
-                          <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
-                        </div>
-                      </Grid> */}
-                    </Grid>
-                    <Grid item xs={12} container spacing={2} columns={13}>
                       <Grid item xs={6} />
                       <Grid item xs={4}>
                         <Typography style={{ marginBottom: 10 }}>
@@ -601,7 +654,10 @@ function InvoiceForm(props: IProps) {
           <Grid item xs={12} container spacing={2} columns={13}>
             <Grid item xs={6} />
             <Grid item xs={4}>
-              <Typography> Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}</Typography>
+              <Typography style={{ marginBottom: 10 }}>
+                {' '}
+                Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}
+              </Typography>
               {enableTaxLabor && (
                 <TextField
                   name={fields.tax.name}
@@ -671,55 +727,63 @@ function InvoiceForm(props: IProps) {
             </Grid>
           </Grid>
           <br />
-          <Grid item>
-            <Grid container spacing={2}>
+          <br />
+          <Grid style={{ marginTop: 20 }} container spacing={2}>
+            <Grid item md={6}>
               <Grid item>
-                <Typography variant="h6">VAT(7.5%):</Typography>
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Typography variant="h6">VAT(7.5%):</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="h6">₦{formatNumberToIntl(vatTotal)}</Typography>
+                  </Grid>
+                </Grid>
               </Grid>
               <Grid item>
-                <Typography variant="h6">₦{formatNumberToIntl(vatTotal)}</Typography>
+                <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+              </Grid>
+              <Grid item justifyContent="space-around" alignItems="center">
+                <Typography variant="h6">Amount Paid: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="h6">Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
+              </Grid>
+              <Grid item justifyContent="space-around" alignItems="center">
+                <Typography variant="h6">Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
               </Grid>
             </Grid>
-          </Grid>
-          <Grid item xs={2} alignSelf="center">
-            <Typography variant="body1">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
-          </Grid>
-          <Grid item xs={2} alignSelf="center">
-            <Typography variant="body1">Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
-          </Grid>
-          <Grid item xs={2} container justifyContent="space-around" alignItems="center">
-            <Typography variant="body1">Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
-          </Grid>
-          <Grid item xs={3} container justifyContent="space-around" alignItems="center">
-            <Typography variant="body1">Deposited Amount: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
-          </Grid>
-          <Grid item xs={3} container spacing={0.5}>
-            <Grid item xs={6}>
-              <TextInputField
-                onChange={handleChange}
-                value={values.jobDuration.count}
-                name="jobDuration.count"
-                label={fields.jobDuration.label}
-                type="number"
-                inputProps={{
-                  min: '1',
-                }}
-              />
-            </Grid>
-            <Grid item xs>
-              <SelectField
-                data={[
-                  { label: 'day', value: 'day' },
-                  { label: 'week', value: 'week' },
-                  { label: 'month', value: 'month' },
-                  { label: 'year', value: 'year' },
-                ]}
-                onChange={handleChange}
-                value={values.jobDuration.interval}
-                name="jobDuration.interval"
-                label="Interval"
-                fullWidth
-              />
+
+            <Grid item md={6}>
+              <Grid container spacing={0.5}>
+                <Grid item xs={6}>
+                  <TextInputField
+                    onChange={handleChange}
+                    value={values.jobDuration.count}
+                    name="jobDuration.count"
+                    label={fields.jobDuration.label}
+                    type="number"
+                    inputProps={{
+                      min: '1',
+                    }}
+                  />
+                </Grid>
+                <Grid item xs>
+                  <SelectField
+                    data={[
+                      { label: 'day', value: 'day' },
+                      { label: 'week', value: 'week' },
+                      { label: 'month', value: 'month' },
+                      { label: 'year', value: 'year' },
+                    ]}
+                    onChange={handleChange}
+                    value={values.jobDuration.interval}
+                    name="jobDuration.interval"
+                    label="Interval"
+                    fullWidth
+                  />
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
 
@@ -730,7 +794,11 @@ function InvoiceForm(props: IProps) {
             <Stack direction="row" spacing={2}>
               <LoadingButton
                 // disabled={values.status === ESTIMATE_STATUS.invoiced}
-                onClick={onSave}
+                onClick={() => {
+                  props.setDiscountType && props.setDiscountType(discountType);
+                  props.setDiscount && props.setDiscount(discount);
+                  onSave();
+                }}
                 sx={{ ml: 2 }}
                 type="submit"
                 variant="contained"

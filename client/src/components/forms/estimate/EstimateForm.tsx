@@ -83,7 +83,9 @@ function EstimateForm(props: IProps) {
   const [vat, setVat] = useState<number>(0);
   const [createModal, setCreateModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
-
+  const [vatTotal, setVatTotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState('exact');
   // @ts-ignore
   // const [inputStack, setInputStack] = useState<any>("")
   // @ts-ignore
@@ -130,7 +132,7 @@ function EstimateForm(props: IProps) {
   const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(false);
 
   useEffect(() => {
-    if (values?.estimate?.tax !== undefined || parseInt(values?.estimate?.tax) !== 0) {
+    if (values?.estimate?.tax !== undefined && parseInt(values?.estimate?.tax) !== 0) {
       setEnableTaxLabor(true);
     } else {
       setEnableTaxLabor(false);
@@ -141,7 +143,7 @@ function EstimateForm(props: IProps) {
   const [enableTaxPart, setEnableTaxPart] = useState<boolean>(false);
 
   useEffect(() => {
-    if (values?.estimate?.taxPart !== undefined || parseInt(values?.estimate?.taxPart) !== 0) {
+    if (values?.estimate?.taxPart !== undefined && parseInt(values?.estimate?.taxPart) !== 0) {
       setEnableTaxPart(true);
     } else {
       setEnableTaxPart(false);
@@ -172,6 +174,28 @@ function EstimateForm(props: IProps) {
       dispatch(getPartnerAction(partnerId));
     }
   }, [dispatch, partnerId]);
+
+  const [subTotal, setSubTotal] = useState(0);
+
+  useEffect(() => {
+    setSubTotal(partTotal + labourTotal);
+  }, [partTotal, labourTotal]);
+
+  useEffect(() => {
+    console.log('dis', subTotal - calculateDiscount(subTotal));
+    setGrandTotal(subTotal - calculateDiscount(subTotal));
+  }, [subTotal]);
+
+  useEffect(() => {
+    const totalVat = vat + vatPart;
+
+    setVatTotal(totalVat);
+  }, [vat, vatPart]);
+
+  useEffect(() => {
+    console.log('vat total> ', subTotal + vatTotal - calculateDiscount(subTotal));
+    setGrandTotal(subTotal + vatTotal - calculateDiscount(subTotal));
+  }, [vatTotal]);
 
   useEffect(() => {
     if (partnerReducer.getOwnersFilterDataStatus === 'completed') {
@@ -236,31 +260,34 @@ function EstimateForm(props: IProps) {
     calculateTaxLabour();
   }, [calculateTaxLabour]);
 
-  const [subTotal, setSubTotal] = useState(0);
-  const [vatTotal, setVatTotal] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [discountType, setDiscountType] = useState('exact');
+  // useEffect(() => {
+  //   let gT = 0;
+  //   console.log('discount> ', discount);
+  //   const totalSub = partTotal + labourTotal;
+  //   setSubTotal(totalSub);
+  //   setGrandTotal(totalSub);
 
-  useEffect(() => {
-    let gT = 0;
-    setSubTotal(partTotal + labourTotal);
-    setVatTotal(vat + vatPart);
-    if (!enableTaxLabor) {
-      gT = vatPart + partTotal + labourTotal;
-    }
+  //   if (!enableTaxLabor) {
+  //     gT = vatPart + subTotal;
+  //     setVatTotal(vatPart);
+  //   }
 
-    if (!enableTaxPart) {
-      gT = vat + partTotal + labourTotal;
-    }
+  //   if (!enableTaxPart) {
+  //     gT = vat + totalSub;
+  //     setVatTotal(vat);
+  //   }
 
-    if (enableTaxPart && enableTaxLabor) {
-      gT = vat + vatPart + partTotal + labourTotal;
-    } else if (!enableTaxPart && !enableTaxLabor) {
-      gT = partTotal + labourTotal;
-    }
+  //   if (enableTaxPart && enableTaxLabor) {
+  //     gT = vat + vatPart + totalSub;
+  //     setVatTotal(vatPart + vat);
+  //   } else if (!enableTaxPart && !enableTaxLabor) {
+  //     gT = totalSub;
 
-    setGrandTotal(gT);
-  }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
+  //     setVatTotal(0);
+  //   }
+
+  //  setGrandTotal(gT - discount);
+  // }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
     if (vehicleReducer.getVehicleVINStatus === 'completed') {
@@ -406,18 +433,21 @@ function EstimateForm(props: IProps) {
     // }
   }, [value, customerReducer.getCustomerStatus]);
 
-  // listen for tax changes and adjust
+  //listen for tax changes and adjust
   useEffect(() => {
     // check for labor
     if (!enableTaxLabor) {
-      setFieldValue(fields.tax.name, 0);
-      // setVat(0)
+      // setFieldValue(fields.tax.name, 0);
+      setVat(0);
+      values.tax = '0';
     }
 
     // check for part
     if (!enableTaxPart) {
-      setFieldValue(fields.taxPart.name, 0);
-      // setVatPart(0)
+      //setFieldValue(fields.taxPart.name, 0);
+      setVatPart(0);
+
+      values.taxPart = '0';
     }
   }, [enableTaxLabor, enableTaxPart]);
 
@@ -464,33 +494,27 @@ function EstimateForm(props: IProps) {
   };
 
   useEffect(() => {
-    if (isNaN(discount)) return setGrandTotal(subTotal + vatTotal);
-    if (discount < 0 || discount > grandTotal) return setGrandTotal(subTotal + vatTotal);
+    // if (isNaN(discount)) return setGrandTotal(subTotal + vatTotal);
+    // if (discount < 0 || discount > grandTotal) return setGrandTotal(subTotal + vatTotal);
 
-    let discountValue = discount;
-    const total = subTotal + vatTotal;
-
-    if (discountType === 'exact') setGrandTotal(total - discountValue);
-    else {
-      if (discount < 0.1 || discount > 99) return setGrandTotal(total);
-
-      discountValue = 1 - discountValue / 100;
-      setGrandTotal(total * discountValue);
-    }
+    setGrandTotal(subTotal + vatTotal - calculateDiscount(subTotal));
   }, [discount, discountType]);
 
   useEffect(() => {
-    const total = subTotal + vatTotal;
-    if (total === grandTotal) {
-      if (values.estimate && values?.estimate?.discount) {
-        setDiscount(values?.estimate?.discount);
-      }
+    setDiscount(values?.estimate?.discount || 0);
+    setDiscountType(values?.estimate?.discountType || 'exact');
+  }, []);
 
-      if (values.estimate && values?.estimate?.discountType) {
-        setDiscountType(values?.estimate?.discountType);
+  const calculateDiscount = useCallback(
+    (total: number) => {
+      if (discountType === 'exact') {
+        return discount;
+      } else {
+        return Math.ceil(total * (discount / 100));
       }
-    }
-  }, [grandTotal, values.estimate, subTotal, vatTotal]);
+    },
+    [discount, discountType],
+  );
 
   return (
     <React.Fragment>
@@ -1111,6 +1135,7 @@ function EstimateForm(props: IProps) {
                 color="secondary"
                 endIcon={<Save />}
                 onClick={() => {
+                  console.log('called> ', discountType, discount);
                   props.setDiscountType && props.setDiscountType(discountType);
                   props.setDiscount && props.setDiscount(discount);
                   props.setSave(true);

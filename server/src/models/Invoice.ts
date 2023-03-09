@@ -57,6 +57,8 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   jobDurationValue: Joi.string().allow('').label(estimateFields.jobDurationValue.label),
   jobDurationUnit: Joi.string().allow('').label(estimateFields.jobDurationUnit.label),
   dueAmount: Joi.number().allow().label('Due Amount'),
+  discount: Joi.number().label('discount'),
+  discountType: Joi.string().label('discountType'),
 };
 
 @Table({ tableName: 'invoices', timestamps: true, paranoid: true })
@@ -122,6 +124,12 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
 
   @Column(DataType.STRING)
   declare jobDurationUnit: string;
+
+  @Column(DataType.INTEGER)
+  declare discount?: number;
+
+  @Column(DataType.STRING)
+  declare discountType?: string;
 
   @Column(DataType.STRING)
   declare address: string;

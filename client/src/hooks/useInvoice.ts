@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IInvoice } from '@app-models';
 import useAppDispatch from './useAppDispatch';
 import useAppSelector from './useAppSelector';
-import { getInvoicesAction, saveInvoiceAction, sendInvoiceAction } from '../store/actions/invoiceActions';
+import { getInvoicesAction, sendInvoiceAction, saveInvoiceAction } from '../store/actions/invoiceActions';
 import { clearGetInvoicesStatus } from '../store/reducers/invoiceReducer';
 import { CustomHookMessage } from '@app-types';
 import estimateModel, { IEstimateValues, ILabour, IPart } from '../components/forms/models/estimateModel';
@@ -55,6 +55,9 @@ export default function useInvoice() {
   const [estimateId, setEstimateId] = useState<number>();
   const [invoiceId, setInvoiceId] = useState<number>();
   const [save, setSave] = useState<boolean>(false);
+  const [discount, setDiscount] = useState(0);
+
+  const [discountType, setDiscountType] = useState('exact');
 
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
   const dispatch = useAppDispatch();
@@ -160,6 +163,8 @@ export default function useInvoice() {
 
       const invoice = invoices.find(invoice => invoice.id === id);
 
+      console.log('invoice> ', invoice);
+
       if (invoice && invoice.estimate) {
         const driver = invoice.estimate.rideShareDriver;
         const customer = invoice.estimate.customer;
@@ -187,6 +192,7 @@ export default function useInvoice() {
           const jobDuration = { count: `${draftInvoice.jobDurationValue}`, interval: draftInvoice.jobDurationUnit };
           const depositAmount = `${draftInvoice.depositAmount}`;
           const tax = `${draftInvoice.tax}`;
+          const taxPart = `${invoice.taxPart}`;
           const status = draftInvoice.status;
 
           setInitialValues(prevState => ({
@@ -208,7 +214,8 @@ export default function useInvoice() {
             parts,
             labours,
             status,
-            invoice
+            invoice,
+            taxPart,
           }));
 
           setGrandTotal(draftInvoice.grandTotal);
@@ -246,7 +253,7 @@ export default function useInvoice() {
             parts,
             labours,
             status,
-            invoice
+            invoice,
           }));
 
           setGrandTotal(invoice.grandTotal);
@@ -286,7 +293,7 @@ export default function useInvoice() {
             parts,
             labours,
             status,
-            invoice
+            invoice,
           }));
 
           setGrandTotal(estimate.grandTotal);
@@ -325,7 +332,7 @@ export default function useInvoice() {
     const data = getUpdateData(invoiceId, values, partTotal, labourTotal, grandTotal, refundable, dueBalance);
 
     setSave(false);
-    void dispatch(saveInvoiceAction(data));
+    void dispatch(saveInvoiceAction({ ...data, discount, discountType, taxPart: values.taxPart }));
   };
 
   const handleSendInvoice = (values: IEstimateValues) => {
@@ -337,7 +344,7 @@ export default function useInvoice() {
 
     const data = getUpdateData(invoiceId, values, partTotal, labourTotal, grandTotal, refundable, dueBalance);
 
-    void dispatch(sendInvoiceAction(data));
+    void dispatch(sendInvoiceAction({ ...data, discount, discountType, taxPart: values.taxPart }));
   };
 
   const handleCloseEdit = () => {
@@ -384,5 +391,7 @@ export default function useInvoice() {
     handleSendInvoice,
     handleCloseEdit,
     invoice,
+    setDiscountType,
+    setDiscount,
   };
 }

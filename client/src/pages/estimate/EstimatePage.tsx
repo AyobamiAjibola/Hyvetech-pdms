@@ -112,10 +112,15 @@ function EstimatePage() {
     if (discountType === 'exact') {
       return discount;
     }
+    console.log('discount>', Math.ceil(total * (discount / 100)));
     return Math.ceil(total * (discount / 100));
   };
 
   const calculateTaxTotal = (estimate: IEstimate | undefined) => {
+    console.log(
+      'tax total, ',
+      parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join('')),
+    );
     if (!estimate) return 0;
 
     return parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
@@ -358,13 +363,13 @@ function EstimatePage() {
               Discount:
               {
                 // @ts-ignore
-                formatNumberToIntl(
+                `(${formatNumberToIntl(
                   calculateDiscount({
                     total: estimate.partsTotal + estimate.laboursTotal,
                     discount: estimate.discount,
                     discountType: estimate.discountType,
                   }),
-                )
+                )})`
               }
             </Typography>
             {/* <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography> */}
@@ -376,7 +381,8 @@ function EstimatePage() {
             <Typography gutterBottom>
               TOTAL:{' '}
               {formatNumberToIntl(
-                estimate.grandTotal -
+                estimate.partsTotal +
+                  estimate.laboursTotal -
                   calculateDiscount({
                     total: estimate.partsTotal + estimate.laboursTotal,
                     discount: estimate.discount,
