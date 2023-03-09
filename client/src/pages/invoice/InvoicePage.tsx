@@ -526,11 +526,11 @@ function InvoicePage() {
                 Select Method
               </Typography>
               <br />
-              <Select value={recordData.type} native fullWidth placeholder='Select Payment Mode'>
-                <option>Cash</option>
-                <option>Transfer</option>
-                <option>Check</option>
-                <option>POS</option>
+              <Select onChange={e => setRecordData({...recordData, type: e.target.value})} value={recordData.type} native fullWidth placeholder='Select Payment Mode'>
+                <option value={"Cash"}>Cash</option>
+                <option value={"Transfer"}>Transfer</option>
+                <option value={"Check"}>Check</option>
+                <option value={"POS"}>POS</option>
               </Select>
               <br />
 
