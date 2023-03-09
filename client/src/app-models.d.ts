@@ -636,6 +636,7 @@ declare module '@app-models' {
     partsTotal: number;
     laboursTotal: number;
     tax: string;
+    taxPart: string;
     jobDurationValue: number;
     jobDurationUnit: string;
     address: string;
