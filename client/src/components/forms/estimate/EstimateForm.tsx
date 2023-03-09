@@ -141,7 +141,7 @@ function EstimateForm(props: IProps) {
 
   // @ts-ignore
   const [enableTaxPart, setEnableTaxPart] = useState<boolean>(false);
-  console.log('estimate> ', values?.estimate);
+
   useEffect(() => {
     if (values?.estimate?.taxPart !== undefined && parseInt(values?.estimate?.taxPart) !== 0) {
       setEnableTaxPart(true);
