@@ -12,8 +12,20 @@ export const generateInvoiceHandler = authenticateRouteWrapper(async (req, res) 
   res.status(response.code).json(response);
 });
 
+export const generateInvoiceManuallyHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await InvoiceController.generateInvoiceManually(req);
+
+  res.status(response.code).json(response);
+});
+
 export const updateCompletedInvoicePaymentHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await InvoiceController.updateCompletedInvoicePayment(req);
+
+  res.status(response.code).json(response);
+});
+
+export const updateCompletedInvoicePaymentManuallyHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await InvoiceController.updateCompletedInvoicePaymentManually(req);
 
   res.status(response.code).json(response);
 });
