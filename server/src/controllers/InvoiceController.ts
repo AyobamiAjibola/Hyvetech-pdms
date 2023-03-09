@@ -122,10 +122,10 @@ export default class InvoiceController {
 
     const balanceResponse = await axiosClient.get(endpoint);
 
-    if (balanceResponse.data.data.balance < partnerFee * 100)
-      return Promise.reject(
-        CustomAPIError.response('Insufficient Balance. Please contact support.', HttpStatus.BAD_REQUEST.code),
-      );
+    // if (balanceResponse.data.data.balance < partnerFee * 100)
+    //   return Promise.reject(
+    //     CustomAPIError.response('Insufficient Balance. Please contact support.', HttpStatus.BAD_REQUEST.code),
+    //   );
 
     endpoint = '/transferrecipient';
 
@@ -206,6 +206,56 @@ export default class InvoiceController {
     };
 
     return Promise.resolve(response);
+  }
+
+  @TryCatch
+  public static async generateInvoiceManually(req: Request){
+    // 
+    try{
+      const estimate = await dataSources.estimateDAOService.findById(req.body.id);
+
+      if(!estimate){
+        const response: HttpResponse<any> = {
+          code: HttpStatus.BAD_REQUEST.code,
+          message: 'Error',
+        };
+    
+        return Promise.resolve(response);
+      }
+
+      const invoiceCode = Generic.randomize({ number: true, count: 6 });
+      const invoiceValues: Partial<Attributes<Invoice>> = {
+        code: invoiceCode,
+        depositAmount: 0,
+        paidAmount: 0,
+        tax: estimate.tax,
+        taxPart: estimate.taxPart,
+        dueAmount: estimate.grandTotal,
+        grandTotal: estimate.grandTotal,
+        status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
+        dueDate: moment().days(estimate.expiresIn).toDate(),
+      };
+  
+      const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
+  
+      await estimate.update({ status: ESTIMATE_STATUS.invoiced });
+      await estimate.$set('invoice', invoice);
+
+      const response: any = {
+        code: HttpStatus.OK.code,
+        invoiceCode: invoice.id,
+        message: 'Invoice successfully created',
+      };
+  
+      return Promise.resolve(response);
+    }catch(e){
+      const response: HttpResponse<Invoice> = {
+        code: HttpStatus.BAD_REQUEST.code,
+        message: 'Error Generating Invoice',
+      };
+  
+      return Promise.resolve(response);
+    }
   }
 
   @TryCatch
@@ -538,6 +588,83 @@ export default class InvoiceController {
       code: HttpStatus.OK.code,
       message: 'Payment complete',
     } as HttpResponse<void>);
+  }
+
+  @TryCatch
+  public static async updateCompletedInvoicePaymentManually(req: Request){
+    try{
+      const {invoiceId, customerId, amount: _amount, type} = req.body;
+
+      // get customer
+      // const customer = await dataSources.customerDAOService.findById(customerId);
+
+      // get invoice
+      const invoice = await dataSources.invoiceDAOService.findById(invoiceId);
+
+      if (!invoice)
+        return Promise.reject(
+          CustomAPIError.response(`Invoice with Id: ${invoiceId} does not exist`, HttpStatus.NOT_FOUND.code),
+        );
+
+      // update transaction
+      const transferTransactionValues: Partial<Attributes<Transaction>> = {
+        amount: _amount,
+        type: type,
+        reference: "PTRG-"+Generic.generateRandomString(5),
+        status: 'success',
+        bank: "JIFFIX",
+        purpose: `PARTNER: GENERATED-FOR-${invoice.code}`,
+        channel: 'bank',
+        currency: "NGN",
+        paidAt: new Date(),
+        cardType: "none",
+        last4: "none",
+        expMonth: "none",
+        expYear: "none",
+        countryCode: "none",
+        brand: "none",
+      };
+  
+      const transferTransaction = await dataSources.transactionDAOService.create(
+        transferTransactionValues as CreationAttributes<Transaction>,
+      );
+
+      try{
+        const customer = await dataSources.customerDAOService.findById(customerId);
+        if(customer){
+          await customer.$add('transactions', [transferTransaction]);
+        }
+      }catch(e){
+        // 
+      }
+
+      // update invoice
+      const amount = invoice.depositAmount + parseInt(_amount);
+      const newDueAmount = invoice.grandTotal - amount;
+
+      const payload = {
+        dueAmount: newDueAmount,
+        paidAmount: amount,
+        depositAmount: amount,
+        refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : invoice.refundable,
+        status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
+      };
+
+      console.log(payload, _amount, amount);
+
+      await invoice.update(payload);
+
+      return Promise.resolve({
+        code: HttpStatus.OK.code,
+        message: 'Record Updated',
+      } as HttpResponse<void>);
+
+    }catch(e){
+      return Promise.resolve({
+        code: HttpStatus.INTERNAL_SERVER_ERROR.code,
+        message: 'An Error Occurred',
+      } as HttpResponse<void>);
+    }
   }
 
   @TryCatch

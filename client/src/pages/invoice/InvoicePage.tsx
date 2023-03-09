@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IBillingInformation, IEstimate, IInvoice } from '@app-models';
 import { useLocation } from 'react-router-dom';
-import { Alert, Avatar, Box, Button, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Divider, Grid, Input, Select, Stack, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -10,6 +10,10 @@ import settings from '../../config/settings';
 import { INVOICE_STATUS } from '../../config/constants';
 import { ArrowBackIosNew } from '@mui/icons-material';
 import axiosClient from '../../config/axiosClient';
+import AppModal from '../../components/modal/AppModal'
+import { getInvoicesAction } from '../../store/actions/invoiceActions';
+import { useDispatch } from 'react-redux';
+import AppAlert from '../../components/alerts/AppAlert';
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -26,9 +30,22 @@ function InvoicePage() {
   const [_driver, setDriver] = useState<any>(null);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  const [showRecordPayment, setShowRecordPayment] = useState<boolean>(false);
+  const [recording, setRecording] = useState<any>(false);
+  const [recordData, setRecordData] = useState<{
+    amount: string|number;
+    type: string;
+  }>({
+    amount: '',
+    type: 'Cash',
+  });
 
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
+
+  const [showMessage, setshowMessage] = useState<boolean>(false);
 
   useEffect(() => {
     if (location.state) {
@@ -109,6 +126,31 @@ function InvoicePage() {
     }, 3000);
   };
 
+  const handlePaymentRecord = async()=>{
+    setRecording(true)
+    try{
+      const payload = {
+        invoiceId: invoice?.id || 0, customerId: _driver.id, amount: recordData.amount, type: recordData.type
+      }
+
+      const response = await axiosClient.post(`${API_ROOT}/transactions/update-invoice-payment-manually`, payload);
+      console.log(response.data);
+      // @ts-ignore
+      dispatch(getInvoicesAction());
+      setshowMessage(true)
+
+      setTimeout(()=>{
+        setshowMessage(false);
+        window.history.back();
+      }, 3000)
+      // alert("Record Updated");
+      // window.location.reload();
+    }catch(e){
+      console.log(e)
+    }
+    setRecording(false)
+  }
+
   const calculateDiscount = ({
     total,
     discount,
@@ -138,7 +180,7 @@ function InvoicePage() {
       <Grid container justifyContent="center" alignItems="center">
         <Grid item xs>
           <Alert severity="warning" variant="outlined">
-            <Typography>You do not have any estimate. Please contact support</Typography>
+            <Typography>You do not have any invoice. Please contact support</Typography>
           </Alert>
         </Grid>
       </Grid>
@@ -160,6 +202,13 @@ function InvoicePage() {
         </Typography>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            {
+              ( ( invoice.grandTotal !== invoice.paidAmount ) && 
+                <Button style={{ marginRight: 20 }} variant="outlined" color="success" size="small" onClick={() => setShowRecordPayment(true)}>
+                  {'Record Payment'}
+                </Button>
+              )
+            }
           <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
             {downloading ? 'Downloading...' : 'Download Pdf'}
           </Button>
@@ -447,6 +496,53 @@ function InvoicePage() {
             </Box>
           </Grid>
         </Grid>
+
+        <AppModal 
+          show={showRecordPayment}
+          onClose={() => setShowRecordPayment(false)}
+          title="Record Payment"
+          size='md'
+          ActionComponent={
+            <Button onClick={()=> handlePaymentRecord()}>{ recording ? 'Recording' : 'Record'}</Button>
+          }
+          // fullWidth
+          Content={
+            <div style={{ width: 300 }}>
+              <Input value={recordData.amount} type='numeric' fullWidth placeholder={'Amount to Record Max: '+ formatNumberToIntl(invoice.dueAmount)}
+              onChange={e => {
+                // process entry
+                if( parseInt(e.target.value) > invoice.dueAmount ){
+                  alert('Recording above due amount, a refund might be considered');
+                }else{
+                  setRecordData({...recordData, amount: e.target.value})
+                }
+              }} />
+
+              <br />
+              &nbsp;
+              <br />
+
+              <Typography>
+                Select Method
+              </Typography>
+              <br />
+              <Select value={recordData.type} native fullWidth placeholder='Select Payment Mode'>
+                <option>Cash</option>
+                <option>Transfer</option>
+                <option>Check</option>
+                <option>POS</option>
+              </Select>
+              <br />
+
+            </div>
+          }/>
+          
+          <AppAlert
+            alertType="success"
+            show={showMessage}
+            message={"record recieved, re-open invoice to see changes"}
+            onClose={() => setshowMessage(false)}
+          />
       </React.Fragment>
     );
 }

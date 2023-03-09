@@ -25,6 +25,7 @@ function EstimatePage() {
   const location = useLocation();
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
+  const [generating, setGenerating] = useState<any>(false);
 
   useEffect(() => {
     if (location.state) {
@@ -73,6 +74,28 @@ function EstimatePage() {
       window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
     }, 3000);
   };
+
+  const generateInvoice = async ()=>{
+    // 
+    try{
+      const payload = {
+        id: estimate?.id
+      };
+      setGenerating(true);
+
+      const response = await axiosClient.post(`${API_ROOT}/transactions/generate-invoice-manually`, payload);
+      const code = response.data.invoiceCode;
+      console.log(code)
+      // window.location.href = ('/invoices/'+code);
+      window.location.replace('/invoices');
+
+    }catch(e){
+      alert('an error occurred');
+      console.log(e)
+    }
+
+    setGenerating(false);
+  }
 
   const calculateDiscount = ({
     total,
@@ -125,6 +148,16 @@ function EstimatePage() {
         </Typography>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {
+            (
+              ( ((estimate.status).toLowerCase() === 'sent') ) &&
+              
+              <Button style={{ marginRight: 20 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
+                {generating ? 'Generating...' : 'Generate Invoice'}
+              </Button>
+            )
+          }
+
           <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
             {downloading ? 'Downloading...' : 'Download Pdf'}
           </Button>
