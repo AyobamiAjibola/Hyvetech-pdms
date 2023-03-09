@@ -129,7 +129,7 @@ function InvoicePage() {
     return Math.ceil(total * (discount / 100));
   };
 
-  const calculateTaxTotal = (estimate: IEstimate | undefined) => {
+  const calculateTaxTotal = (estimate: IInvoice | IEstimate | undefined) => {
     if (!estimate) return 0;
 
     return parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
@@ -352,7 +352,7 @@ function InvoicePage() {
               VAT(7.5%):{' '}
               {
                 // @ts-ignore
-                formatNumberToIntl(calculateTaxTotal(estimate))
+                formatNumberToIntl(calculateTaxTotal(invoice))
               }
             </Typography>
             <Typography gutterBottom>
@@ -361,9 +361,9 @@ function InvoicePage() {
                 // @ts-ignore
                 `(${formatNumberToIntl(
                   calculateDiscount({
-                    total: estimate.partsTotal + estimate.laboursTotal,
-                    discount: estimate.discount,
-                    discountType: estimate.discountType,
+                    total: grandTotal,
+                    discount: invoice.discount,
+                    discountType: invoice.discountType,
                   }),
                 )})`
               }
@@ -378,11 +378,11 @@ function InvoicePage() {
               {formatNumberToIntl(
                 grandTotal -
                   calculateDiscount({
-                    total: estimate.partsTotal + estimate.laboursTotal,
-                    discount: estimate.discount,
-                    discountType: estimate.discountType,
+                    total: grandTotal,
+                    discount: invoice.discount,
+                    discountType: invoice.discountType,
                   }) +
-                  calculateTaxTotal(estimate),
+                  calculateTaxTotal(invoice),
               )}
             </Typography>
           </Grid>
@@ -394,7 +394,7 @@ function InvoicePage() {
               gutterBottom
               fontStyle="italic"
               color={theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238')}>
-              Job Duration: {estimate.jobDurationValue} {estimate.jobDurationUnit}(s)
+              Job Duration: {invoice.jobDurationValue} {invoice.jobDurationUnit}(s)
             </Typography>
           </Grid>
         </Grid>

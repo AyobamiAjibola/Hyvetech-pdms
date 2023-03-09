@@ -651,5 +651,7 @@ declare module '@app-models' {
     createdAt: string;
     updatedAt: string;
     deletedAt: string;
+    discount: number;
+    discountType: string;
   }
 }
