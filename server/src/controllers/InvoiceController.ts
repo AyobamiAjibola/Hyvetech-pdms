@@ -231,6 +231,8 @@ export default class InvoiceController {
         tax: estimate.tax,
         taxPart: estimate.taxPart,
         dueAmount: estimate.grandTotal,
+        discount: estimate?.discount || 0,
+        discountType: estimate?.discountType || "percentage",
         grandTotal: estimate.grandTotal,
         status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
         dueDate: moment().days(estimate.expiresIn).toDate(),
@@ -249,6 +251,7 @@ export default class InvoiceController {
   
       return Promise.resolve(response);
     }catch(e){
+      console.log(e);
       const response: HttpResponse<Invoice> = {
         code: HttpStatus.BAD_REQUEST.code,
         message: 'Error Generating Invoice',
