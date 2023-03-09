@@ -111,7 +111,6 @@ function InvoiceForm(props: IProps) {
   // }, [props, values.email]);
 
   useEffect(() => {
-    console.log('parseInt(values?.invoice?.tax) ', parseInt(values?.invoice?.tax));
     if (values?.invoice?.tax !== undefined && values?.invoice?.tax !== null && parseInt(values?.invoice?.tax) !== 0) {
       setEnableTaxLabor(true);
     } else {
