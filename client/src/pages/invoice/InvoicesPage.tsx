@@ -28,6 +28,7 @@ import { verifyRefundCustomerAction } from '../../store/actions/transactionActio
 import useAdmin from '../../hooks/useAdmin';
 import { getInvoicesAction } from '../../store/actions/invoiceActions';
 import { clearSaveInvoiceStatus, clearSendInvoiceStatus } from '../../store/reducers/invoiceReducer';
+import { formatNumberToIntl } from '../../utils/generic';
 
 function InvoicesPage() {
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
@@ -395,7 +396,7 @@ function InvoicesPage() {
       },
       {
         field: 'depositAmount',
-        headerName: 'Deposit Amount',
+        headerName: 'Amount Paid',
         headerAlign: 'center',
         align: 'center',
         type: 'number',
@@ -411,7 +412,7 @@ function InvoicesPage() {
         width: 150,
         sortable: true,
         valueFormatter: ({ value }) => {
-          return value ? (Math.sign(value) === -1 ? 0 : value) : 0;
+          return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
         },
       },
       {
