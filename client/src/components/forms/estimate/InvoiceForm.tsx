@@ -111,7 +111,7 @@ function InvoiceForm(props: IProps) {
   // }, [props, values.email]);
 
   useEffect(() => {
-    if (values?.invoice?.tax !== undefined || parseInt(values?.invoice?.tax) !== 0) {
+    if (values?.invoice?.tax !== undefined && values?.invoice?.tax !== null && parseInt(values?.invoice?.tax) !== 0) {
       setEnableTaxLabor(true);
     } else {
       setEnableTaxLabor(false);
@@ -124,7 +124,11 @@ function InvoiceForm(props: IProps) {
   // }, [values.invoice?.discount, values.invoice?.discountType]);
 
   useEffect(() => {
-    if (values?.invoice?.taxPart !== undefined || parseInt(values?.invoice?.taxPart) !== 0) {
+    if (
+      values?.invoice?.taxPart !== undefined &&
+      values?.invoice?.taxPart !== null &&
+      parseInt(values?.invoice?.taxPart) !== 0
+    ) {
       setEnableTaxPart(true);
     } else {
       setEnableTaxPart(false);
