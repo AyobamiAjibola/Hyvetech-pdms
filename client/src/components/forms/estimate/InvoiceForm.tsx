@@ -229,6 +229,7 @@ function InvoiceForm(props: IProps) {
     const tax = partTotal * vat;
 
     setFieldValue('taxPart', formatNumberToIntl(tax));
+
     setVatPart(tax);
   }, [partTotal, setFieldValue, enableTaxPart]);
 
@@ -271,7 +272,6 @@ function InvoiceForm(props: IProps) {
 
   const calculateDiscount = useCallback(
     (total: number) => {
-      console.log('total> ', total, 'dicount, ', discount);
       if (discountType === 'exact') {
         return discount;
       } else {
@@ -339,7 +339,7 @@ function InvoiceForm(props: IProps) {
     // check for labor
     if (!enableTaxLabor) {
       // setFieldValue(fields.tax.name, 0);
-      // setVat(0)
+      setVat(0);
       values.tax = '0';
     }
 

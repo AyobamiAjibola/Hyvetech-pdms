@@ -540,7 +540,6 @@ export default class InvoiceController {
 
   @TryCatch
   public static async saveInvoice(req: Request) {
-    console.log('called to saved');
     const { error, value } = Joi.object<InvoiceSchemaType>($saveInvoiceSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -562,9 +561,11 @@ export default class InvoiceController {
 
     let draftInvoice = await invoice.$get('draftInvoice');
 
+    console.log('indv> ', value.grandTotal, invoice.grandTotal);
+
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.draft,
-      edited: true,
+      edited: value.grandTotal !== invoice.grandTotal,
       paidAmount: invoice.depositAmount,
     });
 
