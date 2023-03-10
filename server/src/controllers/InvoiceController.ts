@@ -565,7 +565,7 @@ export default class InvoiceController {
 
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.draft,
-      edited: value.grandTotal !== invoice.grandTotal,
+      edited: true,
       paidAmount: invoice.depositAmount,
     });
 
