@@ -809,7 +809,11 @@ function InvoiceForm(props: IProps) {
               </LoadingButton>
               <LoadingButton
                 // disabled={values.status === ESTIMATE_STATUS.invoiced}
-                onClick={onSend}
+                onClick={() => {
+                  props.setDiscountType && props.setDiscountType(discountType);
+                  props.setDiscount && props.setDiscount(discount);
+                  onSend();
+                }}
                 sx={{ ml: 2 }}
                 type="submit"
                 variant="contained"
