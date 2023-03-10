@@ -97,12 +97,31 @@ function InvoicePage() {
 
   const grandTotal = useMemo(() => {
     if (invoice && estimate) {
-      console.log(invoice);
+      console.log('rices> ', invoice);
       return invoice.edited ? invoice.grandTotal : estimate.partsTotal + estimate.laboursTotal;
       // return estimate.partsTotal + estimate.laboursTotal;
     }
     return 0;
   }, [estimate, invoice]);
+
+  const [refundAmount, setRefundable] = useState(0);
+  const [balance, setDueBalance] = useState(0);
+
+  useEffect(() => {
+    // const _grandTotal = vat + vatPart + partTotal + labourTotal;
+
+    const _depositAmount = invoice?.depositAmount || 0;
+    const _dueBalance = grandTotal - _depositAmount;
+
+    setDueBalance(_dueBalance);
+
+    if (_depositAmount > grandTotal) {
+      setRefundable(_depositAmount - grandTotal);
+      setDueBalance(0);
+    } else {
+      setRefundable(0);
+    }
+  }, [grandTotal, invoice]);
 
   const generateDownload = async () => {
     const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
@@ -174,7 +193,16 @@ function InvoicePage() {
   const calculateTaxTotal = (estimate: IInvoice | IEstimate | undefined) => {
     if (!estimate) return 0;
 
-    return parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+    if (estimate.taxPart && estimate.tax)
+      return (
+        parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''))
+      );
+
+    if (estimate.tax && !estimate.taxPart) return parseFloat(`${estimate?.tax}`.split(',').join(''));
+
+    if (!estimate.tax && estimate.taxPart) return parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+
+    return 0;
   };
 
   if (!estimate || !invoice)
@@ -425,13 +453,13 @@ function InvoicePage() {
             <Typography gutterBottom>
               TOTAL:{' '}
               {formatNumberToIntl(
-                grandTotal -
-                  calculateDiscount({
-                    total: grandTotal,
-                    discount: invoice.discount,
-                    discountType: invoice.discountType,
-                  }) +
-                  calculateTaxTotal(invoice),
+                grandTotal,
+                // calculateDiscount({
+                //   total: grandTotal,
+                //   discount: invoice.discount,
+                //   discountType: invoice.discountType,
+                // }) +
+                // calculateTaxTotal(invoice),
               )}
             </Typography>
           </Grid>
@@ -477,7 +505,8 @@ function InvoicePage() {
               <Typography>Balance Due</Typography>
               <Typography sx={{ mr: 7 }} />
               <Typography>
-                ₦{Math.sign(invoice.dueAmount) === -1 ? '0.00' : formatNumberToIntl(invoice.dueAmount)}
+                {/* ₦{Math.sign(invoice.dueAmount) === -1 ? '0.00' : formatNumberToIntl(invoice.dueAmount)} */}₦
+                {Math.sign(balance) === -1 ? '0.00' : formatNumberToIntl(balance)}
               </Typography>
             </Box>
           </Grid>
@@ -494,7 +523,8 @@ function InvoicePage() {
               }}>
               <Typography>Refund Due</Typography>
               <Typography sx={{ mr: 7 }} />
-              <Typography>₦{formatNumberToIntl(invoice.refundable)}</Typography>
+              {/* <Typography>₦{formatNumberToIntl(invoice.refundable)}</Typography> */}
+              <Typography>₦{formatNumberToIntl(refundAmount)}</Typography>
             </Box>
           </Grid>
         </Grid>
