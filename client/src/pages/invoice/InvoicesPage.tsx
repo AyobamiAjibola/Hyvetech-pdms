@@ -393,6 +393,9 @@ function InvoicesPage() {
         type: 'number',
         width: 150,
         sortable: true,
+        valueFormatter: ({ value }) => {
+          return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
+        }
       },
       {
         field: 'depositAmount',
@@ -402,10 +405,13 @@ function InvoicesPage() {
         type: 'number',
         width: 150,
         sortable: true,
+        valueFormatter: ({ value }) => {
+          return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
+        }
       },
       {
         field: 'dueAmount',
-        headerName: 'Due Amount',
+        headerName: 'Receivable',
         headerAlign: 'center',
         align: 'center',
         type: 'number',
@@ -417,12 +423,15 @@ function InvoicesPage() {
       },
       {
         field: 'refundable',
-        headerName: 'Due Refund',
+        headerName: 'Refund Due',
         headerAlign: 'center',
         align: 'center',
         type: 'number',
         width: 150,
         sortable: true,
+        valueFormatter: ({ value }) => {
+          return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
+        }
       },
       {
         field: 'status',
