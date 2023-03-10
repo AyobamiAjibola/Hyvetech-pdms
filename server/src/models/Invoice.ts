@@ -37,6 +37,8 @@ export const $sendInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   jobDurationValue: Joi.string().required().label(estimateFields.jobDurationValue.label),
   jobDurationUnit: Joi.string().required().label(estimateFields.jobDurationUnit.label),
   dueAmount: Joi.number().allow().label('Due Amount'),
+  discount: Joi.number().label('discount'),
+  discountType: Joi.string().label('discountType'),
 };
 
 export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
