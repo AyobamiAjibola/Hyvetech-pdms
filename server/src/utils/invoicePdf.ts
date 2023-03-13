@@ -179,6 +179,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
         color: #263238;
         text-align: left;
         width: 300px;
+        margin-top: 5px;
     }
     
     .bill-to-name {
@@ -395,6 +396,10 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
     body{
         padding: 30px;
     }
+
+    .bold{
+        font-weight: 800
+    }
     </style>
     
     <body>
@@ -427,10 +432,10 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
             <div class="second-section">
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
-                    <p class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</p>
-                    <p class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</p>
-                    <p class="bill-to-address">${customer?.email || ""}</p>
-                    <p class="bill-to-address">${customer?.phone || ""}</p>
+                    <div class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</div>
+                    <div class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</div>
+                    <div class="bill-to-address">${customer?.email || ""}</div>
+                    <div class="bill-to-address">${customer?.phone || ""}</div>
                 </div>
                 <div>
                     <span class="vehicle-inforTitle">Vehicle Information:</span>
@@ -584,17 +589,17 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                         <div style="width: 300px">
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Name</span>
-                                <span>${partner?.accountName || ""}</span>
+                                <span class="bold">${partner?.accountName || ""}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Bank Name</span>
-                                <span>${partner?.bankName || ""}</span>
+                                <span class="bold">${partner?.bankName || ""}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Number</span>
-                                <span>${partner?.accountNumber || ""}</span>
+                                <span class="bold">${partner?.accountNumber || ""}</span>
                             </div>
                         </div>
 
@@ -612,7 +617,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                             href="http://app.myautohyve.com/">app.myautohyve.com</a> </li>
 
                             <li>Sign in with your Email address (username), and Phone number (as password)</li>
-                            <li>Open <span>Estimate #${invoice.code}</span>, and click on <span>“Approve and Pay Deposit”</span></li>
+                            <li>Open <span>Estimate #${invoice.code}</span>, and click on <span>“Make Payment”</span></li>
                         </ol>
                         <p style="font-size: 12px;">PS: you can pay using your bank card, transfer, or USSD. once successful, your invoice and receipt is created automatically.</p>
                     </div>

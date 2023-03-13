@@ -177,13 +177,14 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
         color: #263238;
         text-align: left;
         width: 300px;
+        margin-top: 5px;
     }
     
     .bill-to-name {
         font-weight: 700;
         font-size: 12px;
         color: #263238;
-        margin-bottom: 7px;
+        margin-bottom: 2px;
         margin-top: 10px;
     }
     
@@ -393,6 +394,10 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
     body{
         padding: 30px;
     }
+
+    .bold{
+        font-weight: 800
+    }
     </style>
     
     <body>
@@ -426,10 +431,10 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
             <div class="second-section">
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
-                    <p class="bill-to-name">${ customer?.companyName || `${customer.firstName} ${customer.lastName}`}</p>
-                    <p class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</p>
-                    <p class="bill-to-address">${customer?.email || ""}</p>
-                    <p class="bill-to-address">${customer?.phone || ""}</p>
+                    <div class="bill-to-name">${ customer?.companyName || `${customer.firstName} ${customer.lastName}`}</div>
+                    <div class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</div>
+                    <div class="bill-to-address">${customer?.email || ""}</div>
+                    <div class="bill-to-address">${customer?.phone || ""}</div>
                 </div>
                 <div>
                     <span class="vehicle-inforTitle">Vehicle Information:</span>
@@ -570,17 +575,17 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                         <div style="width: 300px">
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Name</span>
-                                <span>${partner?.accountName || ""}</span>
+                                <span class="bold">${partner?.accountName || ""}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Bank Name</span>
-                                <span>${partner?.bankName || ""}</span>
+                                <span class="bold">${partner?.bankName || ""}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Number</span>
-                                <span>${partner?.accountNumber || ""}</span>
+                                <span class="bold">${partner?.accountNumber || ""}</span>
                             </div>
                         </div>
 
