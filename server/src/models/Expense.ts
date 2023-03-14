@@ -1,11 +1,97 @@
 import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasOne, Model, Table } from 'sequelize-typescript';
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import { Attributes, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
 import Beneficiary from './Beneficiary';
 import ExpenseCategory from './ExpenseCategory';
 import ExpenseType from './ExpenseType';
 import Invoice from './Invoice';
+import Joi from 'joi';
+
+export const expenseFields = {
+  date: {
+    name: 'date',
+    label: 'date',
+    error: {
+      invalid: 'Date is required',
+      required: 'Date is required',
+    },
+  },
+  reference: {
+    name: 'Reference',
+    label: 'reference',
+    error: {
+      invalid: 'Reference is invalid',
+      required: 'Reference is required',
+    },
+  },
+  amount: {
+    name: 'amount',
+    label: 'amount',
+    error: {
+      invalid: 'Amount is invalid',
+      required: 'Amount is required',
+    },
+  },
+  status: {
+    name: 'status',
+    label: 'status',
+    error: {
+      invalid: 'Status is invalid',
+      required: 'Status is required',
+    },
+  },
+  expenseCategoryId: {
+    name: 'Expense Category ID',
+    label: 'expenseCategoryId',
+    error: {
+      invalid: 'Expense Category ID is invalid',
+      required: 'Expense Category ID is required',
+    },
+  },
+  expenseTypeId: {
+    name: 'Expense Type ID',
+    label: 'expenseTypeId',
+    error: {
+      invalid: 'Expense Type ID is invalid',
+      required: 'Expense Type ID is required',
+    },
+  },
+  beneficiaryId: {
+    name: 'Beneficiary ID',
+    label: 'beneficiaryId',
+    error: {
+      invalid: 'Beneficiary ID is invalid',
+      required: 'Beneficiary ID is required',
+    },
+  },
+  invoiceId: {
+    name: 'Invoice ID',
+    label: 'invoiceId',
+    error: {
+      invalid: 'Invoice ID is invalid',
+      required: 'Invoice ID is required',
+    },
+  },
+};
 
 export type expenseType = 'PAID' | 'UNPAID';
+
+export type ExpenseSchemaType = Attributes<Expense> & {
+  expenseCategoryId: number;
+  expenseTypeId: number;
+  beneficiaryId: number;
+  invoiceId: number;
+};
+
+export const $saveExpenseSchema: Joi.SchemaMap<ExpenseSchemaType> = {
+  date: Joi.date().required().label(expenseFields.date.label),
+  reference: Joi.string().required().label(expenseFields.reference.label),
+  status: Joi.string().required().label(expenseFields.status.label),
+  amount: Joi.number().required().label(expenseFields.date.label),
+  expenseCategoryId: Joi.number().label(expenseFields.expenseCategoryId.label),
+  expenseTypeId: Joi.number().label(expenseFields.expenseTypeId.label),
+  beneficiaryId: Joi.number().label(expenseFields.beneficiaryId.label),
+  invoiceId: Joi.number().label(expenseFields.invoiceId.label),
+};
 
 @Table({
   tableName: 'expenses',
