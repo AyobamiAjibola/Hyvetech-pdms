@@ -547,7 +547,7 @@ const invoicePdfTemplate = (invoice) => {
                     <span class="item-warranty-item"></span>
                     <div class="total-flex" style="background: #E8E8E8;">
                         <span class="item-cost-item-sub-total">Total:</span>
-                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(invoice.draftInvoice.grandTotal || invoice.grandTotal || estimate.grandTotal)}</span>
+                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(invoice?.draftInvoice?.grandTotal || invoice?.grandTotal || estimate?.grandTotal || 0)}</span>
                     </div>
     
                 </div>
