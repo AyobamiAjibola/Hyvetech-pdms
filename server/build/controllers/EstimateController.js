@@ -193,7 +193,7 @@ class EstimateController {
             lastName: customer.lastName,
             partner,
             estimate,
-            vehichleData: `${value.modelYear} ${value.make} ${value.model} `
+            vehichleData: `${value.modelYear} ${value.make} ${value.model} `,
         });
         await rabbitmq_email_manager_1.default.publish({
             queue: constants_1.QUEUE_EVENTS.name,
@@ -203,7 +203,7 @@ class EstimateController {
                 // @ts-ignore
                 'reply-to': partner.email,
                 from: {
-                    name: "AutoHyve",
+                    name: 'AutoHyve',
                     address: process.env.SMTP_EMAIL_FROM2,
                 },
                 subject: `${partner.name} has sent you an estimate on AutoHyve`,
@@ -248,7 +248,7 @@ class EstimateController {
             for (let j = i; j > 0; j--) {
                 const _t1 = estimates[j];
                 const _t0 = estimates[j - 1];
-                if (((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime())) {
+                if (new Date(_t1.updatedAt).getTime() > new Date(_t0.updatedAt).getTime()) {
                     estimates[j] = _t0;
                     estimates[j - 1] = _t1;
                     // console.log('sorted')
@@ -258,7 +258,7 @@ class EstimateController {
                 }
             }
         }
-        estimates = (estimates).map(estimate => {
+        estimates = estimates.map(estimate => {
             const parts = estimate.parts;
             const labours = estimate.labours;
             estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [constants_1.INITIAL_PARTS_VALUE];
@@ -284,7 +284,7 @@ class EstimateController {
             return Promise.reject(CustomAPIError_1.default.response(`Partner with Id: ${value.id} does not exist`, HttpStatus_1.default.NOT_FOUND.code));
         // check if partner is active
         try {
-            if ((!(partner?.users[0]?.active || true) || false)) {
+            if (!(partner?.users[0]?.active || true) || false) {
                 return Promise.reject(CustomAPIError_1.default.response(`Partner Account Inactive`, HttpStatus_1.default.NOT_FOUND.code));
             }
         }
@@ -300,6 +300,8 @@ class EstimateController {
                 plateNumber: value.plateNumber,
                 mileageValue: value.mileageValue,
                 mileageUnit: value.mileageUnit,
+                disount: value.discount,
+                discountType: value.discountType,
             };
             const vin = await dao_1.default.vinDAOService.findByAny({
                 where: { vin: value.vin },
@@ -335,7 +337,7 @@ class EstimateController {
         }
         const findCustomer = await dao_1.default.customerDAOService.findByAny({
             where: {
-                email: value.email
+                email: value.email,
             },
             include: [Contact_1.default],
         });
@@ -356,9 +358,9 @@ class EstimateController {
             await customer.$set('vehicles', [vehicle]);
             // try to link a contact with this customer
             const contactValue = {
-                label: "Home",
+                label: 'Home',
                 // @ts-ignore
-                state: value?.state || "Abuja (FCT)"
+                state: value?.state || 'Abuja (FCT)',
             };
             const contact = await dao_1.default.contactDAOService.create(contactValue);
             await customer.$set('contacts', [contact]);
@@ -438,6 +440,8 @@ class EstimateController {
             taxPart: value.taxPart,
             code: Generic_1.default.randomize({ count: 6, number: true }),
             expiresIn: constants_1.ESTIMATE_EXPIRY_DAYS,
+            discount: value.discount,
+            discountType: value.discountType,
         };
         const estimate = await dao_1.default.estimateDAOService.create(estimateValues);
         await partner.$add('estimates', [estimate]);
@@ -452,14 +456,14 @@ class EstimateController {
             lastName: customer.lastName,
             partner,
             estimate,
-            vehichleData: `${value.modelYear} ${value.make} ${value.model} `
+            vehichleData: `${value.modelYear} ${value.make} ${value.model} `,
         });
         // console.log('reach1')
         //todo: Send email with credentials
         try {
             // create pdf before sending
             const html = await (0, pdf_1.generateEstimateHtml)(estimate.id);
-            const rName = (Math.ceil(((Math.random() * 999) + 1100))) + '.pdf';
+            const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
             await (0, pdf_1.generatePdf)(html, rName);
             // set seperate listener to send mail after 6 seconds
             setTimeout(() => {
@@ -471,7 +475,7 @@ class EstimateController {
                             // @ts-ignore
                             'reply-to': partner.email,
                             from: {
-                                name: "AutoHyve",
+                                name: 'AutoHyve',
                                 address: process.env.SMTP_EMAIL_FROM2,
                             },
                             subject: `${partner.name} has sent you an estimate on AutoHyve`,
@@ -480,10 +484,10 @@ class EstimateController {
                             attachments: [
                                 {
                                     filename: rName,
-                                    path: path.join(__dirname, "../../uploads/", "pdf", rName),
-                                    cid: rName
-                                }
-                            ]
+                                    path: path.join(__dirname, '../../uploads/', 'pdf', rName),
+                                    cid: rName,
+                                },
+                            ],
                         });
                     }
                     catch (err) {
@@ -567,7 +571,7 @@ class EstimateController {
         }
         const findCustomer = await dao_1.default.customerDAOService.findByAny({
             where: {
-                email: value.email
+                email: value.email,
             },
             include: [Contact_1.default],
         });
@@ -587,9 +591,9 @@ class EstimateController {
                 await customer.$set('vehicles', [vehicle]);
             try {
                 const contactValue = {
-                    label: "Home",
+                    label: 'Home',
                     // @ts-ignore
-                    state: value?.state || "Abuja (FCT)"
+                    state: value?.state || 'Abuja (FCT)',
                 };
                 const contact = await dao_1.default.contactDAOService.create(contactValue);
                 await customer.$set('contacts', [contact]);
@@ -603,6 +607,7 @@ class EstimateController {
                 await findCustomer.$add('vehicles', [vehicle]);
             customer = findCustomer;
         }
+        console.log('values> ', value);
         const estimateValues = {
             jobDurationUnit: value.jobDurationUnit,
             labours: value.labours.map(value => JSON.stringify(value)),
@@ -618,6 +623,8 @@ class EstimateController {
             taxPart: value.taxPart,
             code: Generic_1.default.randomize({ count: 6, number: true }),
             expiresIn: constants_1.ESTIMATE_EXPIRY_DAYS,
+            discount: value.discount,
+            discountType: value.discountType,
         };
         const estimate = await dao_1.default.estimateDAOService.create(estimateValues);
         await partner.$add('estimates', [estimate]);
@@ -676,6 +683,8 @@ class EstimateController {
             addressType: value.addressType,
             tax: value.tax,
             taxPart: value.taxPart,
+            discount: value.discount,
+            discountType: value.discountType,
         };
         await estimate.update(estimateValues);
         return { estimate };
