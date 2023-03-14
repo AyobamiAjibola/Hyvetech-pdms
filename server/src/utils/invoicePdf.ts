@@ -3,6 +3,7 @@ import path from 'path'
 import "dotenv/config"
 import fs from 'fs'
 import Invoice from "../models/Invoice";
+import { INVOICE_STATUS } from "../config/constants";
 
 export function formatNumberToIntl(amount: number) {
     return new Intl.NumberFormat('en-GB', {
@@ -24,6 +25,20 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
     const partner = estimate.partner;
     const customer = estimate.customer;
     const vehicle = estimate.vehicle;
+
+    // alterer
+    if (invoice.edited && INVOICE_STATUS.update.draft) {
+        estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
+        estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
+      } else if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
+        console.log('');
+        estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
+        estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
+      } else {
+        estimate.parts = !estimate.parts.length ? [] : (estimate.parts);
+        estimate.labours = !estimate.labours.length ? [] : (estimate.labours);
+      }
+
     // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
 
     // convert image to base 64
@@ -480,8 +495,8 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                             <div class="item-header-item">
                     <span class="count-num-item">${idx1 + 1}</span>
                     <span class="item-descrip-item">${part.name}</span>
-                    <span class="item-warranty-item">${part.warranty.warranty} ${part.warranty.interval}</span>
-                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part.quantity.quantity} ${part.quantity.unit}</span>
+                    <span class="item-warranty-item">${part?.warranty?.warranty || ''} ${part?.warranty?.interval || ''}</span>
+                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part?.quantity?.quantity || 1} ${part?.quantity?.unit || 'pcs'}</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
                             `
@@ -518,7 +533,9 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Discount:</span>
-                    <span class="item-amount-item-amount">₦ 0.00</span>
+                    <span class="item-amount-item-amount"> 
+                    ${formatNumberToIntl(( invoice?.draftInvoice.discount || invoice?.discount || estimate?.discount || 0))}
+                    </span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -527,7 +544,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-cost-item-sub">VAT (7.5%):</span>
                     <span class="item-amount-item-amount">₦ ${
                         // @ts-ignore
-                        formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
+                        formatNumberToIntl(parseFloat( invoice?.draftInvoice.tax || invoice?.tax || estimate?.tax || 0) + parseFloat( invoice?.draftInvoice.taxPart || invoice?.taxPart || estimate?.taxPart || 0))
                     }</span>
                 </div>
                 <div class="item-header-item-total">
@@ -536,7 +553,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-warranty-item"></span>
                     <div class="total-flex" style="background: #E8E8E8;">
                         <span class="item-cost-item-sub-total">Total:</span>
-                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(estimate.grandTotal)}</span>
+                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl( invoice.draftInvoice.grandTotal || invoice.grandTotal ||  estimate.grandTotal)}</span>
                     </div>
     
                 </div>
