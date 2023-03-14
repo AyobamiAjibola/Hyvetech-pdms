@@ -1,5 +1,6 @@
-import { BelongsToMany, Column, DataType, Model, Table } from 'sequelize-typescript';
+import { BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
 import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Expense from './Expense';
 
 @Table({
   tableName: 'expense_category',
@@ -11,12 +12,16 @@ export default class ExpenseCategory extends Model<
 > {
   @Column({
     type: DataType.INTEGER,
-    field: 'id',
+    field: 'expense_category_id',
     primaryKey: true,
     autoIncrement: true,
+    unique: true,
   })
   declare id: CreationOptional<number>;
 
-  @Column(DataType.STRING)
+  @Column({ type: DataType.STRING, unique: true })
   declare name: string;
+
+  @HasMany(() => Expense)
+  declare expense: NonAttribute<Expense[]>;
 }

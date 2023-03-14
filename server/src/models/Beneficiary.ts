@@ -1,5 +1,6 @@
-import { BelongsToMany, Column, DataType, Model, Table } from 'sequelize-typescript';
+import { BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
 import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import Expense from './Expense';
 
 @Table({
   tableName: 'beneficiaries',
@@ -22,4 +23,7 @@ export default class Beneficiary extends Model<InferAttributes<Beneficiary>, Inf
   declare bankName: string;
   @Column(DataType.STRING)
   declare accountName: string;
+
+  @HasMany(() => Expense)
+  declare expenses: NonAttribute<Expense[]>;
 }
