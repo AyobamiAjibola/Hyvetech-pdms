@@ -695,7 +695,7 @@ export default class InvoiceController {
 
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.draft,
-      edited: value.grandTotal !== invoice.grandTotal,
+      edited: true,
       paidAmount: invoice.depositAmount,
     });
 
@@ -796,6 +796,7 @@ export default class InvoiceController {
       additionalDeposit: parseInt(`${value.additionalDeposit}`),
       jobDurationValue: parseInt(`${value.jobDurationValue}`),
       tax: value.tax,
+      taxPart: value.taxPart,
       jobDurationUnit: value.jobDurationUnit,
       partsTotal: value.partsTotal,
       laboursTotal: value.laboursTotal,
@@ -804,6 +805,8 @@ export default class InvoiceController {
       dueAmount: value.dueAmount,
       updateStatus: INVOICE_STATUS.update.sent,
       edited: true,
+      discount: value.discount,
+      discountType: value.discountType,
     });
 
     const draftInvoice = await invoice.$get('draftInvoice');

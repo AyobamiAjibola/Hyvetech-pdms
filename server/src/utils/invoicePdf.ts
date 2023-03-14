@@ -27,7 +27,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
     const vehicle = estimate.vehicle;
 
     // alterer
-    if(invoice.draftInvoice != null){
+    if( (invoice.draftInvoice != null) && (invoice.draftInvoice.parts != null)){
         if (invoice.edited && INVOICE_STATUS.update.draft) {
             estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
             estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
@@ -41,7 +41,17 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
         }
     }
 
-    console.log(invoice.parts);
+    try{
+        if((invoice.labours != null)){
+            estimate.parts = !invoice.parts.length ? [] : (invoice.parts);
+            estimate.labours = !invoice.labours.length ? [] : (invoice.labours);
+        }
+    }catch(e){
+        // 
+    }
+
+    // @ts-ignore
+    console.log((invoice.dataValues.labours), invoice.labours);
     
 
     // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
@@ -539,7 +549,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Discount:</span>
                     <span class="item-amount-item-amount"> 
-                    ${formatNumberToIntl(( invoice?.draftInvoice.discount || invoice?.discount || estimate?.discount || 0))}
+                    ${formatNumberToIntl(( invoice?.draftInvoice?.discount || invoice?.discount || estimate?.discount || 0))}
                     </span>
                 </div>
                 <div class="item-header-item-total">
@@ -549,7 +559,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-cost-item-sub">VAT (7.5%):</span>
                     <span class="item-amount-item-amount">₦ ${
                         // @ts-ignore
-                        formatNumberToIntl(parseFloat( invoice?.draftInvoice.tax || invoice?.tax || estimate?.tax || 0) + parseFloat( invoice?.draftInvoice.taxPart || invoice?.taxPart || estimate?.taxPart || 0))
+                        formatNumberToIntl(parseFloat( invoice?.draftInvoice?.tax || invoice?.tax || estimate?.tax || 0) + parseFloat( invoice?.draftInvoice?.taxPart || invoice?.taxPart || estimate?.taxPart || 0))
                     }</span>
                 </div>
                 <div class="item-header-item-total">
@@ -558,7 +568,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-warranty-item"></span>
                     <div class="total-flex" style="background: #E8E8E8;">
                         <span class="item-cost-item-sub-total">Total:</span>
-                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl( invoice.draftInvoice.grandTotal || invoice.grandTotal ||  estimate.grandTotal)}</span>
+                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl( invoice.draftInvoice?.grandTotal || invoice?.grandTotal ||  estimate?.grandTotal || 0)}</span>
                     </div>
     
                 </div>
