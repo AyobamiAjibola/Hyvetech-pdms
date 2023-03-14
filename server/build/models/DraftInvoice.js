@@ -119,6 +119,14 @@ __decorate([
     __metadata("design:type", Boolean)
 ], DraftInvoice.prototype, "edited", void 0);
 __decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    __metadata("design:type", Number)
+], DraftInvoice.prototype, "discount", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", String)
+], DraftInvoice.prototype, "discountType", void 0);
+__decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => Invoice_1.default),
     __metadata("design:type", Object)
 ], DraftInvoice.prototype, "invoice", void 0);

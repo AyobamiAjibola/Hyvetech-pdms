@@ -273,6 +273,8 @@ exports.$createEstimateSchema = {
     depositAmount: joi_1.default.any().required().label(exports.estimateFields.depositAmount.label),
     jobDurationValue: joi_1.default.any().required().label(exports.estimateFields.jobDurationValue.label),
     jobDurationUnit: joi_1.default.string().required().label(exports.estimateFields.jobDurationUnit.label),
+    discount: joi_1.default.number().label('discount'),
+    discountType: joi_1.default.string().label('discountType'),
 };
 exports.$saveEstimateSchema = {
     id: joi_1.default.number().required().label('Partner Id'),
@@ -301,6 +303,8 @@ exports.$saveEstimateSchema = {
     depositAmount: joi_1.default.any().allow('').label(exports.estimateFields.depositAmount.label),
     jobDurationValue: joi_1.default.any().allow('').label(exports.estimateFields.jobDurationValue.label),
     jobDurationUnit: joi_1.default.string().allow('').label(exports.estimateFields.jobDurationUnit.label),
+    discount: joi_1.default.number().label('discount'),
+    discountType: joi_1.default.string().label('discountType'),
 };
 exports.$updateEstimateSchema = {
     ...exports.$saveEstimateSchema,
@@ -391,6 +395,14 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Object)
 ], Estimate.prototype, "customerId", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    __metadata("design:type", Number)
+], Estimate.prototype, "discount", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", String)
+], Estimate.prototype, "discountType", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => RideShareDriver_1.default, { onDelete: 'CASCADE' }),
     __metadata("design:type", Object)

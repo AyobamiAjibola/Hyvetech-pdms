@@ -78,16 +78,16 @@ export const generateInvoiceHtml = async (id: any, partnerId: any)=>{
     invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
 
     try{
-      const parts = invoice.draftInvoice.parts;
-      const labours = invoice.draftInvoice.labours;
+      const parts = invoice?.draftInvoice?.parts || [];
+      const labours = invoice?.draftInvoice?.labours || [];
 
       invoice.draftInvoice.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
       invoice.draftInvoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
     }catch(e){
-      console.log('')
+      // console.log(e)
     }
 
-    console.log((invoice.draftInvoice.parts), invoice.draftInvoice.labours)
+    // console.log((invoice.draftInvoice.parts), invoice.draftInvoice.labours)
 
     // exit(0);
 
