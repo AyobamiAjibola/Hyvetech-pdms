@@ -529,7 +529,7 @@ const invoicePdfTemplate = (invoice) => {
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Discount:</span>
                     <span class="item-amount-item-amount"> 
-                    ${formatNumberToIntl((invoice?.draftInvoice.discount || invoice?.discount || estimate?.discount || 0))}
+                    ${formatNumberToIntl((invoice?.draftInvoice?.discount || invoice?.discount || estimate?.discount || 0))}
                     </span>
                 </div>
                 <div class="item-header-item-total">
@@ -539,7 +539,7 @@ const invoicePdfTemplate = (invoice) => {
                     <span class="item-cost-item-sub">VAT (7.5%):</span>
                     <span class="item-amount-item-amount">₦ ${
     // @ts-ignore
-    formatNumberToIntl(parseFloat(invoice?.draftInvoice.tax || invoice?.tax || estimate?.tax || 0) + parseFloat(invoice?.draftInvoice.taxPart || invoice?.taxPart || estimate?.taxPart || 0))}</span>
+    formatNumberToIntl(parseFloat(invoice?.draftInvoice?.tax || invoice?.tax || estimate?.tax || 0) + parseFloat(invoice?.draftInvoice?.taxPart || invoice?.taxPart || estimate?.taxPart || 0))}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
