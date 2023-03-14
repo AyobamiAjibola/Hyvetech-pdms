@@ -84,7 +84,7 @@ export const generateInvoiceHtml = async (id: any, partnerId: any)=>{
       invoice.draftInvoice.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
       invoice.draftInvoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
     }catch(e){
-      console.log(e)
+      // console.log(e)
     }
 
     // console.log((invoice.draftInvoice.parts), invoice.draftInvoice.labours)
