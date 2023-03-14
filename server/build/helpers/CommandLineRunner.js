@@ -230,8 +230,8 @@ class CommandLineRunner {
         //create roles
         for (const roleName of settings_1.default.roles) {
             await this.roleRepository.save({
-                slug: roleName,
-                name: roleName.replaceAll('_', ' '),
+                slug: `${roleName}`,
+                name: `${roleName}`.replace(/_/g, ' '),
             });
         }
         //guest permissions

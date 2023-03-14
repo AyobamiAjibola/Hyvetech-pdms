@@ -234,8 +234,9 @@ class Generic {
         }
         try {
             response.type = android;
-            response.token = (response.token).replace(`[${android}]-`, '');
-            response.token = (response.token).replace(`[${ios}]-`, '');
+            response.token = response.token.replace(`[${android}]-`, '');
+            response.token = response.token.replace(`[${ios}]-`, '');
+            // eslint-disable-next-line no-empty
         }
         catch (e) { }
         return response;
