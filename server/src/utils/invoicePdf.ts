@@ -27,17 +27,22 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
     const vehicle = estimate.vehicle;
 
     // alterer
-    if (invoice.edited && INVOICE_STATUS.update.draft) {
-        estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
-        estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
-      } else if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
-        console.log('');
-        estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
-        estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
-      } else {
-        estimate.parts = !estimate.parts.length ? [] : (estimate.parts);
-        estimate.labours = !estimate.labours.length ? [] : (estimate.labours);
-      }
+    if(invoice.draftInvoice != null){
+        if (invoice.edited && INVOICE_STATUS.update.draft) {
+            estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
+            estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
+          } else if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
+            console.log('');
+            estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
+            estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
+          } else {
+            estimate.parts = !estimate.parts.length ? [] : (estimate.parts);
+            estimate.labours = !estimate.labours.length ? [] : (estimate.labours);
+        }
+    }
+
+    console.log(invoice.parts);
+    
 
     // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
 
