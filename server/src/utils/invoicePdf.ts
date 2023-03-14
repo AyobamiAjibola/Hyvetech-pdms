@@ -43,8 +43,8 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
 
     try{
         if((invoice.labours != null)){
-            estimate.parts = !invoice.parts.length ? [] : (invoice.parts);
-            estimate.labours = !invoice.labours.length ? [] : (invoice.labours);
+            estimate.parts = !invoice.parts.length ? [] : (invoice.parts.map(part => JSON.parse(part)));
+            estimate.labours = !invoice.labours.length ? [] : (invoice.labours.map(part => JSON.parse(part)));
         }
     }catch(e){
         // 
