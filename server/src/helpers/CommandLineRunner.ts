@@ -78,6 +78,8 @@ import BankRepository from '../repositories/BankRepository';
 import SettingRepository from '../repositories/SettingRepository';
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 import IPayStackBank = appModelTypes.IPayStackBank;
+import ExpenseCategoryRepository from '../repositories/ExpenseCategoryRepository';
+import ExpenseTypeRepository from '../repositories/ExpenseTypeRepository';
 
 export default class CommandLineRunner {
   public static singleton: CommandLineRunner = new CommandLineRunner();
@@ -100,6 +102,8 @@ export default class CommandLineRunner {
   private tagRepository: AbstractCrudRepository;
   private userRepository: AbstractCrudRepository;
   private settingRepository: AbstractCrudRepository;
+  private expenseCategoryRepository: ExpenseCategoryRepository;
+  private expenseTypeRepository: ExpenseTypeRepository;
 
   constructor() {
     this.roleRepository = new RoleRepository();
@@ -121,6 +125,8 @@ export default class CommandLineRunner {
     this.tagRepository = new TagRepository();
     this.userRepository = new UserRepository();
     this.settingRepository = new SettingRepository();
+    this.expenseCategoryRepository = new ExpenseCategoryRepository();
+    this.expenseTypeRepository = new ExpenseTypeRepository();
   }
 
   public static async run() {
@@ -138,6 +144,31 @@ export default class CommandLineRunner {
     await this.singleton.loadDefaultAdmin();
     await this.singleton.loadPayStackPlans();
     await this.singleton.loadPayStackBanks();
+    await this.singleton.loadDefaultExpenseTypes();
+    await this.singleton.loadDefaultExpenseCategories();
+  }
+
+  async loadDefaultExpenseTypes() {
+    const types = await this.expenseTypeRepository.findAll();
+    if (types.length > 0) return;
+
+    await this.expenseTypeRepository.bulkCreate([
+      { name: 'Parts' },
+      { name: 'Wages/Labour' },
+      { name: 'Consultant' },
+      { name: 'Transportation' },
+    ]);
+  }
+
+  async loadDefaultExpenseCategories() {
+    const categories = await this.expenseCategoryRepository.findAll();
+    if (categories.length > 0) return;
+
+    await this.expenseCategoryRepository.bulkCreate([
+      { name: 'Direct cost' },
+      { name: 'Indirect cost' },
+      { name: 'Overhead' },
+    ]);
   }
 
   async loadDefaultSettings() {
