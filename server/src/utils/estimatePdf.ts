@@ -517,7 +517,9 @@ export const estimatePdfTemplate = (estimate: Estimate) => {
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Discount:</span>
-                    <span class="item-amount-item-amount">₦ 0.00</span>
+                    <span class="item-amount-item-amount"> 
+                    ${formatNumberToIntl(estimate?.discount || 0)}
+                    </span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
