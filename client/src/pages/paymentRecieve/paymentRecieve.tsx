@@ -79,7 +79,7 @@ export default function PaymentRecieve() {
                   onClick={() => {
                     // params.row.customer 
                   }}>
-                  {`${params?.row?.customer?.firstName || ""} ${params.row.customer.lastName}`}
+                  {`${params?.row?.customer?.firstName || ""} ${params?.row?.customer?.lastName || ""}`}
                 </span>
               );
             },
