@@ -79,7 +79,7 @@ export default function PaymentRecieve() {
                   onClick={() => {
                     // params.row.customer 
                   }}>
-                  {`${params.row.customer.firstName} ${params.row.customer.lastName}`}
+                  {`${params?.row?.customer?.firstName || ""} ${params.row.customer.lastName}`}
                 </span>
               );
             },
@@ -97,6 +97,9 @@ export default function PaymentRecieve() {
                   style={{ color: 'skyblue', cursor: 'pointer' }}
                   onClick={() => {
                     // 
+                    if(params.row.invoice == undefined){
+                      return ;
+                    }
                     void dispatch(getInvoicesAction());
                     const invoice = params.row.invoice as IInvoice;
 
@@ -143,7 +146,7 @@ export default function PaymentRecieve() {
 
                     navigate(`/invoices/${invoice.id}`, { state: __state });
                   }}>
-                  {params.row.invoice.code}
+                  {params?.row?.invoice?.code || ""}
                 </span>
               );
             },
