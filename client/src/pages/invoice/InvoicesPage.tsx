@@ -334,7 +334,7 @@ function InvoicesPage() {
       },
       {
         field: 'code',
-        headerName: 'Invoice',
+        headerName: 'Invoice #',
         headerAlign: 'center',
         align: 'center',
         sortable: true,
