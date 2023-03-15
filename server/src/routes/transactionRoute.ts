@@ -38,3 +38,9 @@ export const getPaymentRecieveHandler = authenticateRouteWrapper(async (req, res
 
   res.status(response.code).json(response);
 });
+
+export const deletePaymentRecieveHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await TransactionController.deletePaymentRecieve(req);
+
+  res.status(response.code).json(response);
+});

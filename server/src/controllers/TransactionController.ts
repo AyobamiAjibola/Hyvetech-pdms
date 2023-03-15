@@ -269,6 +269,51 @@ export default class TransactionController {
   }
 
   @TryCatch
+  public static async deletePaymentRecieve(req: Request){
+    
+    try{
+      // 
+      const {trans_id, amount: _amount, invoice} = req.body;
+
+      // delete transaction
+      await dataSources.transactionDAOService.deleteById(trans_id);
+
+      // check if invoice exist then perform operation on it
+      if(invoice != null){
+        // 
+        const amount = invoice.depositAmount - parseInt(_amount);
+        const newDueAmount = invoice.grandTotal - amount;
+
+        const payload = {
+          dueAmount: newDueAmount,
+          paidAmount: amount,
+          depositAmount: amount,
+          refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : invoice.refundable,
+          status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
+        };
+
+        await Invoice.update(payload, {
+          where: {
+            id: invoice.id
+          }
+        })
+      }
+      return Promise.resolve({
+        code: HttpStatus.OK.code,
+        message: 'Record Deleted Successfully',
+      });
+    }catch(e){
+      // 
+      console.log(e);
+      return Promise.resolve({
+        code: HttpStatus.INTERNAL_SERVER_ERROR.code,
+        message: 'Error Deleting Record',
+        records: [],
+      });
+    }
+  }
+
+  @TryCatch
   public static async paymentRecieve(req: Request){
     try{
       // logic to fetch
