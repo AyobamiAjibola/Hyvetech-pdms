@@ -378,10 +378,10 @@ function InvoicePage() {
                       {part.name}
                     </Grid>
                     <Grid item xs={3}>
-                      {part.warranty.warranty} {part.warranty.interval}
+                      {part?.warranty?.warranty || ""} {part?.warranty?.interval || ""}
                     </Grid>
                     <Grid item xs={3}>
-                      {formatNumberToIntl(+part.price)} x {part.quantity.quantity}${part.quantity.unit}
+                      {formatNumberToIntl(+part.price)} x {part?.quantity?.quantity || ""}${part?.quantity?.unit || 0}
                     </Grid>
                     <Grid item xs={3}>
                       {amount}

@@ -4,7 +4,8 @@ import {
   // Garage,
   Groups,
   Handshake,
-  History,
+  // History,
+  Paid,
   // HomeRepairService,
   Payments,
   PlaylistAddCheck,
@@ -58,9 +59,9 @@ export const sideNavs: ISideNav[] = [
   },
   {
     tag: 'techs',
-    name: 'Transactions',
-    path: '/transaction',
-    Icon: History,
+    name: 'Payment Recieved',
+    path: '/payment-recieved',
+    Icon: Paid,
   },
   { tag: 'drivers', name: 'Drivers', path: '/drivers', Icon: TaxiAlert },
   // {

@@ -6,7 +6,14 @@ import { AnyObjectType } from '@app-types';
 
 const INIT_REFUND_CUSTOMER = 'txn:INIT_REFUND_CUSTOMER';
 const VERIFY_REFUND_CUSTOMER = 'txn:VERIFY_REFUND_CUSTOMER';
+const PAYMENT_RECIEVE = 'txn:PAYMENT_RECIEVE';
 const API_ROOT = settings.api.rest;
+
+export const getpaymentRecievedAction = asyncThunkWrapper<ApiResponseSuccess<any>, void>(PAYMENT_RECIEVE, async () => {
+  const response = await axiosClient.get(`${API_ROOT}/transactions/payment-recieve`);
+
+  return response.data;
+});
 
 export const initRefundCustomerAction = asyncThunkWrapper<ApiResponseSuccess<IInitTransaction>, AnyObjectType>(
   INIT_REFUND_CUSTOMER,
