@@ -1,6 +1,6 @@
 import { IThunkAPIStatus } from '@app-types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { initRefundCustomerAction, verifyRefundCustomerAction } from '../actions/transactionActions';
+import { getpaymentRecievedAction, initRefundCustomerAction, verifyRefundCustomerAction } from '../actions/transactionActions';
 import { IInitTransaction } from '@app-interfaces';
 
 interface ITransactionState {
@@ -11,6 +11,11 @@ interface ITransactionState {
   verifyRefundCustomerStatus: IThunkAPIStatus;
   verifyRefundCustomerSuccess: string;
   verifyRefundCustomerError: string;
+
+  getPaymentRecievedStatus: IThunkAPIStatus;
+  getPaymentRecievedSuccess: string;
+  getPaymentRecievedError: string;
+  paymentRecieve: Array<any>;
 
   openTransactionPopup: boolean;
   transactionRef: string;
@@ -28,6 +33,11 @@ const initialState: ITransactionState = {
   verifyRefundCustomerSuccess: '',
   verifyRefundCustomerError: '',
 
+  getPaymentRecievedStatus: 'idle',
+  getPaymentRecievedSuccess: '',
+  getPaymentRecievedError: '',
+  paymentRecieve: [],
+
   invoiceId: undefined,
   openTransactionPopup: false,
   transactionRef: '',
@@ -43,6 +53,11 @@ const transactionSlice = createSlice({
       state.initRefundCustomerSuccess = '';
       state.initRefundCustomerError = '';
       state.invoiceId = undefined;
+    },
+    resetPaymentRecieveStatus(state: ITransactionState) {
+      state.getPaymentRecievedStatus = 'idle';
+      state.getPaymentRecievedSuccess = '';
+      state.getPaymentRecievedError = '';
     },
     resetVerifyRefundCustomerStatus(state: ITransactionState) {
       state.verifyRefundCustomerStatus = 'idle';
@@ -81,6 +96,25 @@ const transactionSlice = createSlice({
         else state.initRefundCustomerError = action.error.message as string;
       });
 
+      builder
+      .addCase(getpaymentRecievedAction.pending, state => {
+        state.getPaymentRecievedStatus = 'loading';
+      })
+      .addCase(getpaymentRecievedAction.fulfilled, (state, action) => {
+        state.getPaymentRecievedStatus = 'completed';
+        
+        // @ts-ignore
+        const payload = action.payload.records;
+        
+        state.paymentRecieve = payload || [];
+      })
+      .addCase(getpaymentRecievedAction.rejected, (state, action) => {
+        state.getPaymentRecievedStatus = 'failed';
+
+        if (action.payload) state.getPaymentRecievedError = action.payload.message;
+        else state.getPaymentRecievedError = action.error.message as string;
+      });
+
     builder
       .addCase(verifyRefundCustomerAction.pending, state => {
         state.verifyRefundCustomerStatus = 'loading';
@@ -105,6 +139,7 @@ export const {
   setTransactionRef,
   resetInitRefundCustomerStatus,
   resetVerifyRefundCustomerStatus,
+  resetPaymentRecieveStatus
 } = transactionSlice.actions;
 
 export default transactionSlice.reducer;

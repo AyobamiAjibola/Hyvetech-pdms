@@ -635,7 +635,22 @@ export default class InvoiceController {
         if(customer){
           await customer.$add('transactions', [transferTransaction]);
         }
+
+        // @ts-ignore
+        // const estimate = await invoice.get('estimate');
+        const estimate = await dataSources.estimateDAOService.findById(invoice.estimateId);
+        
+        if(estimate){
+          // console.log(estimate);
+          const partner = await estimate.$get('partner');
+          if(partner){
+            await partner.$add('transactions', [transferTransaction]);
+          }
+        }
+
+        await invoice.$add('transactions', [transferTransaction]);
       }catch(e){
+        console.log(e)
         // 
       }
 

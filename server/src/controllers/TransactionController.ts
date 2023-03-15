@@ -22,6 +22,14 @@ import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import AnyObjectType = appCommonTypes.AnyObjectType;
 import IInitTransaction = appCommonTypes.IInitTransaction;
+import Customer from '../models/Customer';
+import Invoice from '../models/Invoice';
+import Estimate from '../models/Estimate';
+import Vehicle from '../models/Vehicle';
+import Partner from '../models/Partner';
+import Contact from '../models/Contact';
+import BillingInformation from '../models/BillingInformation';
+import DraftInvoice from '../models/DraftInvoice';
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
@@ -258,6 +266,59 @@ export default class TransactionController {
     };
 
     return Promise.resolve(response);
+  }
+
+  @TryCatch
+  public static async paymentRecieve(req: Request){
+    try{
+      // logic to fetch
+      const partner = req.user.partner;
+
+      // const transaction = await partner.$get("transactions");
+
+      const transactions = await dataSources.transactionDAOService.findAll({
+        where: {
+          // @ts-ignore
+          partnerId: partner.id
+        },
+        include: [
+          Customer,
+          {
+            model: Invoice,
+            include: [
+              {
+                model: Estimate,
+                where: { partnerId: partner.id },
+                include: [
+                  { model: Customer, include: [BillingInformation], paranoid: false },
+                  Vehicle,
+                  {
+                    model: Partner,
+                    include: [Contact],
+                  },
+                ],
+              },
+              Transaction,
+              DraftInvoice,
+            ]
+          }
+        ]
+      });
+
+
+      return Promise.resolve({
+        code: HttpStatus.OK.code,
+        message: 'Record Fetched Successfully',
+        records: transactions || [],
+      });
+    }catch(e){
+      console.log(e);
+      return Promise.resolve({
+        code: HttpStatus.INTERNAL_SERVER_ERROR.code,
+        message: 'Error Fetching Records',
+        records: [],
+      });
+    }
   }
 
   @TryCatch
