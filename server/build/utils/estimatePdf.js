@@ -178,13 +178,14 @@ const estimatePdfTemplate = (estimate) => {
         color: #263238;
         text-align: left;
         width: 300px;
+        margin-top: 5px;
     }
     
     .bill-to-name {
         font-weight: 700;
         font-size: 12px;
         color: #263238;
-        margin-bottom: 7px;
+        margin-bottom: 2px;
         margin-top: 10px;
     }
     
@@ -388,11 +389,15 @@ const estimatePdfTemplate = (estimate) => {
     .parerntWrapper {
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
+        align-items: flex-start;
     }
 
     body{
         padding: 30px;
+    }
+
+    .bold{
+        font-weight: 800
     }
     </style>
     
@@ -427,9 +432,10 @@ const estimatePdfTemplate = (estimate) => {
             <div class="second-section">
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
-                    <p class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</p>
-                    <p class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</p>
-                    <p class="bill-to-address">${customer?.phone || ""}</p>
+                    <div class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</div>
+                    <div class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</div>
+                    <div class="bill-to-address">${customer?.email || ""}</div>
+                    <div class="bill-to-address">${customer?.phone || ""}</div>
                 </div>
                 <div>
                     <span class="vehicle-inforTitle">Vehicle Information:</span>
@@ -504,7 +510,9 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Discount:</span>
-                    <span class="item-amount-item-amount">₦ 0.00</span>
+                    <span class="item-amount-item-amount"> 
+                    ${formatNumberToIntl(estimate?.discount || 0)}
+                    </span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -549,31 +557,49 @@ const estimatePdfTemplate = (estimate) => {
 
                 <br />
                 <br />
-                <p class="terms-header payment">How to Make Payment</p>
+                <p class="terms-header payment">Payment Instructions:</p>
+                <p style="font-size: 11px; text-align: center;">Choose a Preferred Payment Method</p>
     
                 <div class="parerntWrapper">
-                    <div>
-                        <div class="how-top-pay-text">
-                            <span>Step 1:</span>
-    
-                            <p>Open the <a href="https://onelink.to/fh7uc5">AutoHyve mobile app</a> or visit/click <a
-                                    href="http://app.myautohyve.com/">app.myautohyve.com</a> </p>
+                    <div style="font-size: 12px; font-weight: 600; margin-top: 12px;">Method 1</div>
+
+                    <div style="font-size: 11px; display: flex; flex: 1; margin-left: 10px; flex-direction: column;">
+                        <p style="font-size: 12px;">Pay through traditional bank transfer</p>
+                        
+                        <div style="width: 300px">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Account Name</span>
+                                <span class="bold">${partner?.accountName || ""}</span>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Bank Name</span>
+                                <span class="bold">${partner?.bankName || ""}</span>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Account Number</span>
+                                <span class="bold">${partner?.accountNumber || ""}</span>
+                            </div>
                         </div>
-                        <div class="how-top-pay-text">
-                            <span>Step 2:</span>
-    
-                            <p>Sign in with your Email address (username), and Phone number (as password)</p>
-                        </div>
-                        <div class="how-top-pay-text">
-                            <span>Step 3:</span>
-    
-                            <p>Open <span>Estimate #${estimate.code}</span>, and click on <span>“Approve & Pay Deposit”</span></p>
-                        </div>
-                        <div class="how-top-pay-text">
-                            <span>Step 4:</span>
-    
-                            <p>Make payment using Visa/Master/Verve Cards, Bank Transfer, or USSD</p>
-                        </div>
+
+                        <p style="font-size: 11px;">PS: Notify us after payment is successful</p>
+                    </div>
+                </div>
+
+                <div class="parerntWrapper">
+                    <div style="font-size: 12px; font-weight: 600; margin-top: 12px;">Method 2</div>
+
+                    <div style="font-size: 11px; display: flex; flex: 1; margin-left: 10px; flex-direction: column;">
+                        <p style="font-size: 12px;">A more secure & faster way to pay</p>
+                        <ol>
+                            <li>Open the <a href="https://onelink.to/fh7uc5">AutoHyve mobile app</a> or visit/click <a
+                            href="http://app.myautohyve.com/">app.myautohyve.com</a> </li>
+
+                            <li>Sign in with your Email address (username), and Phone number (as password)</li>
+                            <li>Open <span>Estimate #${estimate.code}</span>, and click on <span>“Approve and Pay Deposit”</span></li>
+                        </ol>
+                        <p style="font-size: 12px;">PS: you can pay using your bank card, transfer, or USSD. once successful, your invoice and receipt is created automatically.</p>
                     </div>
                 </div>
             </div>

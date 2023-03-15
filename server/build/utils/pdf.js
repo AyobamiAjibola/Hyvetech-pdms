@@ -63,8 +63,22 @@ const generateInvoiceHtml = async (id, partnerId) => {
         return null;
     const parts = invoice.estimate.parts;
     const labours = invoice.estimate.labours;
+    // console.log((invoice.getDataValue("code")))
+    // const parts = invoice.parts;
+    // const labours = invoice.labours;
     invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [constants_1.INITIAL_PARTS_VALUE];
     invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [constants_1.INITIAL_LABOURS_VALUE];
+    try {
+        const parts = invoice?.draftInvoice?.parts || [];
+        const labours = invoice?.draftInvoice?.labours || [];
+        invoice.draftInvoice.parts = parts.length ? parts.map(part => JSON.parse(part)) : [constants_1.INITIAL_PARTS_VALUE];
+        invoice.draftInvoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [constants_1.INITIAL_LABOURS_VALUE];
+    }
+    catch (e) {
+        console.log('');
+    }
+    console.log((invoice.draftInvoice.parts), invoice.draftInvoice.labours);
+    // exit(0);
     return (0, invoicePdf_1.invoicePdfTemplate)(invoice);
 };
 exports.generateInvoiceHtml = generateInvoiceHtml;

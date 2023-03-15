@@ -1,4 +1,4 @@
-import { INITIAL_LABOURS_VALUE, INITIAL_PARTS_VALUE } from '../config/constants';
+import { INITIAL_LABOURS_VALUE, INITIAL_PARTS_VALUE, INVOICE_STATUS } from '../config/constants';
 import BillingInformation from '../models/BillingInformation';
 import Contact from '../models/Contact';
 import Customer from '../models/Customer';
@@ -15,6 +15,7 @@ import Invoice from '../models/Invoice';
 import { invoicePdfTemplate } from './invoicePdf';
 import DraftInvoice from '../models/DraftInvoice';
 import Transaction from '../models/Transaction';
+import { exit } from 'process';
 
 const pdf = require("pdf-creator-node");
 const HTML5ToPDF = require("html5-to-pdf")
@@ -67,9 +68,28 @@ export const generateInvoiceHtml = async (id: any, partnerId: any)=>{
 
     const parts = invoice.estimate.parts;
     const labours = invoice.estimate.labours;
+    
+    // console.log((invoice.getDataValue("code")))
+
+    // const parts = invoice.parts;
+    // const labours = invoice.labours;
 
     invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
     invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+
+    try{
+      const parts = invoice?.draftInvoice?.parts || [];
+      const labours = invoice?.draftInvoice?.labours || [];
+
+      invoice.draftInvoice.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+      invoice.draftInvoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+    }catch(e){
+    console.log(e);
+    }
+
+    // console.log((invoice.draftInvoice.parts), invoice.draftInvoice.labours)
+
+    // exit(0);
 
     return invoicePdfTemplate(invoice)
 

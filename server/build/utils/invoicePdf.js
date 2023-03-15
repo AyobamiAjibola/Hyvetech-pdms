@@ -7,6 +7,7 @@ exports.invoicePdfTemplate = exports.formatNumberToIntl = void 0;
 const path_1 = __importDefault(require("path"));
 require("dotenv/config");
 const fs_1 = __importDefault(require("fs"));
+const constants_1 = require("../config/constants");
 function formatNumberToIntl(amount) {
     return new Intl.NumberFormat('en-GB', {
         minimumFractionDigits: 2,
@@ -26,6 +27,23 @@ const invoicePdfTemplate = (invoice) => {
     const partner = estimate.partner;
     const customer = estimate.customer;
     const vehicle = estimate.vehicle;
+    // alterer
+    if(invoice.draftInvoice != null){
+        if (invoice.edited && constants_1.INVOICE_STATUS.update.draft) {
+            estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
+            estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
+        }
+        else if (invoice.edited && invoice.updateStatus === constants_1.INVOICE_STATUS.update.sent) {
+            console.log('');
+            estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
+            estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
+        }
+        else {
+            estimate.parts = !estimate.parts.length ? [] : (estimate.parts);
+            estimate.labours = !estimate.labours.length ? [] : (estimate.labours);
+        }
+    }
+
     // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
     // convert image to base 64
     let mainUrl = '';
@@ -179,6 +197,7 @@ const invoicePdfTemplate = (invoice) => {
         color: #263238;
         text-align: left;
         width: 300px;
+        margin-top: 5px;
     }
     
     .bill-to-name {
@@ -389,11 +408,15 @@ const invoicePdfTemplate = (invoice) => {
     .parerntWrapper {
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
+        align-items: flex-start;
     }
 
     body{
         padding: 30px;
+    }
+
+    .bold{
+        font-weight: 800
     }
     </style>
     
@@ -427,9 +450,10 @@ const invoicePdfTemplate = (invoice) => {
             <div class="second-section">
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
-                    <p class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</p>
-                    <p class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</p>
-                    <p class="bill-to-address">${customer?.phone || ""}</p>
+                    <div class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</div>
+                    <div class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</div>
+                    <div class="bill-to-address">${customer?.email || ""}</div>
+                    <div class="bill-to-address">${customer?.phone || ""}</div>
                 </div>
                 <div>
                     <span class="vehicle-inforTitle">Vehicle Information:</span>
@@ -472,8 +496,8 @@ const invoicePdfTemplate = (invoice) => {
                             <div class="item-header-item">
                     <span class="count-num-item">${idx1 + 1}</span>
                     <span class="item-descrip-item">${part.name}</span>
-                    <span class="item-warranty-item">${part.warranty.warranty} ${part.warranty.interval}</span>
-                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part.quantity.quantity} ${part.quantity.unit}</span>
+                    <span class="item-warranty-item">${part?.warranty?.warranty || ''} ${part?.warranty?.interval || ''}</span>
+                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part?.quantity?.quantity || 1} ${part?.quantity?.unit || 'pcs'}</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
                             `);
@@ -504,7 +528,9 @@ const invoicePdfTemplate = (invoice) => {
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Discount:</span>
-                    <span class="item-amount-item-amount">₦ 0.00</span>
+                    <span class="item-amount-item-amount"> 
+                    ${formatNumberToIntl((invoice?.draftInvoice?.discount || invoice?.discount || estimate?.discount || 0))}
+                    </span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -513,7 +539,7 @@ const invoicePdfTemplate = (invoice) => {
                     <span class="item-cost-item-sub">VAT (7.5%):</span>
                     <span class="item-amount-item-amount">₦ ${
     // @ts-ignore
-    formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))}</span>
+    formatNumberToIntl(parseFloat(invoice?.draftInvoice?.tax || invoice?.tax || estimate?.tax || 0) + parseFloat(invoice?.draftInvoice?.taxPart || invoice?.taxPart || estimate?.taxPart || 0))}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -521,7 +547,7 @@ const invoicePdfTemplate = (invoice) => {
                     <span class="item-warranty-item"></span>
                     <div class="total-flex" style="background: #E8E8E8;">
                         <span class="item-cost-item-sub-total">Total:</span>
-                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(estimate.grandTotal)}</span>
+                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(invoice?.draftInvoice?.grandTotal || invoice?.grandTotal || estimate?.grandTotal || 0)}</span>
                     </div>
     
                 </div>
@@ -563,34 +589,51 @@ const invoicePdfTemplate = (invoice) => {
 
                 <br />
                 <br />
-                <p class="terms-header payment">How to Make Payment</p>
+                <p class="terms-header payment">Payment Instructions:</p>
     
                 <div class="parerntWrapper">
-                    <div>
-                        <div class="how-top-pay-text">
-                            <span>Step 1:</span>
-    
-                            <p>Open the <a href="https://onelink.to/fh7uc5">AutoHyve mobile app</a> or visit/click <a
-                                    href="http://app.myautohyve.com/">app.myautohyve.com</a> </p>
-                        </div>
-                        <div class="how-top-pay-text">
-                            <span>Step 2:</span>
-    
-                            <p>Sign in with your Email address (username), and Phone number (as password)</p>
-                        </div>
-                        <div class="how-top-pay-text">
-                            <span>Step 3:</span>
-    
-                            <p>Open <span>Invoice #${invoice.code}</span>, and click on <span>“Make Payment”</span></p>
-                        </div>
-                        <div class="how-top-pay-text">
-                            <span>Step 4:</span>
-    
-                            <p>Make payment using Visa/Master/Verve Cards, Bank Transfer, or USSD</p>
-                        </div>
-                    </div>
+                    <div style="font-size: 12px; font-weight: 600; margin-top: 12px;">Method 1</div>
 
+                    <div style="font-size: 11px; display: flex; flex: 1; margin-left: 10px; flex-direction: column;">
+                        <p style="font-size: 12px;">Pay through traditional bank transfer</p>
+                        
+                        <div style="width: 300px">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Account Name</span>
+                                <span class="bold">${partner?.accountName || ""}</span>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Bank Name</span>
+                                <span class="bold">${partner?.bankName || ""}</span>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Account Number</span>
+                                <span class="bold">${partner?.accountNumber || ""}</span>
+                            </div>
+                        </div>
+
+                        <p style="font-size: 11px;">PS: Notify us after payment is successful</p>
+                    </div>
                 </div>
+
+                <div class="parerntWrapper">
+                    <div style="font-size: 12px; font-weight: 600; margin-top: 12px;">Method 2</div>
+
+                    <div style="font-size: 11px; display: flex; flex: 1; margin-left: 10px; flex-direction: column;">
+                        <p style="font-size: 12px;">A more secure & faster way to pay</p>
+                        <ol>
+                            <li>Open the <a href="https://onelink.to/fh7uc5">AutoHyve mobile app</a> or visit/click <a
+                            href="http://app.myautohyve.com/">app.myautohyve.com</a> </li>
+
+                            <li>Sign in with your Email address (username), and Phone number (as password)</li>
+                            <li>Open <span>Estimate #${invoice.code}</span>, and click on <span>“Make Payment”</span></li>
+                        </ol>
+                        <p style="font-size: 12px;">PS: you can pay using your bank card, transfer, or USSD. once successful, your invoice and receipt is created automatically.</p>
+                    </div>
+                </div>
+
             </div>
     </body>
     

@@ -89,8 +89,10 @@ class InvoiceController {
         axiosClient_1.default.defaults.headers.common['Authorization'] = `Bearer ${paymentGateway.secretKey}`;
         let endpoint = '/balance';
         const balanceResponse = await axiosClient_1.default.get(endpoint);
-        if (balanceResponse.data.data.balance < partnerFee * 100)
-            return Promise.reject(CustomAPIError_1.default.response('Insufficient Balance. Please contact support.', HttpStatus_1.default.BAD_REQUEST.code));
+        // if (balanceResponse.data.data.balance < partnerFee * 100)
+        //   return Promise.reject(
+        //     CustomAPIError.response('Insufficient Balance. Please contact support.', HttpStatus.BAD_REQUEST.code),
+        //   );
         endpoint = '/transferrecipient';
         const recipientResponse = await axiosClient_1.default.post(endpoint, recipient);
         const recipientCode = recipientResponse.data.data.recipient_code;
@@ -153,6 +155,50 @@ class InvoiceController {
         };
         return Promise.resolve(response);
     }
+    static async generateInvoiceManually(req) {
+        // 
+        try {
+            const estimate = await dao_1.default.estimateDAOService.findById(req.body.id);
+            if (!estimate) {
+                const response = {
+                    code: HttpStatus_1.default.BAD_REQUEST.code,
+                    message: 'Error',
+                };
+                return Promise.resolve(response);
+            }
+            const invoiceCode = Generic_1.default.randomize({ number: true, count: 6 });
+            const invoiceValues = {
+                code: invoiceCode,
+                depositAmount: 0,
+                paidAmount: 0,
+                tax: estimate.tax,
+                taxPart: estimate.taxPart,
+                dueAmount: estimate.grandTotal,
+                discount: estimate?.discount || 0,
+                discountType: estimate?.discountType || "percentage",
+                grandTotal: estimate.grandTotal,
+                status: estimate.grandTotal === estimate.depositAmount ? constants_1.INVOICE_STATUS.paid : constants_1.INVOICE_STATUS.deposit,
+                dueDate: (0, moment_1.default)().days(estimate.expiresIn).toDate(),
+            };
+            const invoice = await dao_1.default.invoiceDAOService.create(invoiceValues);
+            await estimate.update({ status: constants_1.ESTIMATE_STATUS.invoiced });
+            await estimate.$set('invoice', invoice);
+            const response = {
+                code: HttpStatus_1.default.OK.code,
+                invoiceCode: invoice.id,
+                message: 'Invoice successfully created',
+            };
+            return Promise.resolve(response);
+        }
+        catch (e) {
+            console.log(e);
+            const response = {
+                code: HttpStatus_1.default.BAD_REQUEST.code,
+                message: 'Error Generating Invoice',
+            };
+            return Promise.resolve(response);
+        }
+    }
     static async invoices(req) {
         const partner = req.user.partner;
         let invoices;
@@ -201,7 +247,7 @@ class InvoiceController {
             for (let j = i; j > 0; j--) {
                 const _t1 = invoices[j];
                 const _t0 = invoices[j - 1];
-                if (((new Date(_t1.updatedAt)).getTime()) > ((new Date(_t0.updatedAt)).getTime())) {
+                if (new Date(_t1.updatedAt).getTime() > new Date(_t0.updatedAt).getTime()) {
                     invoices[j] = _t0;
                     invoices[j - 1] = _t1;
                     // console.log('sorted')
@@ -211,7 +257,7 @@ class InvoiceController {
                 }
             }
         }
-        invoices = (invoices).map(invoice => {
+        invoices = invoices.map(invoice => {
             const parts = invoice.estimate.parts;
             const labours = invoice.estimate.labours;
             invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [constants_1.INITIAL_PARTS_VALUE];
@@ -400,6 +446,67 @@ class InvoiceController {
             message: 'Payment complete',
         });
     }
+    static async updateCompletedInvoicePaymentManually(req) {
+        try {
+            const { invoiceId, customerId, amount: _amount, type } = req.body;
+            // get customer
+            // const customer = await dataSources.customerDAOService.findById(customerId);
+            // get invoice
+            const invoice = await dao_1.default.invoiceDAOService.findById(invoiceId);
+            if (!invoice)
+                return Promise.reject(CustomAPIError_1.default.response(`Invoice with Id: ${invoiceId} does not exist`, HttpStatus_1.default.NOT_FOUND.code));
+            // update transaction
+            const transferTransactionValues = {
+                amount: _amount,
+                type: type,
+                reference: "PTRG-" + Generic_1.default.generateRandomString(5),
+                status: 'success',
+                bank: "JIFFIX",
+                purpose: `PARTNER: GENERATED-FOR-${invoice.code}`,
+                channel: 'bank',
+                currency: "NGN",
+                paidAt: new Date(),
+                cardType: "none",
+                last4: "none",
+                expMonth: "none",
+                expYear: "none",
+                countryCode: "none",
+                brand: "none",
+            };
+            const transferTransaction = await dao_1.default.transactionDAOService.create(transferTransactionValues);
+            try {
+                const customer = await dao_1.default.customerDAOService.findById(customerId);
+                if (customer) {
+                    await customer.$add('transactions', [transferTransaction]);
+                }
+            }
+            catch (e) {
+                // 
+            }
+            // update invoice
+            const amount = invoice.depositAmount + parseInt(_amount);
+            const newDueAmount = invoice.grandTotal - amount;
+            const payload = {
+                dueAmount: newDueAmount,
+                paidAmount: amount,
+                depositAmount: amount,
+                refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : invoice.refundable,
+                status: newDueAmount === 0 ? constants_1.INVOICE_STATUS.paid : constants_1.INVOICE_STATUS.deposit,
+            };
+            console.log(payload, _amount, amount);
+            await invoice.update(payload);
+            return Promise.resolve({
+                code: HttpStatus_1.default.OK.code,
+                message: 'Record Updated',
+            });
+        }
+        catch (e) {
+            return Promise.resolve({
+                code: HttpStatus_1.default.INTERNAL_SERVER_ERROR.code,
+                message: 'An Error Occurred',
+            });
+        }
+    }
     static async saveInvoice(req) {
         const { error, value } = joi_1.default.object(Invoice_1.$saveInvoiceSchema).validate(req.body);
         if (error)
@@ -416,9 +523,10 @@ class InvoiceController {
         if (!customer)
             return Promise.reject(CustomAPIError_1.default.response(`Customer not found.`, HttpStatus_1.default.NOT_FOUND.code));
         let draftInvoice = await invoice.$get('draftInvoice');
+        console.log('indv> ', value.grandTotal, invoice.grandTotal);
         await invoice.update({
             updateStatus: constants_1.INVOICE_STATUS.update.draft,
-            edited: true,
+            edited: value.grandTotal !== invoice.grandTotal,
             paidAmount: invoice.depositAmount,
         });
         if (draftInvoice) {
@@ -612,6 +720,12 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
+], InvoiceController, "generateInvoiceManually", null);
+__decorate([
+    decorators_1.TryCatch,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
 ], InvoiceController, "invoices", null);
 __decorate([
     decorators_1.TryCatch,
@@ -625,6 +739,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], InvoiceController, "updateCompletedInvoicePayment", null);
+__decorate([
+    decorators_1.TryCatch,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], InvoiceController, "updateCompletedInvoicePaymentManually", null);
 __decorate([
     decorators_1.TryCatch,
     __metadata("design:type", Function),

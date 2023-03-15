@@ -40,6 +40,7 @@ import InvoicePage from '../../pages/invoice/InvoicePage';
 import Expenses from '../../pages/expenses/ExpensesPage';
 import ExpenseCreate from '../../pages/expenses/ExpenseCreate';
 import ExpenseDetail from '../../pages/expenses/ExpenseDetail';
+import PaymentRecieve from '../../pages/paymentRecieve/paymentRecieve';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -103,6 +104,7 @@ function PrivateLayout() {
             <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />
+            <Route path="/payment-recieved" element={<PaymentRecieve />} />
           </Routes>
         </Box>
       </Box>

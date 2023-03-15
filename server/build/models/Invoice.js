@@ -78,6 +78,8 @@ exports.$saveInvoiceSchema = {
     jobDurationValue: joi_1.default.string().allow('').label(Estimate_1.estimateFields.jobDurationValue.label),
     jobDurationUnit: joi_1.default.string().allow('').label(Estimate_1.estimateFields.jobDurationUnit.label),
     dueAmount: joi_1.default.number().allow().label('Due Amount'),
+    discount: joi_1.default.number().label('discount'),
+    discountType: joi_1.default.string().label('discountType'),
 };
 let Invoice = class Invoice extends sequelize_typescript_1.Model {
 };
@@ -163,6 +165,14 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)
 ], Invoice.prototype, "jobDurationUnit", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    __metadata("design:type", Number)
+], Invoice.prototype, "discount", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", String)
+], Invoice.prototype, "discountType", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)

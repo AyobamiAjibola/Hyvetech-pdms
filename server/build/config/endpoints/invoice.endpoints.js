@@ -15,10 +15,22 @@ const invoiceEndpoints = [
         handler: invoiceRoute_1.generateInvoiceHandler,
     },
     {
+        name: 'generate invoice manually',
+        method: 'post',
+        path: '/transactions/generate-invoice-manually',
+        handler: invoiceRoute_1.generateInvoiceManuallyHandler,
+    },
+    {
         name: 'update completed invoice payment',
         method: 'patch',
         path: '/transactions/update-completed-invoice-payment',
         handler: invoiceRoute_1.updateCompletedInvoicePaymentHandler,
+    },
+    {
+        name: 'update completed invoice payment manually',
+        method: 'post',
+        path: '/transactions/update-invoice-payment-manually',
+        handler: invoiceRoute_1.updateCompletedInvoicePaymentManuallyHandler,
     },
     {
         name: 'get invoices',

@@ -1,5 +1,7 @@
 import {
+  deletePaymentRecieveHandler,
   depositForEstimateHandler,
+  getPaymentRecieveHandler,
   initRefundCustomerHandler,
   initTransactionCallbackHandler,
   txnStatusHandler,
@@ -15,6 +17,18 @@ const transactionEndpoints: RouteEndpoints = [
     method: 'get',
     path: '/transactions',
     handler: txnStatusHandler,
+  },
+  {
+    name: 'get payment recieve',
+    method: 'get',
+    path: '/transactions/payment-recieve',
+    handler: getPaymentRecieveHandler,
+  },
+  {
+    name: 'delete payment recieve',
+    method: 'post',
+    path: '/transactions/delete-single',
+    handler: deletePaymentRecieveHandler,
   },
   {
     name: 'deposit for estimate',

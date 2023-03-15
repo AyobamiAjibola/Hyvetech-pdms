@@ -22,6 +22,14 @@ import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import AnyObjectType = appCommonTypes.AnyObjectType;
 import IInitTransaction = appCommonTypes.IInitTransaction;
+import Customer from '../models/Customer';
+import Invoice from '../models/Invoice';
+import Estimate from '../models/Estimate';
+import Vehicle from '../models/Vehicle';
+import Partner from '../models/Partner';
+import Contact from '../models/Contact';
+import BillingInformation from '../models/BillingInformation';
+import DraftInvoice from '../models/DraftInvoice';
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
@@ -258,6 +266,104 @@ export default class TransactionController {
     };
 
     return Promise.resolve(response);
+  }
+
+  @TryCatch
+  public static async deletePaymentRecieve(req: Request){
+    
+    try{
+      // 
+      const {trans_id, amount: _amount, invoice} = req.body;
+
+      // delete transaction
+      await dataSources.transactionDAOService.deleteById(trans_id);
+
+      // check if invoice exist then perform operation on it
+      if(invoice != null){
+        // 
+        const amount = invoice.depositAmount - parseInt(_amount);
+        const newDueAmount = invoice.grandTotal - amount;
+
+        const payload = {
+          dueAmount: newDueAmount,
+          paidAmount: amount,
+          depositAmount: amount,
+          refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : invoice.refundable,
+          status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
+        };
+
+        await Invoice.update(payload, {
+          where: {
+            id: invoice.id
+          }
+        })
+      }
+      return Promise.resolve({
+        code: HttpStatus.OK.code,
+        message: 'Record Deleted Successfully',
+      });
+    }catch(e){
+      // 
+      console.log(e);
+      return Promise.resolve({
+        code: HttpStatus.INTERNAL_SERVER_ERROR.code,
+        message: 'Error Deleting Record',
+        records: [],
+      });
+    }
+  }
+
+  @TryCatch
+  public static async paymentRecieve(req: Request){
+    try{
+      // logic to fetch
+      const partner = req.user.partner;
+
+      // const transaction = await partner.$get("transactions");
+
+      const transactions = await dataSources.transactionDAOService.findAll({
+        where: {
+          // @ts-ignore
+          partnerId: partner.id
+        },
+        include: [
+          Customer,
+          {
+            model: Invoice,
+            include: [
+              {
+                model: Estimate,
+                where: { partnerId: partner.id },
+                include: [
+                  { model: Customer, include: [BillingInformation], paranoid: false },
+                  Vehicle,
+                  {
+                    model: Partner,
+                    include: [Contact],
+                  },
+                ],
+              },
+              Transaction,
+              DraftInvoice,
+            ]
+          }
+        ]
+      });
+
+
+      return Promise.resolve({
+        code: HttpStatus.OK.code,
+        message: 'Record Fetched Successfully',
+        records: transactions || [],
+      });
+    }catch(e){
+      console.log(e);
+      return Promise.resolve({
+        code: HttpStatus.INTERNAL_SERVER_ERROR.code,
+        message: 'Error Fetching Records',
+        records: [],
+      });
+    }
   }
 
   @TryCatch
