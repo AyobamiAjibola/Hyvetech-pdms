@@ -327,7 +327,10 @@ export default class TransactionController {
           partnerId: partner.id
         },
         include: [
-          Customer,
+          {
+            model: Customer,
+            include: [Contact]
+          },
           {
             model: Invoice,
             include: [
