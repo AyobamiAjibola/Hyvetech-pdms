@@ -438,13 +438,14 @@ function InvoicesPage() {
         headerName: 'Status',
         headerAlign: 'center',
         align: 'center',
+        width: 200,
         sortable: true,
         type: 'string',
         renderCell: params => {
           return params.row.status === INVOICE_STATUS.paid ? (
-            <Chip label={INVOICE_STATUS.paid} size="small" color="success" />
+            <Chip label={"Fully Paid"} size="small" color="success" />
           ) : params.row.status === INVOICE_STATUS.deposit ? (
-            <Chip label={INVOICE_STATUS.deposit} size="small" color="warning" />
+            <Chip label={ (params.row.depositAmount != 0) ? "Partially Paid" : "Not Paid"} size="small" color="warning" />
           ) : params.row.status === INVOICE_STATUS.overDue ? (
             <Chip label={INVOICE_STATUS.overDue} size="small" color="error" />
           ) : null;
@@ -456,19 +457,6 @@ function InvoicesPage() {
         headerAlign: 'center',
         align: 'center',
         getActions: (params: any) => [
-          // <GridActionsCellItem
-          //   key={0}
-          //   icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-          //   onClick={() => {
-          //     void dispatch(getInvoicesAction());
-          //     const invoice = params.row as IInvoice;
-          //     const estimate = invoice.estimate;
-
-          //     navigate(`/invoices/${invoice.id}`, { state: { invoice, estimate } });
-          //   }}
-          //   label="View"
-          //   showInMenu={false}
-          // />,
           <GridActionsCellItem
             key={2}
             icon={<Edit sx={{ display: isTechAdmin ? 'block' : 'none', color: 'limegreen' }} />}
