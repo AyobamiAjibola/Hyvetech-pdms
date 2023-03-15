@@ -556,6 +556,54 @@ declare module '@app-models' {
     updatedAt: Date;
   }
 
+  interface IExpenseCategory {
+    name: string;
+    id: number;
+  }
+
+  interface IExpenseType {
+    name: string;
+    id: number;
+  }
+
+  interface IBeneficiary {
+    name: string;
+    id: number;
+    accountNumber: string;
+    accountName: string;
+    bankName: string;
+  }
+
+  interface IExpense {
+    id: number;
+
+    date: string;
+
+    amount: number;
+
+    reference: string;
+
+    status: expenseType;
+
+    beneficiary: IBeneficiary;
+
+    category: IExpenseCategory;
+
+    type: IExpenseType;
+
+    invoice: IInvoice;
+
+    invoiceId: number;
+
+    beneficiaryId: number;
+
+    expenseTypeId: number;
+
+    expenseCategoryId: number;
+
+    invoiceCode: string;
+  }
+
   interface IEstimate {
     id: number;
     code: string;

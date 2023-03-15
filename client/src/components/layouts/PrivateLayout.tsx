@@ -37,6 +37,9 @@ import EstimatesPage from '../../pages/estimate/EstimatesPage';
 import EstimatePage from '../../pages/estimate/EstimatePage';
 import InvoicesPage from '../../pages/invoice/InvoicesPage';
 import InvoicePage from '../../pages/invoice/InvoicePage';
+import Expenses from '../../pages/expenses/ExpensesPage';
+import ExpenseCreate from '../../pages/expenses/ExpenseCreate';
+import ExpenseDetail from '../../pages/expenses/ExpenseDetail';
 import PaymentRecieve from '../../pages/paymentRecieve/paymentRecieve';
 
 function PrivateLayout() {
@@ -94,6 +97,9 @@ function PrivateLayout() {
             <Route path="/checkLists" element={<CheckListsPage />} />
             <Route path="/checkLists/:id" element={<CheckListPage />} />
             <Route path="/estimates" element={<EstimatesPage />} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="/expense/create" element={<ExpenseCreate />} />
+            <Route path="/expense/:id" element={<ExpenseDetail />} />
             <Route path="/estimates/:id" element={<EstimatePage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/invoices/:id" element={<InvoicePage />} />

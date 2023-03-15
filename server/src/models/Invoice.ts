@@ -16,6 +16,7 @@ import Estimate, { estimateFields } from './Estimate';
 import Transaction from './Transaction';
 import Joi from 'joi';
 import DraftInvoice from './DraftInvoice';
+import Expense from './Expense';
 
 export type InvoiceSchemaType = Attributes<Invoice>;
 
@@ -150,6 +151,9 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
 
   @HasMany(() => Transaction)
   declare transactions: NonAttribute<Transaction[]>;
+
+  @HasMany(() => Expense)
+  declare expenses: NonAttribute<Expense[]>;
 
   @HasOne(() => DraftInvoice)
   declare draftInvoice: NonAttribute<DraftInvoice>;

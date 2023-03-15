@@ -5021,6 +5021,11 @@ export const ESTIMATE_STATUS = {
   draft: 'Draft',
 };
 
+export const EXPENSE_STATUS = {
+  paid: 'PAID',
+  unpaid: 'UNPAID',
+};
+
 export const INVOICE_STATUS = {
   paid: 'Paid',
   overDue: 'Overdue',
