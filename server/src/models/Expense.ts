@@ -5,6 +5,7 @@ import ExpenseCategory from './ExpenseCategory';
 import ExpenseType from './ExpenseType';
 import Invoice from './Invoice';
 import Joi from 'joi';
+import Partner from './Partner';
 
 export const expenseFields = {
   date: {
@@ -84,8 +85,7 @@ export type ExpenseSchemaType = Attributes<Expense> & {
 
 export const $saveExpenseSchema: Joi.SchemaMap<ExpenseSchemaType> = {
   date: Joi.date().required().label(expenseFields.date.label),
-  reference: Joi.string().required().label(expenseFields.reference.label),
-  status: Joi.string().required().label(expenseFields.status.label),
+  reference: Joi.string().optional().label(expenseFields.reference.label),
   amount: Joi.number().required().label(expenseFields.date.label),
   expenseCategoryId: Joi.number().label(expenseFields.expenseCategoryId.label),
   expenseTypeId: Joi.number().label(expenseFields.expenseTypeId.label),
@@ -128,6 +128,9 @@ export default class Expense extends Model<InferAttributes<Expense>, InferCreati
   @BelongsTo(() => ExpenseType)
   declare type: NonAttribute<ExpenseType>;
 
+  @BelongsTo(() => Partner)
+  declare partner: NonAttribute<Partner>;
+
   @BelongsTo(() => Invoice, { onDelete: 'CASCADE' })
   declare invoice: NonAttribute<Invoice>;
 
@@ -146,4 +149,11 @@ export default class Expense extends Model<InferAttributes<Expense>, InferCreati
   @ForeignKey(() => ExpenseCategory)
   @Column(DataType.INTEGER)
   declare expenseCategoryId: NonAttribute<number>;
+
+  @ForeignKey(() => Partner)
+  @Column(DataType.INTEGER)
+  declare partnerId: number;
+
+  @Column(DataType.STRING)
+  declare invoiceCode: string;
 }

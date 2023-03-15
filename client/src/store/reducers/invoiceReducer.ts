@@ -1,7 +1,7 @@
 import { IThunkAPIStatus } from '@app-types';
 import { IInvoice } from '@app-models';
 import { createSlice } from '@reduxjs/toolkit';
-import { getInvoicesAction, saveInvoiceAction, sendInvoiceAction } from '../actions/invoiceActions';
+import { getInvoicesAction, getSingleInvoice, saveInvoiceAction, sendInvoiceAction } from '../actions/invoiceActions';
 
 interface IInvoiceState {
   getInvoicesStatus: IThunkAPIStatus;
@@ -102,6 +102,22 @@ const invoiceSlice = createSlice({
         state.sendInvoiceSuccess = action.payload.message;
       })
       .addCase(sendInvoiceAction.rejected, (state, action) => {
+        state.sendInvoiceStatus = 'failed';
+
+        if (action.payload) {
+          state.sendInvoiceError = action.payload.message;
+        } else state.sendInvoiceError = action.error.message as string;
+      });
+
+    builder
+      .addCase(getSingleInvoice.pending, state => {
+        state.sendInvoiceStatus = 'loading';
+      })
+      .addCase(getSingleInvoice.fulfilled, (state, action) => {
+        state.sendInvoiceStatus = 'completed';
+        state.invoice = action.payload.result as IInvoice;
+      })
+      .addCase(getSingleInvoice.rejected, (state, action) => {
         state.sendInvoiceStatus = 'failed';
 
         if (action.payload) {
