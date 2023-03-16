@@ -334,7 +334,7 @@ function InvoicesPage() {
       },
       {
         field: 'code',
-        headerName: 'Invoice',
+        headerName: 'Invoice #',
         headerAlign: 'center',
         align: 'center',
         sortable: true,
@@ -444,8 +444,10 @@ function InvoicesPage() {
         renderCell: params => {
           return params.row.status === INVOICE_STATUS.paid ? (
             <Chip label={"Fully Paid"} size="small" color="success" />
-          ) : params.row.status === INVOICE_STATUS.deposit ? (
-            <Chip label={ (params.row.depositAmount != 0) ? "Partially Paid" : "Not Paid"} size="small" color="warning" />
+          ) : ((params.row.status === INVOICE_STATUS.deposit) && (params.row.depositAmount != 0) ) ? (
+            <Chip label={ (params.row.depositAmount != 0) ? "Partially Paid" : ""} size="small" color="warning" />
+          ) : (params.row.status === INVOICE_STATUS.deposit && (params.row.depositAmount == 0)) ? (
+            <Chip label={ (params.row.depositAmount != 0) ? "" : "Not Paid"} size="small" color="error" />
           ) : params.row.status === INVOICE_STATUS.overDue ? (
             <Chip label={INVOICE_STATUS.overDue} size="small" color="error" />
           ) : null;

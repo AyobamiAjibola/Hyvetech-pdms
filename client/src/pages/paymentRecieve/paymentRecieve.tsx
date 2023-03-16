@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Button, DialogActions, DialogContentText, Grid, Typography } from '@mui/material';
+import { Button, DialogActions, DialogContentText, Divider, Grid, Typography } from '@mui/material';
 import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +21,8 @@ import {
 import { GridActionsCellItem } from '@mui/x-data-grid';
 import { Cancel } from '@mui/icons-material';
 import AppModal from '../../components/modal/AppModal';
+import settings from '../../config/settings';
+import ReactToPdf from 'react-to-pdf'
 
 
 export default function PaymentRecieve() {
@@ -31,10 +33,20 @@ export default function PaymentRecieve() {
     const { isTechAdmin, user } = useAdmin();
     const [records, setRecords] = useState([])
     const [showWarning, setShowWarning] = useState(false)
+    const [showReceipt, setShowReceipt] = useState(false)
+    const [receiptData, setReceiptData] = useState(null)
     const [activeRecord, setactiveRecord] = useState(null)
     // const invoice = useInvoice();
 
+    const ref = React.createRef();
+    const options = {
+      unit: 'in',
+      format: [6,6]
+  };
+
     const partnerName = (user?.partner?.name || " ")
+
+    // console.log(receiptData, "receiptDatareceiptData")
 
     useEffect(()=>{
       // reverse
@@ -81,7 +93,7 @@ export default function PaymentRecieve() {
           },
           {
             field: 'reference',
-            headerName: 'Receipt',
+            headerName: 'Receipt #',
             headerAlign: 'center',
             align: 'center',
             sortable: true,
@@ -94,6 +106,8 @@ export default function PaymentRecieve() {
                   style={{ color: 'skyblue', cursor: 'pointer' }}
                   onClick={() => {
                     // 
+                    setShowReceipt(true);
+                    setReceiptData(params.row)
                   }}>
                   {/* {params.row.reference} */}
                   {`${partnerName[0]}RC-${hashString(`${partnerName[0]}C${params.row.id}`)}`}
@@ -122,7 +136,7 @@ export default function PaymentRecieve() {
           },
           {
             field: 'invoice.code',
-            headerName: 'Invoice',
+            headerName: 'Invoice #',
             headerAlign: 'center',
             align: 'center',
             sortable: true,
@@ -296,6 +310,158 @@ export default function PaymentRecieve() {
                 </DialogActions>
               }
               onClose={() => setShowWarning(false)}
+            />
+
+            <AppModal
+              fullWidth
+              show={showReceipt}
+              Content={
+                <div ref={ref} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  
+                  <div style={{ flex: 1, display: 'flex' }}>
+                    <div style={{ flex: 0.4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <img
+                        alt=""
+                        width="52%"
+                        crossOrigin="anonymous"
+                        src={`${settings.api.baseURL}/${user?.partner?.logo}`}
+                      />
+                    </div>
+                    <div style={{ flex: 0.6, display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant='h4'>
+                      {partnerName}.
+                    </Typography>
+                    <Typography>
+                      {user?.partner?.contact?.address},
+                      &nbsp;
+                      {user?.partner?.contact?.country}
+                    </Typography>
+                    <br />
+
+                    <Typography>
+                      {user?.partner?.phone}
+                      <br />
+                      {user?.partner?.email}
+                    </Typography>
+                    </div>
+                  </div>
+
+                  <br />
+                  <Divider orientation="horizontal" />
+                  <br />
+                  
+                  <div>
+                    <Typography style={{ fontWeight: 'normal', textAlign: 'center' }}>
+                      PAYMENT RECEIPT
+                    </Typography>
+                    <br />
+
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
+                      <div style={{ flex: 1, display: 'flex', flex: 0.68, marginRight: 20, flexDirection: 'column' }}>
+                        
+                        <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography style={{ fontSize: 13 }}>Payment Date</Typography>
+                          <Typography style={{ fontSize: 13, fontWeight: '600' }}>{new Date((receiptData?.updatedAt || "")).toDateString()}</Typography>
+                        </div>
+
+                        <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography style={{ fontSize: 13 }}>Mode of Payment</Typography>
+                          <Typography style={{ fontSize: 13, fontWeight: '600' }}>{receiptData?.type || ""}</Typography>
+                        </div>
+
+                        <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography style={{ fontSize: 13 }}>Payment Reference</Typography>
+                          <Typography style={{ fontSize: 13, fontWeight: '600' }}>
+                          {`${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id || ""}`)}`}
+                          </Typography>
+                        </div>
+
+                      </div>
+
+                      <div style={{ flex: 1, display: 'flex', flex: 0.3, flexDirection: 'column', alignItems: 'center' }}>
+                        <Typography style={{ fontSize: 11 }}>
+                          Amount Received
+                        </Typography>
+                        <Typography style={{ fontSize: 13, fontWeight: '600' }}>
+                          N {formatNumberToIntl(receiptData?.amount || 0)}
+                        </Typography>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Typography style={{ marginTop: 10, marginBottom: 10, fontWeight: '800' }}>Recieved From</Typography>
+                      <Typography style={{ fontSize: 13 }}>{receiptData?.customer?.firstName || ""}{' '}{receiptData?.customer?.lastName || ""}</Typography>
+                      {/* <Typography style={{ fontSize: 13 }}>{receiptData?.customer.contacts[0]?.address || ""}</Typography> */}
+                      <Typography style={{ fontSize: 13 }}>{receiptData?.customer.contacts[0]?.district || ""}</Typography>
+                      <Typography style={{ fontSize: 13 }}>{receiptData?.customer.contacts[0]?.state || ""}</Typography>
+                    </div>
+
+                    <div>
+                      <Typography style={{ marginTop: 10, marginBottom: 10, fontWeight: '800' }}>Payment For</Typography>
+                    </div>
+
+                  </div>
+                  <div>
+                    <table style={{ width: '100%' }}>
+                      <thead style={{ backgroundColor: 'grey', borderColor: 'grey' }}>
+                        <tr style={{ borderColor: 'grey' }}>
+                          
+                          <th style={{ borderColor: 'grey' }}>
+                            <Typography style={{ fontSize: 13 }}>Invoice #</Typography>
+                          </th>
+
+                          <th style={{ borderColor: 'grey' }}>
+                            <Typography style={{ fontSize: 13 }}>Invoice Date</Typography>
+                          </th>
+
+                          <th style={{ borderColor: 'grey' }}>
+                            <Typography style={{ fontSize: 13 }}>Invoice Amount</Typography>
+                          </th>
+
+                          <th style={{ borderColor: 'grey' }}>
+                            <Typography style={{ fontSize: 13 }}>Payment Amount</Typography>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          
+                          <td>
+                            <Typography style={{ fontSize: 13, textAlign: 'center' }}>INV-{receiptData?.invoice?.code || ""}</Typography>
+                          </td>
+
+                          <td>
+                            <Typography style={{ fontSize: 13, textAlign: 'center' }}>{(new Date(receiptData?.invoice?.updatedAt || "")).toDateString()}</Typography>
+                          </td>
+
+                          <td>
+                            <Typography style={{ fontSize: 13, textAlign: 'center' }}>N {formatNumberToIntl(receiptData?.invoice?.grandTotal || "")}</Typography>
+                          </td>
+
+                          <td>
+                            <Typography style={{ fontSize: 13, textAlign: 'center' }}>N {formatNumberToIntl(receiptData?.amount || "")}</Typography>
+                          </td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              }
+              ActionComponent={
+                <DialogActions>
+                  <ReactToPdf targetRef={ref} filename="receipt.pdf" options={options} x={.5} y={.5} scale={0.8}>
+                    {({toPdf}) => (
+                        <Button onClick={toPdf}>DOWNLOAD</Button>
+                    )}
+                </ReactToPdf>
+                  {/* <Button onClick={() => {
+                    // 
+                  }}>DOWNLOAD</Button> */}
+                </DialogActions>
+              }
+              onClose={() => setShowReceipt(false)}
             />
             
             <AppLoader show={transactionReducer.getPaymentRecievedStatus === 'loading' || transactionReducer.deletePaymentRecievedStatus === 'loading'} />

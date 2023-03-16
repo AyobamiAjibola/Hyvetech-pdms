@@ -8,13 +8,17 @@ import { appCommonTypes } from '../@types/app-common';
 
 import User from '../models/User';
 import HttpResponse = appCommonTypes.HttpResponse;
+import Contact from '../models/Contact';
 
 export default class UserController {
   public static async user(req: Request) {
     const userId = req.params.userId as string;
     try {
       const user = await dataSources.userDAOService.findById(+userId, {
-        include: [Partner],
+        include: [{
+          model: Partner,
+          include: [Contact]
+        }],
       });
 
       if (!user)
