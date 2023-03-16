@@ -47,3 +47,9 @@ export const sendInvoiceHandler = authenticateRouteWrapper(async (req, res) => {
 
   res.status(response.code).json(response);
 });
+
+export const getSingleInvoiceHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await InvoiceController.getSingleInvoice(req);
+
+  res.status(response.code).json(response);
+});

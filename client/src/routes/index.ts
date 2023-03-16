@@ -55,6 +55,12 @@ export const sideNavs: ISideNav[] = [
     Icon: Calculate,
   },
   {
+    tag: 'techs',
+    name: 'Expenses',
+    path: '/expenses',
+    Icon: RequestQuote,
+  },
+  {
     tag: 'super',
     name: 'Invoices',
     path: '/invoices',

@@ -72,6 +72,14 @@ import CustomerWorkShopRepository from '../../repositories/CustomerWorkShopRepos
 import CustomerWorkShopDAOService from './CustomerWorkShopDAOService';
 import SettingRepository from '../../repositories/SettingRepository';
 import SettingDAOService from './SettingDAOService';
+import BeneficiaryDAOService from './BeneficiaryDAOService';
+import BeneficiaryRepository from '../../repositories/BeneficiaryRepository';
+import ExpenseTypeRepository from '../../repositories/ExpenseTypeRepository';
+import ExpenseCategoryRepository from '../../repositories/ExpenseCategoryRepository';
+import ExpenseTypeDAOService from './ExpenseTypeDAOService';
+import ExpenseCategoryDAOService from './ExpenseCategoryDAOService';
+import ExpenseRepository from '../../repositories/ExpenseRepository';
+import ExpenseDAOService from './ExpenseDAOService';
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -150,6 +158,16 @@ const invoiceDAOService = new InvoiceDAOService(invoiceRepository);
 const customerWorkShopDAOService = new CustomerWorkShopDAOService(customerWorkShopRepository);
 const settingDAOService = new SettingDAOService(settingRepository);
 
+const beneficiaryRepository = new BeneficiaryRepository();
+const expenseTypeRepository = new ExpenseTypeRepository();
+const expenseCategoryRepository = new ExpenseCategoryRepository();
+const expenseRespository = new ExpenseRepository();
+
+const beneficiaryDAOService = new BeneficiaryDAOService(beneficiaryRepository);
+const expenseTypeDAOService = new ExpenseTypeDAOService(expenseTypeRepository);
+const expenseCategoryDAOService = new ExpenseCategoryDAOService(expenseCategoryRepository);
+const expenseDAOService = new ExpenseDAOService(expenseRespository);
+
 export default {
   customerDAOService,
   vehicleDAOService,
@@ -187,4 +205,8 @@ export default {
   vinDAOService,
   customerWorkShopDAOService,
   settingDAOService,
+  beneficiaryDAOService,
+  expenseCategoryDAOService,
+  expenseTypeDAOService,
+  expenseDAOService,
 };

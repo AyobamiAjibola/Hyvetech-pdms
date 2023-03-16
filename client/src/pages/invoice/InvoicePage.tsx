@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IBillingInformation, IEstimate, IInvoice } from '@app-models';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Alert, Avatar, Box, Button, Divider, Grid, Input, Select, Stack, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
@@ -10,16 +10,18 @@ import settings from '../../config/settings';
 import { INVOICE_STATUS } from '../../config/constants';
 import { ArrowBackIosNew } from '@mui/icons-material';
 import axiosClient from '../../config/axiosClient';
-import AppModal from '../../components/modal/AppModal'
-import { getInvoicesAction } from '../../store/actions/invoiceActions';
-import { useDispatch } from 'react-redux';
+import AppModal from '../../components/modal/AppModal';
+import { getInvoicesAction, getSingleInvoice } from '../../store/actions/invoiceActions';
+
 import AppAlert from '../../components/alerts/AppAlert';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import useAppSelector from '../../hooks/useAppSelector';
 
 const API_ROOT = settings.api.rest;
-interface ILocationState {
-  estimate?: IEstimate;
-  invoice?: IInvoice;
-}
+// interface ILocationState {
+//   estimate?: IEstimate;
+//   invoice?: IInvoice;
+// }
 
 function InvoicePage() {
   const [estimate, setEstimate] = useState<IEstimate>();
@@ -29,13 +31,15 @@ function InvoicePage() {
   const [labours, setLabours] = useState<ILabour[]>([]);
   const [_driver, setDriver] = useState<any>(null);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
-  const location = useLocation();
-  const dispatch = useDispatch();
+  // const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const store = useAppSelector(state => state.invoiceReducer);
 
   const [showRecordPayment, setShowRecordPayment] = useState<boolean>(false);
   const [recording, setRecording] = useState<any>(false);
   const [recordData, setRecordData] = useState<{
-    amount: string|number;
+    amount: string | number;
     type: string;
   }>({
     amount: '',
@@ -47,14 +51,22 @@ function InvoicePage() {
 
   const [showMessage, setshowMessage] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (location.state) {
-      const state = location.state as ILocationState;
+  const params = useParams() as unknown as { id: number };
 
-      setInvoice(state.invoice);
-      setEstimate(state.estimate);
-    }
-  }, [location]);
+  useEffect(() => {
+    dispatch(getSingleInvoice(params.id));
+  }, [params]);
+
+  useEffect(() => {
+    // if (location.state) {
+    //   const state = location.state as ILocationState;
+
+    //   setInvoice(state.invoice);
+    //   setEstimate(state.estimate);
+    // }
+    setInvoice(store.invoice);
+    setEstimate(store.invoice?.estimate);
+  }, [store.invoice]);
 
   useEffect(() => {
     if (estimate && invoice) {
@@ -147,30 +159,33 @@ function InvoicePage() {
     }, 3000);
   };
 
-  const handlePaymentRecord = async()=>{
-    setRecording(true)
-    try{
+  const handlePaymentRecord = async () => {
+    setRecording(true);
+    try {
       const payload = {
-        invoiceId: invoice?.id || 0, customerId: _driver.id, amount: recordData.amount, type: recordData.type
-      }
+        invoiceId: invoice?.id || 0,
+        customerId: _driver.id,
+        amount: recordData.amount,
+        type: recordData.type,
+      };
 
       const response = await axiosClient.post(`${API_ROOT}/transactions/update-invoice-payment-manually`, payload);
       console.log(response.data);
       // @ts-ignore
       dispatch(getInvoicesAction());
-      setshowMessage(true)
+      setshowMessage(true);
 
-      setTimeout(()=>{
+      setTimeout(() => {
         setshowMessage(false);
         window.history.back();
-      }, 3000)
+      }, 3000);
       // alert("Record Updated");
       // window.location.reload();
-    }catch(e){
-      console.log(e)
+    } catch (e) {
+      console.log(e);
     }
-    setRecording(false)
-  }
+    setRecording(false);
+  };
 
   const calculateDiscount = ({
     total,
@@ -232,13 +247,16 @@ function InvoicePage() {
         </Typography>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            {
-              ( ( invoice.grandTotal !== invoice.paidAmount ) && 
-                <Button style={{ marginRight: 20 }} variant="outlined" color="success" size="small" onClick={() => setShowRecordPayment(true)}>
-                  {'Record Payment'}
-                </Button>
-              )
-            }
+          {invoice.grandTotal !== invoice.paidAmount && (
+            <Button
+              style={{ marginRight: 20 }}
+              variant="outlined"
+              color="success"
+              size="small"
+              onClick={() => setShowRecordPayment(true)}>
+              {'Record Payment'}
+            </Button>
+          )}
           <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
             {downloading ? 'Downloading...' : 'Download Pdf'}
           </Button>
@@ -378,10 +396,10 @@ function InvoicePage() {
                       {part.name}
                     </Grid>
                     <Grid item xs={3}>
-                      {part?.warranty?.warranty || ""} {part?.warranty?.interval || ""}
+                      {part?.warranty?.warranty || ''} {part?.warranty?.interval || ''}
                     </Grid>
                     <Grid item xs={3}>
-                      {formatNumberToIntl(+part.price)} x {part?.quantity?.quantity || ""}${part?.quantity?.unit || 0}
+                      {formatNumberToIntl(+part.price)} x {part?.quantity?.quantity || ''}${part?.quantity?.unit || 0}
                     </Grid>
                     <Grid item xs={3}>
                       {amount}
@@ -405,7 +423,7 @@ function InvoicePage() {
                     borderColor="#676767">
                     <Grid item xs={2} />
                     <Grid item xs={3}>
-                      {labour.title}
+                      {labour?.title}
                     </Grid>
                     <Grid item xs={3}>
                       -
@@ -529,52 +547,56 @@ function InvoicePage() {
           </Grid>
         </Grid>
 
-        <AppModal 
+        <AppModal
           show={showRecordPayment}
           onClose={() => setShowRecordPayment(false)}
           title="Record Payment"
-          size='md'
-          ActionComponent={
-            <Button onClick={()=> handlePaymentRecord()}>{ recording ? 'Recording' : 'Record'}</Button>
-          }
+          size="md"
+          ActionComponent={<Button onClick={() => handlePaymentRecord()}>{recording ? 'Recording' : 'Record'}</Button>}
           // fullWidth
           Content={
             <div style={{ width: 300 }}>
-              <Input value={recordData.amount} type='numeric' fullWidth placeholder={'Amount to Record Max: '+ formatNumberToIntl(invoice.dueAmount)}
-              onChange={e => {
-                // process entry
-                if( parseInt(e.target.value) > invoice.dueAmount ){
-                  alert('Recording above due amount, a refund might be considered');
-                }else{
-                  setRecordData({...recordData, amount: e.target.value})
-                }
-              }} />
-
+              <Input
+                value={recordData.amount}
+                type="numeric"
+                fullWidth
+                placeholder={'Amount to Record Max: ' + formatNumberToIntl(invoice.dueAmount)}
+                onChange={e => {
+                  // process entry
+                  if (parseInt(e.target.value) > invoice.dueAmount) {
+                    alert('Recording above due amount, a refund might be considered');
+                  } else {
+                    setRecordData({ ...recordData, amount: e.target.value });
+                  }
+                }}
+              />
               <br />
               &nbsp;
               <br />
-
-              <Typography>
-                Select Method
-              </Typography>
+              <Typography>Select Method</Typography>
               <br />
-              <Select onChange={e => setRecordData({...recordData, type: e.target.value})} value={recordData.type} native fullWidth placeholder='Select Payment Mode'>
-                <option value={"Cash"}>Cash</option>
-                <option value={"Transfer"}>Transfer</option>
-                <option value={"Check"}>Check</option>
-                <option value={"POS"}>POS</option>
+              <Select
+                onChange={e => setRecordData({ ...recordData, type: e.target.value })}
+                value={recordData.type}
+                native
+                fullWidth
+                placeholder="Select Payment Mode">
+                <option value={'Cash'}>Cash</option>
+                <option value={'Transfer'}>Transfer</option>
+                <option value={'Check'}>Check</option>
+                <option value={'POS'}>POS</option>
               </Select>
               <br />
-
             </div>
-          }/>
-          
-          <AppAlert
-            alertType="success"
-            show={showMessage}
-            message={"record recieved, re-open invoice to see changes"}
-            onClose={() => setshowMessage(false)}
-          />
+          }
+        />
+
+        <AppAlert
+          alertType="success"
+          show={showMessage}
+          message={'record recieved, re-open invoice to see changes'}
+          onClose={() => setshowMessage(false)}
+        />
       </React.Fragment>
     );
 }

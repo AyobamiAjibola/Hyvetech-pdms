@@ -7,6 +7,7 @@ import {
   sendInvoiceHandler,
   updateCompletedInvoicePaymentHandler,
   updateCompletedInvoicePaymentManuallyHandler,
+  getSingleInvoiceHandler,
 } from '../../routes/invoiceRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -61,6 +62,12 @@ const invoiceEndpoints: RouteEndpoints = [
     method: 'patch',
     path: '/invoices/send',
     handler: sendInvoiceHandler,
+  },
+  {
+    name: 'get invoice',
+    method: 'get',
+    path: '/invoice/:id',
+    handler: getSingleInvoiceHandler,
   },
 ];
 

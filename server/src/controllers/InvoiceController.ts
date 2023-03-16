@@ -209,17 +209,17 @@ export default class InvoiceController {
   }
 
   @TryCatch
-  public static async generateInvoiceManually(req: Request){
-    // 
-    try{
+  public static async generateInvoiceManually(req: Request) {
+    //
+    try {
       const estimate = await dataSources.estimateDAOService.findById(req.body.id);
 
-      if(!estimate){
+      if (!estimate) {
         const response: HttpResponse<any> = {
           code: HttpStatus.BAD_REQUEST.code,
           message: 'Error',
         };
-    
+
         return Promise.resolve(response);
       }
 
@@ -232,14 +232,14 @@ export default class InvoiceController {
         taxPart: estimate.taxPart,
         dueAmount: estimate.grandTotal,
         discount: estimate?.discount || 0,
-        discountType: estimate?.discountType || "percentage",
+        discountType: estimate?.discountType || 'percentage',
         grandTotal: estimate.grandTotal,
         status: estimate.grandTotal === estimate.depositAmount ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
         dueDate: moment().days(estimate.expiresIn).toDate(),
       };
-  
+
       const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
-  
+
       await estimate.update({ status: ESTIMATE_STATUS.invoiced });
       await estimate.$set('invoice', invoice);
 
@@ -248,17 +248,84 @@ export default class InvoiceController {
         invoiceCode: invoice.id,
         message: 'Invoice successfully created',
       };
-  
+
       return Promise.resolve(response);
-    }catch(e){
+    } catch (e) {
       console.log(e);
       const response: HttpResponse<Invoice> = {
         code: HttpStatus.BAD_REQUEST.code,
         message: 'Error Generating Invoice',
       };
-  
+
       return Promise.resolve(response);
     }
+  }
+
+  public static async getSingleInvoice(req: Request) {
+    const invoice = await this.doGetInvoice(req);
+    return Promise.resolve({
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      result: invoice,
+    } as HttpResponse<Invoice>);
+  }
+
+  private static async doGetInvoice(req: Request) {
+    const partner = req.user.partner;
+    let invoices = await dataSources.invoiceDAOService.findAll({
+      where: { id: req.params.id },
+      include: [
+        {
+          model: Estimate,
+          where: { partnerId: partner.id },
+          include: [
+            { model: Customer, include: [BillingInformation], paranoid: false },
+            Vehicle,
+            {
+              model: Partner,
+              include: [Contact],
+            },
+          ],
+        },
+        Transaction,
+        DraftInvoice,
+      ],
+    });
+    // sort by date updated
+    for (let i = 1; i < invoices.length; i++) {
+      for (let j = i; j > 0; j--) {
+        const _t1: any = invoices[j];
+        const _t0: any = invoices[j - 1];
+
+        if (new Date(_t1.updatedAt).getTime() > new Date(_t0.updatedAt).getTime()) {
+          invoices[j] = _t0;
+          invoices[j - 1] = _t1;
+
+          // console.log('sorted')
+        } else {
+          // console.log('no sorted')
+        }
+      }
+    }
+
+    invoices = invoices.map(invoice => {
+      const parts = invoice.estimate.parts;
+      const labours = invoice.estimate.labours;
+
+      invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+      invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+
+      if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
+        const parts = invoice.parts;
+        const labours = invoice.labours;
+
+        invoice.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+        invoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+      }
+
+      return invoice;
+    });
+    return invoices[0];
   }
 
   @TryCatch
@@ -592,9 +659,9 @@ export default class InvoiceController {
   }
 
   @TryCatch
-  public static async updateCompletedInvoicePaymentManually(req: Request){
-    try{
-      const {invoiceId, customerId, amount: _amount, type} = req.body;
+  public static async updateCompletedInvoicePaymentManually(req: Request) {
+    try {
+      const { invoiceId, customerId, amount: _amount, type } = req.body;
 
       // get customer
       // const customer = await dataSources.customerDAOService.findById(customerId);
@@ -611,47 +678,47 @@ export default class InvoiceController {
       const transferTransactionValues: Partial<Attributes<Transaction>> = {
         amount: _amount,
         type: type,
-        reference: "PTRG-"+Generic.generateRandomString(5),
+        reference: 'PTRG-' + Generic.generateRandomString(5),
         status: 'success',
-        bank: "JIFFIX",
+        bank: 'JIFFIX',
         purpose: `PARTNER: GENERATED-FOR-${invoice.code}`,
         channel: 'bank',
-        currency: "NGN",
+        currency: 'NGN',
         paidAt: new Date(),
-        cardType: "none",
-        last4: "none",
-        expMonth: "none",
-        expYear: "none",
-        countryCode: "none",
-        brand: "none",
+        cardType: 'none',
+        last4: 'none',
+        expMonth: 'none',
+        expYear: 'none',
+        countryCode: 'none',
+        brand: 'none',
       };
-  
+
       const transferTransaction = await dataSources.transactionDAOService.create(
         transferTransactionValues as CreationAttributes<Transaction>,
       );
 
-      try{
+      try {
         const customer = await dataSources.customerDAOService.findById(customerId);
-        if(customer){
+        if (customer) {
           await customer.$add('transactions', [transferTransaction]);
         }
 
         // @ts-ignore
         // const estimate = await invoice.get('estimate');
         const estimate = await dataSources.estimateDAOService.findById(invoice.estimateId);
-        
-        if(estimate){
+
+        if (estimate) {
           // console.log(estimate);
           const partner = await estimate.$get('partner');
-          if(partner){
+          if (partner) {
             await partner.$add('transactions', [transferTransaction]);
           }
         }
 
         await invoice.$add('transactions', [transferTransaction]);
-      }catch(e){
-        console.log(e)
-        // 
+      } catch (e) {
+        console.log(e);
+        //
       }
 
       // update invoice
@@ -674,8 +741,7 @@ export default class InvoiceController {
         code: HttpStatus.OK.code,
         message: 'Record Updated',
       } as HttpResponse<void>);
-
-    }catch(e){
+    } catch (e) {
       return Promise.resolve({
         code: HttpStatus.INTERNAL_SERVER_ERROR.code,
         message: 'An Error Occurred',
