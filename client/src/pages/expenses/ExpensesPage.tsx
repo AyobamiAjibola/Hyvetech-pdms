@@ -1,30 +1,96 @@
 import { IExpense } from '@app-models';
 // import { Cancel, Edit, ViewAgenda } from '@mui/icons-material';
-import { Button, Chip, Grid, Typography } from '@mui/material';
-import { GridColDef } from '@mui/x-data-grid';
-import React, { useEffect, useMemo } from 'react';
+import { Button, Chip, Divider, Grid, TextField, Typography } from '@mui/material';
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
+import React, { useEffect, useMemo, useState } from 'react';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAdmin from '../../hooks/useAdmin';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
-import { getExpensesAction } from '../../store/actions/expenseAction';
+import { deleteExpenseAction, getExpensesAction, updateExpenseAction } from '../../store/actions/expenseAction';
 import moment from 'moment';
 import { formatNumberToIntl } from '../../utils/generic';
 import { Link } from 'react-router-dom';
 import { EXPENSE_STATUS } from '../../config/constants';
+import { Add, Cancel, Save } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
+import AppModal from '../../components/modal/AppModal';
+import { Formik } from 'formik';
+import { FaPlus } from 'react-icons/fa';
+import AppAlert from '../../components/alerts/AppAlert';
+import { clearDeleteExpenseStatus } from '../../store/reducers/expenseReducer';
 
 const Expenses = () => {
   const dispatch = useAppDispatch();
   const expenseReduder = useAppSelector(state => state.expenseReducer);
-
+  const [showAddReferenceForm, setReferenceForm] = useState(false);
+  const [reference, setReference] = useState('');
+  const [expenseId, setExpenseId] = useState<number | null>(-1);
+  const [alerMessage, setAlert] = useState<{ type: 'success' | 'error' | 'info' | 'warning'; message: string } | null>(
+    null,
+  );
   const { isTechAdmin } = useAdmin();
 
   useEffect(() => {
     dispatch(getExpensesAction());
   }, []);
 
+  const handleAddReference = () => {
+    dispatch(updateExpenseAction({ reference, id: expenseId }));
+    setExpenseId(-1);
+    setReference('');
+    setReferenceForm(false);
+  };
+
+  const updateExpenseReference = (expenseId: number | null) => {
+    setReferenceForm(true);
+    setExpenseId(expenseId);
+    console.log(expenseId);
+  };
+
+  useEffect(() => {
+    if (expenseReduder.deleteExpenseStatus === 'failed') {
+      setAlert({ type: 'error', message: expenseReduder.deleteExpenseError });
+    } else if (expenseReduder.deleteExpenseStatus === 'completed') {
+      setAlert({ type: 'success', message: 'Expense deleted successfully' });
+
+      setAlert(null);
+      dispatch(clearDeleteExpenseStatus());
+      dispatch(getExpensesAction());
+    }
+  }, [expenseReduder.deleteExpenseStatus]);
+
+  useEffect(() => {
+    if (expenseReduder.updateExpenseStatus === 'failed') {
+      setAlert({ type: 'error', message: expenseReduder.updateExpenseError });
+    } else if (expenseReduder.updateExpenseStatus === 'completed') {
+      setAlert({ type: 'success', message: 'Expense updated successfully' });
+
+      setAlert(null);
+      dispatch(clearDeleteExpenseStatus());
+      dispatch(getExpensesAction());
+    }
+  }, [expenseReduder.updateExpenseStatus]);
+
+  const handleExpenseDelete = (id: number) => {
+    dispatch(deleteExpenseAction({ id }));
+  };
+
   const techColumns = useMemo(() => {
     return [
+      {
+        field: 'updatedAt',
+        headerName: 'Date Modified',
+        headerAlign: 'center',
+        align: 'center',
+        width: 200,
+        type: 'string',
+        valueFormatter: ({ value }) => {
+          return value ? moment(value).format('LLL') : '-';
+        },
+        sortable: true,
+        sortingOrder: ['desc'],
+      },
       {
         field: 'amount',
         headerName: 'Amount',
@@ -39,12 +105,50 @@ const Expenses = () => {
         width: 150,
       },
       {
-        field: 'reference',
-        headerName: 'Reference',
+        field: 'beneficiary',
+        headerName: 'Beneficiary',
         headerAlign: 'center',
         align: 'center',
         type: 'string',
         width: 200,
+        sortable: true,
+        renderCell: params => {
+          return <span>{params.row.beneficiary.name}</span>;
+        },
+      },
+      {
+        field: 'invoiceCode',
+        headerName: 'Invoice #',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+
+        renderCell: params => {
+          return (
+            <Link style={{ color: 'skyblue', cursor: 'pointer' }} to={`/invoices/${params.row.invoiceId}`}>
+              {params.row.invoiceCode}
+            </Link>
+          );
+        },
+        sortable: true,
+        width: 100,
+      },
+      {
+        field: 'reference',
+        headerName: 'Payment Reference',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 200,
+        renderCell: params => {
+          return (
+            params.row.reference || (
+              <LoadingButton onClick={() => updateExpenseReference(params.row.id)} startIcon={<Add />}>
+                Add
+              </LoadingButton>
+            )
+          );
+        },
       },
       {
         field: 'status',
@@ -62,48 +166,6 @@ const Expenses = () => {
           );
         },
       },
-      {
-        field: 'date',
-        headerName: 'Date',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
-        valueFormatter: ({ value }) => {
-          return value ? moment(value).format('LLL') : '-';
-        },
-        sortable: true,
-        width: 200,
-      },
-      {
-        field: 'invoiceCode',
-        headerName: 'Invoice',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
-
-        renderCell: params => {
-          return (
-            <Link style={{ color: 'skyblue', cursor: 'pointer' }} to={`/invoices/${params.row.invoiceId}`}>
-              {params.row.invoiceCode}
-            </Link>
-          );
-        },
-        sortable: true,
-        width: 100,
-      },
-      {
-        field: 'updatedAt',
-        headerName: 'Date Modified',
-        headerAlign: 'center',
-        align: 'center',
-        width: 200,
-        type: 'string',
-        valueFormatter: ({ value }) => {
-          return value ? moment(value).format('LLL') : '-';
-        },
-        sortable: true,
-        sortingOrder: ['desc'],
-      },
 
       // {
       //   field: 'createdAt',
@@ -117,58 +179,59 @@ const Expenses = () => {
       //   },
       //   sortable: true,
       // },
-      // {
-      //   field: 'actions',
-      //   type: 'actions',
-      //   headerAlign: 'center',
-      //   align: 'center',
-      //   getActions: () => {
-      //     // const row = params.row as IExpense;
+      {
+        field: 'actions',
+        type: 'actions',
+        headerAlign: 'center',
+        align: 'center',
+        headerName: 'Actions',
+        getActions: (params: any) => {
+          const row = params.row as IExpense;
 
-      //     return [
-      //       // <GridActionsCellItem
-      //       //   key={0}
-      //       //   icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-      //       //   onClick={() => {
-      //       //     void dispatch(getEstimatesAction());
-      //       //     navigate(`/estimates/${row.id}`, { state: { estimate: row } });
-      //       //   }}
-      //       //   label="View"
-      //       //   showInMenu={false}
-      //       // />,
-      //       <GridActionsCellItem
-      //         sx={{ display: isTechAdmin ? 'block' : 'none' }}
-      //         key={1}
-      //         icon={<ViewAgenda sx={{ color: 'limegreen' }} />}
-      //         //  onClick={() => estimate.onEdit(row.id)}
-      //         //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
-      //         disabled={!isTechAdmin}
-      //         label="View"
-      //         showInMenu={false}
-      //       />,
+          return [
+            // <GridActionsCellItem
+            //   key={0}
+            //   icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+            //   onClick={() => {
+            //     void dispatch(getEstimatesAction());
+            //     navigate(`/estimates/${row.id}`, { state: { estimate: row } });
+            //   }}
+            //   label="View"
+            //   showInMenu={false}
+            // />,
+            // <GridActionsCellItem
+            //   sx={{ display: isTechAdmin ? 'block' : 'none' }}
+            //   key={1}
+            //   icon={<ViewAgenda sx={{ color: 'limegreen' }} />}
+            //   //  onClick={() => estimate.onEdit(row.id)}
+            //   //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
+            //   disabled={!isTechAdmin}
+            //   label="View"
+            //   showInMenu={false}
+            // />,
 
-      //       <GridActionsCellItem
-      //         sx={{ display: isTechAdmin ? 'block' : 'none' }}
-      //         key={1}
-      //         icon={<Edit sx={{ color: 'limegreen' }} />}
-      //         //  onClick={() => estimate.onEdit(row.id)}
-      //         //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
-      //         disabled={!isTechAdmin}
-      //         label="Edit"
-      //         showInMenu={false}
-      //       />,
-      //       <GridActionsCellItem
-      //         sx={{ display: isTechAdmin ? 'block' : 'none' }}
-      //         key={2}
-      //         icon={<Cancel sx={{ color: 'indianred' }} />}
-      //         //  onClick={() => estimate.onDelete(row.id)}
-      //         label="Delete"
-      //         //  disabled={row.status === ESTIMATE_STATUS.invoiced}
-      //         showInMenu={false}
-      //       />,
-      //     ];
-      //   },
-      // },
+            // <GridActionsCellItem
+            //   sx={{ display: isTechAdmin ? 'block' : 'none' }}
+            //   key={1}
+            //   icon={<Edit sx={{ color: 'limegreen' }} />}
+            //   //  onClick={() => estimate.onEdit(row.id)}
+            //   //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
+            //   disabled={!isTechAdmin}
+            //   label="Edit"
+            //   showInMenu={false}
+            // />,
+            <GridActionsCellItem
+              sx={{ display: isTechAdmin ? 'block' : 'none' }}
+              key={2}
+              icon={<Cancel sx={{ color: 'indianred' }} />}
+              onClick={() => handleExpenseDelete(row.id)}
+              label="Delete"
+              //  disabled={row.status === ESTIMATE_STATUS.invoiced}
+              showInMenu={false}
+            />,
+          ];
+        },
+      },
     ] as GridColDef<IExpense>[];
   }, [isTechAdmin]);
   return (
@@ -197,6 +260,68 @@ const Expenses = () => {
           />
         </Grid>
       </Grid>
+      {showAddReferenceForm && (
+        <AppModal
+          fullWidth
+          size="md"
+          show={showAddReferenceForm}
+          Content={
+            <Formik
+              initialValues={{}}
+              onSubmit={(values, formikHelpers) => {
+                console.log(values, formikHelpers);
+              }}
+              enableReinitialize
+              validateOnChange>
+              <div style={{ marginTop: 20, marginBottom: 20 }}>
+                <Typography
+                  style={{
+                    marginBottom: 20,
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                  }}>
+                  <FaPlus style={{ marginRight: 8 }} />
+                  Add Payment Reference
+                </Typography>
+                <Grid spacing={10} container>
+                  <Grid item md={12} sm={12}>
+                    <TextField
+                      value={reference}
+                      onChange={e => setReference(e.target.value)}
+                      fullWidth
+                      variant="outlined"
+                      name={`name`}
+                      label="Reference"
+                    />
+                  </Grid>
+                </Grid>
+                <Divider style={{ marginTop: 20, marginBottom: 20 }} />
+                <LoadingButton
+                  type="submit"
+                  loading={expenseReduder.createExpenseTypeStatus === 'loading'}
+                  disabled={expenseReduder.createExpenseTypeStatus === 'loading'}
+                  // disabled={
+                  //   saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
+                  // }
+                  onClick={handleAddReference}
+                  variant="contained"
+                  color="secondary"
+                  endIcon={<Save />}>
+                  {'Save'}
+                </LoadingButton>
+              </div>
+            </Formik>
+          }
+          onClose={() => setReferenceForm(false)}
+        />
+      )}
+      <AppAlert
+        onClose={() => setAlert(null)}
+        alertType={alerMessage ? alerMessage.type : 'info'}
+        show={alerMessage !== null}
+        message={alerMessage?.message || ''}
+      />
     </div>
   );
 };

@@ -84,13 +84,17 @@ export type ExpenseSchemaType = Attributes<Expense> & {
 };
 
 export const $saveExpenseSchema: Joi.SchemaMap<ExpenseSchemaType> = {
-  date: Joi.date().required().label(expenseFields.date.label),
   reference: Joi.string().optional().label(expenseFields.reference.label),
   amount: Joi.number().required().label(expenseFields.date.label),
   expenseCategoryId: Joi.number().label(expenseFields.expenseCategoryId.label),
   expenseTypeId: Joi.number().label(expenseFields.expenseTypeId.label),
   beneficiaryId: Joi.number().label(expenseFields.beneficiaryId.label),
-  invoiceId: Joi.number().label(expenseFields.invoiceId.label),
+  invoiceId: Joi.number().optional().label(expenseFields.invoiceId.label),
+};
+
+export const $updateExpenseSchema: Joi.SchemaMap<Expense> = {
+  reference: Joi.string().label(expenseFields.reference.label),
+  id: Joi.number().required().label('id'),
 };
 
 @Table({
@@ -106,9 +110,6 @@ export default class Expense extends Model<InferAttributes<Expense>, InferCreati
     autoIncrement: true,
   })
   declare id: CreationOptional<number>;
-
-  @Column(DataType.DATE)
-  declare date: string;
 
   @Column(DataType.INTEGER)
   declare amount: number;

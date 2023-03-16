@@ -52,3 +52,13 @@ export const createExpenseHandler = authenticateRouteWrapper(async (req, res) =>
   const response = await expenseController.createExpense(req);
   res.status(response.code).json(response);
 });
+
+export const updateExpenseHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await expenseController.updateExpense(req);
+  res.status(response.code).json(response);
+});
+
+export const deleteExpenseHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await expenseController.deleteExpenseById(req);
+  res.status(response.code).json(response);
+});

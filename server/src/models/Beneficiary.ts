@@ -3,6 +3,7 @@ import { Attributes, CreationOptional, InferAttributes, InferCreationAttributes,
 
 import Joi from 'joi';
 import Expense from './Expense';
+import Partner from './Partner';
 
 export type beneficiarySchemaType = Attributes<Beneficiary>;
 
@@ -72,4 +73,8 @@ export default class Beneficiary extends Model<InferAttributes<Beneficiary>, Inf
 
   @HasMany(() => Expense)
   declare expenses: NonAttribute<Expense[]>;
+
+  @ForeignKey(() => Partner)
+  @Column(DataType.INTEGER)
+  declare partnerId: number;
 }

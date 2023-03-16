@@ -1,5 +1,6 @@
 import {
   BookOnline,
+  CurrencyExchange,
   Dashboard,
   // Garage,
   Groups,
@@ -51,12 +52,7 @@ export const sideNavs: ISideNav[] = [
     path: '/estimates',
     Icon: RequestQuote,
   },
-  {
-    tag: 'techs',
-    name: 'Expenses',
-    path: '/expenses',
-    Icon: RequestQuote,
-  },
+
   {
     tag: 'super',
     name: 'Invoices',
@@ -68,6 +64,12 @@ export const sideNavs: ISideNav[] = [
     name: 'Payment Recieved',
     path: '/payment-recieved',
     Icon: Paid,
+  },
+  {
+    tag: 'techs',
+    name: 'Expenses',
+    path: '/expenses',
+    Icon: CurrencyExchange,
   },
   { tag: 'drivers', name: 'Drivers', path: '/drivers', Icon: TaxiAlert },
   // {

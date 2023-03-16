@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { TryCatch } from '../decorators';
 import HttpStatus from '../helpers/HttpStatus';
-import Expense, { $saveExpenseSchema, ExpenseSchemaType, expenseType } from '../models/Expense';
+import Expense, { $saveExpenseSchema, $updateExpenseSchema, ExpenseSchemaType, expenseType } from '../models/Expense';
 import dao from '../services/dao';
 import AppLogger from '../utils/AppLogger';
 import { appCommonTypes } from '../@types/app-common';
@@ -20,7 +20,8 @@ export default class ExpenseController {
 
   @TryCatch
   public async getAllBeneficiaries(req: Request) {
-    const beneficiaries = await dao.beneficiaryDAOService.findAll({});
+    const partner = req.user.partner;
+    const beneficiaries = await dao.beneficiaryDAOService.findAll({ where: { partnerId: partner.id } });
 
     const response: HttpResponse<Beneficiary> = {
       code: HttpStatus.OK.code,
@@ -135,15 +136,66 @@ export default class ExpenseController {
     return response;
   }
 
+  @TryCatch
+  public async deleteExpenseById(req: Request) {
+    await this.doDeleteExpenseById(req);
+
+    const response: HttpResponse<null> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+    };
+
+    return response;
+  }
+
+  @TryCatch
+  public async updateExpense(req: Request) {
+    const expense = await this.doExpenseUpdate(req);
+
+    const response: HttpResponse<Expense> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      result: expense,
+    };
+
+    return response;
+  }
+
   private async doGetExpenseById(req: Request) {
     return dao.expenseDAOService.findById(+req.params.id, {
       include: [Invoice, Beneficiary, ExpenseType, ExpenseCategory],
     });
   }
 
+  private async doDeleteExpenseById(req: Request) {
+    return dao.expenseDAOService.deleteById(+req.params.id);
+  }
+
+  private async doExpenseUpdate(req: Request) {
+    const { error, value } = Joi.object<Expense>($updateExpenseSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    if (!value?.id)
+      return Promise.reject(CustomAPIError.response('Expense ID is required', HttpStatus.BAD_REQUEST.code));
+
+    const values: Partial<Expense> = {
+      reference: value?.reference,
+      status: value.reference.trim() !== '' ? 'PAID' : 'UNPAID',
+    };
+    const expenseOld = await dao.expenseDAOService.findById(value.id);
+
+    if (!expenseOld) return Promise.reject(CustomAPIError.response('Expense not found', HttpStatus.NOT_FOUND.code));
+
+    return dao.expenseDAOService.update(expenseOld, values as CreationAttributes<Expense>);
+  }
+
   private async doGetAllExpenses(req: Request) {
     const partner = req.user.partner;
-    const expenses = await dao.expenseDAOService.findAll({ where: { partnerId: partner.id } });
+    const expenses = await dao.expenseDAOService.findAll({
+      where: { partnerId: partner.id },
+      include: [Beneficiary, ExpenseCategory, ExpenseType],
+    });
     for (let i = 1; i < expenses.length; i++) {
       for (let j = i; j > 0; j--) {
         const _t1: any = expenses[j];
@@ -180,15 +232,18 @@ export default class ExpenseController {
     if (!category)
       return Promise.reject(CustomAPIError.response('Expense Category not found', HttpStatus.NOT_FOUND.code));
 
+    if (!['overhead', 'others'].includes(category.name.toLowerCase()) && !value.invoiceId)
+      return Promise.reject(CustomAPIError.response('Invoice is required', HttpStatus.BAD_REQUEST.code));
+
     const type = await dao.expenseTypeDAOService.findById(value.expenseTypeId);
     if (!type) return Promise.reject(CustomAPIError.response('Expense Type not found', HttpStatus.NOT_FOUND.code));
 
     const invoice = await dao.invoiceDAOService.findById(value.invoiceId);
 
-    if (!invoice) return Promise.reject(CustomAPIError.response('Invoice not found', HttpStatus.NOT_FOUND.code));
+    if (!invoice && !['overhead', 'others'].includes(category.name.toLowerCase()))
+      return Promise.reject(CustomAPIError.response('Invoice not found', HttpStatus.NOT_FOUND.code));
 
     const data: Partial<Expense> = {
-      date: value.date,
       amount: value.amount,
       reference: value.reference,
       status: value.reference ? 'PAID' : 'UNPAID',
@@ -197,12 +252,12 @@ export default class ExpenseController {
       beneficiaryId: value.beneficiaryId,
       invoiceId: value.invoiceId,
       partnerId: partner.id,
-      invoiceCode: invoice.code,
+      invoiceCode: invoice?.code,
     };
 
     const expense = await dao.expenseDAOService.create(data as CreationAttributes<Expense>);
+    if (invoice) await invoice.$add('expenses', [expense]);
 
-    await invoice.$add('expenses', [expense]);
     await beneficiary.$add('expenses', [expense]);
     await category.$add('expense', [expense]);
     await type.$add('expense', [expense]);
@@ -212,17 +267,32 @@ export default class ExpenseController {
   }
 
   private async doCreateBeneficiary(req: Request) {
+    const partner = req.user.partner;
     const { error, value } = Joi.object<beneficiarySchemaType>($saveBeneficiarySchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-    return dao.beneficiaryDAOService.create(value);
+    const beneficiary = await dao.beneficiaryDAOService.findByAny({
+      where: { name: value.name, partnerId: partner.id },
+    });
+
+    if (beneficiary)
+      return Promise.reject(CustomAPIError.response('Beneficiary already exists.', HttpStatus.BAD_REQUEST.code));
+
+    return dao.beneficiaryDAOService.create({ ...value, partnerId: partner.id });
   }
 
   private async doCreateExpenseType(req: Request) {
     const { error, value } = Joi.object<expenseTypeSchemaType>($saveExpenseTypeSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    const expenseType = await dao.expenseTypeDAOService.findByAny({
+      where: { name: value.name },
+    });
+
+    if (expenseType)
+      return Promise.reject(CustomAPIError.response('Expense type already exists.', HttpStatus.BAD_REQUEST.code));
 
     return dao.expenseTypeDAOService.create(value);
   }
@@ -231,6 +301,13 @@ export default class ExpenseController {
     const { error, value } = Joi.object<expenseCategorySchemaType>($saveExpenseCategorySchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    const expenseCategory = await dao.expenseCategoryDAOService.findByAny({
+      where: { name: value.name },
+    });
+
+    if (expenseCategory)
+      return Promise.reject(CustomAPIError.response('Expense category already exists.', HttpStatus.BAD_REQUEST.code));
 
     return dao.expenseCategoryDAOService.create(value);
   }
