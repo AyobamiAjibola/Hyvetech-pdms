@@ -11,7 +11,6 @@ import {
   Payments,
   PlaylistAddCheck,
   Receipt,
-  // RequestQuote,
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
@@ -50,7 +49,6 @@ export const sideNavs: ISideNav[] = [
     tag: 'techs',
     name: 'Estimates',
     path: '/estimates',
-    // Icon: RequestQuote,
     Icon: Calculate,
   },
   {
