@@ -161,10 +161,12 @@ export default class CommandLineRunner {
   }
 
   async loadDefaultExpenseCategories() {
-    await this.expenseCategoryRepository.deleteAll();
+    await this.expenseCategoryRepository.deleteAll({ force: true });
     const categories = await this.expenseCategoryRepository.findAll();
 
     if (categories.length > 0) return;
+
+    console.log('called here ');
 
     await this.expenseCategoryRepository.bulkCreate([
       { name: 'Direct cost' },
