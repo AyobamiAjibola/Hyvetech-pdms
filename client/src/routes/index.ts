@@ -1,6 +1,7 @@
 // @ts-nocheck
 import {
   BookOnline,
+  CurrencyExchange,
   Calculate,
   Dashboard,
   // Garage,
@@ -54,12 +55,7 @@ export const sideNavs: ISideNav[] = [
     // Icon: RequestQuote,
     Icon: Calculate,
   },
-  {
-    tag: 'techs',
-    name: 'Expenses',
-    path: '/expenses',
-    Icon: RequestQuote,
-  },
+
   {
     tag: 'super',
     name: 'Invoices',
@@ -71,6 +67,12 @@ export const sideNavs: ISideNav[] = [
     name: 'Payments Received',
     path: '/payment-recieved',
     Icon: Paid,
+  },
+  {
+    tag: 'techs',
+    name: 'Expenses',
+    path: '/expenses',
+    Icon: CurrencyExchange,
   },
   { tag: 'drivers', name: 'Drivers', path: '/drivers', Icon: TaxiAlert },
   // {

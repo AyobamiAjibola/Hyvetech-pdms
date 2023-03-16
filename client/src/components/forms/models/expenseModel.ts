@@ -2,12 +2,11 @@ import { IBeneficiary, IExpenseCategory, IExpenseType, IInvoice } from '@app-mod
 
 export interface IExpenseValues {
   beneficiary: IBeneficiary;
-  invoice: IInvoice;
+  invoice: IInvoice | null;
   category: IExpenseCategory;
   type: IExpenseType;
   amount: number;
   reference: string | null;
-  date: string;
 }
 
 export interface IBeneficiaryValue {
@@ -15,4 +14,9 @@ export interface IBeneficiaryValue {
   accountName: string;
   bankName: string;
   accountNumber: string;
+}
+
+export interface IExpenseUpdateValue {
+  reference: string;
+  id: number | null;
 }

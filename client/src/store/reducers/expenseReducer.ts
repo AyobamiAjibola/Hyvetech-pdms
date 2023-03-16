@@ -5,10 +5,14 @@ import { IBeneficiary, IExpense, IExpenseCategory, IExpenseType } from '@app-mod
 import {
   createBeneficiaryAction,
   createExpenseAction,
+  createExpenseCategoryAction,
+  createExpenseTypeAction,
+  deleteExpenseAction,
   getBeneficiariesAction,
   getExpenseCategories,
   getExpensesAction,
   getExpenseTypesActions,
+  updateExpenseAction,
 } from '../actions/expenseAction';
 
 interface IExpenseState {
@@ -20,9 +24,25 @@ interface IExpenseState {
   createExpenseStatus: IThunkAPIStatus;
   createExpenseSuccess: string;
 
+  deleteExpenseError: string;
+  deleteExpenseStatus: IThunkAPIStatus;
+  deleteExpenseSuccess: string;
+
+  updateExpenseError: string;
+  updateExpenseStatus: IThunkAPIStatus;
+  updateExpenseSuccess: string;
+
   createBeneficiaryError: string;
   createBeneficiaryStatus: IThunkAPIStatus;
   createBeneficiarySuccess: string;
+
+  createExpenseTypeError: string;
+  createExpenseTypeStatus: IThunkAPIStatus;
+  createExpenseTypeSuccess: string;
+
+  createExpenseCategoryError: string;
+  createExpenseCategoryStatus: IThunkAPIStatus;
+  createExpenseCategorySuccess: string;
 
   saveEstimateStatus: IThunkAPIStatus;
   saveEstimateSuccess: string;
@@ -63,9 +83,25 @@ const initialState: IExpenseState = {
   createExpenseStatus: 'idle',
   createExpenseSuccess: '',
 
+  deleteExpenseError: '',
+  deleteExpenseStatus: 'idle',
+  deleteExpenseSuccess: '',
+
+  updateExpenseError: '',
+  updateExpenseStatus: 'idle',
+  updateExpenseSuccess: '',
+
   createBeneficiaryError: '',
   createBeneficiaryStatus: 'idle',
   createBeneficiarySuccess: '',
+
+  createExpenseTypeError: '',
+  createExpenseTypeStatus: 'idle',
+  createExpenseTypeSuccess: '',
+
+  createExpenseCategoryError: '',
+  createExpenseCategoryStatus: 'idle',
+  createExpenseCategorySuccess: '',
 
   saveEstimateError: '',
   saveEstimateStatus: 'idle',
@@ -112,16 +148,26 @@ const expenseSlice = createSlice({
       state.createBeneficiarySuccess = '';
       state.createBeneficiaryError = '';
     },
-    clearUpdateExpenseStatus(state: IExpenseState) {
-      state.updateEstimateStatus = 'idle';
-      state.updateEstimateSuccess = '';
-      state.updateEstimateError = '';
-    },
 
+    clearCreateExpenseTypeStatus(state: IExpenseState) {
+      state.createExpenseTypeStatus = 'idle';
+      state.createExpenseTypeSuccess = '';
+      state.createExpenseTypeError = '';
+    },
+    clearCreateExpenseCategoryStatus(state: IExpenseState) {
+      state.createExpenseCategoryStatus = 'idle';
+      state.createExpenseCategorySuccess = '';
+      state.createExpenseCategoryError = '';
+    },
     clearDeleteExpenseStatus(state: IExpenseState) {
-      state.deleteEstimateStatus = 'idle';
-      state.deleteEstimateSuccess = '';
-      state.deleteEstimateError = '';
+      state.deleteExpenseStatus = 'idle';
+      state.deleteExpenseSuccess = '';
+      state.deleteExpenseError = '';
+    },
+    clearUpdateExpenseStatus(state: IExpenseState) {
+      state.updateExpenseStatus = 'idle';
+      state.updateExpenseSuccess = '';
+      state.updateExpenseError = '';
     },
     clearGetExpenseStatus(state: IExpenseState) {
       state.getExpensesStatus = 'idle';
@@ -200,6 +246,46 @@ const expenseSlice = createSlice({
       });
 
     builder
+      .addCase(deleteExpenseAction.pending, state => {
+        state.deleteExpenseStatus = 'loading';
+      })
+      .addCase(deleteExpenseAction.fulfilled, (state, action) => {
+        state.deleteExpenseStatus = 'completed';
+        state.deleteExpenseSuccess = action.payload.message;
+      })
+      .addCase(deleteExpenseAction.rejected, (state, action) => {
+        state.deleteExpenseSuccess = 'failed';
+
+        if (action.payload) {
+          state.getExpenseError = action.payload.message;
+          state.deleteExpenseError = action.payload.message;
+        } else {
+          state.getExpenseError = action.error.message;
+          state.deleteExpenseError = action.error.message as string;
+        }
+      });
+
+    builder
+      .addCase(updateExpenseAction.pending, state => {
+        state.updateExpenseStatus = 'loading';
+      })
+      .addCase(updateExpenseAction.fulfilled, (state, action) => {
+        state.updateExpenseStatus = 'completed';
+        state.updateExpenseSuccess = action.payload.message;
+      })
+      .addCase(updateExpenseAction.rejected, (state, action) => {
+        state.updateExpenseStatus = 'failed';
+
+        if (action.payload) {
+          state.getExpenseError = action.payload.message;
+          state.updateExpenseError = action.payload.message;
+        } else {
+          state.getExpenseError = action.error.message;
+          state.updateExpenseError = action.error.message as string;
+        }
+      });
+
+    builder
       .addCase(createExpenseAction.pending, state => {
         state.createExpenseStatus = 'loading';
       })
@@ -213,7 +299,11 @@ const expenseSlice = createSlice({
 
         if (action.payload) {
           state.getExpenseError = action.payload.message;
-        } else state.getExpenseError = action.error.message;
+          state.createExpenseError = action.payload.message;
+        } else {
+          state.getExpenseError = action.error.message;
+          state.createExpenseError = action.error.message as string;
+        }
       });
 
     builder
@@ -230,7 +320,51 @@ const expenseSlice = createSlice({
 
         if (action.payload) {
           state.getExpenseError = action.payload.message;
-        } else state.getExpenseError = action.error.message;
+          state.createBeneficiaryError = action.payload.message;
+        } else {
+          state.getExpenseError = action.error.message;
+          state.createBeneficiaryError = action.error?.message as string;
+        }
+      });
+
+    builder
+      .addCase(createExpenseTypeAction.pending, state => {
+        state.createExpenseTypeStatus = 'loading';
+      })
+      .addCase(createExpenseTypeAction.fulfilled, (state, action) => {
+        state.createExpenseTypeStatus = 'completed';
+        state.createExpenseTypeSuccess = action.payload.message;
+      })
+      .addCase(createExpenseTypeAction.rejected, (state, action) => {
+        state.createExpenseTypeStatus = 'failed';
+
+        if (action.payload) {
+          state.getExpenseError = action.payload.message;
+          state.createExpenseTypeError = action.payload.message;
+        } else {
+          state.getExpenseError = action.error.message;
+          state.createExpenseTypeError = action.error?.message as string;
+        }
+      });
+
+    builder
+      .addCase(createExpenseCategoryAction.pending, state => {
+        state.createExpenseCategoryStatus = 'loading';
+      })
+      .addCase(createExpenseCategoryAction.fulfilled, (state, action) => {
+        state.createExpenseCategoryStatus = 'completed';
+        state.createExpenseCategorySuccess = action.payload.message;
+      })
+      .addCase(createExpenseCategoryAction.rejected, (state, action) => {
+        state.createExpenseCategoryStatus = 'failed';
+
+        if (action.payload) {
+          state.getExpenseError = action.payload.message;
+          state.createExpenseCategoryError = action.payload.message;
+        } else {
+          state.getExpenseError = action.error.message;
+          state.createExpenseCategoryError = action.error?.message as string;
+        }
       });
   },
 });
@@ -241,6 +375,8 @@ export const {
   clearCreateBeneficiaryStatus,
   clearGetExpenseStatus,
   clearUpdateExpenseStatus,
+  clearCreateExpenseCategoryStatus,
+  clearCreateExpenseTypeStatus,
 } = expenseSlice.actions;
 
 export default expenseSlice.reducer;

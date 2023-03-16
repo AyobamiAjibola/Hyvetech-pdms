@@ -6,11 +6,13 @@ import {
   createExpense,
   createExpenseCategoryHandler,
   createExpenseTypeHandler,
+  deleteExpenseHandler,
   getAllBeneficiaries,
   getAllExpenseCategories,
   getAllExpenses,
   getAllExpensesById,
   getAllExpenseTypes,
+  updateExpenseHandler,
 } from '../../routes/expenseRoute';
 
 const expenseEndpoints: RouteEndpoints = [
@@ -25,6 +27,18 @@ const expenseEndpoints: RouteEndpoints = [
     method: 'get',
     path: '/expense/:id',
     handler: getAllExpensesById,
+  },
+  {
+    name: 'expense',
+    method: 'patch',
+    path: '/expense',
+    handler: updateExpenseHandler,
+  },
+  {
+    name: 'expense',
+    method: 'delete',
+    path: '/expense/:id',
+    handler: deleteExpenseHandler,
   },
   {
     name: 'expense',
