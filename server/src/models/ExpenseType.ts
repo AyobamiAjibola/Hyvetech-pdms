@@ -1,7 +1,8 @@
-import { BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
 import { Attributes, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
 import Expense from './Expense';
 import Joi from 'joi';
+import Partner from './Partner';
 
 export const expenseTypeFields = {
   name: {
@@ -34,9 +35,16 @@ export default class ExpenseType extends Model<InferAttributes<ExpenseType>, Inf
   })
   declare id: CreationOptional<number>;
 
-  @Column({ type: DataType.STRING, unique: true })
+  @Column({ type: DataType.STRING })
   declare name: string;
+
+  @BelongsTo(() => Partner)
+  declare partner: NonAttribute<Partner>;
 
   @HasMany(() => Expense)
   declare expense: NonAttribute<Expense[]>;
+
+  @ForeignKey(() => Partner)
+  @Column(DataType.INTEGER)
+  declare partnerId?: CreationOptional<number>;
 }
