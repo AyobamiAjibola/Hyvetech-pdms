@@ -27,6 +27,7 @@ import Estimate from './Estimate';
 import Transaction from './Transaction';
 import Expense from './Expense';
 import Beneficiary from './Beneficiary';
+import ExpenseType from './ExpenseType';
 
 @Table({
   timestamps: true,
@@ -112,6 +113,9 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
 
   @HasMany(() => Expense)
   declare expenses: NonAttribute<Array<Expense>>;
+
+  @HasMany(() => ExpenseType)
+  declare expenseTypes: NonAttribute<Array<ExpenseType>>;
 
   @HasMany(() => Beneficiary)
   declare beneficiaries: NonAttribute<Array<Beneficiary>>;

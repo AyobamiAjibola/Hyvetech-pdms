@@ -12,7 +12,7 @@ import ExpenseType, { $saveExpenseTypeSchema, expenseTypeSchemaType } from '../m
 import ExpenseCategory, { $saveExpenseCategorySchema, expenseCategorySchemaType } from '../models/ExpenseCategory';
 import Joi = require('joi');
 import CustomAPIError from '../exceptions/CustomAPIError';
-import { CreationAttributes } from 'sequelize';
+import { CreationAttributes, Op } from 'sequelize';
 import Invoice from '../models/Invoice';
 
 export default class ExpenseController {
@@ -36,10 +36,12 @@ export default class ExpenseController {
   public async getAllExpenseTypes(req: Request) {
     const expenses = await dao.expenseTypeDAOService.findAll({});
 
+    const data = expenses.filter(item => item.partnerId === req.user.partner.id || !item.partnerId);
+
     const response: HttpResponse<ExpenseType> = {
       code: HttpStatus.OK.code,
       message: HttpStatus.OK.value,
-      results: expenses,
+      results: data,
     };
 
     return response;
@@ -283,18 +285,22 @@ export default class ExpenseController {
   }
 
   private async doCreateExpenseType(req: Request) {
+    const partner = req.user.partner;
     const { error, value } = Joi.object<expenseTypeSchemaType>($saveExpenseTypeSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     const expenseType = await dao.expenseTypeDAOService.findByAny({
-      where: { name: value.name },
+      where: { name: value.name, partnerId: partner.id },
     });
 
     if (expenseType)
       return Promise.reject(CustomAPIError.response('Expense type already exists.', HttpStatus.BAD_REQUEST.code));
 
-    return dao.expenseTypeDAOService.create(value);
+    const type = await dao.expenseTypeDAOService.create({ ...value, partnerId: partner.id });
+
+    await partner.$add('expenseTypes', [type]);
+    return type;
   }
 
   private async doCreateExpenseCategory(req: Request) {
