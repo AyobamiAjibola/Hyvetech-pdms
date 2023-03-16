@@ -1,5 +1,6 @@
 import {
   BookOnline,
+  Calculate,
   Dashboard,
   // Garage,
   Groups,
@@ -10,7 +11,7 @@ import {
   Payments,
   PlaylistAddCheck,
   Receipt,
-  RequestQuote,
+  // RequestQuote,
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
@@ -49,7 +50,8 @@ export const sideNavs: ISideNav[] = [
     tag: 'techs',
     name: 'Estimates',
     path: '/estimates',
-    Icon: RequestQuote,
+    // Icon: RequestQuote,
+    Icon: Calculate,
   },
   {
     tag: 'techs',
@@ -65,7 +67,7 @@ export const sideNavs: ISideNav[] = [
   },
   {
     tag: 'techs',
-    name: 'Payment Recieved',
+    name: 'Payments Received',
     path: '/payment-recieved',
     Icon: Paid,
   },

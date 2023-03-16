@@ -39,6 +39,10 @@ export default function PaymentRecieve() {
     // const invoice = useInvoice();
 
     const ref = React.createRef();
+    const options = {
+      unit: 'in',
+      format: [6,6]
+  };
 
     const partnerName = (user?.partner?.name || " ")
 
@@ -447,7 +451,7 @@ export default function PaymentRecieve() {
               }
               ActionComponent={
                 <DialogActions>
-                  <ReactToPdf targetRef={ref} filename="receipt.pdf">
+                  <ReactToPdf targetRef={ref} filename="receipt.pdf" options={options} x={.5} y={.5} scale={0.8}>
                     {({toPdf}) => (
                         <Button onClick={toPdf}>DOWNLOAD</Button>
                     )}
