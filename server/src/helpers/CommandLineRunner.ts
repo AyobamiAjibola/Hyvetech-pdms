@@ -130,20 +130,20 @@ export default class CommandLineRunner {
   }
 
   public static async run() {
-    // await this.singleton.loadDefaultSettings();
-    // await this.singleton.createUploadDirectory();
-    // await this.singleton.loadDefaultEmailConfig();
-    // await this.singleton.loadDefaultRolesAndPermissions();
-    // await this.singleton.loadDefaultTimeSlotAndSlots();
-    // await this.singleton.loadDefaultServicesData();
-    // await this.singleton.loadDefaultDiscounts();
-    // await this.singleton.loadDefaultStateDistricts();
-    // await this.singleton.loadDefaultPaymentGateway();
-    // await this.singleton.loadDefaultVINProvider();
-    // await this.singleton.loadDefaultTags();
-    // await this.singleton.loadDefaultAdmin();
-    // await this.singleton.loadPayStackPlans();
-    // await this.singleton.loadPayStackBanks();
+    await this.singleton.loadDefaultSettings();
+    await this.singleton.createUploadDirectory();
+    await this.singleton.loadDefaultEmailConfig();
+    await this.singleton.loadDefaultRolesAndPermissions();
+    await this.singleton.loadDefaultTimeSlotAndSlots();
+    await this.singleton.loadDefaultServicesData();
+    await this.singleton.loadDefaultDiscounts();
+    await this.singleton.loadDefaultStateDistricts();
+    await this.singleton.loadDefaultPaymentGateway();
+    await this.singleton.loadDefaultVINProvider();
+    await this.singleton.loadDefaultTags();
+    await this.singleton.loadDefaultAdmin();
+    await this.singleton.loadPayStackPlans();
+    await this.singleton.loadPayStackBanks();
     await this.singleton.loadDefaultExpenseTypes();
     await this.singleton.loadDefaultExpenseCategories();
   }
