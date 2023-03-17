@@ -111,7 +111,7 @@ export default class Expense extends Model<InferAttributes<Expense>, InferCreati
   })
   declare id: CreationOptional<number>;
 
-  @Column(DataType.INTEGER)
+  @Column(DataType.DOUBLE)
   declare amount: number;
 
   @Column(DataType.STRING)
