@@ -37,7 +37,7 @@ export const sideNavs: ISideNav[] = [
   {
     tag: 'techs',
     name: 'Dasboard',
-    path: '/garage',
+    path: '/dashboard',
     Icon: Dashboard,
   },
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IThunkAPIStatus } from '@app-types';
-import { getAnalyticsAction } from '../actions/dashboardActions';
+import { getAnalyticsAction, getTechAnalyticsAction } from '../actions/dashboardActions';
 import { IDashboardData } from '@app-interfaces';
 
 interface IDashboardState {
@@ -8,6 +8,12 @@ interface IDashboardState {
   getAnalyticsSuccess: string;
   getAnalyticsError: string;
   analytics: IDashboardData | null;
+
+  getTechAnalyticsStatus: IThunkAPIStatus;
+  getTechAnalyticsSuccess: string;
+  getTechAnalyticsError: string;
+  techAnalytics: any | null;
+
   stackedMonthlyData: { name: string; data: number[] }[];
 }
 
@@ -16,6 +22,12 @@ const initialState: IDashboardState = {
   getAnalyticsSuccess: '',
   getAnalyticsStatus: 'idle',
   analytics: null,
+
+  getTechAnalyticsStatus: 'idle',
+  getTechAnalyticsSuccess: '',
+  getTechAnalyticsError: '',
+  techAnalytics: null,
+
   stackedMonthlyData: [],
 };
 
@@ -27,6 +39,11 @@ const dashboardSlice = createSlice({
       state.getAnalyticsStatus = 'idle';
       state.getAnalyticsSuccess = '';
       state.getAnalyticsError = '';
+    },
+    clearGetTechAnalyticsStatus(state: IDashboardState) {
+      state.getTechAnalyticsStatus = 'idle';
+      state.getTechAnalyticsSuccess = '';
+      state.getTechAnalyticsError = '';
     },
   },
   extraReducers: builder => {
@@ -43,9 +60,23 @@ const dashboardSlice = createSlice({
         state.getAnalyticsStatus = 'failed';
         state.getAnalyticsError = <string>action.error.message;
       });
+
+      builder
+      .addCase(getTechAnalyticsAction.pending, state => {
+        state.getTechAnalyticsStatus = 'loading';
+      })
+      .addCase(getTechAnalyticsAction.fulfilled, (state, action) => {
+        state.getTechAnalyticsStatus = 'completed';
+        state.getTechAnalyticsSuccess = action.payload.message;
+        state.techAnalytics = action.payload.result;
+      })
+      .addCase(getTechAnalyticsAction.rejected, (state, action) => {
+        state.getTechAnalyticsStatus = 'failed';
+        state.getTechAnalyticsError = <string>action.error.message;
+      });
   },
 });
 
-export const { clearGetAnalyticsStatus } = dashboardSlice.actions;
+export const { clearGetAnalyticsStatus, clearGetTechAnalyticsStatus } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

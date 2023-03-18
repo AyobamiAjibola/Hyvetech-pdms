@@ -1,9 +1,10 @@
 import React from 'react';
 
 import AdminDashboard from '../../components/dashboard/AdminDashboard';
+import TechDashboard from '../../components/dashboard/TechDashboard';
 import { AppCan } from '../../context/AbilityContext';
 import useAdmin from '../../hooks/useAdmin';
-import PartnerPage from '../partner/PartnerPage';
+// import PartnerPage from '../partner/PartnerPage';
 
 function DashboardPage() {
   const { isSuperAdmin } = useAdmin();
@@ -14,7 +15,8 @@ function DashboardPage() {
         {isSuperAdmin && <AdminDashboard />}
       </AppCan>
       <AppCan I="manage" an="technician">
-        {!isSuperAdmin && <PartnerPage />}
+        {/* {!isSuperAdmin && <PartnerPage />} */}
+        {!isSuperAdmin && <TechDashboard />}
       </AppCan>
     </React.Fragment>
   );
