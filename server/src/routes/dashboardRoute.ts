@@ -6,3 +6,8 @@ export const dashboardHandler = authenticateRouteWrapper(async (req: Request, re
   const result = await DashboardController.getData();
   res.status(result.code).json(result);
 });
+
+export const dashboardTechHandler = authenticateRouteWrapper(async (req, res) => {
+  const result = await DashboardController.getTechData(req);
+  res.status(result.code).json(result);
+});

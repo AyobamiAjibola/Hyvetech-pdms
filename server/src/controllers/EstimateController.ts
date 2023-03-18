@@ -147,10 +147,35 @@ export default class EstimateController {
         mileageUnit: value.mileageUnit,
       };
 
+      // check if vehicle vin exist
+      if((value?.vin || "").length === 0){
+        return Promise.reject(
+          CustomAPIError.response(`VIN: ${value.vin} does not exist.`, HttpStatus.NOT_FOUND.code),
+        );
+      }
+
       vehicle = await dataSources.vehicleDAOService.create(data);
       await customer.$add('vehicles', [vehicle]);
       await vehicle.$add('estimates', [estimate]);
       // return Promise.reject(CustomAPIError.response(`Vehicle not found`, HttpStatus.BAD_REQUEST.code))
+    }
+
+    // check if vehicle vin exist
+    if((vehicle?.vin || "").length === 0){
+      const value = req.body;
+      if((value?.vin || "").length === 0){
+        return Promise.reject(
+          CustomAPIError.response(`VIN: can't proceed without vin.`, HttpStatus.NOT_FOUND.code),
+        );
+      }else{
+        // update the vehicle with the vin and aall
+        vehicle.vin = value.vin;
+        vehicle.mileageValue = value.mileageValue;
+        vehicle.mileageUnit = value.mileageUnit;
+
+        await vehicle.save();
+      }
+      
     }
 
     const partner = await estimate.$get('partner', { include: [Contact] });
