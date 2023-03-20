@@ -15,6 +15,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { DRAWER_WIDTH } from '../../config/constants';
+// import settings from '../../config/settings';
 import { AppContext } from '../../context/AppContextProvider';
 import useAdmin from '../../hooks/useAdmin';
 import useLogout from '../../hooks/useLogout';
@@ -92,11 +93,22 @@ function SideNav() {
   };
 
   return (
-    <Drawer variant="permanent" open={openSideNav}>
+    <Drawer variant="permanent" sx={{ backgroundColor: '#4F4F4F' }} open={openSideNav}>
       <DrawerHeader>
+        
+        <img
+          style={{ 
+            width: 50, height: 50, borderRadius: 6,
+            position: 'absolute',
+            left: '39%'
+          }}
+          crossOrigin="anonymous"
+          src="./logo.ico" alt="" />
+
         <IconButton onClick={handleDrawerClose}>
           {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
+
       </DrawerHeader>
       <Divider />
       <List>

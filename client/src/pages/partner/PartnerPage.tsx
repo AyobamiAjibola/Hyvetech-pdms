@@ -158,9 +158,22 @@ function PartnerPage() {
   return (
     <React.Fragment>
       <Grid container justifyContent="space-between" alignItems="center">
-        <Grid item xs={9}>
-          <h1>{partner?.name}</h1>
-        </Grid>
+        {
+          (admin.isSuperAdmin && (
+            <Grid item xs={9}>
+              <h1>{partner?.name}</h1>
+            </Grid>
+          ))
+        }
+
+        {
+          (!(admin.isSuperAdmin) && (
+            <Grid item xs={9}>
+              <h1>&nbsp;</h1>
+            </Grid>
+          ))
+        }
+        
 
         <Grid item>
           <AppCan I="manage" a="all">

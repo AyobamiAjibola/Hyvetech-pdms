@@ -60,8 +60,8 @@ function PrivateLayout() {
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex' }}>
-        <AppBar position="fixed" open={openSideNav}>
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <AppBar position="fixed" sx={{ backgroundColor: '#E8E8E8' }} open={openSideNav}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
               <IconButton
@@ -76,10 +76,10 @@ function PrivateLayout() {
                 <MenuIcon />
               </IconButton>
 
-              <img
+              {/* <img
                 style={{ width: 50, height: 50, borderRadius: 6 }}
                 crossOrigin="anonymous"
-                src="./logo.ico" alt="" />
+                src="./logo.ico" alt="" /> */}
 
             </Box>
 
