@@ -16,12 +16,12 @@ import { getTechAnalyticsAction } from '../../store/actions/dashboardActions';
 import useAppSelector from '../../hooks/useAppSelector';
 import { formatNumberToIntl } from '../../utils/generic';
 import AppLoader from '../loader/AppLoader';
-import useAdmin from '../../hooks/useAdmin';
+// import useAdmin from '../../hooks/useAdmin';
 
 function TechDashboard() {
 
     const dispatch = useDispatch()
-    const {user} = useAdmin()
+    // const {user} = useAdmin()
     const techDashboardReducer = useAppSelector( _ => _.dashboardReducer.techAnalytics)
     const techDashboardReducerMain = useAppSelector( _ => _.dashboardReducer)
     const [_month, _setMonth] = useState<any>( ( (new Date()).getMonth() + 1 )  )
@@ -38,7 +38,9 @@ function TechDashboard() {
 
       <div style={{ display: 'flex', width: window.screen.width - 160, justifyContent: 'space-between' }}>
 
-        <h1>Welcome {user?.firstName || ""} {user?.lastName || ""},</h1>
+        <h1 style={{ fontWeight: '500' }}>Welcome,
+          {/* {user?.firstName || ""} {user?.lastName || ""} */}
+          </h1>
         
         <div>
           <Select value={_month} onChange={(e: any) => _setMonth(e.target.value)} native={true}>
