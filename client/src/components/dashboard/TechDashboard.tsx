@@ -16,10 +16,12 @@ import { getTechAnalyticsAction } from '../../store/actions/dashboardActions';
 import useAppSelector from '../../hooks/useAppSelector';
 import { formatNumberToIntl } from '../../utils/generic';
 import AppLoader from '../loader/AppLoader';
+import useAdmin from '../../hooks/useAdmin';
 
 function TechDashboard() {
 
     const dispatch = useDispatch()
+    const {user} = useAdmin()
     const techDashboardReducer = useAppSelector( _ => _.dashboardReducer.techAnalytics)
     const techDashboardReducerMain = useAppSelector( _ => _.dashboardReducer)
     const [_month, _setMonth] = useState<any>( ( (new Date()).getMonth() + 1 )  )
@@ -34,21 +36,26 @@ function TechDashboard() {
         Total customers: {0}
       </Typography> */}
 
-      <div style={{ display: 'flex', width: window.screen.width - 160, justifyContent: 'flex-end' }}>
-        <Select value={_month} onChange={(e: any) => _setMonth(e.target.value)} native={true}>
-            <option value={"1"}>January</option>
-            <option value={"2"}>February</option>
-            <option value={"3"}>March</option>
-            <option value={"4"}>April</option>
-            <option value={"5"}>May</option>
-            <option value={"6"}>June</option>
-            <option value={"7"}>July</option>
-            <option value={"8"}>August</option>
-            <option value={"9"}>Sepetember</option>
-            <option value={"10"}>October</option>
-            <option value={"11"}>November</option>
-            <option value={"12"}>December</option>
-        </Select>
+      <div style={{ display: 'flex', width: window.screen.width - 160, justifyContent: 'space-between' }}>
+
+        <h1>Welcome {user?.firstName || ""} {user?.lastName || ""},</h1>
+        
+        <div>
+          <Select value={_month} onChange={(e: any) => _setMonth(e.target.value)} native={true}>
+              <option value={"1"}>January</option>
+              <option value={"2"}>February</option>
+              <option value={"3"}>March</option>
+              <option value={"4"}>April</option>
+              <option value={"5"}>May</option>
+              <option value={"6"}>June</option>
+              <option value={"7"}>July</option>
+              <option value={"8"}>August</option>
+              <option value={"9"}>Sepetember</option>
+              <option value={"10"}>October</option>
+              <option value={"11"}>November</option>
+              <option value={"12"}>December</option>
+          </Select>
+        </div>
       </div>
       <br />
       <br />
@@ -70,7 +77,7 @@ function TechDashboard() {
                 <Grid item style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: window.screen.width - 160, }}>
                     <DataCard title='Number of Estimate Sent' data={(techDashboardReducer?.mEstimate || 0)} bgColor={orange[300]} />
                     <DataCard title='Number of Invoice Generated' data={(techDashboardReducer?.mInvoice || 0)} bgColor={orange[600]} />
-                    <DataCard title='Customer Served' data={(techDashboardReducer?.mCustomer || 0)} bgColor={orange[900]} />
+                    <DataCard title='Total Receivable' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceivable || 0)} bgColor={orange[900]} />
                 </Grid>
             </Grid>
           

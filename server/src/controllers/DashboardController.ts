@@ -136,15 +136,18 @@ export default class DashboardController {
           series: [
             {
               name: "Sales",
-              data: __sales
+              data: __sales,
+              color: 'blue'
             },
             {
               name: "Receipt",
-              data: __receipt
+              data: __receipt,
+              color: 'green'
             },
             {
               name: "Expenses",
-              data: __expenses
+              data: __expenses,
+              color: 'red'
             },
           ],
           seriesOne: [
