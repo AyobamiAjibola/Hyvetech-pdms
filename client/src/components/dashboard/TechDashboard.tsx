@@ -90,7 +90,15 @@ function TechDashboard() {
           </Paper>
         </Stack> */}
         <Stack direction={{ xs: 'column', sm: 'column' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{ width: window.screen.width - 160 }}>
-          <AppStackedColumnChart
+
+        <AppStackedColumnChart
+            title="Sales Analysis"
+            categories={MONTHS}
+            yAxisText="Naira (₦)"
+            series={techDashboardReducer?.series || []}
+        />
+
+          {/* <AppStackedColumnChart
             title="Sales Analysis"
             categories={MONTHS}
             yAxisText="Naira (₦)"
@@ -109,7 +117,7 @@ function TechDashboard() {
             categories={MONTHS}
             yAxisText="Naira (₦)"
             series={techDashboardReducer?.seriesThree || []}
-          />
+          /> */}
         </Stack>
       </Stack>
 
