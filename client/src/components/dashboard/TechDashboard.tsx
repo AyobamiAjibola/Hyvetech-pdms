@@ -93,21 +93,21 @@ function TechDashboard() {
           <AppStackedColumnChart
             title="Sales Analysis"
             categories={MONTHS}
-            yAxisText="Naira (₦)"
+            yAxisText="Naira (₦) "
             series={techDashboardReducer?.seriesOne || []}
           />
           
           <AppStackedColumnChart
             title="Receipt Analysis"
             categories={MONTHS}
-            yAxisText="Naira (₦)"
+            yAxisText="Naira (₦) "
             series={techDashboardReducer?.seriesTwo || []}
           />
           
           <AppStackedColumnChart
             title="Expenses Analysis"
             categories={MONTHS}
-            yAxisText="Naira (₦)"
+            yAxisText="Naira (₦) "
             series={techDashboardReducer?.seriesThree || []}
           />
         </Stack>
