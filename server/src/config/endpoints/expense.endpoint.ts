@@ -12,6 +12,7 @@ import {
   getAllExpenses,
   getAllExpensesById,
   getAllExpenseTypes,
+  updateExpenseDetailsHandler,
   updateExpenseHandler,
 } from '../../routes/expenseRoute';
 
@@ -33,6 +34,12 @@ const expenseEndpoints: RouteEndpoints = [
     method: 'patch',
     path: '/expense',
     handler: updateExpenseHandler,
+  },
+  {
+    name: 'expense',
+    method: 'patch',
+    path: '/expense/detail',
+    handler: updateExpenseDetailsHandler,
   },
   {
     name: 'expense',

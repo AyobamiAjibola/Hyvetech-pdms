@@ -26,7 +26,11 @@ import {
   clearCreateEspenseStatus,
   clearCreateExpenseCategoryStatus,
   clearCreateExpenseTypeStatus,
+  setInvoiceCode
 } from '../../store/reducers/expenseReducer';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 const ExpenseCreate = () => {
   const store = useAppSelector(state => state.expenseReducer);
@@ -36,6 +40,7 @@ const ExpenseCreate = () => {
   const [beneficiary, setValue] = useState<IBeneficiary | null>(null);
   const [reference, setReference] = useState('');
   const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
   const [category, setCategory] = useState<IExpenseCategory | null>();
   const [type, setType] = useState<IExpenseType | null>();
   const [invoice, setInvoice] = useState<IInvoice | null>(null);
@@ -45,7 +50,9 @@ const ExpenseCreate = () => {
   const [accountName, setAccountName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [suucessAlert, setSuccessAlert] = useState('');
+  const [dateModified, setDateModified] = useState(new Date());
   const navigate = useNavigate();
+  const expenseReducer = useAppSelector(state => state.expenseReducer);
 
   const [errorAlert, setErrorAlert] = useState('');
 
@@ -80,6 +87,10 @@ const ExpenseCreate = () => {
     dispatch(getPayStackBanksAction());
   }, []);
 
+  const handleDate = (newValue: any) => {
+    setDateModified(newValue)
+  }
+
   const handleFormSubmit = () => {
     if (!beneficiary) {
       return setErrorAlert('Please select beneficiary');
@@ -91,6 +102,12 @@ const ExpenseCreate = () => {
     if (!category) return setErrorAlert('Please select category');
     if (!type) return setErrorAlert('Please select type');
 
+    let findRef = ''
+    expenseReducer.expenses.find(value => {
+      value.reference === reference && (findRef = value.reference)
+    })
+    if (findRef !== '') return setErrorAlert('This payment has already been recorded');
+
     // if (!invoice) return setErrorAlert('Please select invoice');
 
     dispatch(
@@ -99,10 +116,14 @@ const ExpenseCreate = () => {
         type,
         reference: reference.trim() === '' ? null : reference,
         beneficiary,
-        invoice,
+        invoice, //expenseReducer.invoiceCode !== '' ? invoiceCode : invoice,
         amount: +amount,
+        note,
+        dateModified,
       }),
     );
+
+    dispatch(setInvoiceCode(''))
   };
 
   useEffect(() => {
@@ -125,6 +146,8 @@ const ExpenseCreate = () => {
     if (!accountName || accountName.trim() === '') return setErrorAlert('Please provide account name');
 
     if (!accountNumber || accountNumber.trim() === '') return setErrorAlert('Please provide account number');
+    if (accountNumber.length < 10 || accountNumber.length > 10) return setErrorAlert('Please account number must be 10 digits');
+    // if (accountNumber.replace(/[^0-9]/g, '')) return setErrorAlert('Only numbers are allowed');
     if (!bank) return setErrorAlert('Please select bank');
 
     dispatch(
@@ -213,7 +236,7 @@ const ExpenseCreate = () => {
                   inputValue={inputValue}
                   value={beneficiary}
                   loading={store.getExpensesStatus === 'loading'}
-                  getOptionLabel={option => option.name}
+                  getOptionLabel={option => `${option.name} ${option.bankName} ${option.accountNumber}`}
                   isOptionEqualToValue={(option, value) => option.name === value.name}
                   onChange={(_: any, newValue) => {
                     setValue(newValue);
@@ -273,36 +296,35 @@ const ExpenseCreate = () => {
               </Grid>
             )}
             <Grid spacing={8} style={{ marginTop: 20 }} xs={12} container>
-              <Grid item md={12} sm={12}>
-                <TextField
-                  value={amount}
-                  onChange={e => setAmount(e.target.value)}
-                  type={'number'}
-                  fullWidth
-                  variant="outlined"
-                  name={`amount`}
-                  label={'Amount'}
-                />
+              <Grid item md={6} sm={12}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    disableFuture
+                    minDate={new Date('2000/01/01')}
+                    openTo="year"
+                    views={['year', 'month', 'day']}
+                    value={dateModified}
+                    onChange={ handleDate }
+                    renderInput={(params: any) =>
+                      <TextField
+                        {...params}
+                        fullWidth
+                        label="Date Modified"
+                        variant="outlined"
+                      />
+                    }
+                  />
+                </LocalizationProvider>
               </Grid>
             </Grid>
-            <Grid spacing={8} xs={12} style={{ marginTop: 5 }} container>
-              <Grid item md={6} sm={12}>
-                <TextField
-                  value={reference}
-                  onChange={e => setReference(e.target.value)}
-                  fullWidth
-                  variant="outlined"
-                  name={`reference`}
-                  label="Reference"
-                />
-              </Grid>
-              <Grid item md={6}>
+            <Grid spacing={8} style={{ marginTop: 5 }} xs={12} container>
+            <Grid item md={6} sm={12}>
                 <Autocomplete
                   getOptionLabel={option => option.name}
                   renderInput={props => (
                     <TextField
                       {...props}
-                      label="Category"
+                      label="Expense category"
                       InputProps={{
                         ...props.InputProps,
                         endAdornment: (
@@ -322,28 +344,27 @@ const ExpenseCreate = () => {
                   }}
                   options={store.expenseCategories}
                 />
-                {/* <Typography
-                  onClick={() => setCategoryForm(true)}
-                  color={'skyblue'}
-                  style={{
-                    marginTop: 20,
-                    display: 'flex',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                  }}>
-                  <FaPlus style={{ marginRight: 8 }} />
-                  New Expense category
-                </Typography> */}
+              </Grid>
+              <Grid item md={6} sm={12}>
+                <TextField
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                  type={'number'}
+                  fullWidth
+                  variant="outlined"
+                  name={`amount`}
+                  label={'Amount'}
+                />
               </Grid>
             </Grid>
             <Grid spacing={8} xs={12} style={{ marginTop: 5 }} container>
-              <Grid item md={6}>
+              <Grid item md={6} sm={12}>
                 <Autocomplete
                   getOptionLabel={option => option.name}
                   renderInput={props => (
                     <TextField
                       {...props}
-                      label="Type"
+                      label="Expense Type/Name"
                       InputProps={{
                         ...props.InputProps,
                         endAdornment: (
@@ -376,31 +397,64 @@ const ExpenseCreate = () => {
                   New Expense type
                 </Typography>
               </Grid>
-              <Grid item md={6}>
-                <Autocomplete
-                  getOptionLabel={option => option.code}
-                  renderInput={props => (
-                    <TextField
-                      {...props}
-                      label="Invoice"
-                      InputProps={{
-                        ...props.InputProps,
-                        endAdornment: (
-                          <React.Fragment>
-                            {store.getExpensesStatus === 'loading' ? (
-                              <CircularProgress color="inherit" size={20} />
-                            ) : null}
-                            {props.InputProps.endAdornment}
-                          </React.Fragment>
-                        ),
-                      }}
+              <Grid item md={6} sm={12}>
+                <TextField
+                  value={note}
+                  onChange={e => setNote(e.target.value)}
+                  fullWidth
+                  multiline
+                  rows={2}
+                  variant="outlined"
+                  name={`note`}
+                  label={'Note/Remarks'}
+                />
+              </Grid>
+            </Grid>
+            <Grid spacing={8} xs={12} style={{ marginTop: 5 }} container>
+              <Grid item md={6} sm={12}>
+                {expenseReducer.invoiceCode === ''
+                  ? <Autocomplete
+                      getOptionLabel={option => option.code}
+                      disabled={category?.name === "Others" || category?.name === "Overhead"}
+                      renderInput={props => (
+                        <TextField
+                          {...props}
+                          label="Invoice"
+                          disabled={category?.name === "Others" || category?.name === "Overhead"}
+                          InputProps={{
+                            ...props.InputProps,
+                            endAdornment: (
+                              <React.Fragment>
+                                {store.getExpensesStatus === 'loading' ? (
+                                  <CircularProgress color="inherit" size={20} />
+                                ) : null}
+                                {props.InputProps.endAdornment}
+                              </React.Fragment>
+                            ),
+                          }}
+                        />
+                      )}
+                      value={invoice}
+                      onChange={(_: any, newValue) => setInvoice(newValue)}
+                      options={invoiceStore.invoices}
                     />
-                  )}
-                  value={invoice}
-                  onChange={(_: any, newValue) => {
-                    setInvoice(newValue);
-                  }}
-                  options={invoiceStore.invoices}
+                  : <TextField
+                      value={expenseReducer.invoiceCode}
+                      // onChange={e => setReference(e.target.value)}
+                      fullWidth
+                      variant="outlined"
+                      label="Invoice"
+                    />
+                }
+              </Grid>
+              <Grid item md={6} sm={12}>
+                <TextField
+                  value={reference}
+                  onChange={e => setReference(e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  name={`reference`}
+                  label="Payment reference"
                 />
               </Grid>
             </Grid>
@@ -449,7 +503,7 @@ const ExpenseCreate = () => {
                   <Grid item md={6} sm={12}>
                     <TextField
                       value={name}
-                      onChange={e => setName(e.target.value)}
+                      onChange={e => setName(e.target.value.trim())}
                       fullWidth
                       variant="outlined"
                       name={`name`}
@@ -459,7 +513,7 @@ const ExpenseCreate = () => {
                   <Grid item md={6} sm={12}>
                     <TextField
                       value={accountName}
-                      onChange={e => setAccountName(e.target.value)}
+                      onChange={e => setAccountName(e.target.value.trim())}
                       fullWidth
                       variant="outlined"
                       name={`accountName`}
@@ -499,7 +553,7 @@ const ExpenseCreate = () => {
                   <Grid item md={6} sm={12}>
                     <TextField
                       value={accountNumber}
-                      onChange={e => setAccountNumber(e.target.value)}
+                      onChange={e => setAccountNumber(e.target.value.replace(" ", ""))}
                       fullWidth
                       variant="outlined"
                       name={`accountNumber`}

@@ -1,5 +1,5 @@
 import { IThunkAPIStatus } from '@app-types';
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { IBeneficiary, IExpense, IExpenseCategory, IExpenseType } from '@app-models';
 import {
@@ -12,7 +12,9 @@ import {
   getExpenseCategories,
   getExpensesAction,
   getExpenseTypesActions,
+  getSingleExpenseAction,
   updateExpenseAction,
+  updateExpenseDetailAction,
 } from '../actions/expenseAction';
 
 interface IExpenseState {
@@ -31,6 +33,11 @@ interface IExpenseState {
   updateExpenseError: string;
   updateExpenseStatus: IThunkAPIStatus;
   updateExpenseSuccess: string;
+
+  updateExpenseDetailError: string;
+  updateExpenseDetailStatus: IThunkAPIStatus;
+  updateExpenseDetailSuccess: string;
+
 
   createBeneficiaryError: string;
   createBeneficiaryStatus: IThunkAPIStatus;
@@ -72,6 +79,8 @@ interface IExpenseState {
 
   expenseTypes: IExpenseType[];
   expenseCategories: IExpenseCategory[];
+
+  invoiceCode: string;
 }
 
 const initialState: IExpenseState = {
@@ -90,6 +99,10 @@ const initialState: IExpenseState = {
   updateExpenseError: '',
   updateExpenseStatus: 'idle',
   updateExpenseSuccess: '',
+
+  updateExpenseDetailError: '',
+  updateExpenseDetailStatus: 'idle',
+  updateExpenseDetailSuccess: '',
 
   createBeneficiaryError: '',
   createBeneficiaryStatus: 'idle',
@@ -131,6 +144,8 @@ const initialState: IExpenseState = {
 
   expenseTypes: [],
   expenseCategories: [],
+
+  invoiceCode: ''
 };
 
 const expenseSlice = createSlice({
@@ -169,10 +184,19 @@ const expenseSlice = createSlice({
       state.updateExpenseSuccess = '';
       state.updateExpenseError = '';
     },
+    clearUpdateExpenseDetailStatus(state: IExpenseState) {
+      state.updateExpenseDetailStatus = 'idle';
+      state.updateExpenseDetailSuccess = '';
+      state.updateExpenseDetailError = '';
+    },
     clearGetExpenseStatus(state: IExpenseState) {
       state.getExpensesStatus = 'idle';
       state.getExpenseSuccess = '';
       state.getExpenseError = '';
+    },
+
+    setInvoiceCode(state: IExpenseState, action: PayloadAction<any>) {
+      state.invoiceCode = action.payload;
     },
   },
 
@@ -187,6 +211,22 @@ const expenseSlice = createSlice({
         state.expenses = action.payload.results as IExpense[];
       })
       .addCase(getExpensesAction.rejected, (state, action) => {
+        state.getExpensesStatus = 'failed';
+
+        if (action.payload) {
+          state.getExpenseError = action.payload.message;
+        } else state.getExpenseError = action.error.message;
+      });
+
+    builder
+      .addCase(getSingleExpenseAction.pending, state => {
+        state.getExpensesStatus = 'loading';
+      })
+      .addCase(getSingleExpenseAction.fulfilled, (state, action) => {
+        state.getExpensesStatus = 'completed';
+        state.expense = action.payload.result as IExpense;
+      })
+      .addCase(getSingleExpenseAction.rejected, (state, action) => {
         state.getExpensesStatus = 'failed';
 
         if (action.payload) {
@@ -286,6 +326,26 @@ const expenseSlice = createSlice({
       });
 
     builder
+      .addCase(updateExpenseDetailAction.pending, state => {
+        state.updateExpenseDetailStatus = 'loading';
+      })
+      .addCase(updateExpenseDetailAction.fulfilled, (state, action) => {
+        state.updateExpenseDetailStatus = 'completed';
+        state.updateExpenseDetailSuccess = action.payload.message;
+      })
+      .addCase(updateExpenseDetailAction.rejected, (state, action) => {
+        state.updateExpenseDetailStatus = 'failed';
+
+        if (action.payload) {
+          state.getExpenseError = action.payload.message;
+          state.updateExpenseDetailError = action.payload.message;
+        } else {
+          state.getExpenseError = action.error.message;
+          state.updateExpenseDetailError = action.error.message as string;
+        }
+      });
+
+    builder
       .addCase(createExpenseAction.pending, state => {
         state.createExpenseStatus = 'loading';
       })
@@ -375,8 +435,10 @@ export const {
   clearCreateBeneficiaryStatus,
   clearGetExpenseStatus,
   clearUpdateExpenseStatus,
+  clearUpdateExpenseDetailStatus,
   clearCreateExpenseCategoryStatus,
   clearCreateExpenseTypeStatus,
+  setInvoiceCode,
 } = expenseSlice.actions;
 
 export default expenseSlice.reducer;

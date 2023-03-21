@@ -151,6 +151,16 @@ export default class Generic {
     return result;
   }
 
+  public static generateExpenseCode(count: number) {
+    count = 1;
+    let code = () => {
+      count.toString().padStart(3, '0')
+      count++
+      return code
+    }
+    code()
+  }
+
   public static convertTextToCamelcase(text: string) {
     text = text.replace(/[^a-zA-Z0-9 ]/g, '');
     return camelcase(text);

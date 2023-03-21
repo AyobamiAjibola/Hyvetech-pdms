@@ -45,7 +45,6 @@ const Expenses = () => {
   const updateExpenseReference = (expenseId: number | null) => {
     setReferenceForm(true);
     setExpenseId(expenseId);
-    console.log(expenseId);
   };
 
   useEffect(() => {
@@ -79,17 +78,47 @@ const Expenses = () => {
   const techColumns = useMemo(() => {
     return [
       {
-        field: 'updatedAt',
-        headerName: 'Date Modified',
+        field: 'dateModified',
+        headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        width: 100,
         type: 'string',
         valueFormatter: ({ value }) => {
-          return value ? moment(value).format('LLL') : '-';
+          return value ? moment(value).format('DD/MM/YYYY') : '-';
         },
         sortable: true,
         sortingOrder: ['desc'],
+      },
+      {
+        field: 'id',
+        headerName: 'Expense #',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+
+        renderCell: params => {
+          console.log(params)
+          return (
+            <Link style={{ color: 'skyblue', cursor: 'pointer' }} to={`/expense/${params.row.id}`}>
+              {`EXP - ${params.row.expenseCode}00${params.row.partnerId}`}
+            </Link>
+          );
+        },
+        sortable: true,
+        width: 100,
+      },
+      {
+        field: 'category',
+        headerName: 'Category',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 200,
+        sortable: true,
+        renderCell: params => {
+          return <span>{params.row.category.name}</span>;
+        },
       },
       {
         field: 'amount',
@@ -166,18 +195,17 @@ const Expenses = () => {
           );
         },
       },
-
       // {
-      //   field: 'createdAt',
-      //   headerName: 'Date Created',
+      //   field: 'note',
+      //   headerName: 'Note',
       //   headerAlign: 'center',
       //   align: 'center',
-      //   width: 200,
       //   type: 'string',
-      //   valueFormatter: ({ value }) => {
-      //     return value ? moment(value).format('LLL') : '-';
-      //   },
+      //   width: 400,
       //   sortable: true,
+      //   renderCell: params => {
+      //     return <span>{params.row.note}</span>;
+      //   },
       // },
       {
         field: 'actions',
@@ -234,6 +262,7 @@ const Expenses = () => {
       },
     ] as GridColDef<IExpense>[];
   }, [isTechAdmin]);
+
   return (
     <div>
       <Grid container justifyContent="space-between" alignItems="center">
