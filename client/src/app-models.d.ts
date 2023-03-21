@@ -576,32 +576,23 @@ declare module '@app-models' {
 
   interface IExpense {
     id: number;
-
     date: string;
-
     amount: number;
-
     reference: string;
-
     status: expenseType;
-
     beneficiary: IBeneficiary;
-
     category: IExpenseCategory;
-
     type: IExpenseType;
-
     invoice: IInvoice;
-
     invoiceId: number;
-
     beneficiaryId: number;
-
     expenseTypeId: number;
-
     expenseCategoryId: number;
-
     invoiceCode: string;
+    expenseCode: number;
+    note: string;
+    dateModified: any;
+    partnerId: number
   }
 
   interface IEstimate {
@@ -701,5 +692,6 @@ declare module '@app-models' {
     deletedAt: string;
     discount: number;
     discountType: string;
+    invoiceCode: string;
   }
 }

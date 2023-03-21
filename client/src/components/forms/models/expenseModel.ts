@@ -7,6 +7,8 @@ export interface IExpenseValues {
   type: IExpenseType;
   amount: number;
   reference: string | null;
+  note: string | null;
+  dateModified: any;
 }
 
 export interface IBeneficiaryValue {
@@ -19,4 +21,8 @@ export interface IBeneficiaryValue {
 export interface IExpenseUpdateValue {
   reference: string;
   id: number | null;
+}
+
+export interface IExpenseUpdateDetailValue {
+  note: string;
 }
