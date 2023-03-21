@@ -26,7 +26,7 @@ export default function AppStackedColumnChart(props: IProps) {
   const options: Highcharts.Options = {
     chart: {
       type: 'column',
-      width: 1660,
+      width: window.screen.width - 160,
     },
     title: {
       text: props.title,

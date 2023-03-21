@@ -62,15 +62,15 @@ function TechDashboard() {
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
             <Grid container style={{ flex: 1, display: 'flex', }}>
                 <Grid item style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: window.screen.width - 160, marginBottom: 25 }}>
-                    <DataCard title='Total Revenue' data={formatNumberToIntl(techDashboardReducer?.mRevenue || 0)} bgColor={teal[400]} />
-                    <DataCard title='Total Receivables' data={formatNumberToIntl(techDashboardReducer?.mReceivable || 0)} bgColor={cyan[400]} />
-                    <DataCard title='Total Expenses' data={(techDashboardReducer?.mExpense || 0)} bgColor={lime[400]} />
+                    <DataCard title='Total Sales' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mRevenue || 0)} bgColor={teal[400]} />
+                    <DataCard title='Total Receipts' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceipt || 0)} bgColor={cyan[400]} />
+                    <DataCard title='Total Expenses' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mExpense || 0)} bgColor={lime[400]} />
                 </Grid>
 
                 <Grid item style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: window.screen.width - 160, }}>
-                    <DataCard title='Total Number of Estimate' data={(techDashboardReducer?.mEstimate || 0)} bgColor={orange[300]} />
-                    <DataCard title='Total Number of Invoice' data={(techDashboardReducer?.mInvoice || 0)} bgColor={orange[600]} />
-                    <DataCard title='Total Number of Customer' data={(techDashboardReducer?.mCustomer || 0)} bgColor={orange[900]} />
+                    <DataCard title='Number of Estimate Sent' data={(techDashboardReducer?.mEstimate || 0)} bgColor={orange[300]} />
+                    <DataCard title='Number of Invoice Generated' data={(techDashboardReducer?.mInvoice || 0)} bgColor={orange[600]} />
+                    <DataCard title='Customer Served' data={(techDashboardReducer?.mCustomer || 0)} bgColor={orange[900]} />
                 </Grid>
             </Grid>
           
@@ -89,12 +89,26 @@ function TechDashboard() {
             <AppPieChart title={`Transactions, ${moment().format('MMM YYYY')}.`} series={[]} />
           </Paper>
         </Stack> */}
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{ width: '100%' }}>
+        <Stack direction={{ xs: 'column', sm: 'column' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{ width: window.screen.width - 160 }}>
           <AppStackedColumnChart
-            title=""
+            title="Sales Analysis"
             categories={MONTHS}
-            yAxisText="Monthly Data for Sales, Receipt, Expenses"
-            series={techDashboardReducer?.series || []}
+            yAxisText="Naira (₦)"
+            series={techDashboardReducer?.seriesOne || []}
+          />
+          
+          <AppStackedColumnChart
+            title="Receipt Analysis"
+            categories={MONTHS}
+            yAxisText="Naira (₦)"
+            series={techDashboardReducer?.seriesTwo || []}
+          />
+          
+          <AppStackedColumnChart
+            title="Expenses Analysis"
+            categories={MONTHS}
+            yAxisText="Naira (₦)"
+            series={techDashboardReducer?.seriesThree || []}
           />
         </Stack>
       </Stack>

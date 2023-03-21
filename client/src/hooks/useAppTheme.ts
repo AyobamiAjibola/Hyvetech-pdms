@@ -11,6 +11,7 @@ export default function useAppTheme() {
       createTheme({
         palette: {
           primary: { main: '#1a97cf' },
+          // primary: { main: '#e8e8e8' },
           secondary: { main: '#fba91a' },
           mode: prefersDarkMode ? 'dark' : 'light',
         },

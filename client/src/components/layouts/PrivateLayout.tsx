@@ -60,42 +60,44 @@ function PrivateLayout() {
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex' }}>
-        <AppBar position="fixed" open={openSideNav}>
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <AppBar position="fixed" sx={{ backgroundColor: '#E8E8E8', boxShadow: 'none' }} open={openSideNav}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
               <IconButton
-                color="inherit"
+                // color="inherit"
+                // color="black"
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 edge="start"
                 sx={{
                   marginRight: 5,
+                  color: 'black',
                   ...(openSideNav && { display: 'none' }),
                 }}>
                 <MenuIcon />
               </IconButton>
 
-              <img
+              {/* <img
                 style={{ width: 50, height: 50, borderRadius: 6 }}
                 crossOrigin="anonymous"
-                src="./logo.ico" alt="" />
+                src="./logo.ico" alt="" /> */}
 
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
-              <img
-                style={{ width: 30, height: 30, marginRight: 10, borderRadius: 6 }}
-                crossOrigin="anonymous"
-                src={`${settings.api.baseURL}/${user?.partner?.logo || ""}`} alt=" " />
-
-              <Typography variant="h6" noWrap component="div">
+              <Typography sx={{ color: 'black', marginRight: 3, fontWeight: '400' }} variant="h6" noWrap component="div">
                 {user?.partner?.name || ""}
               </Typography>
 
+              <img
+                style={{ width: 30, height: 30, borderRadius: 6 }}
+                crossOrigin="anonymous"
+                src={`${settings.api.baseURL}/${user?.partner?.logo || ""}`} alt=" " />
+
               <IconButton
-                color="inherit"
+                // color="inherit"
                 aria-label="open drawer"
                 onClick={()=>{
                   // ..
@@ -105,6 +107,7 @@ function PrivateLayout() {
                 sx={{
                   marginRight: 2,
                   marginLeft: 5,
+                  color: 'black',
                 }}>
                 <Settings />
               </IconButton>

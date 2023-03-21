@@ -33,8 +33,10 @@ export default class DashboardController {
 
       // console.log(estimates.length, invoices.length);
       const mRevenue = this.getRevenue(invoicesByMonth);
+      const mReceipt = this.getReceipt(invoicesByMonth);
       const mReceivable = this.getReceivable(invoicesByMonth);
-      const mExpense = expensesByMonth.length
+      // const mExpense = expensesByMonth.length
+      const mExpense = this.getExpenses(expensesByMonth);
       const mEstimate = estimatesByMonth.length;
       const mInvoice = invoicesByMonth.length;
       const mCustomer = customersByMonth.length;
@@ -103,16 +105,20 @@ export default class DashboardController {
 
         // sales
         const _invoicesByMonth = await this.filterByMonth(invoices, _month.id);
-        __sales.push(_invoicesByMonth.length);
+        __sales.push(this.getRevenue(_invoicesByMonth));
+        // __sales.push(_invoicesByMonth.length);
 
 
         // receipt
         const _transactionsByMonth = await this.filterByMonth(transactions, _month.id);
-        __receipt.push(_transactionsByMonth.length);
+        __receipt.push(this.getTransaction(_transactionsByMonth));
+        // __receipt.push(_transactionsByMonth.length);
+        // getTransaction
 
         // expenses
         const _expensesByMonth = await this.filterByMonth(expenses, _month.id);
-        __expenses.push(_expensesByMonth.length);
+        __expenses.push(this.getExpenses(_expensesByMonth));
+        // __expenses.push(_expensesByMonth.length);
         
       }
 
@@ -123,6 +129,7 @@ export default class DashboardController {
           mReceivable,
           mRevenue,
           mExpense,
+          mReceipt,
           mEstimate,
           mInvoice,
           mCustomer,
@@ -135,6 +142,24 @@ export default class DashboardController {
               name: "Receipt",
               data: __receipt
             },
+            {
+              name: "Expenses",
+              data: __expenses
+            },
+          ],
+          seriesOne: [
+            {
+              name: "Sales",
+              data: __sales
+            },
+          ],
+          seriesTwo: [
+            {
+              name: "Receipt",
+              data: __receipt
+            },
+          ],
+          seriesThree: [
             {
               name: "Expenses",
               data: __expenses
@@ -159,7 +184,37 @@ export default class DashboardController {
     return amount;
   }
 
+  public static getTransaction(transactions: Transaction[]){
+    let amount = 0;
+
+    transactions.map( _transaction => {
+      amount = amount + _transaction.amount;
+    } );
+
+    return amount;
+  }
+
+  public static getExpenses(expenses: Expense[]){
+    let amount = 0;
+
+    expenses.map( _expense => {
+      amount = amount + _expense.amount;
+    } );
+
+    return amount;
+  }
+
   public static getRevenue(invoices: Invoice[]){
+    let amount = 0;
+
+    invoices.map( _invoice => {
+      amount = amount + _invoice.grandTotal;
+    } );
+
+    return amount;
+  }
+
+  public static getReceipt(invoices: Invoice[]){
     let amount = 0;
 
     invoices.map( _invoice => {
