@@ -87,7 +87,7 @@ export default function PaymentRecieve() {
             width: 200,
             type: 'string',
             valueFormatter: ({ value }: any) => {
-              return value ? moment(value).format('LLL') : '-';
+              return value ? moment(value).format('DD/MM/YYYY') : '-';
             },
             sortable: true,
           },

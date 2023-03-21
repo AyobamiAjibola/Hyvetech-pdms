@@ -1,5 +1,5 @@
 import { IExpense, IExpenseCategory, IExpenseType, IInvoice } from '@app-models';
-import { Save } from '@mui/icons-material';
+import { ArrowBackIosNew, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, CircularProgress, Divider, Grid, TextField, Typography } from '@mui/material';
 import { Form, Formik } from 'formik';
@@ -160,6 +160,14 @@ const ExpenseDetail = () => {
           }}
         >
           <Box sx={{mt: 4, mb: 2}}>
+            <Grid>
+              <ArrowBackIosNew
+                onClick={() => window.history.back()}
+                style={{ position: 'absolute', cursor: 'pointer' }}
+              />
+            </Grid>
+            <br /><br/>
+
             <Typography sx={{fontSize: '25px', fontWeight: 600}}>
               Summary
             </Typography>

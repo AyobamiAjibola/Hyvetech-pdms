@@ -228,7 +228,7 @@ function EstimatesPage() {
         width: 200,
         type: 'string',
         valueFormatter: ({ value }) => {
-          return value ? moment(value).format('LLL') : '-';
+          return value ? moment(value).format('DD/MM/YYYY') : '-';
         },
         sortable: true,
         sortingOrder: ['desc'],
