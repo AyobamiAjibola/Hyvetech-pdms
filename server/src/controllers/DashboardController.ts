@@ -110,8 +110,8 @@ export default class DashboardController {
 
 
         // receipt
-        const _transactionsByMonth = await this.filterByMonth(transactions, _month.id);
-        __receipt.push(this.getTransaction(_transactionsByMonth));
+        // const _transactionsByMonth = await this.filterByMonth(transactions, _month.id);
+        __receipt.push(this.getReceipt(_invoicesByMonth));
         // __receipt.push(_transactionsByMonth.length);
         // getTransaction
 
