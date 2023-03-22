@@ -101,7 +101,7 @@ const Expenses = () => {
           console.log(params)
           return (
             <Link style={{ color: 'skyblue', cursor: 'pointer' }} to={`/expense/${params.row.id}`}>
-              {`EXP - ${params.row.expenseCode}00${params.row.partnerId}`}
+              {`EXP - 00${params.row.partnerId}${params.row.expenseCode}`}
             </Link>
           );
         },
