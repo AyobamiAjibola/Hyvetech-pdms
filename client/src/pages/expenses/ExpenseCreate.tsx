@@ -503,7 +503,7 @@ const ExpenseCreate = () => {
                   <Grid item md={6} sm={12}>
                     <TextField
                       value={name}
-                      onChange={e => setName(e.target.value.trim())}
+                      onChange={e => setName(e.target.value)}
                       fullWidth
                       variant="outlined"
                       name={`name`}
@@ -513,7 +513,7 @@ const ExpenseCreate = () => {
                   <Grid item md={6} sm={12}>
                     <TextField
                       value={accountName}
-                      onChange={e => setAccountName(e.target.value.trim())}
+                      onChange={e => setAccountName(e.target.value)}
                       fullWidth
                       variant="outlined"
                       name={`accountName`}

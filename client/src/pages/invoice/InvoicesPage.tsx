@@ -322,7 +322,7 @@ function InvoicesPage() {
       // },
       {
         field: 'updatedAt',
-        headerName: 'Modified Date',
+        headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
         width: 200,

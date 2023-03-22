@@ -222,7 +222,7 @@ function EstimatesPage() {
     return [
       {
         field: 'updatedAt',
-        headerName: 'Date Modified',
+        headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
         width: 200,
