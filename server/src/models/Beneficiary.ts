@@ -44,9 +44,9 @@ export const beneficiaryFields = {
 
 export const $saveBeneficiarySchema: Joi.SchemaMap<beneficiarySchemaType> = {
   name: Joi.string().required().label(beneficiaryFields.name.label),
-  accountName: Joi.string().required().label(beneficiaryFields.accountName.label),
-  bankName: Joi.string().required().label(beneficiaryFields.bankName.label),
-  accountNumber: Joi.string().required().label(beneficiaryFields.accountNumber.label),
+  accountName: Joi.string().allow('').label(beneficiaryFields.accountName.label),
+  bankName: Joi.string().allow('').optional().label(beneficiaryFields.bankName.label),
+  accountNumber: Joi.string().allow('').optional().label(beneficiaryFields.accountNumber.label),
 };
 
 @Table({

@@ -1,4 +1,7 @@
-import { IExpense, IExpenseCategory, IExpenseType, IInvoice } from '@app-models';
+import {
+  IExpense,
+  // IExpenseCategory,
+  IExpenseType, IInvoice } from '@app-models';
 import { ArrowBackIosNew, Save } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Autocomplete, Box, CircularProgress, Divider, Grid, TextField, Typography } from '@mui/material';
@@ -35,7 +38,7 @@ const ExpenseDetail = () => {
   const [note, setNote] = useState<string | undefined>('');
   const [amount, setAmount] = useState<string | undefined>('');
   const [invoiceCode, setInvoiceCode] = useState<string | undefined>('');
-  const [category, setCategory] = useState<IExpenseCategory | null>();
+  const [category, setCategory] = useState<any | null>();
   const [type, setType] = useState<IExpenseType | null>();
   const [invoice, setInvoice] = useState<IInvoice | null>(null);
   const [dateModified, setDateModified] = useState(new Date());
@@ -43,7 +46,7 @@ const ExpenseDetail = () => {
   const navigate = useNavigate();
   const params = useParams() as unknown as { id: number };
   const [errorAlert, setErrorAlert] = useState('');
-  const [edit, setEdit] = useState<boolean>(false);
+  const [edit] = useState<boolean>(false);
 
   useEffect(() => {
     if (store.updateExpenseDetailStatus === 'completed') {
@@ -83,14 +86,13 @@ const ExpenseDetail = () => {
     setNote(expense?.note);
     setInvoiceCode(expense?.invoiceCode);
     setAmount(expense?.amount.toString());
-    // setCategory(expense?.category?.name);
+    setCategory(expense?.category?.name);
     setReference(expense?.reference)
   },[expense])
-  console.log(expense)
   const handleDate = (newValue: any) => {
     setDateModified(newValue)
   }
-
+  console.log(category)
   const handleFormSubmit = () => {
     // if (!beneficiary) {
     //   return setErrorAlert('Please select beneficiary');
@@ -114,7 +116,6 @@ const ExpenseDetail = () => {
       updateExpenseDetailAction({
         // category,
         // type,
-        // reference: reference
         // beneficiary,
         // invoice, //expenseReducer.invoiceCode !== '' ? invoiceCode : invoice,
         // amount: +amount,
@@ -123,11 +124,11 @@ const ExpenseDetail = () => {
     );
   };
 
-  useEffect(() => {
-    if(expense?.status === 'UNPAID') {
-      setEdit(true)
-    }
-  }, [expense])
+  // useEffect(() => {
+  //   if(expense?.status === 'UNPAID') {
+  //     setEdit(true)
+  //   }
+  // }, [expense])
 
   if (!expense)
     return (
@@ -172,7 +173,7 @@ const ExpenseDetail = () => {
               Summary
             </Typography>
             <Typography sx={{fontSize: '20px', fontWeight: 500}}>
-              {expense?.expenseCode ? `EXP-${expense?.expenseCode}00${expense?.partnerId}` : ''}
+              {expense?.expenseCode ? `EXP-00${expense?.partnerId}${expense?.expenseCode}` : ''}
             </Typography>
           </Box>
           <Formik
@@ -209,11 +210,11 @@ const ExpenseDetail = () => {
                       </Grid>
 
                       <Grid xs={12} container>
-                        <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.accountNumber}</Typography> <br />
+                        <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.accountNumber ? expense?.beneficiary?.accountNumber : ''}</Typography> <br />
                       </Grid>
 
                       <Grid xs={12} container>
-                        <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.bankName}</Typography> <br />
+                        <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.bankName ? expense?.beneficiary?.bankName : ''}</Typography> <br />
                       </Grid>
                     </Grid>
                 </Grid>
@@ -227,6 +228,9 @@ const ExpenseDetail = () => {
                         variant="outlined"
                         // name="Invoice"
                         label={'Expense Category'}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
                         InputProps={{
                           readOnly: expense?.status === "PAID" && true
                         }}
@@ -238,6 +242,7 @@ const ExpenseDetail = () => {
                         <TextField
                           {...props}
                           label="Expense category"
+                          name="category"
                           InputProps={{
                             ...props.InputProps,
                             endAdornment: (
@@ -266,6 +271,9 @@ const ExpenseDetail = () => {
                       fullWidth
                       variant="outlined"
                       name="amount"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                       label={'Amount'}
                       InputProps={{
                         readOnly: expense?.status === "PAID" && true
@@ -281,6 +289,9 @@ const ExpenseDetail = () => {
                         // onChange={e => setInvoiceCode(e.target.value)}
                         fullWidth
                         variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
                         // name="Invoice"
                         label={'Expense Type/Name'}
                         InputProps={{
@@ -323,6 +334,9 @@ const ExpenseDetail = () => {
                       rows={2}
                       variant="outlined"
                       name="note"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                       label={'Note/Remarks'}
                       InputProps={{
                         readOnly: expense?.status === "PAID" && true
@@ -339,6 +353,9 @@ const ExpenseDetail = () => {
                         fullWidth
                         variant="outlined"
                         name="Invoice"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
                         label={'Invoice'}
                         InputProps={{
                           readOnly: expense?.status === "PAID" && true
@@ -379,6 +396,9 @@ const ExpenseDetail = () => {
                       variant="outlined"
                       name={`reference`}
                       label="Payment reference"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                       InputProps={{
                         readOnly: expense?.status === "PAID" && true
                       }}

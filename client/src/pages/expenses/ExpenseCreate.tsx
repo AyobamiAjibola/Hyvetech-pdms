@@ -143,17 +143,19 @@ const ExpenseCreate = () => {
 
   const handleOnCreateBeneficiary = () => {
     if (!name || name.trim() === '') return setErrorAlert('Please provide beneficiary name');
-    if (!accountName || accountName.trim() === '') return setErrorAlert('Please provide account name');
+    // if (!accountName || accountName.trim() === '') return setErrorAlert('Please provide account name');
 
-    if (!accountNumber || accountNumber.trim() === '') return setErrorAlert('Please provide account number');
-    if (accountNumber.length < 10 || accountNumber.length > 10) return setErrorAlert('Please account number must be 10 digits');
-    // if (accountNumber.replace(/[^0-9]/g, '')) return setErrorAlert('Only numbers are allowed');
-    if (!bank) return setErrorAlert('Please select bank');
+    // if (!accountNumber || accountNumber.trim() === '') return setErrorAlert('Please provide account number');
+    if(accountNumber) {
+      if (accountNumber.length < 10 || accountNumber.length > 10) return setErrorAlert('Please account number must be 10 digits');
+      // if (accountNumber.replace(/[0-9]/g, '')) return setErrorAlert('Only numbers are allowed'); // PLEASE CHECK THIS
+    }
+    // if (!bank) return setErrorAlert('Please select bank');
 
     dispatch(
       createBeneficiaryAction({
         name,
-        bankName: bank.name,
+        bankName: bank?.name,
         accountName,
         accountNumber,
       }),
@@ -236,7 +238,7 @@ const ExpenseCreate = () => {
                   inputValue={inputValue}
                   value={beneficiary}
                   loading={store.getExpensesStatus === 'loading'}
-                  getOptionLabel={option => `${option.name} ${option.bankName} ${option.accountNumber}`}
+                  getOptionLabel={option => `${option.name} ${option.bankName ? option.bankName: ''} ${option.accountNumber ? option.accountNumber : ''}`}
                   isOptionEqualToValue={(option, value) => option.name === value.name}
                   onChange={(_: any, newValue) => {
                     setValue(newValue);
