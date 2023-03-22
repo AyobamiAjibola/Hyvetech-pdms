@@ -221,7 +221,7 @@ function EstimatesPage() {
   const techColumns = useMemo(() => {
     return [
       {
-        field: 'updatedAt',
+        field: 'createdAt',
         headerName: 'Date',
         headerAlign: 'center',
         align: 'center',

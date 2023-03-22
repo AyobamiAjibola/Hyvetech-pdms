@@ -321,7 +321,7 @@ function InvoicesPage() {
       //   },
       // },
       {
-        field: 'updatedAt',
+        field: 'createdAt',
         headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
