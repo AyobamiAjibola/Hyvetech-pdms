@@ -220,7 +220,7 @@ const ExpenseDetail = () => {
                 </Grid>
                 <Grid spacing={6} style={{ marginTop: 3 }} xs={12} container>
                   <Grid item md={6} sm={12}>
-                    {/* {!edit &&
+                    {!edit &&
                       <TextField
                         value={expense?.category?.name}
                         // onChange={e => setInvoiceCode(e.target.value)}
@@ -235,9 +235,8 @@ const ExpenseDetail = () => {
                           readOnly: expense?.status === "PAID" && true
                         }}
                       />
-                    } */}
-                    {/* {edit &&  */}
-                    <Autocomplete
+                    }
+                    {edit && <Autocomplete
                       getOptionLabel={option => option.name}
                       renderInput={props => (
                         <TextField
@@ -262,8 +261,7 @@ const ExpenseDetail = () => {
                         setCategory(newValue);
                       }}
                       options={store.expenseCategories}
-                    />
-                    {/* } */}
+                    />}
                   </Grid>
                   <Grid item md={6} sm={12}>
                     <TextField
