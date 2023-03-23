@@ -70,6 +70,7 @@ const ExpenseCreate = () => {
       setAmount('');
       setReference('');
       dispatch(clearCreateEspenseStatus());
+      dispatch(setInvoiceCode(''))
       navigate(-1);
     } else if (store.createExpenseStatus === 'failed') {
       setErrorAlert(store.createExpenseError);
@@ -121,7 +122,6 @@ const ExpenseCreate = () => {
       }),
     );
 
-    dispatch(setInvoiceCode(''))
   };
 
   useEffect(() => {
