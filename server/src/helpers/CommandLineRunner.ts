@@ -10,7 +10,7 @@ import RoleRepository from '../repositories/RoleRepository';
 import PermissionRepository from '../repositories/PermissionRepository';
 import SubscriptionRepository from '../repositories/SubscriptionRepository';
 import PlanRepository from '../repositories/PlanRepository';
-import settings from '../config/settings';
+import settings, { MANAGE_ALL } from '../config/settings';
 import PaymentGatewayRepository from '../repositories/PaymentGatewayRepository';
 import DistrictRepository from '../repositories/DistrictRepository';
 import ScheduleRepository from '../repositories/ScheduleRepository';
@@ -80,6 +80,8 @@ import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 import IPayStackBank = appModelTypes.IPayStackBank;
 import ExpenseCategoryRepository from '../repositories/ExpenseCategoryRepository';
 import ExpenseTypeRepository from '../repositories/ExpenseTypeRepository';
+import { Model } from 'mongoose';
+import User from '../models/User';
 
 export default class CommandLineRunner {
   public static singleton: CommandLineRunner = new CommandLineRunner();
@@ -250,14 +252,15 @@ export default class CommandLineRunner {
       password: await passwordEncoder.encode(<string>process.env.ADMIN_PASS),
     });
 
-    const user = await this.userRepository.save(adminJson);
+    const user = (await this.userRepository.save(adminJson)) as User;
 
     const role = await this.roleRepository.findOne({
       where: { slug: settings.roles[0] },
     });
 
     if (role) {
-      await user.$add('roles', [role]);
+      user.roleId = role?.id;
+      await user.save();
     }
   }
 
@@ -393,27 +396,31 @@ export default class CommandLineRunner {
       },
     });
 
-    //user permissions
-    const permissions = settings.permissions.filter(
-      permission => permission !== 'manage_all' && !permission.startsWith('delete'),
-    );
+    // //user permissions
+    // const permissions = settings.permissions.filter(
+    //   permission => permission !== 'manage_all' && !permission.startsWith('delete'),
+    // );
 
-    const userPermissions = [];
+    // const userPermissions = [];
 
-    for (let i = 0; i < permissions.length; i++) {
-      userPermissions.push(
-        ...(await this.permissionRepository.findAll({
-          where: {
-            [Op.or]: [{ name: permissions[i] }],
-          },
-        })),
-      );
-    }
+    // console.log('permission> ', permissions);
+
+    // for (let i = 0; i < permissions.length; i++) {
+    //   userPermissions.push(
+    //     ...(await this.permissionRepository.findAll({
+    //       where: {
+    //         [Op.or]: [{ name: permissions[i] }],
+    //       },
+    //     })),
+    //   );
+    // }
 
     //admin permissions
     const adminPermissions = await this.permissionRepository.findAll({
-      where: { name: settings.permissions[0] },
+      where: { name: MANAGE_ALL },
     });
+
+    console.log(adminPermissions);
 
     //get guest role
     const guestRole = await this.roleRepository.findOne({
@@ -457,7 +464,7 @@ export default class CommandLineRunner {
 
     //associate roles to their respective permissions
     await guestRole?.$add('permissions', guestPermissions);
-    await userRole?.$add('permissions', userPermissions);
+    // await userRole?.$add('permissions', userPermissions);
     await customerRole?.$add('permissions', customerPermissions);
     await adminRole?.$add('permissions', adminPermissions);
     await garageAdminRole?.$add('permissions', garageAdminPermissions);

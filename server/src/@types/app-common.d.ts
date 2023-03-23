@@ -77,7 +77,28 @@ export declare namespace appCommonTypes {
     | 'update_driver'
     | 'delete_driver'
     | 'manage_driver'
-    | 'read_guest';
+    | 'read_guest'
+    | 'read_expense'
+    | 'update_expense'
+    | 'delete_expense'
+    | 'create_expense'
+    | 'read_invoice'
+    | 'update_invoice'
+    | 'delete_invoice'
+    | 'create_invoice'
+    | 'read_payment'
+    | 'create_payment'
+    | 'update_payment'
+    | 'delete_payment'
+    | 'create_estimate'
+    | 'read_estimate'
+    | 'delete_estimate'
+    | 'update_estimate'
+    | 'create_vendor'
+    | 'read_vendor'
+    | 'delete_vendor'
+    | 'update_vendor';
+
   type VINProvider = {
     name: string;
     apiSecret: string;
@@ -153,7 +174,7 @@ export declare namespace appCommonTypes {
     redis: Record<DatabaseEnv, DatabaseConfig>;
     mongo: Record<DatabaseEnv, DatabaseConfig>;
     queue: Record<DatabaseEnv, DatabaseConfig>;
-    cookie: { name: string, secret: string };
+    cookie: { name: string; secret: string };
     vinProviders: VINProvider[];
     roles: Roles[];
     permissions: Permissions[];

@@ -17,6 +17,7 @@ export default class PasswordEncoder implements BcryptPasswordEncoder {
   }
 
   match(rawPassword: string, hash: string): Promise<boolean> {
+    console.log('march> ', rawPassword, hash);
     return compare(rawPassword, hash);
   }
 }

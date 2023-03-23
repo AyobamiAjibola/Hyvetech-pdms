@@ -6,6 +6,7 @@ import {
   DataType,
   ForeignKey,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -18,7 +19,7 @@ import UserRole from './UserRole';
 import Contact from './Contact';
 
 import { PASSWORD_PATTERN } from '../config/constants';
-import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute } from 'sequelize';
+import { CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute, Attributes } from 'sequelize';
 import Partner from './Partner';
 
 export const $userSchema = {
@@ -32,7 +33,24 @@ export const $userSchema = {
 
 export const $loginSchema = {
   username: Joi.string().required().label('Username'),
-  password: Joi.string().pattern(new RegExp(PASSWORD_PATTERN)).required().label('Password'),
+  password: Joi.string().required().label('Password'),
+};
+
+export type UserSchemaType = Attributes<User> & { roleId: number };
+
+export const $saveUserSchema: Joi.SchemaMap<UserSchemaType> = {
+  firstName: Joi.string().required().label('firstName'),
+  lastName: Joi.string().required().label('lastName'),
+  email: Joi.string().required().label('email'),
+  password: Joi.string().required().label('password'),
+  rawPassword: Joi.string().optional().label('rawPassword'),
+  phone: Joi.string().required().label('phone'),
+  roleId: Joi.number().required().label('roleId'),
+};
+
+export const $updateUserSchema: Joi.SchemaMap<UserSchemaType> = {
+  ...$saveUserSchema,
+  id: Joi.number().required().label('userId'),
 };
 
 @Table({
@@ -101,5 +119,9 @@ export default class User extends Model<InferAttributes<User>, InferCreationAttr
 
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
-  declare partnerId: NonAttribute<number>;
+  declare partnerId: number;
+
+  @ForeignKey(() => Role)
+  @Column(DataType.INTEGER)
+  declare roleId: NonAttribute<number>;
 }

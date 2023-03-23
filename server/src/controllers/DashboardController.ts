@@ -1,10 +1,11 @@
+import { Request } from 'express';
 import { appCommonTypes } from '../@types/app-common';
 import HttpStatus from '../helpers/HttpStatus';
 import dataSources from '../services/dao';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class DashboardController {
-  public static async getData() {
+  public static async getData(req: Request) {
     try {
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,

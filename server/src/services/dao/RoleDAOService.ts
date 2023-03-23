@@ -12,6 +12,7 @@ import RoleRepository from '../../repositories/RoleRepository';
 import Role from '../../models/Role';
 import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
+import Permission from '../../models/Permission';
 
 export default class RoleDAOService implements ICrudDAO<Role> {
   private roleRepository: RoleRepository;
@@ -42,5 +43,21 @@ export default class RoleDAOService implements ICrudDAO<Role> {
 
   update(role: Role, values: InferAttributes<Role>, options: UpdateOptions<Attributes<Role>>): Promise<Role> {
     return this.roleRepository.updateOne(role, values, options);
+  }
+
+  findBySlugName(slugName: string) {
+    return this.roleRepository.findOne({ where: { slug: slugName } });
+  }
+
+  findRolePermissionsById(id: number) {
+    return this.roleRepository.findById(id, {
+      include: [
+        {
+          model: Permission,
+          attributes: ['action', 'subject', 'name'],
+          through: { attributes: [] },
+        },
+      ],
+    });
   }
 }

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { TryCatch } from '../decorators';
+import { HasPermission, TryCatch } from '../decorators';
 import HttpStatus from '../helpers/HttpStatus';
 import Expense, { $saveExpenseSchema, $updateExpenseSchema, ExpenseSchemaType, expenseType } from '../models/Expense';
 import dao from '../services/dao';
@@ -14,6 +14,7 @@ import Joi = require('joi');
 import CustomAPIError from '../exceptions/CustomAPIError';
 import { CreationAttributes, Op } from 'sequelize';
 import Invoice from '../models/Invoice';
+import { CREATE_EXPENSE, DELETE_EXPENSE, MANAGE_TECHNICIAN, READ_EXPENSE, UPDATE_EXPENSE } from '../config/settings';
 
 export default class ExpenseController {
   private static LOGGER = AppLogger.init(ExpenseController.name).logger;
@@ -61,6 +62,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
   public async createBeneficiaryHandler(req: Request) {
     const beneficiary = await this.doCreateBeneficiary(req);
 
@@ -74,6 +76,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
   public async createExpenseTypeHandler(req: Request) {
     const expenseType = await this.doCreateExpenseType(req);
 
@@ -87,6 +90,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
   public async createExpenseCategoryHandler(req: Request) {
     const expenseCategory = await this.doCreateExpenseCategory(req);
 
@@ -100,6 +104,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_EXPENSE])
   public async createExpense(req: Request) {
     const expense = await this.doCreateExpense(req);
 
@@ -113,6 +118,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, READ_EXPENSE, CREATE_EXPENSE])
   public async getAllExpenses(req: Request) {
     const expense = await this.doGetAllExpenses(req);
 
@@ -126,6 +132,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, READ_EXPENSE, CREATE_EXPENSE])
   public async getExpenseById(req: Request) {
     const expense = await this.doGetExpenseById(req);
 
@@ -139,6 +146,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, DELETE_EXPENSE])
   public async deleteExpenseById(req: Request) {
     await this.doDeleteExpenseById(req);
 
@@ -151,6 +159,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, UPDATE_EXPENSE])
   public async updateExpense(req: Request) {
     const expense = await this.doExpenseUpdate(req);
 
