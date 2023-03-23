@@ -98,7 +98,6 @@ const Expenses = () => {
         type: 'string',
 
         renderCell: params => {
-          console.log(params)
           return (
             <Link style={{ color: 'skyblue', cursor: 'pointer' }} to={`/expense/${params.row.id}`}>
               {`EXP - 00${params.row.partnerId}${params.row.expenseCode}`}

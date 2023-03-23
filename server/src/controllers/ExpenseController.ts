@@ -207,19 +207,24 @@ export default class ExpenseController {
   private async doUpdateExpenseDetails(req: Request) {
     // const { error, value } = Joi.object<Expense>($saveExpenseSchema).validate(req.body);
     const value = req.body;
-    console.log(req.params)
+
     // if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-    const expense = await dao.expenseDAOService.findByAny({
-      where: {id: +req.params.id}
-    });
+    const expense = await dao.expenseDAOService.findById(+req.params.id)
 
     if (!expense) {
       return Promise.reject(CustomAPIError.response("Expense does not exist", HttpStatus.NOT_FOUND.code));
     }
 
+    const category = await dao.expenseCategoryDAOService.findById(value.expenseCategoryId);
+    if (!category)
+      return Promise.reject(CustomAPIError.response('Expense Category not found', HttpStatus.NOT_FOUND.code));
+
+
     return expense.update({
-      reference: value.reference,
-      note: value.reference
+      note: value.note,
+      // expenseCategoryId: value.expenseCategoryId,
+      // expenseTypeId: value.expenseTypeId,
+      amount: value.amount,
     });
   }
 

@@ -121,8 +121,9 @@ export const updateExpenseAction = asyncThunkWrapper<ApiResponseSuccess<IExpense
 
 export const updateExpenseDetailAction = asyncThunkWrapper<ApiResponseSuccess<IExpenseType>, Partial<IExpenseUpdateDetailValue>>(
   UPDATE_EXPENSE_DETAILS,
-  async data => {
-    const response = await axiosClient.patch(`${API_ROOT}/expense/detail`, data);
+  async args => {
+    console.log(args)
+    const response = await axiosClient.patch(`${API_ROOT}/expense/${args.id}`, args);
     return response.data;
   },
 );
