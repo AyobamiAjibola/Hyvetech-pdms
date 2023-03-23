@@ -225,7 +225,7 @@ function EstimatesPage() {
         headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        width: 160,
         type: 'string',
         valueFormatter: ({ value }) => {
           return value ? moment(value).format('DD/MM/YYYY') : '-';

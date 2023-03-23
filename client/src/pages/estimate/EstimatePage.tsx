@@ -155,7 +155,7 @@ function EstimatePage() {
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {
             (
-              ( ((estimate.status).toLowerCase() === 'sent') ) &&
+              ( ((estimate.status).toLowerCase() === 'sent') || ((estimate.status).toLowerCase() === 'draft') ) &&
               
               <Button style={{ marginRight: 20 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
                 {generating ? 'Generating...' : 'Generate Invoice'}

@@ -1,17 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, Stack, TextField, Select, MenuItem } from '@mui/material';
+import { Box, Stack, TextField, Select, MenuItem, Grid, Typography, Button } from '@mui/material';
 import { STATES } from '../../config/constants';
 import { ISelectData } from '../forms/fields/SelectField'
 import { CustomerPageContext } from '../../pages/customer/CustomerPage';
 import { CustomerPageContextProps } from '@app-interfaces';
 import { LoadingButton } from '@mui/lab';
-import { updateCustomerAction } from '../../store/actions/customerActions';
+import { getCustomerAction, updateCustomerAction } from '../../store/actions/customerActions';
 // import { Send } from '@mui/icons-material';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
 import { clearUpdateCustomerStatus } from '../../store/reducers/customerReducer';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../alerts/AppAlert';
+import EstimateForm from '../forms/estimate/EstimateForm';
+import useEstimate from '../../hooks/useEstimate';
+import AppModal from '../modal/AppModal';
+import { Formik } from 'formik';
+import estimateModel from '../forms/models/estimateModel';
 // import { getCustomerVehiclesAction } from '../../store/actions/customerActions';
 // import moment from 'moment';
 // import { IVehicle } from '@app-models';
@@ -29,7 +34,7 @@ const [isLoading, setIsLoading] = useState<boolean>(false);
 const [isEditing, setIsEditing] = useState<boolean>(false);
 const [error, setError] = useState<CustomHookMessage>();
 const [success, setSuccess] = useState<CustomHookMessage>();
-  const [form, setForm] = useState<any>({
+const [form, setForm] = useState<any>({
     firstName: "",
     email: "",
     lastName: "",
@@ -41,6 +46,8 @@ const [success, setSuccess] = useState<CustomHookMessage>();
     district: "",
     address: "",
   });
+
+const estimate = useEstimate();
 
   useEffect(() => {
     const newStates = STATES.map(state => ({
@@ -97,6 +104,7 @@ const [success, setSuccess] = useState<CustomHookMessage>();
   }, [customer])
 
   const customerReducer = useAppSelector(state => state.customerReducer);
+  const estimateReducer = useAppSelector(state => state.estimateReducer);
 
   const dispatch = useAppDispatch();
 
@@ -157,6 +165,63 @@ const handleEdit = async ()=>{
     <Box>
       <Stack spacing={2}>
 
+      <Button variant="outlined" color="success" size="small" onClick={() => {
+        if (customer?.id) {
+            dispatch(getCustomerAction(customer?.id));
+            estimate.setShowCreate(true)
+        }
+      }} 
+      style={{ 
+        position: 'absolute',
+        top: '18%',
+        right: '7%',
+       }}>
+            Generate Estimate
+        </Button>
+
+        {
+            (
+                (!isEditing) && 
+
+                (
+                    <>
+                        <Grid item xs={11}>
+                            <Grid xs={12} container>
+                            <Typography>
+                                {form?.firstName || 'First Name & '} {form?.lastName || 'Last Name'}
+                            </Typography>{' '}
+                            <br />
+                            </Grid>
+
+                            {(form?.companyName || '').length != 0 && (
+                            <Grid xs={12} container>
+                                <Typography>{form?.companyName || 'First Name & '}</Typography> <br />
+                            </Grid>
+                            )}
+
+                            <Grid xs={12} container>
+                            <Typography>{form?.email || 'Email'}</Typography> <br />
+                            </Grid>
+
+                            <Grid xs={12} container>
+                            <Typography>{form?.phone || 'Phone'}</Typography> <br />
+                            </Grid>
+
+                            <Grid xs={12} container>
+                            <Typography>{form?.address || 'Address'}</Typography> <br />
+                            </Grid>
+
+                            <Grid xs={12} container>
+                            <Typography>{form?.state || 'State'}</Typography> <br />
+                            </Grid>
+                        </Grid>
+                    </>
+                )
+            )
+        }
+
+        {( isEditing && (
+        <>
         <Stack direction={"row"} spacing={2}>
             <TextField
                 label='First Name'
@@ -276,12 +341,9 @@ const handleEdit = async ()=>{
                     })}
             </Select>
 
-            {/* <TextField
-                label='District'
-                onChange={val => setForm({...form, district: val.target.value})}
-                value={form.district}
-                fullWidth={true} /> */}
         </Stack>
+        </>
+        ))}
         
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             {( isEditing && (<LoadingButton
@@ -319,6 +381,43 @@ const handleEdit = async ()=>{
         </div>
         
       </Stack>
+
+      {estimate.showCreate && (
+        <AppModal
+          fullWidth
+          size="xl"
+          show={estimate.showCreate}
+          Content={
+            <Formik
+              initialValues={estimate.initialValues}
+              validationSchema={estimateModel.schema}
+              validateOnChange
+              onSubmit={(values, formikHelpers) => {
+                if (estimate.save) {
+                  estimate.handleSaveEstimate(values, formikHelpers);
+                } else estimate.handleCreateEstimate(values, formikHelpers);
+              }}>
+              <EstimateForm
+                showCreate={estimate.showCreate}
+                isPopUp={true}
+                setLabourTotal={estimate.setLabourTotal}
+                setPartTotal={estimate.setPartTotal}
+                setGrandTotal={estimate.setGrandTotal}
+                setDiscount={estimate.setDiscount}
+                setDiscountType={estimate.setDiscountType}
+                labourTotal={estimate.labourTotal}
+                partTotal={estimate.partTotal}
+                grandTotal={estimate.grandTotal}
+                isSubmitting={
+                  estimateReducer.createEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading'
+                }
+                setSave={estimate.setSave}
+              />
+            </Formik>
+          }
+          onClose={() => estimate.setShowCreate(false)}
+        />
+      )}
 
       <AppAlert
         alertType="error"

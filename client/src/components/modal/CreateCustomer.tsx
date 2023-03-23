@@ -23,6 +23,7 @@ type Props = {
 export default function CreateCustomerModal(props: Props) {
     const [form, setForm] = useState({
         accountType: 'individual',
+        title: "",
         firstName: "",
         email: "",
         lastName: "",
@@ -48,6 +49,7 @@ export default function CreateCustomerModal(props: Props) {
         if((props.data == null) || (props.data == undefined)){
             setForm({
                 accountType: 'individual',
+                title: "",
                 firstName: "",
                 email: "",
                 lastName: "",
@@ -66,6 +68,7 @@ export default function CreateCustomerModal(props: Props) {
             setTimeout(()=>{
                 setForm({
                     accountType: props.data?.accountType || "individual",
+                    title: props.data?.title || "",
                     firstName: props.data?.firstName || "",
                     email: props.data?.email || "",
                     lastName: props.data?.lastName || "",
@@ -147,6 +150,7 @@ export default function CreateCustomerModal(props: Props) {
         const {error} = Joi.object({
             firstName: Joi.string().required().label("First Name"),
             lastName: Joi.string().required().label("Last Name"),
+            title: Joi.string().optional().label("Title"),
             email: Joi.string().required().label("Email"),
             state: Joi.string().required().label("State"),
             district: Joi.string().required().label("District"),
@@ -267,6 +271,16 @@ export default function CreateCustomerModal(props: Props) {
                     <Box sx={{ 
                         
                     }}>
+                        <Stack direction={"row"} spacing={2}>
+                            <TextField
+                                label='Title'
+                                onChange={val => setForm({...form, title: val.target.value})}
+                                value={form.title}
+                                style={{ width: '49%' }} />
+                            
+                        </Stack>
+                        <br />
+
                         <Stack direction={"row"} spacing={2}>
                             <TextField
                                 label='First Name'

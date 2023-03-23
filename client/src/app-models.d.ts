@@ -397,6 +397,7 @@ declare module '@app-models' {
   interface ICustomer {
     id: number;
     code: string;
+    title: string;
     firstName: string;
     lastName: string;
     username: string;
