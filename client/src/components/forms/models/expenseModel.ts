@@ -13,9 +13,9 @@ export interface IExpenseValues {
 
 export interface IBeneficiaryValue {
   name: string;
-  accountName: string;
-  bankName: string;
-  accountNumber: string;
+  accountName: string | null;
+  bankName: string | null;
+  accountNumber: string | null;
 }
 
 export interface IExpenseUpdateValue {

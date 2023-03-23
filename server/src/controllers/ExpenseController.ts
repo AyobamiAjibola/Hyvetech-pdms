@@ -285,11 +285,11 @@ export default class ExpenseController {
     let $expense = () => {
       let code: string;
       let res = ''
-      code = count.toString().padStart(3, '0')
+      code = count.toString().padStart(4, '0')
       let fnd = expenses.find(value => value.expenseCode.toString() === code)
       if(fnd){
         count++
-        code = count.toString().padStart(3, '0')
+        code = count.toString().padStart(4, '0')
       } else { res = code }
 
       res = code
@@ -335,15 +335,15 @@ export default class ExpenseController {
       where: { accountNumber: value.accountNumber, partnerId: partner.id },
     });
 
-    const beneficiaryAccountName = await dao.beneficiaryDAOService.findByAny({
-      where: { accountName: value.accountName, partnerId: partner.id },
-    });
+    // const beneficiaryAccountName = await dao.beneficiaryDAOService.findByAny({
+    //   where: { accountName: value.accountName, partnerId: partner.id },
+    // });
 
-    if (beneficiaryAccountNumber)
-      return Promise.reject(CustomAPIError.response('Beneficiary account number already exists.', HttpStatus.BAD_REQUEST.code));
+    // if (beneficiaryAccountNumber)
+    //   return Promise.reject(CustomAPIError.response('Beneficiary account number already exists.', HttpStatus.BAD_REQUEST.code));
 
-    if (beneficiaryAccountName)
-      return Promise.reject(CustomAPIError.response('Beneficiary account name already exists.', HttpStatus.BAD_REQUEST.code));
+    // if (beneficiaryAccountName)
+    //   return Promise.reject(CustomAPIError.response('Beneficiary account name already exists.', HttpStatus.BAD_REQUEST.code));
 
     return dao.beneficiaryDAOService.create({ ...value, partnerId: partner.id });
   }

@@ -79,7 +79,7 @@ export const createExpenseAction = asyncThunkWrapper<ApiResponseSuccess<Partial<
   },
 );
 
-export const createBeneficiaryAction = asyncThunkWrapper<ApiResponseSuccess<IExpense>, IBeneficiaryValue>(
+export const createBeneficiaryAction = asyncThunkWrapper<ApiResponseSuccess<IExpense>, Partial<IBeneficiaryValue>>(
   CREATE_BENEFICIARY,
   async data => {
     const response = await axiosClient.post(`${API_ROOT}/beneficiary/create`, data);

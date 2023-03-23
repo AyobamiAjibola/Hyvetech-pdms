@@ -115,7 +115,7 @@ export const $saveExpenseSchema: Joi.SchemaMap<ExpenseSchemaType> = {
   beneficiaryId: Joi.number().label(expenseFields.beneficiaryId.label),
   invoiceId: Joi.number().optional().label(expenseFields.invoiceId.label),
   dateModified: Joi.any().required().label(expenseFields.dateModified.label),
-  note: Joi.string().optional().label(expenseFields.note.label),
+  note: Joi.string().allow('').optional().label(expenseFields.note.label),
 };
 
 export const $updateExpenseSchema: Joi.SchemaMap<Expense> = {

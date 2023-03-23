@@ -135,7 +135,7 @@ declare module '@app-models' {
     createdAt: Date;
     updatedAt: Date;
   }
-
+  IExpenseCategory
   interface ITag {
     id: number;
     name: string;
