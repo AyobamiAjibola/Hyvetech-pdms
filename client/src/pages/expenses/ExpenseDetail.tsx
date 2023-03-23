@@ -205,7 +205,7 @@ const ExpenseDetail = () => {
                           <TextField
                             {...params}
                             fullWidth
-                            label="Date Modified"
+                            label="Date Created"
                             variant="outlined"
                           />
                         }
