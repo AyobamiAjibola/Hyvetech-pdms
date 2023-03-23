@@ -108,8 +108,6 @@ const ExpenseCreate = () => {
     })
     if (findRef !== '') return setErrorAlert('This payment has already been recorded');
 
-    // if (!invoice) return setErrorAlert('Please select invoice');
-
     dispatch(
       createExpenseAction({
         category,
@@ -311,7 +309,7 @@ const ExpenseCreate = () => {
                       <TextField
                         {...params}
                         fullWidth
-                        label="Date Modified"
+                        label="Date"
                         variant="outlined"
                       />
                     }

@@ -116,7 +116,8 @@ const Expenses = () => {
         width: 200,
         sortable: true,
         renderCell: params => {
-          return <span>{params.row.category.name}</span>;
+          console.log(params)
+          return <span>{params.row.category !== null ? params.row.category.name : ''}</span>;
         },
       },
       {

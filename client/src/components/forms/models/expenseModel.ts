@@ -26,7 +26,10 @@ export interface IExpenseUpdateValue {
 export interface IExpenseUpdateDetailValue {
   id: number;
   note: string;
-  expenseCategoryId: number;
-  expenseTypeId: number;
-  amount: number | null
+  amount: number | null;
+  category: IExpenseCategory | null;
+  type: IExpenseType | null;
+  invoice: IInvoice | null;
+  status: string;
+  dateModified: any
 }

@@ -1,5 +1,6 @@
 import { IDashboardData } from '@app-interfaces';
 import { IJob, IVehicle } from '@app-models';
+import moment from 'moment';
 import settings from '../config/settings';
 
 export function formatNumberToIntl(amount: number) {
@@ -171,4 +172,8 @@ export function dataURItoBlob(dataURI: string) {
 
 export function getRndInteger(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function formatDate (value: any) {
+  return value ? moment(value).format('LLL') : '-';
 }

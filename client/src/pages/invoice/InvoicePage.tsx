@@ -50,6 +50,7 @@ function InvoicePage() {
 
   const generateExpense = () => {
     dispatch(setInvoiceCode(invoice?.code))
+    // sessionStorage.setItem('inv#*C0', invoice?.code)
     navigate('/expense/create')
   }
 
