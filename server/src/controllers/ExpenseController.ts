@@ -252,7 +252,7 @@ export default class ExpenseController {
       note: value?.note,
       dateModified: value.dateModified
     };
-
+    
     const expense = await dao.expenseDAOService.findById(+req.params.id)
      if (!expense) {
       return Promise.reject(CustomAPIError.response("Expense does not exist", HttpStatus.NOT_FOUND.code));

@@ -111,11 +111,11 @@ export declare namespace appCommonTypes {
     | 'delete_expense_type'
     | 'delete_expense_type'
     | 'read_expense_type'
-    | 'create_workflow_profile'
-    | 'update_workflow_profile'
-    | 'delete_workflow_profile'
-    | 'update_workflow_profile'
-    | 'read_workflow_profile'
+    | 'create_workshop_profile'
+    | 'update_workshop_profile'
+    | 'delete_workshop_profile'
+    | 'update_workshop_profile'
+    | 'read_workshop_profile'
     | 'create_transaction'
     | 'update_transaction'
     | 'delete_transaction'
@@ -123,7 +123,8 @@ export declare namespace appCommonTypes {
     | 'create_item'
     | 'read_item'
     | 'delete_item'
-    | 'update_item';
+    | 'update_item'
+    | 'view_analytics';
 
   type VINProvider = {
     name: string;

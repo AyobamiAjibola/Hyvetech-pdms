@@ -115,13 +115,19 @@ function GarageProfileAndSetting() {
   const handleSubmitKyc = (values: IKycValues) => {
     if (partner) {
       dispatch(createPartnerKycAction({ partnerId: partner.id, data: values }));
-    } else throw new Error(MESSAGES.internalError);
+    } else {
+      setError({ message: 'Permission denied. Please try again' });
+      throw new Error(MESSAGES.internalError);
+    }
   };
 
   const handleSubmitSettings = (values: IGarageSettings) => {
     if (partner) {
       dispatch(createPartnerSettingsAction({ partnerId: partner.id, data: values }));
-    } else throw new Error(MESSAGES.internalError);
+    } else {
+      setError({ message: 'Permission denied. Please try again' });
+      throw new Error(MESSAGES.internalError);
+    }
   };
 
   return (

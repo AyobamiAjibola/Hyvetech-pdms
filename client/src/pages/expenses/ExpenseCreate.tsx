@@ -110,7 +110,7 @@ const ExpenseCreate = () => {
     if (findRef !== '') return setErrorAlert('This payment has already been recorded');
 
     const invoiceCode = invoiceStore.invoices.find((inv: IInvoice) => inv.code === expenseReducer.invoiceCode)
-
+      
     dispatch(
       createExpenseAction({
         category,
