@@ -16,6 +16,14 @@ export const expenseFields = {
       required: 'Date is required',
     },
   },
+  expenseCode: {
+    name: 'Expense Number',
+    label: 'expenseCode',
+    error: {
+      invalid: 'Expense Number is invalid',
+      required: 'Expense Number is required',
+    },
+  },
   reference: {
     name: 'Reference',
     label: 'reference',
@@ -72,6 +80,22 @@ export const expenseFields = {
       required: 'Invoice ID is required',
     },
   },
+  note: {
+    name: 'Note',
+    label: 'note',
+    error: {
+      invalid: 'Note is invalid',
+      required: 'Note is required',
+    },
+  },
+  dateModified: {
+    name: 'Date Modified',
+    label: 'dateModified',
+    error: {
+      invalid: 'Date is invalid',
+      required: 'Date is required',
+    },
+  },
 };
 
 export type expenseType = 'PAID' | 'UNPAID';
@@ -90,6 +114,8 @@ export const $saveExpenseSchema: Joi.SchemaMap<ExpenseSchemaType> = {
   expenseTypeId: Joi.number().label(expenseFields.expenseTypeId.label),
   beneficiaryId: Joi.number().label(expenseFields.beneficiaryId.label),
   invoiceId: Joi.number().optional().label(expenseFields.invoiceId.label),
+  dateModified: Joi.any().required().label(expenseFields.dateModified.label),
+  note: Joi.string().allow('').optional().label(expenseFields.note.label),
 };
 
 export const $updateExpenseSchema: Joi.SchemaMap<Expense> = {
@@ -157,4 +183,13 @@ export default class Expense extends Model<InferAttributes<Expense>, InferCreati
 
   @Column(DataType.STRING)
   declare invoiceCode: string;
+
+  @Column(DataType.STRING)
+  declare expenseCode: string;
+
+  @Column(DataType.STRING)
+  declare note: string;
+
+  @Column(DataType.DATE)
+  declare dateModified: any;
 }

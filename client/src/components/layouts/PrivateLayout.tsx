@@ -5,7 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import AppointmentsPage from '../../pages/appointment/AppointmentsPage';
 import VehiclePages from '../../pages/vehicle/VehiclePages';
@@ -41,6 +41,9 @@ import Expenses from '../../pages/expenses/ExpensesPage';
 import ExpenseCreate from '../../pages/expenses/ExpenseCreate';
 import ExpenseDetail from '../../pages/expenses/ExpenseDetail';
 import PaymentRecieve from '../../pages/paymentRecieve/paymentRecieve';
+import { Settings } from '@mui/icons-material';
+import useAdmin from '../../hooks/useAdmin';
+import settings from '../../config/settings';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -51,25 +54,66 @@ function PrivateLayout() {
     setOpenSideNav(true);
   };
 
+  const navigate = useNavigate();
+  const {user} = useAdmin();
+
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex' }}>
-        <AppBar position="fixed" open={openSideNav}>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={{
-                marginRight: 5,
-                ...(openSideNav && { display: 'none' }),
-              }}>
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              Auto HYVE
-            </Typography>
+        <AppBar position="fixed" sx={{ backgroundColor: '#E8E8E8', boxShadow: 'none' }} open={openSideNav}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+              <IconButton
+                // color="inherit"
+                // color="black"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={{
+                  marginRight: 5,
+                  color: 'black',
+                  ...(openSideNav && { display: 'none' }),
+                }}>
+                <MenuIcon />
+              </IconButton>
+
+              {/* <img
+                style={{ width: 50, height: 50, borderRadius: 6 }}
+                crossOrigin="anonymous"
+                src="./logo.ico" alt="" /> */}
+
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+              <Typography sx={{ color: 'black', marginRight: 3, fontWeight: '400' }} variant="h6" noWrap component="div">
+                {user?.partner?.name || ""}
+              </Typography>
+
+              <img
+                style={{ width: 30, height: 30, borderRadius: 6 }}
+                crossOrigin="anonymous"
+                src={`${settings.api.baseURL}/${user?.partner?.logo || ""}`} alt=" " />
+
+              <IconButton
+                // color="inherit"
+                aria-label="open drawer"
+                onClick={()=>{
+                  // ..
+                  navigate("/garage");
+                }}
+                edge="start"
+                sx={{
+                  marginRight: 2,
+                  marginLeft: 5,
+                  color: 'black',
+                }}>
+                <Settings />
+              </IconButton>
+
+            </Box>
+            
           </Toolbar>
         </AppBar>
         <SideNav />

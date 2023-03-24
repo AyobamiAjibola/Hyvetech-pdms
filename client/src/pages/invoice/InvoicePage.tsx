@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IBillingInformation, IEstimate, IInvoice } from '@app-models';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, Avatar, Box, Button, Divider, Grid, Input, Select, Stack, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
@@ -16,6 +16,7 @@ import { getInvoicesAction, getSingleInvoice } from '../../store/actions/invoice
 import AppAlert from '../../components/alerts/AppAlert';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
+import { setInvoiceCode } from '../../store/reducers/expenseReducer';
 
 const API_ROOT = settings.api.rest;
 // interface ILocationState {
@@ -33,6 +34,7 @@ function InvoicePage() {
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   // const location = useLocation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate()
 
   const store = useAppSelector(state => state.invoiceReducer);
 
@@ -45,6 +47,11 @@ function InvoicePage() {
     amount: '',
     type: 'Cash',
   });
+
+  const generateExpense = () => {
+    dispatch(setInvoiceCode(invoice?.code))
+    navigate('/expense/create')
+  }
 
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
@@ -257,6 +264,12 @@ function InvoicePage() {
               {'Record Payment'}
             </Button>
           )}
+          <Button variant="outlined" color="success" size="small"
+            sx={{ mr: 2 }}
+            onClick={() => generateExpense()}
+          >
+            Record Expense
+          </Button>
           <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
             {downloading ? 'Downloading...' : 'Download Pdf'}
           </Button>

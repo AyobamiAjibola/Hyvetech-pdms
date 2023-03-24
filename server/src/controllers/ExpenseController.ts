@@ -184,6 +184,18 @@ export default class ExpenseController {
     return response;
   }
 
+  @TryCatch
+  public async updateExpenseDetails(req: Request) {
+    await this.doUpdateExpenseDetails(req);
+
+    const response: HttpResponse<null> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+    };
+
+    return response;
+  }
+
   private async doGetExpenseById(req: Request) {
     return dao.expenseDAOService.findById(+req.params.id, {
       include: [Invoice, Beneficiary, ExpenseType, ExpenseCategory],
@@ -211,6 +223,25 @@ export default class ExpenseController {
     if (!expenseOld) return Promise.reject(CustomAPIError.response('Expense not found', HttpStatus.NOT_FOUND.code));
 
     return dao.expenseDAOService.update(expenseOld, values as CreationAttributes<Expense>);
+  }
+
+  private async doUpdateExpenseDetails(req: Request) {
+    // const { error, value } = Joi.object<Expense>($saveExpenseSchema).validate(req.body);
+    const value = req.body;
+    console.log(req.params)
+    // if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    const expense = await dao.expenseDAOService.findByAny({
+      where: {id: +req.params.id}
+    });
+
+    if (!expense) {
+      return Promise.reject(CustomAPIError.response("Expense does not exist", HttpStatus.NOT_FOUND.code));
+    }
+
+    return expense.update({
+      reference: value.reference,
+      note: value.reference
+    });
   }
 
   private async doGetAllExpenses(req: Request) {
@@ -266,6 +297,29 @@ export default class ExpenseController {
     if (!invoice && !['overhead', 'others'].includes(category.name.toLowerCase()))
       return Promise.reject(CustomAPIError.response('Invoice not found', HttpStatus.NOT_FOUND.code));
 
+      const expenses = await dao.expenseDAOService.findAll({
+        where: { partnerId: partner.id }
+      });
+
+    //EXPENSE CODE GENERATOR
+    let count = expenses.length + 1;
+    let $expense = () => {
+      let code: string;
+      let res = ''
+      code = count.toString().padStart(4, '0')
+      let fnd = expenses.find(value => value.expenseCode.toString() === code)
+      if(fnd){
+        count++
+        code = count.toString().padStart(4, '0')
+      } else { res = code }
+
+      res = code
+      return res
+    };
+
+    const result = $expense()
+    // const invoiceCode = Generic.randomize({ number: true, count: 6 });
+
     const data: Partial<Expense> = {
       amount: value.amount,
       reference: value.reference,
@@ -276,6 +330,9 @@ export default class ExpenseController {
       invoiceId: value.invoiceId,
       partnerId: partner.id,
       invoiceCode: invoice?.code,
+      expenseCode: result,
+      note: value?.note,
+      dateModified: value.dateModified
     };
 
     const expense = await dao.expenseDAOService.create(data as CreationAttributes<Expense>);
@@ -295,12 +352,19 @@ export default class ExpenseController {
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-    const beneficiary = await dao.beneficiaryDAOService.findByAny({
-      where: { name: value.name, partnerId: partner.id },
+    const beneficiaryAccountNumber = await dao.beneficiaryDAOService.findByAny({
+      where: { accountNumber: value.accountNumber, partnerId: partner.id },
     });
 
-    if (beneficiary)
-      return Promise.reject(CustomAPIError.response('Beneficiary already exists.', HttpStatus.BAD_REQUEST.code));
+    // const beneficiaryAccountName = await dao.beneficiaryDAOService.findByAny({
+    //   where: { accountName: value.accountName, partnerId: partner.id },
+    // });
+
+    // if (beneficiaryAccountNumber)
+    //   return Promise.reject(CustomAPIError.response('Beneficiary account number already exists.', HttpStatus.BAD_REQUEST.code));
+
+    // if (beneficiaryAccountName)
+    //   return Promise.reject(CustomAPIError.response('Beneficiary account name already exists.', HttpStatus.BAD_REQUEST.code));
 
     return dao.beneficiaryDAOService.create({ ...value, partnerId: partner.id });
   }

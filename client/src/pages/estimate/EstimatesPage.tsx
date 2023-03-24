@@ -221,14 +221,14 @@ function EstimatesPage() {
   const techColumns = useMemo(() => {
     return [
       {
-        field: 'updatedAt',
-        headerName: 'Date Modified',
+        field: 'createdAt',
+        headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        width: 160,
         type: 'string',
         valueFormatter: ({ value }) => {
-          return value ? moment(value).format('LLL') : '-';
+          return value ? moment(value).format('DD/MM/YYYY') : '-';
         },
         sortable: true,
         sortingOrder: ['desc'],

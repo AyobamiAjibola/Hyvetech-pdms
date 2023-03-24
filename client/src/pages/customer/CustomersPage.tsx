@@ -132,7 +132,7 @@ const getPartnerTableColumn = (options?: any) =>
       //   return param ? `${param.row.firstName} ${param.row.lastName}` : '';
       // },
       renderCell: param => (
-        <div style={{ cursor: 'pointer' }} onClick={() => options.onView(param.row)}>{param ? `${param.row.firstName} ${param.row.lastName}` : ''}</div>
+        <div style={{ cursor: 'pointer', color: 'lightblue' }} onClick={() => options.onView(param.row)}>{param ? `${param?.row?.title || ""} ${param.row.firstName} ${param.row.lastName}` : ''}</div>
       )
     },
     {

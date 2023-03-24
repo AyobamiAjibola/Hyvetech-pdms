@@ -76,6 +76,9 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
   declare code: string;
 
   @Column(DataType.STRING)
+  declare title: string;
+
+  @Column(DataType.STRING)
   declare firstName: string;
 
   @Column(DataType.STRING)

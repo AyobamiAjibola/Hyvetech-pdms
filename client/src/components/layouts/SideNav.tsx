@@ -10,11 +10,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
+import { createTheme, CSSObject, styled, Theme, ThemeProvider, useTheme } from '@mui/material/styles';
 import React, { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { DRAWER_WIDTH } from '../../config/constants';
+// import settings from '../../config/settings';
 import { AppContext } from '../../context/AppContextProvider';
 import useAdmin from '../../hooks/useAdmin';
 import useLogout from '../../hooks/useLogout';
@@ -93,64 +94,97 @@ function SideNav() {
   };
 
   return (
-    <Drawer variant="permanent" open={openSideNav}>
-      <DrawerHeader>
-        <IconButton onClick={handleDrawerClose}>
-          {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-        </IconButton>
-      </DrawerHeader>
-      <Divider />
-      <List>
-        {navs.map((nav, index) => (
-          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              onClick={() => {
-                navigate(nav.path);
+    <ThemeProvider theme={createTheme({
+      palette: {
+          primary: { main: '#4F4F4F' },
+          // primary: { main: '#e8e8e8' },
+          secondary: { main: '#4F4F4F' },
+          mode: 'dark',
+        },
+      })}>
+      <Drawer variant="permanent" open={openSideNav}>
+      <ThemeProvider theme={createTheme({
+        palette: {
+            primary: { main: '#1a97cf' },
+            // primary: { main: '#e8e8e8' },
+            secondary: { main: '#fba91a' },
+            mode: 'light',
+          },
+        })}>
+          
+          <DrawerHeader sx={{ backgroundColor: 'white' }}>
+          
+            <img
+              style={{ 
+                // width: 50, height: 50, borderRadius: 6,
+                width: 90, height: 90, borderRadius: 6,
+                position: 'absolute',
+                left: '24%'
               }}
-              selected={nav.path === location.pathname}
-              sx={{
-                minHeight: 48,
-                justifyContent: openSideNav ? 'initial' : 'center',
-                px: 2.5,
-              }}>
-              <ListItemIcon
+              crossOrigin="anonymous"
+              src="./logo.ico" alt="" />
+
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            </IconButton>
+
+          </DrawerHeader>
+
+        </ThemeProvider>
+        
+        <Divider />
+        <List>
+          {navs.map((nav, index) => (
+            <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+              <ListItemButton
+                onClick={() => {
+                  navigate(nav.path);
+                }}
+                selected={nav.path === location.pathname}
                 sx={{
-                  minWidth: 0,
-                  mr: openSideNav ? 3 : 'auto',
-                  justifyContent: 'center',
+                  minHeight: 48,
+                  justifyContent: openSideNav ? 'initial' : 'center',
+                  px: 2.5,
                 }}>
-                <nav.Icon />
-              </ListItemIcon>
-              <ListItemText primary={nav.name} sx={{ opacity: openSideNav ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['Logout'].map(text => (
-          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-              onClick={logout.handleLogout}
-              sx={{
-                minHeight: 48,
-                justifyContent: openSideNav ? 'initial' : 'center',
-                px: 2.5,
-              }}>
-              <ListItemIcon
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: openSideNav ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}>
+                  <nav.Icon />
+                </ListItemIcon>
+                <ListItemText primary={nav.name} sx={{ opacity: openSideNav ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {['Logout'].map(text => (
+            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+              <ListItemButton
+                onClick={logout.handleLogout}
                 sx={{
-                  minWidth: 0,
-                  mr: openSideNav ? 3 : 'auto',
-                  justifyContent: 'center',
+                  minHeight: 48,
+                  justifyContent: openSideNav ? 'initial' : 'center',
+                  px: 2.5,
                 }}>
-                <Logout />
-              </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: openSideNav ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Drawer>
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: openSideNav ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}>
+                  <Logout />
+                </ListItemIcon>
+                <ListItemText primary={text} sx={{ opacity: openSideNav ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+    </ThemeProvider>
   );
 }
 

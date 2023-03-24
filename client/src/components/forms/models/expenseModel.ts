@@ -7,16 +7,22 @@ export interface IExpenseValues {
   type: IExpenseType;
   amount: number;
   reference: string | null;
+  note: string | null;
+  dateModified: any;
 }
 
 export interface IBeneficiaryValue {
   name: string;
-  accountName: string;
-  bankName: string;
-  accountNumber: string;
+  accountName: string | null;
+  bankName: string | null;
+  accountNumber: string | null;
 }
 
 export interface IExpenseUpdateValue {
   reference: string;
   id: number | null;
+}
+
+export interface IExpenseUpdateDetailValue {
+  note: string;
 }

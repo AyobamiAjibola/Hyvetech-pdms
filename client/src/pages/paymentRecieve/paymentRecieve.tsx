@@ -87,7 +87,7 @@ export default function PaymentRecieve() {
             width: 200,
             type: 'string',
             valueFormatter: ({ value }: any) => {
-              return value ? moment(value).format('LLL') : '-';
+              return value ? moment(value).format('DD/MM/YYYY') : '-';
             },
             sortable: true,
           },
@@ -451,7 +451,7 @@ export default function PaymentRecieve() {
               }
               ActionComponent={
                 <DialogActions>
-                  <ReactToPdf targetRef={ref} filename="receipt.pdf" options={options} x={.5} y={.5} scale={0.8}>
+                  <ReactToPdf targetRef={ref} filename={`${hashString(`${partnerName[0]}C${receiptData?.id || ""}`)}.pdf`} options={options} x={.5} y={.5} scale={0.8}>
                     {({toPdf}) => (
                         <Button onClick={toPdf}>DOWNLOAD</Button>
                     )}

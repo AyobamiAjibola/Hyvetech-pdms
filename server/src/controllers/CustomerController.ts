@@ -85,6 +85,7 @@ export default class CustomerController {
   public static async addCustomers(req: Request) {
     // console.log(req.body)
     const {error, value} = Joi.object({
+            title: Joi.string().optional().label("Title"),
             firstName: Joi.string().required().label("First Name"),
             lastName: Joi.string().required().label("Last Name"),
             email: Joi.string().email().required().label("Email"),
@@ -119,6 +120,7 @@ export default class CustomerController {
         customer.companyName = value.companyName;
         customer.lastName = value.lastName;
         customer.creditRating = value.creditRating;
+        customer.title = value.title;
         await customer.save()
 
         await Contact.update({
@@ -167,6 +169,7 @@ export default class CustomerController {
       lastName: value.lastName,
       email: value.email,
       phone: value.phone,
+      title: value.title,
       partnerId: req?.user.partner?.id || null
     }
 

@@ -157,7 +157,7 @@ declare module '@app-models' {
     createdAt: Date;
     updatedAt: Date;
   }
-
+  IExpenseCategory
   interface ITag {
     id: number;
     name: string;
@@ -419,6 +419,7 @@ declare module '@app-models' {
   interface ICustomer {
     id: number;
     code: string;
+    title: string;
     firstName: string;
     lastName: string;
     username: string;
@@ -598,32 +599,23 @@ declare module '@app-models' {
 
   interface IExpense {
     id: number;
-
     date: string;
-
     amount: number;
-
     reference: string;
-
     status: expenseType;
-
     beneficiary: IBeneficiary;
-
     category: IExpenseCategory;
-
     type: IExpenseType;
-
     invoice: IInvoice;
-
     invoiceId: number;
-
     beneficiaryId: number;
-
     expenseTypeId: number;
-
     expenseCategoryId: number;
-
     invoiceCode: string;
+    expenseCode: number;
+    note: string;
+    dateModified: any;
+    partnerId: number
   }
 
   interface IEstimate {
@@ -723,5 +715,6 @@ declare module '@app-models' {
     deletedAt: string;
     discount: number;
     discountType: string;
+    invoiceCode: string;
   }
 }

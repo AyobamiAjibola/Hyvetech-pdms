@@ -19,7 +19,7 @@ import RideShareSettings from '../components/partner/rideShare/RideShareSettings
 import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from '../config/constants';
 // import TechniciansPage from '../pages/technician/TechniciansPage';
 import Estimate from '../components/partner/garage/Estimate';
-import VehicleOwner from '../components/partner/garage/VehicleOwner';
+// import VehicleOwner from '../components/partner/garage/VehicleOwner';
 import ProfileNew from '../components/customer/Profile';
 import UserRoleManagement from '../components/partner/garage/UserRoleManagement';
 
@@ -54,11 +54,11 @@ export const partnerDetailTabs: ITab[] = [
     name: 'Settings',
     Element: RideShareSettings,
   },
-  {
-    tag: GARAGE_CATEGORY,
-    name: 'Auto Hyve',
-    Element: VehicleOwner,
-  },
+  // {
+  //   tag: GARAGE_CATEGORY,
+  //   name: 'Auto Hyve',
+  //   Element: VehicleOwner,
+  // },
   // {
   //   tag: GARAGE_CATEGORY,
   //   name: 'Ride Share Hyve',
@@ -66,7 +66,7 @@ export const partnerDetailTabs: ITab[] = [
   // },
   {
     tag: GARAGE_CATEGORY,
-    name: 'Garage Profile & Settings',
+    name: 'Account Settings',
     Element: GarageProfileAndSetting,
   },
   {
