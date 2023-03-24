@@ -8,8 +8,11 @@ import Expense from '../models/Expense';
 import Customer from '../models/Customer';
 import Transaction from '../models/Transaction';
 import HttpResponse = appCommonTypes.HttpResponse;
+import { HasPermission } from '../decorators';
+import { MANAGE_ALL, MANAGE_TECHNICIAN, VIEW_ANALYTICS } from '../config/settings';
 
 export default class DashboardController {
+  @HasPermission([VIEW_ANALYTICS, MANAGE_ALL, MANAGE_TECHNICIAN])
   public static async getTechData(req: Request) {
     //
     try {

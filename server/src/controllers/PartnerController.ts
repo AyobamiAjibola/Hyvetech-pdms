@@ -11,7 +11,13 @@ import dataSources from '../services/dao';
 import { CATEGORIES, QUEUE_EVENTS, UPLOAD_BASE_PATH } from '../config/constants';
 import Generic from '../utils/Generic';
 import { appCommonTypes } from '../@types/app-common';
-import settings, { MANAGE_ALL } from '../config/settings';
+import settings, {
+  CREATE_WORKSHOP_PROFILE,
+  MANAGE_ALL,
+  MANAGE_TECHNICIAN,
+  READ_WORKSHOP_PROFILE,
+  UPDATE_WORKSHOP_PROFILEY,
+} from '../config/settings';
 import Partner from '../models/Partner';
 import Category from '../models/Category';
 import User from '../models/User';
@@ -356,7 +362,7 @@ export default class PartnerController {
    * @name createKyc
    * @param req
    */
-  @HasPermission([MANAGE_ALL])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_WORKSHOP_PROFILE, UPDATE_WORKSHOP_PROFILEY])
   public async createKyc(req: Request) {
     const partnerId = req.params.partnerId as string;
 
@@ -413,7 +419,7 @@ export default class PartnerController {
    * @name createSettings
    * @param req
    */
-  @HasPermission([MANAGE_ALL])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_WORKSHOP_PROFILE, UPDATE_WORKSHOP_PROFILEY])
   public async createSettings(req: Request): Promise<HttpResponse<InferAttributes<Partner>>> {
     const partnerId = req.params.partnerId as string;
 
@@ -512,9 +518,10 @@ export default class PartnerController {
    * @name getPartner
    * @param id
    */
-  public async getPartner(id: number) {
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, READ_WORKSHOP_PROFILE, CREATE_WORKSHOP_PROFILE])
+  public async getPartner(req: Request) {
     try {
-      const partner = await dataSources.partnerDAOService.findById(id, {
+      const partner = await dataSources.partnerDAOService.findById(+req.params.id || +req.params.partnerId, {
         include: [Category, User, Contact],
       });
 
