@@ -70,6 +70,7 @@ const ExpenseCreate = () => {
       setAmount('');
       setReference('');
       dispatch(clearCreateEspenseStatus());
+      dispatch(setInvoiceCode(''))
       navigate(-1);
     } else if (store.createExpenseStatus === 'failed') {
       setErrorAlert(store.createExpenseError);
@@ -108,8 +109,6 @@ const ExpenseCreate = () => {
     })
     if (findRef !== '') return setErrorAlert('This payment has already been recorded');
 
-    // if (!invoice) return setErrorAlert('Please select invoice');
-
     dispatch(
       createExpenseAction({
         category,
@@ -123,7 +122,6 @@ const ExpenseCreate = () => {
       }),
     );
 
-    dispatch(setInvoiceCode(''))
   };
 
   useEffect(() => {
@@ -311,7 +309,7 @@ const ExpenseCreate = () => {
                       <TextField
                         {...params}
                         fullWidth
-                        label="Date Modified"
+                        label="Date"
                         variant="outlined"
                       />
                     }

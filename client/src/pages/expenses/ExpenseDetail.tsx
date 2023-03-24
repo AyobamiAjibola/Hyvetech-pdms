@@ -1,10 +1,12 @@
 import {
   IExpense,
-  // IExpenseCategory,
-  IExpenseType, IInvoice } from '@app-models';
-import { ArrowBackIosNew, Save } from '@mui/icons-material';
+  IExpenseCategory,
+  IExpenseType,
+  IInvoice
+} from '@app-models';
+import { ArrowBackIosNew, Save, Edit } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Autocomplete, Box, CircularProgress, Divider, Grid, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, CircularProgress, Divider, Grid, TextField, Typography } from '@mui/material';
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -21,12 +23,14 @@ import {
 import { getInvoicesAction } from '../../store/actions/invoiceActions';
 import { getPayStackBanksAction } from '../../store/actions/miscellaneousActions';
 import {
+  clearGetExpenseStatus,
   clearUpdateExpenseDetailStatus
 } from '../../store/reducers/expenseReducer';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Spinner from '../../utils/Spinner';
+import { formatDate } from '../../utils/generic';
 
 const ExpenseDetail = () => {
   const store = useAppSelector(state => state.expenseReducer);
@@ -38,24 +42,24 @@ const ExpenseDetail = () => {
   const [note, setNote] = useState<string | undefined>('');
   const [amount, setAmount] = useState<string | undefined>('');
   const [invoiceCode, setInvoiceCode] = useState<string | undefined>('');
-  const [category, setCategory] = useState<any | null>();
+  const [category, setCategory] = useState<IExpenseCategory | null>();
   const [type, setType] = useState<IExpenseType | null>();
-  const [invoice, setInvoice] = useState<IInvoice | null>(null);
+  const [invoice, setInvoice] = useState<IInvoice | null>();
   const [dateModified, setDateModified] = useState(new Date());
   const [suucessAlert, setSuccessAlert] = useState('');
   const navigate = useNavigate();
   const params = useParams() as unknown as { id: number };
   const [errorAlert, setErrorAlert] = useState('');
-  const [edit] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false)
+  const [date, setDate] = useState<string | null>('')
 
   useEffect(() => {
     if (store.updateExpenseDetailStatus === 'completed') {
-      // setValue(null);
+      setType(null);
       setInvoice(null);
       setCategory(null);
-      setType(null);
+      setNote('');
       setAmount('');
-      setReference('');
       dispatch(clearUpdateExpenseDetailStatus());
       navigate(-1);
     } else if (store.updateExpenseDetailStatus === 'failed') {
@@ -79,56 +83,84 @@ const ExpenseDetail = () => {
   }, [params]);
 
   useEffect(() => {
-    setExpense(store.expense);
-  }, [store.expense]);
+    if(store.getExpensesStatus === 'completed'){
+      setExpense(store.expense);
+    }
+
+    dispatch(clearGetExpenseStatus())
+  }, [dispatch, store.expense]);
 
   useEffect(() => {
     setNote(expense?.note);
     setInvoiceCode(expense?.invoiceCode);
     setAmount(expense?.amount.toString());
-    setCategory(expense?.category?.name);
-    setReference(expense?.reference)
+    setCategory(expense?.category);
+    setReference(expense?.reference);
+    setType(expense?.type)
+    setInvoice(expense?.invoice)
+    setDate(expense?.dateModified)
   },[expense])
+
   const handleDate = (newValue: any) => {
     setDateModified(newValue)
   }
-  console.log(category)
+
   const handleFormSubmit = () => {
-    // if (!beneficiary) {
-    //   return setErrorAlert('Please select beneficiary');
-    // }
-    // if (!amount) return setErrorAlert('Please provide amount');
+    if (!amount) return setErrorAlert('Please provide amount');
 
-    // if (isNaN(+amount)) return setErrorAlert('Amount is invalid');
+    if (isNaN(+amount)) return setErrorAlert('Amount is invalid');
 
-    // if (!category) return setErrorAlert('Please select category');
-    // if (!type) return setErrorAlert('Please select type');
+    if (!category) return setErrorAlert('Please select category');
+    if (type === null) return setErrorAlert('Please select type');
 
-    // let findRef = ''
-    // store.expenses.find(value => {
-    //   value.reference === reference && (findRef = value.reference)
-    // })
-    // if (findRef !== '') return setErrorAlert('This payment has already been recorded');
-
-    // if (!invoice) return setErrorAlert('Please select invoice');
+    let findRef = ''
+    store.expenses.find(value => {
+      value.reference === reference
+      // && (findRef = value.reference)
+    })
+    if (findRef !== '') return setErrorAlert('This payment has already been recorded or you entering a blank reference.');
 
     dispatch(
       updateExpenseDetailAction({
-        // category,
-        // type,
-        // beneficiary,
-        // invoice, //expenseReducer.invoiceCode !== '' ? invoiceCode : invoice,
-        // amount: +amount,
-        note: note
+        category,
+        id: params.id,
+        note,
+        type,
+        invoice,
+        dateModified,
+        amount: amount === undefined ? null : +amount,
+        status: expense?.status
       }),
     );
   };
 
-  // useEffect(() => {
-  //   if(expense?.status === 'UNPAID') {
-  //     setEdit(true)
-  //   }
-  // }, [expense])
+  const getOptionLabel = (option: any) => {
+    if (typeof option === 'string') {
+      return option;
+    }
+    if (option && option.name) {
+      return option.name;
+    }
+    return '';
+  };
+
+  const getOptionLabelInv = (option: any) => {
+    if (typeof option === 'string') {
+      return option;
+    }
+    if (option && option.code) {
+      return option.code;
+    }
+    return '';
+  };
+
+  const isOptionEqualToValue = (option: any, value: any) => {
+    return option === value || option.name === value
+  }
+
+  const isOptionEqualToValueInv = (option: any, value: any) => {
+    return option === value || option.code === value
+  }
 
   if (!expense)
     return (
@@ -147,7 +179,8 @@ const ExpenseDetail = () => {
           justifyContent: 'center',
           alignItems: 'center',
           width: '100%',
-          height: 'auto'
+          height: 'auto',
+
         }}
       >
         <Box
@@ -184,7 +217,23 @@ const ExpenseDetail = () => {
             {() => (
               <Form autoComplete="off" autoCorrect="off">
                 <Grid spacing={6} style={{ marginTop: 3 }} xs={12} container>
-                  <Grid item md={6} sm={7}>
+                    {!edit && <Grid item md={6} sm={7}>
+                      <TextField
+                        value={formatDate(date)}
+                        // onChange={e => setInvoiceCode(e.target.value)}
+                        fullWidth
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        // name="Invoice"
+                        label={'Date Created'}
+                        InputProps={{
+                          readOnly: edit === false && true
+                        }}
+                      />
+                    </Grid>}
+                  {edit && <Grid item md={6} sm={7}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DatePicker
                         disableFuture
@@ -197,13 +246,13 @@ const ExpenseDetail = () => {
                           <TextField
                             {...params}
                             fullWidth
-                            label="Date Modified"
+                            label="Date Created"
                             variant="outlined"
                           />
                         }
                       />
                     </LocalizationProvider>
-                  </Grid>
+                  </Grid>}
                   <Grid item md={6} sm={5}>
                     <Grid xs={12} container>
                         <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.name}</Typography> <br />
@@ -220,48 +269,49 @@ const ExpenseDetail = () => {
                 </Grid>
                 <Grid spacing={6} style={{ marginTop: 3 }} xs={12} container>
                   <Grid item md={6} sm={12}>
+                    {edit && <Autocomplete
+                        getOptionLabel={getOptionLabel}
+                        isOptionEqualToValue={isOptionEqualToValue}
+                        renderInput={props => (
+                          <TextField
+                            {...props}
+                            label="Expense category"
+                            InputProps={{
+                              ...props.InputProps,
+                              endAdornment: (
+                                <React.Fragment>
+                                  {store.getExpensesStatus === 'loading' ? (
+                                    <CircularProgress color="inherit" size={20} />
+                                  ) : null}
+                                  {props.InputProps.endAdornment}
+                                </React.Fragment>
+                              ),
+                            }}
+                          />
+                        )}
+                        defaultValue={edit ? category?.name : category}
+                        onChange={(_: any, newValue: any) => {
+                          setCategory(newValue);
+                        }}
+                        options={store.expenseCategories}
+                      />
+                    }
                     {!edit &&
                       <TextField
                         value={expense?.category?.name}
                         // onChange={e => setInvoiceCode(e.target.value)}
                         fullWidth
                         variant="outlined"
-                        // name="Invoice"
-                        label={'Expense Category'}
                         InputLabelProps={{
                           shrink: true,
                         }}
+                        // name="Invoice"
+                        label={'Expense category'}
                         InputProps={{
-                          readOnly: expense?.status === "PAID" && true
+                          readOnly: edit === false && true
                         }}
                       />
                     }
-                    {edit && <Autocomplete
-                      getOptionLabel={option => option.name}
-                      renderInput={props => (
-                        <TextField
-                          {...props}
-                          label="Expense category"
-                          name="category"
-                          InputProps={{
-                            ...props.InputProps,
-                            endAdornment: (
-                              <React.Fragment>
-                                {store.getExpensesStatus === 'loading' ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {props.InputProps.endAdornment}
-                              </React.Fragment>
-                            ),
-                          }}
-                        />
-                      )}
-                      value={category}
-                      onChange={(_: any, newValue) => {
-                        setCategory(newValue);
-                      }}
-                      options={store.expenseCategories}
-                    />}
                   </Grid>
                   <Grid item md={6} sm={12}>
                     <TextField
@@ -276,7 +326,7 @@ const ExpenseDetail = () => {
                       }}
                       label={'Amount'}
                       InputProps={{
-                        readOnly: expense?.status === "PAID" && true
+                        readOnly: edit === false && true
                       }}
                     />
                   </Grid>
@@ -295,35 +345,37 @@ const ExpenseDetail = () => {
                         // name="Invoice"
                         label={'Expense Type/Name'}
                         InputProps={{
-                          readOnly: expense?.status === "PAID" && true
+                          readOnly: edit === false && true
                         }}
                       />
                     }
                     {edit && <Autocomplete
-                      getOptionLabel={option => option.name}
-                      renderInput={props => (
-                        <TextField
-                          {...props}
-                          label="Expense Type/Name"
-                          InputProps={{
-                            ...props.InputProps,
-                            endAdornment: (
-                              <React.Fragment>
-                                {store.getExpensesStatus === 'loading' ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {props.InputProps.endAdornment}
-                              </React.Fragment>
-                            ),
-                          }}
-                        />
-                      )}
-                      value={type}
-                      onChange={(_: any, newValue) => {
-                        setType(newValue);
-                      }}
-                      options={store.expenseTypes}
-                    />}
+                        getOptionLabel={getOptionLabel}
+                        isOptionEqualToValue={isOptionEqualToValue}
+                        renderInput={props => (
+                          <TextField
+                            {...props}
+                            label="Expense Type/Name"
+                            InputProps={{
+                              ...props.InputProps,
+                              endAdornment: (
+                                <React.Fragment>
+                                  {store.getExpensesStatus === 'loading' ? (
+                                    <CircularProgress color="inherit" size={20} />
+                                  ) : null}
+                                  {props.InputProps.endAdornment}
+                                </React.Fragment>
+                              ),
+                            }}
+                          />
+                        )}
+                        defaultValue={edit ? type?.name : type}
+                        onChange={(_: any, newValue: any) => {
+                          setType(newValue);
+                        }}
+                        options={store.expenseTypes}
+                      />
+                    }
                   </Grid>
                   <Grid item md={6} sm={12}>
                     <TextField
@@ -339,7 +391,7 @@ const ExpenseDetail = () => {
                       }}
                       label={'Note/Remarks'}
                       InputProps={{
-                        readOnly: expense?.status === "PAID" && true
+                        readOnly: edit === false && true
                       }}
                     />
                   </Grid>
@@ -348,7 +400,7 @@ const ExpenseDetail = () => {
                   <Grid item md={6} sm={12}>
                     {!edit &&
                       <TextField
-                        value={invoiceCode === null && ''}
+                        value={invoiceCode ? invoiceCode : ''}
                         onChange={e => setInvoiceCode(e.target.value)}
                         fullWidth
                         variant="outlined"
@@ -358,38 +410,42 @@ const ExpenseDetail = () => {
                         }}
                         label={'Invoice'}
                         InputProps={{
-                          readOnly: expense?.status === "PAID" && true
+                          readOnly: edit === false && true
                         }}
                       />
                     }
                     {edit && <Autocomplete
-                      getOptionLabel={option => option.code}
-                      disabled={category?.name === "Others" || category?.name === "Overhead"}
-                      renderInput={props => (
-                        <TextField
-                          {...props}
-                          label="Invoice"
-                          disabled={category?.name === "Others" || category?.name === "Overhead"}
-                          InputProps={{
-                            ...props.InputProps,
-                            endAdornment: (
-                              <React.Fragment>
-                                {store.getExpensesStatus === 'loading' ? (
-                                  <CircularProgress color="inherit" size={20} />
-                                ) : null}
-                                {props.InputProps.endAdornment}
-                              </React.Fragment>
-                            ),
-                          }}
-                        />
-                      )}
-                      value={invoice}
-                      onChange={(_: any, newValue) => setInvoice(newValue)}
-                      options={invoiceStore.invoices}
-                    />}
+                        getOptionLabel={getOptionLabelInv}
+                        isOptionEqualToValue={isOptionEqualToValueInv}
+                        disabled={category?.name === "Others" || category?.name === "Overhead"}
+                        renderInput={props => (
+                          <TextField
+                            {...props}
+                            label="Invoice"
+                            disabled={category?.name === "Others" || category?.name === "Overhead"}
+                            InputProps={{
+                              ...props.InputProps,
+                              endAdornment: (
+                                <React.Fragment>
+                                  {store.getExpensesStatus === 'loading' ? (
+                                    <CircularProgress color="inherit" size={20} />
+                                  ) : null}
+                                  {props.InputProps.endAdornment}
+                                </React.Fragment>
+                              ),
+                            }}
+                          />
+                        )}
+                        defaultValue={edit ? invoice?.code : invoice}
+                        onChange={(_: any, newValue: any) => {
+                          setInvoice(newValue);
+                        }}
+                        options={invoiceStore.invoices}
+                      />
+                    }
                   </Grid>
                   <Grid item md={6} sm={12}>
-                    <TextField
+                    {!edit && <TextField
                       value={reference}
                       onChange={e => setReference(e.target.value)}
                       fullWidth
@@ -400,26 +456,38 @@ const ExpenseDetail = () => {
                         shrink: true,
                       }}
                       InputProps={{
-                        readOnly: expense?.status === "PAID" && true
+                        readOnly: edit === false && true
                       }}
-                    />
+                    />}
                   </Grid>
                 </Grid>
                 <Divider style={{ marginTop: 40, marginBottom: 20 }} />
 
-                <LoadingButton
+                {edit && <LoadingButton
                   type="submit"
-                  loading={store.createEstimateStatus === 'loading'}
-                  // disabled={store.createEstimateStatus === 'loading' || expense?.status === 'PAID'}
-                  disabled={true}
+                  loading={store.updateExpenseDetailStatus === 'loading'}
+                  disabled={store.updateExpenseDetailStatus === 'loading' || expense?.status === 'PAID'}
                   variant="contained"
                   color="secondary"
                   endIcon={<Save />}>
-                  {'Edit'}
-                </LoadingButton>
+                  {'Save'}
+                </LoadingButton>}
               </Form>
             )}
           </Formik>
+          {expense?.status === "UNPAID" && <Button
+            onClick={() => setEdit(true)}
+            variant="contained"
+            color="secondary"
+            endIcon={<Edit />}
+            disabled={edit === true}
+            sx={{
+              width: '10%',
+              mt: 2
+            }}
+          >
+            {'Edit'}
+          </Button>}
         </Box>
       </Box>
       <AppAlert onClose={() => setErrorAlert('')} alertType="error" show={errorAlert !== ''} message={errorAlert} />
