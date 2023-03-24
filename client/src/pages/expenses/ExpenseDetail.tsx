@@ -36,7 +36,6 @@ const ExpenseDetail = () => {
   const store = useAppSelector(state => state.expenseReducer);
   const invoiceStore = useAppSelector(state => state.invoiceReducer);
   const dispatch = useAppDispatch();
-  // const [beneficiary] = useState<IBeneficiary | null>(null);
   const [expense, setExpense] = useState<IExpense | null>();
   const [reference, setReference] = useState<string | undefined>('');
   const [note, setNote] = useState<string | undefined>('');
@@ -112,13 +111,6 @@ const ExpenseDetail = () => {
 
     if (!category) return setErrorAlert('Please select category');
     if (type === null) return setErrorAlert('Please select type');
-
-    let findRef = ''
-    store.expenses.find(value => {
-      value.reference === reference
-      // && (findRef = value.reference)
-    })
-    if (findRef !== '') return setErrorAlert('This payment has already been recorded or you entering a blank reference.');
 
     dispatch(
       updateExpenseDetailAction({
