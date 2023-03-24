@@ -238,17 +238,17 @@ export default class ExpenseController {
     const type = await dao.expenseTypeDAOService.findById(value.expenseTypeId);
       if (!type) return Promise.reject(CustomAPIError.response('Expense Type not found', HttpStatus.NOT_FOUND.code));
 
-    // const invoice = await dao.invoiceDAOService.findById(value.invoiceId);
+    const invoice = await dao.invoiceDAOService.findById(value.invoiceId);
 
-    // if (!invoice && !['overhead', 'others'].includes(category.name.toLowerCase()))
-    //   return Promise.reject(CustomAPIError.response('Invoice not found', HttpStatus.NOT_FOUND.code));
+    if (!invoice && !['overhead', 'others'].includes(category.name.toLowerCase()))
+      return Promise.reject(CustomAPIError.response('Invoice not found', HttpStatus.NOT_FOUND.code));
 
     const data: Partial<Expense> = {
       amount: value.amount,
       expenseCategoryId: value.expenseCategoryId,
       expenseTypeId: value.expenseTypeId,
-      // invoiceId: value.invoiceId,
-      // invoiceCode: invoice?.code,
+      invoiceId: value.invoiceId,
+      invoiceCode: invoice?.code,
       note: value?.note,
       dateModified: value.dateModified
     };

@@ -109,13 +109,15 @@ const ExpenseCreate = () => {
     })
     if (findRef !== '') return setErrorAlert('This payment has already been recorded');
 
+    const invoiceCode = invoiceStore.invoices.find((inv: IInvoice) => inv.code === expenseReducer.invoiceCode)
+
     dispatch(
       createExpenseAction({
         category,
         type,
         reference: reference.trim() === '' ? null : reference,
         beneficiary,
-        invoice, //expenseReducer.invoiceCode !== '' ? invoiceCode : invoice,
+        invoice: expenseReducer.invoiceCode !== '' ? invoiceCode : invoice,
         amount: +amount,
         note,
         dateModified,
@@ -434,7 +436,7 @@ const ExpenseCreate = () => {
                           }}
                         />
                       )}
-                      value={invoice}
+                      defaultValue={expenseReducer.invoiceCode !== '' ? expenseReducer.invoiceCode : invoice}
                       onChange={(_: any, newValue) => setInvoice(newValue)}
                       options={invoiceStore.invoices}
                     />
