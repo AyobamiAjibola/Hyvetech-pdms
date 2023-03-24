@@ -13,9 +13,7 @@ function DashboardPage() {
       <AppCan I="manage" a="all">
         {isSuperAdmin && <AdminDashboard />}
       </AppCan>
-      <AppCan I="manage" an="technician">
-        {!isSuperAdmin && <PartnerPage />}
-      </AppCan>
+      <div>{!isSuperAdmin && <PartnerPage />}</div>
     </React.Fragment>
   );
 }

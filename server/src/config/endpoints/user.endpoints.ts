@@ -4,6 +4,7 @@ import {
   getUserHandler,
   getUsersHandler,
   updateUsersHandler,
+  updateUserStatusHandler,
 } from '../../routes/userRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -18,8 +19,14 @@ const userEndpoints: RouteEndpoints = [
   {
     name: 'users',
     method: 'get',
-    path: '/user/:userId',
+    path: '/users/:userId',
     handler: getUserHandler,
+  },
+  {
+    name: 'users',
+    method: 'put',
+    path: '/user/:userId/toggle-status',
+    handler: updateUserStatusHandler,
   },
 
   {

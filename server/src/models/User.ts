@@ -50,7 +50,8 @@ export const $saveUserSchema: Joi.SchemaMap<UserSchemaType> = {
 
 export const $updateUserSchema: Joi.SchemaMap<UserSchemaType> = {
   ...$saveUserSchema,
-  id: Joi.number().required().label('userId'),
+  id: Joi.number().required().label('id'),
+  password: Joi.string().optional().label('password'),
 };
 
 @Table({

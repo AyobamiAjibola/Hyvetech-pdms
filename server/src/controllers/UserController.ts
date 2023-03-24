@@ -6,11 +6,11 @@ import HttpStatus from '../helpers/HttpStatus';
 import Partner from '../models/Partner';
 import { appCommonTypes } from '../@types/app-common';
 
-import User, { $saveUserSchema, UserSchemaType } from '../models/User';
+import User, { $saveUserSchema, $updateUserSchema, UserSchemaType } from '../models/User';
 
 import Contact from '../models/Contact';
 import Joi = require('joi');
-import { CreationAttributes } from 'sequelize';
+import { CreationAttributes, InferAttributes } from 'sequelize';
 import { HasPermission, TryCatch } from '../decorators';
 import { CREATE_USER, DELETE_USER, MANAGE_TECHNICIAN, READ_USER, UPDATE_USER } from '../config/settings';
 import PasswordEncoder from '../utils/PasswordEncoder';
@@ -69,6 +69,7 @@ export default class UserController {
           partnerId: partner.id,
         },
         include: [Role],
+        order: [['updatedAt', 'DESC']],
       });
 
       const response: HttpResponse<User> = {
@@ -87,6 +88,20 @@ export default class UserController {
   @HasPermission([MANAGE_TECHNICIAN, CREATE_USER])
   public async createUser(req: Request) {
     const user = await this.doCreateUser(req);
+
+    const response: HttpResponse<User> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      result: user,
+    };
+
+    return response;
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, UPDATE_USER, CREATE_USER])
+  public async updateUserStatus(req: Request) {
+    const user = await this.doUpdateUserStatus(req);
 
     const response: HttpResponse<User> = {
       code: HttpStatus.OK.code,
@@ -152,9 +167,21 @@ export default class UserController {
     return user;
   }
 
+  private async doUpdateUserStatus(req: Request) {
+    const partner = req.user.partner;
+
+    const user = await dataSources.userDAOService.findById(+req.params.userId);
+
+    if (!user) return Promise.reject(CustomAPIError.response('User not found', HttpStatus.BAD_REQUEST.code));
+
+    return dataSources.userDAOService.update(user, {
+      active: !user.active,
+    } as InferAttributes<User>);
+  }
+
   private async doUpdateUser(req: Request) {
     const partner = req.user.partner;
-    const { error, value } = Joi.object<UserSchemaType>($saveUserSchema).validate(req.body);
+    const { error, value } = Joi.object<UserSchemaType>($updateUserSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -166,18 +193,18 @@ export default class UserController {
 
     if (!role) return Promise.reject(CustomAPIError.response('Role not found', HttpStatus.BAD_REQUEST.code));
 
-    const passwordEncoder = new PasswordEncoder();
     const userValues: Partial<User> = {
       ...value,
-      password: await passwordEncoder.encode(value.password),
+
       roleId: role.id,
-      partnerId: partner.id,
     };
 
-    await user.update(userValues);
+    if (value.password && value.password.trim() !== '') userValues.password = value.password;
+
+    await dataSources.userDAOService.update(user, userValues as InferAttributes<User>);
 
     await role.$set('users', [user]);
-
+    await user.$set('roles', [role]);
     return user;
   }
 

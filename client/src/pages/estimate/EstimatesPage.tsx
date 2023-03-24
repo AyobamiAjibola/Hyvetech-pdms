@@ -396,7 +396,7 @@ function EstimatesPage() {
             Estimates
           </Typography>
         </Grid>
-        <Grid item hidden={!isTechAdmin}>
+        <Grid item>
           <Button variant="outlined" color="success" size="small" onClick={() => estimate.setShowCreate(true)}>
             Generate
           </Button>

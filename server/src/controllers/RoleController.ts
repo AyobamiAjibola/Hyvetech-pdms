@@ -168,7 +168,13 @@ export default class RoleController {
       },
     });
 
-    if (!role) return Promise.reject(CustomAPIError.response('Role does not exist', HttpStatus.BAD_REQUEST.code));
+    if (!role)
+      return Promise.reject(
+        CustomAPIError.response(
+          'Role does not exist OR Role is not available for modification',
+          HttpStatus.BAD_REQUEST.code,
+        ),
+      );
 
     const permissions = [];
 

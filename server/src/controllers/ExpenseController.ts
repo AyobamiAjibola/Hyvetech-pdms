@@ -14,12 +14,23 @@ import Joi = require('joi');
 import CustomAPIError from '../exceptions/CustomAPIError';
 import { CreationAttributes, Op } from 'sequelize';
 import Invoice from '../models/Invoice';
-import { CREATE_EXPENSE, DELETE_EXPENSE, MANAGE_TECHNICIAN, READ_EXPENSE, UPDATE_EXPENSE } from '../config/settings';
+import {
+  CREATE_BENEFICIARY,
+  CREATE_EXPENSE,
+  CREATE_EXPENSE_TYPE,
+  DELETE_EXPENSE,
+  MANAGE_TECHNICIAN,
+  READ_BENEFICIARY,
+  READ_EXPENSE,
+  READ_EXPENSE_TYPE,
+  UPDATE_EXPENSE,
+} from '../config/settings';
 
 export default class ExpenseController {
   private static LOGGER = AppLogger.init(ExpenseController.name).logger;
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_BENEFICIARY, READ_BENEFICIARY])
   public async getAllBeneficiaries(req: Request) {
     const partner = req.user.partner;
     const beneficiaries = await dao.beneficiaryDAOService.findAll({ where: { partnerId: partner.id } });
@@ -34,6 +45,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_EXPENSE_TYPE, READ_EXPENSE_TYPE])
   public async getAllExpenseTypes(req: Request) {
     const expenses = await dao.expenseTypeDAOService.findAll({});
 
@@ -62,7 +74,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_BENEFICIARY])
   public async createBeneficiaryHandler(req: Request) {
     const beneficiary = await this.doCreateBeneficiary(req);
 
@@ -76,7 +88,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_EXPENSE_TYPE])
   public async createExpenseTypeHandler(req: Request) {
     const expenseType = await this.doCreateExpenseType(req);
 

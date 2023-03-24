@@ -65,6 +65,36 @@ export const UPDATE_VENDOR = 'update_vendor';
 export const READ_VENDOR = 'read_vendor';
 export const DELETE_VENDOR = 'delete_vendor';
 
+export const CREATE_PAYMENT_RECIEVED = 'create_payment_received';
+export const UPDATE_PAYMENT_RECIEVED = 'update_payment_received';
+export const READ_PAYMENT_RECIEVED = 'read_payment_received';
+export const DELETE_PAYMENT_RECIEVED = 'delete_payment_received';
+
+export const CREATE_BENEFICIARY = 'create_beneficiary';
+export const UPDATE_BENEFICIARY = 'update_beneficiary';
+export const READ_BENEFICIARY = 'read_beneficiary';
+export const DELETE_BENEFICIARY = 'delete_beneficiary';
+
+export const CREATE_EXPENSE_TYPE = 'create_expense_type';
+export const UPDATE_EXPENSE_TYPE = 'update_expense_type';
+export const READ_EXPENSE_TYPE = 'read_expense_type';
+export const DELETE_EXPENSE_TYPE = 'delete_expense_type';
+
+export const CREATE_WORKFLOW_PROFILE = 'create_workflow_profile';
+export const UPDATE_WORKFLOW_PROFILEY = 'update_workflow_profile';
+export const READ_WORKFLOW_PROFILE = 'read_workflow_profile';
+export const DELETE_WORKFLOW_PROFILE = 'delete_workflow_profile';
+
+export const CREATE_TRANSACTION = 'create_transaction';
+export const UPDATE_TRANSACTION = 'update_transaction';
+export const READ_TRANSACTION = 'read_transaction';
+export const DELETE_TRANSACTION = 'delete_transaction';
+
+export const CREATE_ITEM = 'create_item';
+export const UPDATE_ITEM = 'update_item';
+export const READ_ITEM = 'read_item';
+export const DELETE_ITEM = 'delete_item';
+
 export const READ_GUEST = 'read_guest';
 
 const settings: AppSettings = {
@@ -135,6 +165,36 @@ const settings: AppSettings = {
     DELETE_VENDOR,
     UPDATE_VENDOR,
     READ_VENDOR,
+
+    CREATE_BENEFICIARY,
+    READ_BENEFICIARY,
+    UPDATE_BENEFICIARY,
+    DELETE_BENEFICIARY,
+
+    CREATE_PAYMENT_RECIEVED,
+    READ_PAYMENT_RECIEVED,
+    DELETE_PAYMENT_RECIEVED,
+    UPDATE_PAYMENT_RECIEVED,
+
+    CREATE_EXPENSE_TYPE,
+    READ_EXPENSE_TYPE,
+    DELETE_EXPENSE_TYPE,
+    UPDATE_EXPENSE_TYPE,
+
+    CREATE_WORKFLOW_PROFILE,
+    UPDATE_WORKFLOW_PROFILEY,
+    DELETE_WORKFLOW_PROFILE,
+    READ_WORKFLOW_PROFILE,
+
+    CREATE_TRANSACTION,
+    READ_TRANSACTION,
+    DELETE_TRANSACTION,
+    UPDATE_TRANSACTION,
+
+    CREATE_ITEM,
+    READ_ITEM,
+    DELETE_ITEM,
+    UPDATE_ITEM,
   ],
   roles: [
     'ADMIN_ROLE',

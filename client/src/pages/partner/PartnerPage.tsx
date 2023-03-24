@@ -86,6 +86,8 @@ function PartnerPage() {
 
         setPartner(_partner);
       }
+    } else {
+      setTabs(partnerDetailTabs.filter(tab => tab.tag === GARAGE_CATEGORY));
     }
   }, [partnerReducer.getPartnerStatus, partnerReducer.partner]);
 
@@ -122,7 +124,7 @@ function PartnerPage() {
       dispatch(clearGetPaymentPlansStatus());
       dispatch(clearDeletePartnerStatus());
       dispatch(clearCreateEstimateStatus());
-      dispatch(clearTogglePartnerStatus())
+      dispatch(clearTogglePartnerStatus());
       clearTimeout(_timeout);
     };
   }, [_timeout, dispatch]);
@@ -183,11 +185,10 @@ function PartnerPage() {
               variant="outlined"
               color="info"
               size="small">
-              {((partner?.users[0]?.active == true) ? "Disable Partner" : "Enable Partner") || ""}
+              {(partner?.users[0]?.active == true ? 'Disable Partner' : 'Enable Partner') || ''}
             </LoadingButton>
           </AppCan>
         </Grid>
-
       </Grid>
       <PartnerPageContext.Provider
         value={{

@@ -34,3 +34,9 @@ export const deleteUserHandler = authenticateRouteWrapper(async (req, res) => {
 
   res.status(response.code).json(response);
 });
+
+export const updateUserStatusHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await userController.updateUserStatus(req);
+
+  res.status(response.code).json(response);
+});

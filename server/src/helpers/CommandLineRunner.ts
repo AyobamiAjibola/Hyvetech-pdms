@@ -136,6 +136,7 @@ export default class CommandLineRunner {
     await this.singleton.createUploadDirectory();
     await this.singleton.loadDefaultEmailConfig();
     await this.singleton.loadDefaultRolesAndPermissions();
+    await this.singleton.syncRolesAndPermisison();
     await this.singleton.loadDefaultTimeSlotAndSlots();
     await this.singleton.loadDefaultServicesData();
     await this.singleton.loadDefaultDiscounts();
@@ -319,6 +320,42 @@ export default class CommandLineRunner {
       secure: settings.email.secure,
       port: +(<string>settings.email.port),
     });
+  }
+
+  async syncRolesAndPermisison() {
+    const permissions = settings.permissions;
+    for (let i = 0; i < permissions.length; i++) {
+      const permissionName = permissions[i];
+      const perm = await this.permissionRepository.findOne({
+        where: {
+          name: permissionName,
+        },
+      });
+      if (perm) continue;
+
+      await this.permissionRepository.save({
+        name: permissionName,
+        action: permissionName.split('_')[0],
+        subject: permissionName.split('_')[1],
+        inverted: true,
+      });
+    }
+
+    const roles = settings.roles;
+    for (let i = 0; i < roles.length; i++) {
+      const roleName = roles[i];
+      const role = await this.roleRepository.findOne({
+        where: {
+          slug: roleName,
+        },
+      });
+      if (role) continue;
+
+      await this.roleRepository.save({
+        slug: `${roleName}`,
+        name: `${roleName}`.replace(/_/g, ' '),
+      });
+    }
   }
 
   async loadDefaultRolesAndPermissions() {
