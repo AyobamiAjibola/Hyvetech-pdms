@@ -31,7 +31,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Spinner from '../../utils/Spinner';
 import { formatDate } from '../../utils/generic';
-// import moment from 'moment';
 
 const ExpenseDetail = () => {
   const store = useAppSelector(state => state.expenseReducer);
