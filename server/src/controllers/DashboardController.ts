@@ -296,7 +296,7 @@ export default class DashboardController {
     return invoices;
   }
 
-  public static async getData() {
+  public static async getData(req: Request) {
     try {
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,
