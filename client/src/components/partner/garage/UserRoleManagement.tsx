@@ -351,6 +351,7 @@ const UserRoleManagement = () => {
       setShowCreateUser(false);
       dispatch(clearCreateUserStatus);
       setEditMode(false);
+      setPassword('');
     } else if (store.createUserStatus === 'failed') {
       setAlert({ message: store.createUserError || 'Operation failed', type: 'error' });
       dispatch(clearCreateUserStatus());
