@@ -1,11 +1,15 @@
 import { Request } from 'express';
+import { appCommonTypes } from '../@types/app-common';
 
 import 'reflect-metadata';
 
 import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
 
-const errorResponse = CustomAPIError.response(HttpStatus.FORBIDDEN.value, HttpStatus.FORBIDDEN.code);
+const errorResponse = CustomAPIError.response(
+  'Unauthorized access. Please contact system administrator',
+  HttpStatus.FORBIDDEN.code,
+);
 
 /**
  * @description Specify role name to access resource
@@ -23,6 +27,35 @@ export function HasRole(role: string) {
       const findRole = roles.find(item => item.name === role);
 
       if (!findRole) return errorResponse;
+      return method.apply(this, arguments);
+    };
+  };
+}
+
+/**
+ *
+ * @param authorizedPermission
+ * @param userPermissions
+ * @returns
+ */
+export function HasPermission(authorizedPermission: Array<appCommonTypes.Permissions>) {
+  return function (target: object, propertyKey: string, descriptor: PropertyDescriptor) {
+    const method = descriptor.value;
+    descriptor.value = function (request: Request) {
+      console.log('re> ', request.permissions);
+      let isAuthourized = false;
+      if (authorizedPermission.length === 0) isAuthourized = true;
+      else
+        request.permissions
+          .map(item => item.name)
+          .forEach(permission_name => {
+            if (authorizedPermission.includes(permission_name as appCommonTypes.Permissions)) {
+              isAuthourized = true;
+            }
+          });
+
+      if (!isAuthourized) return Promise.reject(errorResponse);
+
       return method.apply(this, arguments);
     };
   };

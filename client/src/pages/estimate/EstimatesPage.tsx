@@ -221,11 +221,11 @@ function EstimatesPage() {
   const techColumns = useMemo(() => {
     return [
       {
-        field: 'updatedAt',
+        field: 'createdAt',
         headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        width: 160,
         type: 'string',
         valueFormatter: ({ value }) => {
           return value ? moment(value).format('DD/MM/YYYY') : '-';
@@ -396,7 +396,7 @@ function EstimatesPage() {
             Estimates
           </Typography>
         </Grid>
-        <Grid item hidden={!isTechAdmin}>
+        <Grid item>
           <Button variant="outlined" color="success" size="small" onClick={() => estimate.setShowCreate(true)}>
             Generate
           </Button>

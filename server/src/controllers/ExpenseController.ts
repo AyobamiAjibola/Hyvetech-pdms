@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { TryCatch } from '../decorators';
+import { HasPermission, TryCatch } from '../decorators';
 import HttpStatus from '../helpers/HttpStatus';
 import Expense, { $saveExpenseSchema, $updateExpenseSchema, $updateSummaryExpenseSchema, ExpenseSchemaType, expenseType } from '../models/Expense';
 import dao from '../services/dao';
@@ -14,11 +14,23 @@ import Joi = require('joi');
 import CustomAPIError from '../exceptions/CustomAPIError';
 import { CreationAttributes, Op } from 'sequelize';
 import Invoice from '../models/Invoice';
+import {
+  CREATE_BENEFICIARY,
+  CREATE_EXPENSE,
+  CREATE_EXPENSE_TYPE,
+  DELETE_EXPENSE,
+  MANAGE_TECHNICIAN,
+  READ_BENEFICIARY,
+  READ_EXPENSE,
+  READ_EXPENSE_TYPE,
+  UPDATE_EXPENSE,
+} from '../config/settings';
 
 export default class ExpenseController {
   private static LOGGER = AppLogger.init(ExpenseController.name).logger;
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_BENEFICIARY, READ_BENEFICIARY])
   public async getAllBeneficiaries(req: Request) {
     const partner = req.user.partner;
     const beneficiaries = await dao.beneficiaryDAOService.findAll({ where: { partnerId: partner.id } });
@@ -33,6 +45,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_EXPENSE_TYPE, READ_EXPENSE_TYPE])
   public async getAllExpenseTypes(req: Request) {
     const expenses = await dao.expenseTypeDAOService.findAll({});
 
@@ -61,6 +74,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_BENEFICIARY])
   public async createBeneficiaryHandler(req: Request) {
     const beneficiary = await this.doCreateBeneficiary(req);
 
@@ -74,6 +88,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_EXPENSE_TYPE])
   public async createExpenseTypeHandler(req: Request) {
     const expenseType = await this.doCreateExpenseType(req);
 
@@ -87,6 +102,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
   public async createExpenseCategoryHandler(req: Request) {
     const expenseCategory = await this.doCreateExpenseCategory(req);
 
@@ -100,6 +116,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_EXPENSE])
   public async createExpense(req: Request) {
     const expense = await this.doCreateExpense(req);
 
@@ -113,6 +130,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, READ_EXPENSE, CREATE_EXPENSE])
   public async getAllExpenses(req: Request) {
     const expense = await this.doGetAllExpenses(req);
 
@@ -126,6 +144,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, READ_EXPENSE, CREATE_EXPENSE])
   public async getExpenseById(req: Request) {
     const expense = await this.doGetExpenseById(req);
 
@@ -139,6 +158,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, DELETE_EXPENSE])
   public async deleteExpenseById(req: Request) {
     await this.doDeleteExpenseById(req);
 
@@ -151,6 +171,7 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, UPDATE_EXPENSE])
   public async updateExpense(req: Request) {
     const expense = await this.doExpenseUpdate(req);
 

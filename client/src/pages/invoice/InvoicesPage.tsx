@@ -321,11 +321,11 @@ function InvoicesPage() {
       //   },
       // },
       {
-        field: 'updatedAt',
+        field: 'createdAt',
         headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        width: 100,
         type: 'string',
         valueFormatter: ({ value }) => {
           return value ? moment(value).format('DD/MM/YYYY') : '-';
@@ -338,6 +338,7 @@ function InvoicesPage() {
         headerAlign: 'center',
         align: 'center',
         sortable: true,
+        width: 100,
         type: 'string',
         renderCell: params => {
           return (
@@ -361,7 +362,7 @@ function InvoicesPage() {
         headerAlign: 'center',
         align: 'center',
         type: 'string',
-        width: 250,
+        width: 200,
         sortable: true,
         valueGetter: param => {
           const estimate = param.row.estimate;
@@ -376,7 +377,7 @@ function InvoicesPage() {
         headerAlign: 'center',
         align: 'center',
         type: 'string',
-        width: 200,
+        width: 170,
         sortable: true,
         valueGetter: param => {
           const estimate = param.row.estimate;
@@ -391,7 +392,7 @@ function InvoicesPage() {
         headerAlign: 'center',
         align: 'center',
         type: 'number',
-        width: 150,
+        width: 120,
         sortable: true,
         valueFormatter: ({ value }) => {
           return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
@@ -403,7 +404,7 @@ function InvoicesPage() {
         headerAlign: 'center',
         align: 'center',
         type: 'number',
-        width: 150,
+        width: 100,
         sortable: true,
         valueFormatter: ({ value }) => {
           return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
@@ -415,7 +416,7 @@ function InvoicesPage() {
         headerAlign: 'center',
         align: 'center',
         type: 'number',
-        width: 150,
+        width: 100,
         sortable: true,
         valueFormatter: ({ value }) => {
           return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
@@ -427,7 +428,7 @@ function InvoicesPage() {
         headerAlign: 'center',
         align: 'center',
         type: 'number',
-        width: 150,
+        width: 100,
         sortable: true,
         valueFormatter: ({ value }) => {
           return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
@@ -438,7 +439,7 @@ function InvoicesPage() {
         headerName: 'Status',
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        width: 100,
         sortable: true,
         type: 'string',
         renderCell: params => {

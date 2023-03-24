@@ -21,6 +21,7 @@ import { GARAGE_CATEGORY, RIDE_SHARE_CATEGORY } from '../config/constants';
 import Estimate from '../components/partner/garage/Estimate';
 // import VehicleOwner from '../components/partner/garage/VehicleOwner';
 import ProfileNew from '../components/customer/Profile';
+import UserRoleManagement from '../components/partner/garage/UserRoleManagement';
 
 export const customerDetailTabsTechOnly: ITab[] = [
   { name: 'Profile', Element: ProfileNew },
@@ -67,6 +68,11 @@ export const partnerDetailTabs: ITab[] = [
     tag: GARAGE_CATEGORY,
     name: 'Account Settings',
     Element: GarageProfileAndSetting,
+  },
+  {
+    tag: GARAGE_CATEGORY,
+    name: 'User & Role Management',
+    Element: UserRoleManagement,
   },
   // {
   //   tag: GARAGE_CATEGORY,

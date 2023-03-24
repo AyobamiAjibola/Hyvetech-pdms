@@ -28,6 +28,7 @@ import Transaction from './Transaction';
 import Expense from './Expense';
 import Beneficiary from './Beneficiary';
 import ExpenseType from './ExpenseType';
+import Role from './Role';
 
 @Table({
   timestamps: true,
@@ -119,6 +120,9 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
 
   @HasMany(() => Beneficiary)
   declare beneficiaries: NonAttribute<Array<Beneficiary>>;
+
+  @HasMany(() => Role)
+  declare roles: NonAttribute<Array<Role>>;
 
   @BelongsToMany(() => CheckList, () => PartnerCheckList)
   declare checkLists: NonAttribute<Array<CheckList & { PartnerCheckList: PartnerCheckList }>>;

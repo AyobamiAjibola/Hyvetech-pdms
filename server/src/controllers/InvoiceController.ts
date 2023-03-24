@@ -1,4 +1,4 @@
-import { TryCatch } from '../decorators';
+import { HasPermission, TryCatch } from '../decorators';
 import { Request } from 'express';
 import Joi from 'joi';
 import CustomAPIError from '../exceptions/CustomAPIError';
@@ -34,11 +34,13 @@ import DraftInvoice from '../models/DraftInvoice';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
+import { CREATE_INVOICE, MANAGE_TECHNICIAN, READ_INVOICE } from '../config/settings';
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
 export default class InvoiceController {
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async generateInvoice(req: Request) {
     const { error, value } = Joi.object<IGenerateInvoice>({
       estimateId: Joi.number().required().label('Estimate Id'),
@@ -209,6 +211,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async generateInvoiceManually(req: Request) {
     //
     try {
@@ -329,6 +332,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, READ_INVOICE, CREATE_INVOICE])
   public static async invoices(req: Request) {
     const partner = req.user.partner;
 
@@ -426,6 +430,7 @@ export default class InvoiceController {
    * }
    */
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async completeEstimateDeposit(req: Request) {
     const { error, value } = Joi.object<IDepositForEstimate>({
       customerId: Joi.number().required().label('Customer Id'),
@@ -526,6 +531,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async updateCompletedInvoicePayment(req: Request) {
     const value = req.body;
 
@@ -659,6 +665,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async updateCompletedInvoicePaymentManually(req: Request) {
     try {
       const { invoiceId, customerId, amount: _amount, type } = req.body;
@@ -750,6 +757,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async saveInvoice(req: Request) {
     const { error, value } = Joi.object<InvoiceSchemaType>($saveInvoiceSchema).validate(req.body);
 
@@ -850,6 +858,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async sendInvoice(req: Request) {
     const { error, value } = Joi.object<InvoiceSchemaType>($sendInvoiceSchema).validate(req.body);
 

@@ -478,3 +478,5 @@ export const TRANSACTION_TYPE = {
 };
 
 export const PAYMENT_CHANNELS = ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer', 'eft'];
+
+export const GARAGE_ADMIN_ROLE = 'GARAGE_ADMIN_ROLE';

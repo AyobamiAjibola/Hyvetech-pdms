@@ -74,7 +74,7 @@ function SideNav() {
 
   useEffect(() => {
     if (admin.isSuperAdmin)
-      setNavs(
+      return setNavs(
         sideNavs.filter(
           value =>
             value.tag === 'all' ||
@@ -84,8 +84,9 @@ function SideNav() {
             value.name === 'Invoices',
         ),
       );
-    if (admin.isTechAdmin) setNavs(sideNavs.filter(value => value.tag === 'techs' || value.name === 'Invoices'));
-    if (admin.isDriverAdmin) setNavs(sideNavs.filter(value => value.tag === 'all' || value.tag === 'drivers'));
+    if (admin.isTechAdmin) return setNavs(sideNavs.filter(value => value.tag === 'techs' || value.name === 'Invoices'));
+    if (admin.isDriverAdmin) return setNavs(sideNavs.filter(value => value.tag === 'all' || value.tag === 'drivers'));
+    else setNavs(sideNavs.filter(value => value.tag === 'techs' || value.name === 'Invoices'));
   }, [admin.isDriverAdmin, admin.isSuperAdmin, admin.isTechAdmin]);
 
   const handleDrawerClose = () => {
@@ -93,8 +94,9 @@ function SideNav() {
   };
 
   return (
-    <ThemeProvider theme={createTheme({
-      palette: {
+    <ThemeProvider
+      theme={createTheme({
+        palette: {
           primary: { main: '#4F4F4F' },
           // primary: { main: '#e8e8e8' },
           secondary: { main: '#4F4F4F' },
@@ -102,35 +104,36 @@ function SideNav() {
         },
       })}>
       <Drawer variant="permanent" open={openSideNav}>
-      <ThemeProvider theme={createTheme({
-        palette: {
-            primary: { main: '#1a97cf' },
-            // primary: { main: '#e8e8e8' },
-            secondary: { main: '#fba91a' },
-            mode: 'light',
-          },
-        })}>
-          
+        <ThemeProvider
+          theme={createTheme({
+            palette: {
+              primary: { main: '#1a97cf' },
+              // primary: { main: '#e8e8e8' },
+              secondary: { main: '#fba91a' },
+              mode: 'light',
+            },
+          })}>
           <DrawerHeader sx={{ backgroundColor: 'white' }}>
-          
             <img
-              style={{ 
+              style={{
                 // width: 50, height: 50, borderRadius: 6,
-                width: 90, height: 90, borderRadius: 6,
+                width: 90,
+                height: 90,
+                borderRadius: 6,
                 position: 'absolute',
-                left: '24%'
+                left: '24%',
               }}
               crossOrigin="anonymous"
-              src="./logo.ico" alt="" />
+              src="./logo.ico"
+              alt=""
+            />
 
             <IconButton onClick={handleDrawerClose}>
               {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
             </IconButton>
-
           </DrawerHeader>
-
         </ThemeProvider>
-        
+
         <Divider />
         <List>
           {navs.map((nav, index) => (

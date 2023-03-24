@@ -3,7 +3,7 @@
 import { Request } from 'express';
 import Joi from 'joi';
 import capitalize from 'capitalize';
-import { InferAttributes, Op } from 'sequelize';
+import { CreationAttributes, InferAttributes, Op } from 'sequelize';
 
 import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
@@ -11,7 +11,7 @@ import dataSources from '../services/dao';
 import { CATEGORIES, QUEUE_EVENTS, UPLOAD_BASE_PATH } from '../config/constants';
 import Generic from '../utils/Generic';
 import { appCommonTypes } from '../@types/app-common';
-import settings from '../config/settings';
+import settings, { MANAGE_ALL } from '../config/settings';
 import Partner from '../models/Partner';
 import Category from '../models/Category';
 import User from '../models/User';
@@ -28,6 +28,7 @@ import ride_share_partner_welcome_email from '../resources/templates/email/ride_
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 import { generateEstimateHtml, generateInvoiceHtml, generatePdf } from '../utils/pdf';
+import { HasPermission } from '../decorators';
 
 interface IPaymentPlanModelDescription {
   value: string;
@@ -90,7 +91,7 @@ export interface IDriverFilterProps {
     lastName?: string;
     companyName?: string;
     phone?: string;
-  }
+  };
 }
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
@@ -125,7 +126,7 @@ export default class PartnerController {
    * @description Create partners
    * @param req
    */
-
+  @HasPermission([MANAGE_ALL])
   public async createPartner(req: Request): Promise<HttpResponse<Partner>> {
     return new Promise((resolve, reject) => {
       form.parse(req, async (err, fields, files) => {
@@ -166,7 +167,7 @@ export default class PartnerController {
             totalTechnicians: 0,
             yearOfIncorporation: 0,
           };
-          const userValues: any = {
+          const userValues: Partial<User> = {
             username: value.email,
             email: value.email,
             firstName: 'Admin',
@@ -188,7 +189,7 @@ export default class PartnerController {
             mailSubject = `Welcome to AutoHyve!`;
             mailText = garage_partner_welcome_email({
               partnerName: capitalize(partnerValues.name),
-              password: userValues.rawPassword,
+              password: userValues.rawPassword || '',
               appUrl: <string>process.env.CLIENT_HOST,
             });
 
@@ -210,7 +211,7 @@ export default class PartnerController {
             mailSubject = `Welcome to Auto Hyve!`;
             mailText = ride_share_partner_welcome_email({
               partnerName: capitalize(partnerValues.name),
-              password: userValues.rawPassword,
+              password: userValues.rawPassword || '',
               appUrl: <string>process.env.CLIENT_HOST,
             });
 
@@ -242,11 +243,13 @@ export default class PartnerController {
             });
           }
 
+          userValues.roleId = role.id;
+
           //create partner
           const partner = await dataSources.partnerDAOService.create(partnerValues);
 
           //create default admin user
-          const user = await dataSources.userDAOService.create(userValues);
+          const user = await dataSources.userDAOService.create(userValues as CreationAttributes<User>);
 
           const contact = await dataSources.contactDAOService.create(contactValues);
 
@@ -254,6 +257,7 @@ export default class PartnerController {
           await partner.$add('categories', [category]);
           await partner.$set('contact', contact);
           await partner.$set('users', user);
+          await role.$set('users', [user]);
 
           const result = PartnerController.formatPartner(partner);
 
@@ -295,22 +299,23 @@ export default class PartnerController {
       if (!partner)
         return Promise.reject(CustomAPIError.response('Customer does not exist', HttpStatus.NOT_FOUND.code));
 
-      console.log(partner, "partner")
       const user_id = partner.users[0].id;
       const user_active = partner.users[0].active;
 
-      await User.update({
-        active: !user_active,
-      },
+      await User.update(
+        {
+          active: !user_active,
+        },
         {
           where: {
-            id: user_id
-          }
-        });
+            id: user_id,
+          },
+        },
+      );
 
       return Promise.resolve({
         code: HttpStatus.OK.code,
-        message: `Partner Account Adjusted successfully.`
+        message: `Partner Account Adjusted successfully.`,
       } as HttpResponse<void>);
     } catch (e) {
       return Promise.reject(e);
@@ -318,6 +323,7 @@ export default class PartnerController {
     // end
   }
 
+  @HasPermission([MANAGE_ALL])
   public async deletePartner(req: Request) {
     try {
       const partnerId = req.params.partnerId as unknown as string;
@@ -350,6 +356,7 @@ export default class PartnerController {
    * @name createKyc
    * @param req
    */
+  @HasPermission([MANAGE_ALL])
   public async createKyc(req: Request) {
     const partnerId = req.params.partnerId as string;
 
@@ -406,6 +413,7 @@ export default class PartnerController {
    * @name createSettings
    * @param req
    */
+  @HasPermission([MANAGE_ALL])
   public async createSettings(req: Request): Promise<HttpResponse<InferAttributes<Partner>>> {
     const partnerId = req.params.partnerId as string;
 
@@ -479,8 +487,8 @@ export default class PartnerController {
   /**
    * @name getPartners
    */
-
-  public async getPartners() {
+  @HasPermission([MANAGE_ALL])
+  public async getPartners(req: Request) {
     try {
       const partners = await dataSources.partnerDAOService.findAll({
         include: [Category, User, Contact],
@@ -504,7 +512,6 @@ export default class PartnerController {
    * @name getPartner
    * @param id
    */
-
   public async getPartner(id: number) {
     try {
       const partner = await dataSources.partnerDAOService.findById(id, {
@@ -533,7 +540,7 @@ export default class PartnerController {
    * @param body
    * @param partnerId
    */
-
+  @HasPermission([MANAGE_ALL])
   public async addPlan(body: ICreatePlanBody, partnerId: number) {
     try {
       const { error, value } = Joi.object($planSchema).validate(body);
@@ -611,7 +618,7 @@ export default class PartnerController {
    * @param body
    * @param partnerId
    */
-
+  @HasPermission([MANAGE_ALL])
   public async addPaymentPlan(body: ICreatePaymentPlanBody, partnerId: number) {
     try {
       const { value, error } = Joi.object<ICreatePaymentPlanBody>($paymentPlanSchema).validate(body);
@@ -746,7 +753,6 @@ export default class PartnerController {
    * @name getPlans
    * @param partnerId
    */
-
   public async getPlans(partnerId: number) {
     try {
       const plans = await dataSources.planDAOService.findAll({
@@ -769,7 +775,6 @@ export default class PartnerController {
    * @name getPaymentPlans
    * @param partnerId
    */
-
   public async getPaymentPlans(partnerId: number) {
     try {
       const partner = await dataSources.partnerDAOService.findById(partnerId, {
@@ -913,12 +918,14 @@ export default class PartnerController {
       for (let i = 0; i < drivers.length; i++) {
         const driver = drivers[i];
         // const fullName = `${driver.firstName} ${driver.lastName} ${driver.email} ${driver.companyName}`;
-        const fullName = `${driver.firstName} ${driver.lastName} ${driver?.companyName || ""} ${driver.email} ${driver.phone}`;
+        const fullName = `${driver.firstName} ${driver.lastName} ${driver?.companyName || ''} ${driver.email} ${
+          driver.phone
+        }`;
         const email = driver.email;
 
         const vehicles = await drivers[i].$get('vehicles');
 
-        console.log(vehicles.length, " vehicles")
+        console.log(vehicles.length, ' vehicles');
 
         driverInfo[i] = {
           id: driver.id,
@@ -930,7 +937,7 @@ export default class PartnerController {
             lastName: driver.lastName,
             companyName: driver.companyName,
             phone: driver.phone,
-          }
+          },
         };
 
         for (let j = 0; j < vehicles.length; j++) {
@@ -1023,36 +1030,36 @@ export default class PartnerController {
 
   public async requestPdf(req: Request) {
     // ..
-    try{
-      const {type, id} = req.body;
+    try {
+      const { type, id } = req.body;
 
-      let html: string | null = ''; 
+      let html: string | null = '';
       let partner = null;
 
       switch (type) {
-        case "ESTIMATE":
-          html = await generateEstimateHtml(id)
+        case 'ESTIMATE':
+          html = await generateEstimateHtml(id);
           break;
 
-        case "INVOICE":
+        case 'INVOICE':
           partner = req.user.partner;
-          html = await generateInvoiceHtml(id, partner.id)
+          html = await generateInvoiceHtml(id, partner.id);
           break;
-      
+
         default:
           break;
       }
 
       const rName = req.body.rName;
       await generatePdf(html, rName);
-      console.log(rName)
+      console.log(rName);
 
       return Promise.resolve({
         code: 200,
         message: HttpStatus.CREATED.value,
-        name: rName
+        name: rName,
       } as HttpResponse<any>);
-    }catch(e){
+    } catch (e) {
       return Promise.reject(e);
     }
   }

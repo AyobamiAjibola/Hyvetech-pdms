@@ -270,7 +270,7 @@ const Expenses = () => {
             Expenses
           </Typography>
         </Grid>
-        <Grid item hidden={!isTechAdmin}>
+        <Grid item>
           <Link to="/expense/create">
             <Button variant="outlined" color="success" size="small">
               Generate

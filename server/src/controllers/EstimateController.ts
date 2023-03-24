@@ -28,7 +28,7 @@ import Customer from '../models/Customer';
 import RideShareDriver from '../models/RideShareDriver';
 import { appEventEmitter } from '../services/AppEventEmitter';
 import BillingInformation from '../models/BillingInformation';
-import { TryCatch } from '../decorators';
+import { HasPermission, TryCatch } from '../decorators';
 import { CreationAttributes } from 'sequelize/types';
 import { Op } from 'sequelize';
 import HttpResponse = appCommonTypes.HttpResponse;
@@ -41,9 +41,17 @@ import new_estimate_template from '../resources/templates/email/new_estimate';
 import { sendMail } from '../utils/sendMail';
 import { generateEstimateHtml, generatePdf } from '../utils/pdf';
 import path = require('path');
+import {
+  CREATE_ESTIMATE,
+  DELETE_ESTIMATE,
+  MANAGE_TECHNICIAN,
+  READ_ESTIMATE,
+  UPDATE_ESTIMATE,
+} from '../config/settings';
 
 export default class EstimateController {
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE])
   public async create(req: Request) {
     const { estimate, customer, vehicle, partner } = await this.doCreateEstimate(req);
 
@@ -70,6 +78,7 @@ export default class EstimateController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE, DELETE_ESTIMATE])
   public async delete(req: Request) {
     const estimateId = req.params.estimateId as string;
 
@@ -91,6 +100,7 @@ export default class EstimateController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE])
   public async save(req: Request) {
     const { estimate } = await this.doSaveEstimate(req);
 
@@ -108,6 +118,7 @@ export default class EstimateController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE, UPDATE_ESTIMATE])
   public async update(req: Request) {
     const { estimate } = await this.doUpdateEstimate(req);
 
@@ -121,6 +132,7 @@ export default class EstimateController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE, UPDATE_ESTIMATE])
   public async sendDraft(req: Request) {
     const estimateId = req.params.estimateId as string;
 
@@ -281,6 +293,7 @@ export default class EstimateController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE, READ_ESTIMATE, DELETE_ESTIMATE])
   public async estimates(req: Request) {
     const partner = req.user.partner;
 

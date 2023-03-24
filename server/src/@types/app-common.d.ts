@@ -77,7 +77,54 @@ export declare namespace appCommonTypes {
     | 'update_driver'
     | 'delete_driver'
     | 'manage_driver'
-    | 'read_guest';
+    | 'read_guest'
+    | 'read_expense'
+    | 'update_expense'
+    | 'delete_expense'
+    | 'create_expense'
+    | 'read_invoice'
+    | 'update_invoice'
+    | 'delete_invoice'
+    | 'create_invoice'
+    | 'read_payment'
+    | 'create_payment'
+    | 'update_payment'
+    | 'delete_payment'
+    | 'create_estimate'
+    | 'read_estimate'
+    | 'delete_estimate'
+    | 'update_estimate'
+    | 'create_vendor'
+    | 'read_vendor'
+    | 'delete_vendor'
+    | 'update_vendor'
+    | 'create_beneficiary'
+    | 'read_beneficiary'
+    | 'delete_beneficiary'
+    | 'update_beneficiary'
+    | 'create_payment_received'
+    | 'update_payment_received'
+    | 'delete_payment_received'
+    | 'read_payment_received'
+    | 'create_expense_type'
+    | 'update_expense_type'
+    | 'delete_expense_type'
+    | 'delete_expense_type'
+    | 'read_expense_type'
+    | 'create_workflow_profile'
+    | 'update_workflow_profile'
+    | 'delete_workflow_profile'
+    | 'update_workflow_profile'
+    | 'read_workflow_profile'
+    | 'create_transaction'
+    | 'update_transaction'
+    | 'delete_transaction'
+    | 'read_transaction'
+    | 'create_item'
+    | 'read_item'
+    | 'delete_item'
+    | 'update_item';
+
   type VINProvider = {
     name: string;
     apiSecret: string;
@@ -153,7 +200,7 @@ export declare namespace appCommonTypes {
     redis: Record<DatabaseEnv, DatabaseConfig>;
     mongo: Record<DatabaseEnv, DatabaseConfig>;
     queue: Record<DatabaseEnv, DatabaseConfig>;
-    cookie: { name: string, secret: string };
+    cookie: { name: string; secret: string };
     vinProviders: VINProvider[];
     roles: Roles[];
     permissions: Permissions[];

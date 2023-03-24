@@ -2,20 +2,19 @@ import { Request } from 'express';
 import { appCommonTypes } from '../@types/app-common';
 import HttpStatus from '../helpers/HttpStatus';
 import dataSources from '../services/dao';
-import Invoice from '../models/Invoice'
-import Estimate from '../models/Estimate'
-import Expense from '../models/Expense'
-import Customer from '../models/Customer'
-import Transaction from '../models/Transaction'
+import Invoice from '../models/Invoice';
+import Estimate from '../models/Estimate';
+import Expense from '../models/Expense';
+import Customer from '../models/Customer';
+import Transaction from '../models/Transaction';
 import HttpResponse = appCommonTypes.HttpResponse;
 
 export default class DashboardController {
-
-  public static async getTechData(req: Request){
-    // 
-    try{
+  public static async getTechData(req: Request) {
+    //
+    try {
       const user = req.user;
-      const month = req?.query?.month || ((new Date()).getMonth() + 1);
+      const month = req?.query?.month || new Date().getMonth() + 1;
 
       // fetch raw data
       const estimates = await this.getEstimateRaw(user);
@@ -45,53 +44,53 @@ export default class DashboardController {
       const months = [
         {
           id: 1,
-          month: "January"
+          month: 'January',
         },
         {
           id: 2,
-          month: "February"
+          month: 'February',
         },
         {
           id: 3,
-          month: "March"
+          month: 'March',
         },
         {
           id: 4,
-          month: "April"
+          month: 'April',
         },
         {
           id: 5,
-          month: "May"
+          month: 'May',
         },
         {
           id: 6,
-          month: "June"
+          month: 'June',
         },
         {
           id: 7,
-          month: "July"
+          month: 'July',
         },
         {
           id: 8,
-          month: "August"
+          month: 'August',
         },
         {
           id: 9,
-          month: "September"
+          month: 'September',
         },
         {
           id: 10,
-          month: "October"
+          month: 'October',
         },
         {
           id: 11,
-          month: "November"
+          month: 'November',
         },
         {
           id: 12,
-          month: "December"
+          month: 'December',
         },
-      ]
+      ];
 
       // @ts-ignore
       const __sales = [];
@@ -101,13 +100,12 @@ export default class DashboardController {
       for (let i = 0; i < months.length; i++) {
         const _month = months[i];
 
-        // 
+        //
 
         // sales
         const _invoicesByMonth = await this.filterByMonth(invoices, _month.id);
         __sales.push(this.getRevenue(_invoicesByMonth));
         // __sales.push(_invoicesByMonth.length);
-
 
         // receipt
         // const _transactionsByMonth = await this.filterByMonth(transactions, _month.id);
@@ -119,7 +117,6 @@ export default class DashboardController {
         const _expensesByMonth = await this.filterByMonth(expenses, _month.id);
         __expenses.push(this.getExpenses(_expensesByMonth));
         // __expenses.push(_expensesByMonth.length);
-        
       }
 
       const response: HttpResponse<any> = {
@@ -135,171 +132,171 @@ export default class DashboardController {
           mCustomer,
           series: [
             {
-              name: "Sales",
+              name: 'Sales',
               data: __sales,
-              color: 'blue'
+              color: 'blue',
             },
             {
-              name: "Receipt",
+              name: 'Receipt',
               data: __receipt,
-              color: 'green'
+              color: 'green',
             },
             {
-              name: "Expenses",
+              name: 'Expenses',
               data: __expenses,
-              color: 'red'
+              color: 'red',
             },
           ],
           seriesOne: [
             {
-              name: "Sales",
-              data: __sales
+              name: 'Sales',
+              data: __sales,
             },
           ],
           seriesTwo: [
             {
-              name: "Receipt",
-              data: __receipt
+              name: 'Receipt',
+              data: __receipt,
             },
           ],
           seriesThree: [
             {
-              name: "Expenses",
-              data: __expenses
+              name: 'Expenses',
+              data: __expenses,
             },
           ],
         },
       };
 
       return Promise.resolve(response);
-    }catch(e){
+    } catch (e) {
       return Promise.reject(e);
     }
   }
 
-  public static getReceivable(invoices: Invoice[]){
+  public static getReceivable(invoices: Invoice[]) {
     let amount = 0;
 
-    invoices.map( _invoice => {
+    invoices.map(_invoice => {
       amount = amount + _invoice.dueAmount;
-    } );
+    });
 
     return amount;
   }
 
-  public static getTransaction(transactions: Transaction[]){
+  public static getTransaction(transactions: Transaction[]) {
     let amount = 0;
 
-    transactions.map( _transaction => {
+    transactions.map(_transaction => {
       amount = amount + _transaction.amount;
-    } );
+    });
 
     return amount;
   }
 
-  public static getExpenses(expenses: Expense[]){
+  public static getExpenses(expenses: Expense[]) {
     let amount = 0;
 
-    expenses.map( _expense => {
+    expenses.map(_expense => {
       amount = amount + _expense.amount;
-    } );
+    });
 
     return amount;
   }
 
-  public static getRevenue(invoices: Invoice[]){
+  public static getRevenue(invoices: Invoice[]) {
     let amount = 0;
 
-    invoices.map( _invoice => {
+    invoices.map(_invoice => {
       amount = amount + _invoice.grandTotal;
-    } );
+    });
 
     return amount;
   }
 
-  public static getReceipt(invoices: Invoice[]){
+  public static getReceipt(invoices: Invoice[]) {
     let amount = 0;
 
-    invoices.map( _invoice => {
+    invoices.map(_invoice => {
       amount = amount + _invoice.depositAmount;
-    } );
+    });
 
     return amount;
   }
 
-  public static async filterByMonth(collection: any[], month: any){
+  public static async filterByMonth(collection: any[], month: any) {
     const newCollection: any[] = [];
     const year = 2023;
 
     collection.map(_item => {
-      if(_item != null){
-        const _month = ((new Date(_item.createdAt)).getMonth() + 1);
-        const _year = ((new Date(_item.createdAt)).getFullYear());
+      if (_item != null) {
+        const _month = new Date(_item.createdAt).getMonth() + 1;
+        const _year = new Date(_item.createdAt).getFullYear();
 
-        if((_month == month) && (_year == year)){
+        if (_month == month && _year == year) {
           newCollection.push(_item);
         }
       }
-    })
+    });
 
     return newCollection;
   }
 
-  public static async getTransactionsRaw({partner: {id}}: any){
-    // 
-    return (await Transaction.findAll({
+  public static async getTransactionsRaw({ partner: { id } }: any) {
+    //
+    return await Transaction.findAll({
       where: {
         // @ts-ignore
-        partnerId: id
+        partnerId: id,
       },
-    }));
+    });
   }
 
-  public static async getCustomersRaw({partner: {id}}: any){
-    // 
-    return (await Customer.findAll({
+  public static async getCustomersRaw({ partner: { id } }: any) {
+    //
+    return await Customer.findAll({
       where: {
         // @ts-ignore
-        partnerId: id
-      }
-    }));
-  }
-
-  public static async getExpensesRaw({partner: {id}}: any){
-    // 
-    return (await Expense.findAll({
-      where: {
-        // @ts-ignore
-        partnerId: id
+        partnerId: id,
       },
-    }));
+    });
   }
 
-  public static async getEstimateRaw({partner: {id}}: any){
-    // 
-    return (await Estimate.findAll({
+  public static async getExpensesRaw({ partner: { id } }: any) {
+    //
+    return await Expense.findAll({
       where: {
         // @ts-ignore
-        partnerId: id
+        partnerId: id,
       },
-      include: [Invoice]
-    }));
+    });
   }
 
-  public static async getInvoiceRaw(estimates: Estimate[]){
-    // 
-    const invoices: Invoice[] = [];  
+  public static async getEstimateRaw({ partner: { id } }: any) {
+    //
+    return await Estimate.findAll({
+      where: {
+        // @ts-ignore
+        partnerId: id,
+      },
+      include: [Invoice],
+    });
+  }
 
-    estimates.map(_estimate =>{
-      if(_estimate.invoice != null){
-        invoices.push(_estimate.invoice)
+  public static async getInvoiceRaw(estimates: Estimate[]) {
+    //
+    const invoices: Invoice[] = [];
+
+    estimates.map(_estimate => {
+      if (_estimate.invoice != null) {
+        invoices.push(_estimate.invoice);
       }
     });
 
     return invoices;
   }
 
-  public static async getData() {
+  public static async getData(req: Request) {
     try {
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,

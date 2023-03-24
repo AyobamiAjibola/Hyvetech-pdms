@@ -39,7 +39,7 @@ export const createPartnerSettingsHandler = authenticateRouteWrapper(async (req:
 });
 
 export const getPartnersHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
-  const result = await partnerController.getPartners();
+  const result = await partnerController.getPartners(req);
 
   res.status(result.code).json(result);
 });
