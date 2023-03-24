@@ -10,7 +10,7 @@ import User, { $saveUserSchema, $updateUserSchema, UserSchemaType } from '../mod
 
 import Contact from '../models/Contact';
 import Joi = require('joi');
-import { CreationAttributes, InferAttributes } from 'sequelize';
+import { CreationAttributes, InferAttributes, Op } from 'sequelize';
 import { HasPermission, TryCatch } from '../decorators';
 import { CREATE_USER, DELETE_USER, MANAGE_TECHNICIAN, READ_USER, UPDATE_USER } from '../config/settings';
 import PasswordEncoder from '../utils/PasswordEncoder';
@@ -159,6 +159,12 @@ export default class UserController {
       username: value.email,
     };
 
+    const oldUser = await dataSources.userDAOService.findByAny({
+      where: { [Op.or]: [{ email: value.email }, { username: value.email }] },
+    });
+
+    if (oldUser) return Promise.reject(CustomAPIError.response('User already exists', HttpStatus.BAD_REQUEST.code));
+
     const user = await dataSources.userDAOService.create(userValues as CreationAttributes<User>);
 
     await role?.$set('users', [user]);
@@ -194,7 +200,9 @@ export default class UserController {
     if (!role) return Promise.reject(CustomAPIError.response('Role not found', HttpStatus.BAD_REQUEST.code));
 
     const userValues: Partial<User> = {
-      ...value,
+      firstName: value.firstName,
+      lastName: value.lastName,
+      phone: value.phone,
 
       roleId: role.id,
     };
