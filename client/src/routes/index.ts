@@ -13,11 +13,9 @@ import {
   Payments,
   PlaylistAddCheck,
   Receipt,
-  RequestQuote,
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
-  Home,
 } from '@mui/icons-material';
 import React from 'react';
 
@@ -41,12 +39,7 @@ export const sideNavs: ISideNav[] = [
     path: '/dashboard',
     Icon: Dashboard,
   },
-  {
-    tag: 'techs',
-    name: 'Workshop',
-    path: '/workshop',
-    Icon: Home,
-  },
+
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
   { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },
   {

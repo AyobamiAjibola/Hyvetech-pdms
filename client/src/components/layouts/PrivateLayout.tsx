@@ -147,7 +147,7 @@ function PrivateLayout() {
             <Route path="/expense/:id" element={<ExpenseDetail />} />
             <Route path="/estimates/:id" element={<EstimatePage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
-            <Route path="/workshop" element={<PartnerPage />} />
+
             <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />
             <Route path="/payment-recieved" element={<PaymentRecieve />} />

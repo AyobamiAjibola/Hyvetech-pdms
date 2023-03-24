@@ -35,6 +35,8 @@ import { LoadingButton } from '@mui/lab';
 import Checkbox from '@mui/material/Checkbox';
 import { clearCreateRoleStatus, clearCreateUserStatus } from '../../../store/reducers/userReducer';
 import { IRole, IUser, IUserUpdate } from '@app-models';
+import _ from 'lodash';
+import CapitalizeWord from '../../../utils/capitalizeWord';
 
 const UserRoleManagement = () => {
   const store = useAppSelector(item => item.userReducer);
@@ -533,7 +535,7 @@ const UserRoleManagement = () => {
                       {(store.permissions || []).map(item => (
                         <MenuItem key={item.permission_id} value={item.name}>
                           <Checkbox checked={permissions.indexOf(item.name) > -1} />
-                          <ListItemText primary={item.name} />
+                          <ListItemText primary={CapitalizeWord.capitalize(item.name.replace(/_/g, ' '))} />
                         </MenuItem>
                       ))}
                     </Select>

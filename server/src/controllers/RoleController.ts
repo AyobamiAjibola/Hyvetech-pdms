@@ -95,7 +95,7 @@ export default class RoleController {
       order: [['createdAt', 'DESC']],
     });
 
-    return roles.filter(item => item.partnerId === partner.id || !item.partnerId);
+    return roles.filter(item => item.partnerId === partner.id);
   }
 
   private async doGetSingleRole(req: Request) {
@@ -115,7 +115,15 @@ export default class RoleController {
     const partner = req.user.partner;
 
     return datasources.permissionDAOService.findAll({
-      order: [['name', 'ASC']],
+      where: {
+        name: {
+          [Op.notIn]: [MANAGE_ALL],
+        },
+      },
+      order: [
+        ['subject', 'ASC'],
+        ['name', 'ASC'],
+      ],
     });
   }
   private async createRoleAndPermission(req: Request) {
