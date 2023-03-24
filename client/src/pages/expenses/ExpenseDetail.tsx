@@ -31,7 +31,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Spinner from '../../utils/Spinner';
 import { formatDate } from '../../utils/generic';
-import moment from 'moment';
+// import moment from 'moment';
 
 const ExpenseDetail = () => {
   const store = useAppSelector(state => state.expenseReducer);
@@ -233,7 +233,7 @@ const ExpenseDetail = () => {
                         minDate={new Date('2000/01/01')}
                         openTo="year"
                         views={['year', 'month', 'day']}
-                        value={edit ? moment(date).format('DD/MM/YYYY') : dateModified}
+                        value={dateModified}
                         onChange={ handleDate }
                         renderInput={(params: any) =>
                           <TextField
