@@ -52,14 +52,15 @@ function PartnerPage() {
   const admin = useAdmin();
 
   const partnerId = useMemo(() => {
-    if (admin.isTechAdmin && admin.user) {
-      return admin.user.partnerId;
-    }
+    return +(params.id as unknown as string) || admin.user?.partnerId;
+    // if (admin.isTechAdmin && admin.user) {
+    //   return admin.user.partnerId;
+    // }
 
-    if (params.id) {
-      return +(params.id as unknown as string);
-    }
-  }, [admin.isTechAdmin, admin.user, params.id]);
+    // if (params.id) {
+    //   return +(params.id as unknown as string);
+    // }
+  }, [admin.user, params.id]);
 
   const partnerReducer = useAppSelector(state => state.partnerReducer);
   const dispatch = useAppDispatch();
@@ -160,22 +161,17 @@ function PartnerPage() {
   return (
     <React.Fragment>
       <Grid container justifyContent="space-between" alignItems="center">
-        {
-          (admin.isSuperAdmin && (
-            <Grid item xs={9}>
-              <h1>{partner?.name}</h1>
-            </Grid>
-          ))
-        }
+        {admin.isSuperAdmin && (
+          <Grid item xs={9}>
+            <h1>{partner?.name}</h1>
+          </Grid>
+        )}
 
-        {
-          (!(admin.isSuperAdmin) && (
-            <Grid item xs={9}>
-              <h1>&nbsp;</h1>
-            </Grid>
-          ))
-        }
-        
+        {!admin.isSuperAdmin && (
+          <Grid item xs={9}>
+            <h1>&nbsp;</h1>
+          </Grid>
+        )}
 
         <Grid item>
           <AppCan I="manage" a="all">

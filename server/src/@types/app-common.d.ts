@@ -123,7 +123,8 @@ export declare namespace appCommonTypes {
     | 'create_item'
     | 'read_item'
     | 'delete_item'
-    | 'update_item';
+    | 'update_item'
+    | 'view_analytics';
 
   type VINProvider = {
     name: string;

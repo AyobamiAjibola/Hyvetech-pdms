@@ -47,7 +47,7 @@ export const getPartnersHandler = authenticateRouteWrapper(async (req: Request, 
 export const getPartnerHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
   const id = req.params.partnerId as string;
 
-  const result = await partnerController.getPartner(+id);
+  const result = await partnerController.getPartner(req);
 
   res.status(result.code).json(result);
 });

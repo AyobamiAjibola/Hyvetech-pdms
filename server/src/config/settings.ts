@@ -97,6 +97,8 @@ export const DELETE_ITEM = 'delete_item';
 
 export const READ_GUEST = 'read_guest';
 
+export const VIEW_ANALYTICS = 'view_analytics';
+
 const settings: AppSettings = {
   cookie: { name: process.env.COOKIE_AUTH as string, secret: process.env.COOKIE_AUTH as string },
   permissions: [
@@ -195,6 +197,8 @@ const settings: AppSettings = {
     READ_ITEM,
     DELETE_ITEM,
     UPDATE_ITEM,
+
+    VIEW_ANALYTICS,
   ],
   roles: [
     'ADMIN_ROLE',

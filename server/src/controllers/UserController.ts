@@ -176,9 +176,17 @@ export default class UserController {
   private async doUpdateUserStatus(req: Request) {
     const partner = req.user.partner;
 
-    const user = await dataSources.userDAOService.findById(+req.params.userId);
+    const user = await dataSources.userDAOService.findById(+req.params.userId, { include: [{ model: Role }] });
 
     if (!user) return Promise.reject(CustomAPIError.response('User not found', HttpStatus.BAD_REQUEST.code));
+
+    if (
+      user.roles[0]?.slug === MANAGE_TECHNICIAN &&
+      !req.permissions.map(item => item.name).includes(MANAGE_TECHNICIAN)
+    )
+      return Promise.reject(
+        CustomAPIError.response('Unauthorized access. Please contact system admin', HttpStatus.UNAUTHORIZED.code),
+      );
 
     return dataSources.userDAOService.update(user, {
       active: !user.active,
@@ -193,9 +201,17 @@ export default class UserController {
 
     const role = await dataSources.roleDAOService.findById(value.roleId);
 
-    const user = await dataSources.userDAOService.findById(value.id);
+    const user = await dataSources.userDAOService.findById(value.id, { include: [{ model: Role }] });
 
     if (!user) return Promise.reject(CustomAPIError.response('User not found', HttpStatus.BAD_REQUEST.code));
+
+    if (
+      user.roles[0]?.slug === MANAGE_TECHNICIAN &&
+      !req.permissions.map(item => item.name).includes(MANAGE_TECHNICIAN)
+    )
+      return Promise.reject(
+        CustomAPIError.response('Unauthorized access. Please contact system admin', HttpStatus.UNAUTHORIZED.code),
+      );
 
     if (!role) return Promise.reject(CustomAPIError.response('Role not found', HttpStatus.BAD_REQUEST.code));
 
