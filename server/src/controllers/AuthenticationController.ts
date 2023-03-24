@@ -11,7 +11,7 @@ import { InferAttributes } from 'sequelize/types';
 import { QueueManager } from 'rabbitmq-email-manager';
 import email_content from '../resources/templates/email/email_content';
 import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
-import { CATEGORIES, QUEUE_EVENTS } from '../config/constants';
+import { CATEGORIES, GARAGE_ADMIN_ROLE, QUEUE_EVENTS } from '../config/constants';
 import dataSources from '../services/dao';
 import settings from '../config/settings';
 import { CreationAttributes, Op } from 'sequelize';
@@ -149,32 +149,23 @@ export default class AuthenticationController {
       const hash = user.password;
       const password = value.password;
 
-      console.log(user)
+      console.log('iiii> ', password, hash);
 
-      const isMatch = await this.passwordEncoder.match(password, hash);
+      const isMatch = await this.passwordEncoder.match(password.trim(), hash.trim());
 
       if (!isMatch)
         return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
 
-      const roles = await user.$get('roles', {
-        include: [
-          {
-            model: Permission,
-            attributes: ['action', 'subject'],
-            through: { attributes: [] },
-          },
-        ],
-      });
+      const role = await dataSources.roleDAOService.findById(user.roleId, { include: [Permission] });
 
-      if (!roles.length)
-        return Promise.reject(CustomAPIError.response(`Roles does not exist`, HttpStatus.UNAUTHORIZED.code));
+      if (!role) return Promise.reject(CustomAPIError.response(`Roles does not exist`, HttpStatus.UNAUTHORIZED.code));
 
       const permissions = [];
 
-      for (const role of roles) {
-        for (const _permission of role.permissions) {
-          permissions.push(_permission.toJSON());
-        }
+      console.log(role.permissions);
+
+      for (const _permission of role.permissions) {
+        permissions.push(_permission.toJSON());
       }
 
       //generate JWT
@@ -382,6 +373,13 @@ export default class AuthenticationController {
       yearOfIncorporation: 0,
     };
 
+    //find garage admin role
+    const role = await dataSources.roleDAOService.findByAny({
+      where: { slug: settings.roles[4] },
+    });
+
+    if (!role) return Promise.reject(CustomAPIError.response(`Role does not exist`, HttpStatus.NOT_FOUND.code));
+
     const userValues: Partial<User> = {
       username: value.email,
       email: value.email,
@@ -390,6 +388,7 @@ export default class AuthenticationController {
       active: true,
       password,
       rawPassword: password,
+      roleId: role.id,
     };
 
     const contactValues: Partial<Contact> = {
@@ -404,15 +403,8 @@ export default class AuthenticationController {
       },
     });
 
-    //find garage admin role
-    const role = await dataSources.roleDAOService.findByAny({
-      where: { slug: settings.roles[4] },
-    });
-
     if (!category)
       return Promise.reject(CustomAPIError.response(`Category does not exist`, HttpStatus.BAD_REQUEST.code));
-
-    if (!role) return Promise.reject(CustomAPIError.response(`Role does not exist`, HttpStatus.NOT_FOUND.code));
 
     //create partner
     const partner = await dataSources.partnerDAOService.create(<CreationAttributes<Partner>>partnerValues);
@@ -422,10 +414,11 @@ export default class AuthenticationController {
 
     const contact = await dataSources.contactDAOService.create(<CreationAttributes<Contact>>contactValues);
 
-    await user.$add('roles', [role]);
     await partner.$add('categories', [category]);
     await partner.$set('contact', contact);
     await partner.$set('users', user);
+
+    await role.$set('users', [user]);
 
     const result = PartnerController.formatPartner(partner);
 

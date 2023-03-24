@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { PASSWORD_PATTERN } from '../../../config/constants';
+// import { PASSWORD_PATTERN } from '../../../config/constants';
 
 const fields = {
   username: {
@@ -31,7 +31,7 @@ const schema = Yup.object().shape({
   username: Yup.string().required(fields.username.error.required).label(fields.username.label),
   password: Yup.string()
     .required(fields.password.error.required)
-    .matches(new RegExp(PASSWORD_PATTERN), fields.password.error.invalid)
+    //  .matches(new RegExp(PASSWORD_PATTERN), fields.password.error.invalid)
     .label(fields.password.label),
 });
 

@@ -1,6 +1,27 @@
 declare module '@app-models' {
   import { CheckListType } from '@app-types';
+  interface IPermission {
+    permission_id: number;
+    name: string;
+    action: string;
+    subjection: string;
+  }
 
+  interface IUserUpdate {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    password?: string | null;
+    roleId: number;
+    id: number;
+  }
+
+  interface IRole {
+    role_id: number;
+    name: string;
+    slug: string;
+  }
   interface IUser {
     id: number;
     code: string;
@@ -26,6 +47,7 @@ declare module '@app-models' {
     roles: IRole[];
     createdAt: Date;
     updatedAt: Date;
+    active: boolean;
   }
 
   interface IContact {

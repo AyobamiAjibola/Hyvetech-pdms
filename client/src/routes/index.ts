@@ -13,7 +13,6 @@ import {
   Payments,
   PlaylistAddCheck,
   Receipt,
-  RequestQuote,
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
@@ -40,6 +39,7 @@ export const sideNavs: ISideNav[] = [
     path: '/dashboard',
     Icon: Dashboard,
   },
+
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
   { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },
   {

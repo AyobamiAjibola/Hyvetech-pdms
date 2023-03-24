@@ -55,15 +55,14 @@ function PrivateLayout() {
   };
 
   const navigate = useNavigate();
-  const {user} = useAdmin();
+  const { user } = useAdmin();
 
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex' }}>
         <AppBar position="fixed" sx={{ backgroundColor: '#E8E8E8', boxShadow: 'none' }} open={openSideNav}>
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', }}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
               <IconButton
                 // color="inherit"
                 // color="black"
@@ -82,26 +81,30 @@ function PrivateLayout() {
                 style={{ width: 50, height: 50, borderRadius: 6 }}
                 crossOrigin="anonymous"
                 src="./logo.ico" alt="" /> */}
-
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
-              <Typography sx={{ color: 'black', marginRight: 3, fontWeight: '400' }} variant="h6" noWrap component="div">
-                {user?.partner?.name || ""}
+              <Typography
+                sx={{ color: 'black', marginRight: 3, fontWeight: '400' }}
+                variant="h6"
+                noWrap
+                component="div">
+                {user?.partner?.name || ''}
               </Typography>
 
               <img
                 style={{ width: 30, height: 30, borderRadius: 6 }}
                 crossOrigin="anonymous"
-                src={`${settings.api.baseURL}/${user?.partner?.logo || ""}`} alt=" " />
+                src={`${settings.api.baseURL}/${user?.partner?.logo || ''}`}
+                alt=" "
+              />
 
               <IconButton
                 // color="inherit"
                 aria-label="open drawer"
-                onClick={()=>{
+                onClick={() => {
                   // ..
-                  navigate("/garage");
+                  navigate('/garage');
                 }}
                 edge="start"
                 sx={{
@@ -111,9 +114,7 @@ function PrivateLayout() {
                 }}>
                 <Settings />
               </IconButton>
-
             </Box>
-            
           </Toolbar>
         </AppBar>
         <SideNav />
@@ -146,6 +147,7 @@ function PrivateLayout() {
             <Route path="/expense/:id" element={<ExpenseDetail />} />
             <Route path="/estimates/:id" element={<EstimatePage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
+
             <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />
             <Route path="/payment-recieved" element={<PaymentRecieve />} />
