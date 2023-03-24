@@ -521,7 +521,7 @@ export default class PartnerController {
   @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, READ_WORKSHOP_PROFILE, CREATE_WORKSHOP_PROFILE])
   public async getPartner(req: Request) {
     try {
-      const partner = await dataSources.partnerDAOService.findById(+req.params.id, {
+      const partner = await dataSources.partnerDAOService.findById(+req.params.id || +req.params.partnerId, {
         include: [Category, User, Contact],
       });
 
