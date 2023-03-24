@@ -80,10 +80,10 @@ export const UPDATE_EXPENSE_TYPE = 'update_expense_type';
 export const READ_EXPENSE_TYPE = 'read_expense_type';
 export const DELETE_EXPENSE_TYPE = 'delete_expense_type';
 
-export const CREATE_WORKFLOW_PROFILE = 'create_workflow_profile';
-export const UPDATE_WORKFLOW_PROFILEY = 'update_workflow_profile';
-export const READ_WORKFLOW_PROFILE = 'read_workflow_profile';
-export const DELETE_WORKFLOW_PROFILE = 'delete_workflow_profile';
+export const CREATE_WORKSHOP_PROFILE = 'create_workshop_profile';
+export const UPDATE_WORKSHOP_PROFILEY = 'update_workshop_profile';
+export const READ_WORKSHOP_PROFILE = 'read_workshop_profile';
+export const DELETE_WORKSHOP_PROFILE = 'delete_workshop_profile';
 
 export const CREATE_TRANSACTION = 'create_transaction';
 export const UPDATE_TRANSACTION = 'update_transaction';
@@ -181,10 +181,10 @@ const settings: AppSettings = {
     DELETE_EXPENSE_TYPE,
     UPDATE_EXPENSE_TYPE,
 
-    CREATE_WORKFLOW_PROFILE,
-    UPDATE_WORKFLOW_PROFILEY,
-    DELETE_WORKFLOW_PROFILE,
-    READ_WORKFLOW_PROFILE,
+    CREATE_WORKSHOP_PROFILE,
+    UPDATE_WORKSHOP_PROFILEY,
+    DELETE_WORKSHOP_PROFILE,
+    READ_WORKSHOP_PROFILE,
 
     CREATE_TRANSACTION,
     READ_TRANSACTION,
