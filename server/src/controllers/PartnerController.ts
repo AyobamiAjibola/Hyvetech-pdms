@@ -15,6 +15,8 @@ import settings, {
   CREATE_WORKSHOP_PROFILE,
   MANAGE_ALL,
   MANAGE_TECHNICIAN,
+  READ_CUSTOMER,
+  READ_DRIVER,
   READ_WORKSHOP_PROFILE,
   UPDATE_WORKSHOP_PROFILEY,
 } from '../config/settings';
@@ -891,6 +893,7 @@ export default class PartnerController {
     }
   }
 
+  @HasPermission([READ_CUSTOMER, MANAGE_TECHNICIAN, MANAGE_ALL, READ_DRIVER])
   public async driversFilterData(req: Request) {
     const partnerId = req.params.partnerId as string;
     const path = req.path;
