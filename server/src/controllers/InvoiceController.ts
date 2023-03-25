@@ -531,7 +531,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_TECHNICIAN, UPDATE_PAYMENT, CREATE_PAYMENT])
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_PAYMENT])
   public static async updateCompletedInvoicePayment(req: Request) {
     const value = req.body;
 
@@ -665,7 +665,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_TECHNICIAN, UPDATE_PAYMENT, CREATE_PAYMENT])
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_PAYMENT])
   public static async updateCompletedInvoicePaymentManually(req: Request) {
     try {
       const { invoiceId, customerId, amount: _amount, type } = req.body;
