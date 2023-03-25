@@ -154,7 +154,7 @@ function EstimateForm(props: IProps) {
     props;
 
   // const estimate = useEstimate();
-  const { isTechAdmin } = useAdmin();
+  // const { isTechAdmin } = useAdmin();
   const params = useParams();
   const admin = useAdmin();
 
@@ -527,7 +527,7 @@ function EstimateForm(props: IProps) {
             <Divider orientation="horizontal" />
           </Grid>
 
-          {isTechAdmin && (props?.isPopUp || false) && (
+          {
             <Grid style={{ width: '100%' }}>
               <div style={{ marginTop: 10, paddingTop: 15, paddingBottom: 15, width: '100%' }}></div>
 
@@ -611,7 +611,7 @@ function EstimateForm(props: IProps) {
 
               {/* <Divider orientation="horizontal" /> */}
             </Grid>
-          )}
+          }
 
           {/* 
           <Grid item xs={4}>

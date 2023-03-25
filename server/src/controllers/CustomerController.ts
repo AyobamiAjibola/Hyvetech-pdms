@@ -11,11 +11,20 @@ import Transaction from '../models/Transaction';
 import VehicleFault from '../models/VehicleFault';
 import { Request } from 'express';
 import { Op } from 'sequelize';
-import { TryCatch } from '../decorators';
+import { HasPermission, TryCatch } from '../decorators';
 import HttpResponse = appCommonTypes.HttpResponse;
 import AppRequestParams = appCommonTypes.AppRequestParams;
 import Contact from '../models/Contact';
-import settings from '../config/settings';
+import settings, {
+  CREATE_CUSTOMER,
+  CREATE_USER,
+  MANAGE_ALL,
+  MANAGE_TECHNICIAN,
+  READ_CUSTOMER,
+  READ_USER,
+  UPDATE_CUSTOMER,
+  UPDATE_USER,
+} from '../config/settings';
 import PasswordEncoder from '../utils/PasswordEncoder';
 import QueueManager from 'rabbitmq-email-manager';
 import { QUEUE_EVENTS } from '../config/constants';
@@ -26,6 +35,7 @@ const CUSTOMER_ID = 'Customer Id';
 
 export default class CustomerController {
   @TryCatch
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER, READ_CUSTOMER])
   public static async allCustomers() {
     const customers = await dataSources.customerDAOService.findAll({
       attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
@@ -44,15 +54,15 @@ export default class CustomerController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER, READ_CUSTOMER])
   public static async allNewCustomers(req: Request) {
-
     // console.log(req)
 
     // so let's process some information
     // check if requester is a user admin
     let customers;
 
-    if(req?.user?.id == 1){
+    if (req?.user?.id == 1) {
       // user is admin
       customers = await dataSources.customerDAOService.findAll({
         attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
@@ -60,15 +70,15 @@ export default class CustomerController {
           [Op.not]: { firstName: 'Anonymous' },
         },
       });
-    }else{
+    } else {
       // user created by workshop
       customers = await dataSources.customerDAOService.findAll({
         attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
         where: {
           [Op.not]: { firstName: 'Anonymous' },
-          partnerId: req?.user?.partner.id
+          partnerId: req?.user?.partner.id,
         },
-        include: [Contact]
+        include: [Contact],
       });
     }
 
@@ -82,70 +92,71 @@ export default class CustomerController {
   }
 
   @TryCatch
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER, READ_CUSTOMER, CREATE_USER, READ_USER, UPDATE_USER])
   public static async addCustomers(req: Request) {
     // console.log(req.body)
-    const {error, value} = Joi.object({
-            title: Joi.string().optional().label("Title"),
-            firstName: Joi.string().required().label("First Name"),
-            lastName: Joi.string().required().label("Last Name"),
-            email: Joi.string().email().required().label("Email"),
-            state: Joi.string().required().label("State"),
-            district: Joi.string().required().label("District"),
-            phone: Joi.string().required().label("Phone"),
-            address: Joi.string().optional().label("Address"),
-            creditRating: Joi.string().optional().label("Credit Rating"),
-            companyName: Joi.any().allow().label("Company Name"),
-            accountType: Joi.string().optional().label("Account Type"),
-            isEditing: Joi.any().optional().label("Is Editing")
+    const { error, value } = Joi.object({
+      title: Joi.string().optional().label('Title'),
+      firstName: Joi.string().required().label('First Name'),
+      lastName: Joi.string().required().label('Last Name'),
+      email: Joi.string().email().required().label('Email'),
+      state: Joi.string().required().label('State'),
+      district: Joi.string().required().label('District'),
+      phone: Joi.string().required().label('Phone'),
+      address: Joi.string().optional().label('Address'),
+      creditRating: Joi.string().optional().label('Credit Rating'),
+      companyName: Joi.any().allow().label('Company Name'),
+      accountType: Joi.string().optional().label('Account Type'),
+      isEditing: Joi.any().optional().label('Is Editing'),
     }).validate(req.body);
-    
-    if(error){
+
+    if (error) {
       return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
     }
 
-    value.email = (value.email).toLowerCase();
+    value.email = value.email.toLowerCase();
 
     // check if user exist
     const customer = await dataSources.customerDAOService.findByAny({
       where: {
-        [Op.or]: [{ email: (value.email).toLowerCase() }, { phone: value.phone }],
+        [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
       },
     });
-    
+
     if (customer) {
-      if(value.isEditing){
-        
+      if (value.isEditing) {
         customer.phone = value.phone;
         customer.firstName = value.firstName;
         customer.companyName = value.companyName;
         customer.lastName = value.lastName;
         customer.creditRating = value.creditRating;
         customer.title = value.title;
-        await customer.save()
+        await customer.save();
 
-        await Contact.update({
-          district: value.district,
-          state: value.state,
-          address: value.address,
-        }, {
-          where: {
-            // @ts-ignore
-            customerId: customer.id
-          }
-        })
+        await Contact.update(
+          {
+            district: value.district,
+            state: value.state,
+            address: value.address,
+          },
+          {
+            where: {
+              // @ts-ignore
+              customerId: customer.id,
+            },
+          },
+        );
 
         const response: HttpResponse<Customer> = {
           code: HttpStatus.OK.code,
-          message: HttpStatus.OK.value
+          message: HttpStatus.OK.value,
         };
-    
-        return Promise.resolve(response);
 
-      }else{
-        return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
+        return Promise.resolve(response);
+      } else {
+        return Promise.reject(CustomAPIError.response('Customer already exist', HttpStatus.NOT_FOUND.code));
       }
     }
-
 
     //find role by name
     const role = await dataSources.roleDAOService.findByAny({
@@ -157,11 +168,11 @@ export default class CustomerController {
         CustomAPIError.response(`Role ${settings.roles[1]} does not exist`, HttpStatus.NOT_FOUND.code),
       );
 
-      const passwordEncoder = new PasswordEncoder();
+    const passwordEncoder = new PasswordEncoder();
 
     const payload = {
       rawPassword: value.phone,
-      password: (await passwordEncoder.encode(value.phone)),
+      password: await passwordEncoder.encode(value.phone),
       enabled: true,
       active: true,
       companyName: value.companyName,
@@ -170,14 +181,14 @@ export default class CustomerController {
       email: value.email,
       phone: value.phone,
       title: value.title,
-      partnerId: req?.user.partner?.id || null
-    }
+      partnerId: req?.user.partner?.id || null,
+    };
 
     const contactValues: any = {
       label: 'Home',
       state: value.state,
       district: value.district,
-      address: value.address
+      address: value.address,
     };
 
     const contact = await dataSources.contactDAOService.create(contactValues);
@@ -191,7 +202,7 @@ export default class CustomerController {
 
     const response: HttpResponse<Customer> = {
       code: HttpStatus.OK.code,
-      message: HttpStatus.OK.value
+      message: HttpStatus.OK.value,
     };
 
     return Promise.resolve(response);
@@ -199,82 +210,82 @@ export default class CustomerController {
 
   // start
   @TryCatch
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER, READ_CUSTOMER, CREATE_USER, READ_USER, UPDATE_USER])
   public static async importCustomers(req: Request) {
     // console.log(req.body)
-    const {error, value: newValue} = Joi.object({
-      accounts: Joi.array().required().label("Account Object"),
+    const { error, value: newValue } = Joi.object({
+      accounts: Joi.array().required().label('Account Object'),
     }).validate(req.body);
-    
-    if(error){
+
+    if (error) {
       return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
     }
 
-    for (let i = 0; i < (newValue.accounts).length; i++) {
-      const value = (newValue.accounts)[i];
+    for (let i = 0; i < newValue.accounts.length; i++) {
+      const value = newValue.accounts[i];
 
-      const {error: error2} = Joi.object({
-        email: Joi.string().email().required().label("Email"),
-        firstName: Joi.string().optional().label("First Name"),
-        lastName: Joi.string().optional().label("Last Name"),
-        phone: Joi.string().optional().label("Phone"),
-        companyName: Joi.any().allow().label("Company Name"),
-        state: Joi.string().optional().label("State"),
-        district: Joi.string().optional().label("District"),
+      const { error: error2 } = Joi.object({
+        email: Joi.string().email().required().label('Email'),
+        firstName: Joi.string().optional().label('First Name'),
+        lastName: Joi.string().optional().label('Last Name'),
+        phone: Joi.string().optional().label('Phone'),
+        companyName: Joi.any().allow().label('Company Name'),
+        state: Joi.string().optional().label('State'),
+        district: Joi.string().optional().label('District'),
       }).validate(value);
-      if(error2){
+      if (error2) {
         console.log(error2.message, value);
         continue;
       }
 
       // validate phone
-      const firstChar = (value?.phone || "")[0];
-      if( firstChar != "0"){
+      const firstChar = (value?.phone || '')[0];
+      if (firstChar != '0') {
         // logic to function on phone
-        if(firstChar == '+'){
-          // 
-          value.phone = (value.phone).replaceAll("+234", "0");
-        }else if(firstChar == '2'){
-          // 
-          value.phone = (value.phone).replaceAll("234", "0");
-        }else{
-          // 
-          value.phone = '0'+(value.phone);
+        if (firstChar == '+') {
+          //
+          value.phone = value.phone.replaceAll('+234', '0');
+        } else if (firstChar == '2') {
+          //
+          value.phone = value.phone.replaceAll('234', '0');
+        } else {
+          //
+          value.phone = '0' + value.phone;
         }
       }
 
-      if( (value?.phone || '').length != 11 ){
+      if ((value?.phone || '').length != 11) {
         continue;
       }
 
-      console.log('reac-code-2')
+      console.log('reac-code-2');
 
-      value.email = (value.email).toLowerCase();
+      value.email = value.email.toLowerCase();
 
-    // check if user exist
-    const customer = await dataSources.customerDAOService.findByAny({
-      where: {
-        [Op.or]: [{ email: (value.email).toLowerCase() }, { phone: value.phone }],
-      },
-    });
-    
-    if (customer) {
-      continue;
-      // return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
-    }
+      // check if user exist
+      const customer = await dataSources.customerDAOService.findByAny({
+        where: {
+          [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
+        },
+      });
 
-    console.log('reac-code-3')
+      if (customer) {
+        continue;
+        // return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
+      }
 
+      console.log('reac-code-3');
 
-    //find role by name
-    const role = await dataSources.roleDAOService.findByAny({
-      where: { slug: settings.roles[1] },
-    });
+      //find role by name
+      const role = await dataSources.roleDAOService.findByAny({
+        where: { slug: settings.roles[1] },
+      });
 
-    if (!role){
-      continue;
-    }
+      if (!role) {
+        continue;
+      }
 
-    console.log('reac-code-4')
+      console.log('reac-code-4');
       // return Promise.reject(
       //   CustomAPIError.response(`Role ${settings.roles[1]} does not exist`, HttpStatus.NOT_FOUND.code),
       // );
@@ -283,7 +294,7 @@ export default class CustomerController {
 
       const payload = {
         rawPassword: value.phone,
-        password: (await passwordEncoder.encode(value.phone)),
+        password: await passwordEncoder.encode(value.phone),
         enabled: true,
         active: true,
         companyName: value.companyName,
@@ -291,14 +302,14 @@ export default class CustomerController {
         lastName: value.lastName,
         email: value.email,
         phone: value.phone,
-        partnerId: req?.user.partner?.id || null
-      }
+        partnerId: req?.user.partner?.id || null,
+      };
 
       const contactValues: any = {
         label: 'Home',
         state: value.state,
         district: value.district,
-        address: value?.address || ""
+        address: value?.address || '',
       };
 
       const contact = await dataSources.contactDAOService.create(contactValues);
@@ -309,12 +320,11 @@ export default class CustomerController {
       //associate user with role
       await user.$set('roles', [role]);
       await user.$set('contacts', [contact]);
-      
     }
 
     const response: HttpResponse<Customer> = {
       code: HttpStatus.OK.code,
-      message: HttpStatus.OK.value
+      message: HttpStatus.OK.value,
     };
 
     return Promise.resolve(response);
@@ -322,29 +332,30 @@ export default class CustomerController {
   // stop
 
   @TryCatch
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_CUSTOMER, READ_CUSTOMER])
   public static async updateCustomers(req: Request) {
-    console.log(req.body)
-    const {error, value} = Joi.object({
-      id: Joi.any().required().label("Customer Id"),
-      firstName: Joi.string().optional().label("First Name"),
-      lastName: Joi.string().optional().label("Last Name"),
-      phone: Joi.string().optional().label("Phone"),
-      creditRating: Joi.any().optional().label("Credit Rating"),
-      companyName: Joi.any().allow().label("Company Name"),
-      address: Joi.string().optional().label("Address"),
-      state: Joi.string().optional().label("State"),
-      district: Joi.string().optional().label("District"),
+    console.log(req.body);
+    const { error, value } = Joi.object({
+      id: Joi.any().required().label('Customer Id'),
+      firstName: Joi.string().optional().label('First Name'),
+      lastName: Joi.string().optional().label('Last Name'),
+      phone: Joi.string().optional().label('Phone'),
+      creditRating: Joi.any().optional().label('Credit Rating'),
+      companyName: Joi.any().allow().label('Company Name'),
+      address: Joi.string().optional().label('Address'),
+      state: Joi.string().optional().label('State'),
+      district: Joi.string().optional().label('District'),
     }).validate(req.body);
-    
-    if(error){
+
+    if (error) {
       return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
     }
 
     // check if user exist
     const customer = await dataSources.customerDAOService.findById(value.id);
-    
+
     if (!customer) {
-      return Promise.reject(CustomAPIError.response("Customer not found", HttpStatus.NOT_FOUND.code));
+      return Promise.reject(CustomAPIError.response('Customer not found', HttpStatus.NOT_FOUND.code));
     }
 
     customer.phone = value.phone;
@@ -352,22 +363,25 @@ export default class CustomerController {
     customer.companyName = value.companyName;
     customer.lastName = value.lastName;
     customer.creditRating = value.creditRating;
-    await customer.save()
+    await customer.save();
 
-    await Contact.update({
-      district: value.district,
-      state: value.state,
-      address: value.address,
-    }, {
-      where: {
-        // @ts-ignore
-        customerId: value.id
-      }
-    })
+    await Contact.update(
+      {
+        district: value.district,
+        state: value.state,
+        address: value.address,
+      },
+      {
+        where: {
+          // @ts-ignore
+          customerId: value.id,
+        },
+      },
+    );
 
     const response: HttpResponse<Customer> = {
       code: HttpStatus.OK.code,
-      message: HttpStatus.OK.value
+      message: HttpStatus.OK.value,
     };
 
     return Promise.resolve(response);

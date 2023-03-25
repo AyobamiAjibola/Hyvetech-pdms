@@ -12,7 +12,14 @@ import Contact from '../models/Contact';
 import Joi = require('joi');
 import { CreationAttributes, InferAttributes, Op } from 'sequelize';
 import { HasPermission, TryCatch } from '../decorators';
-import { CREATE_USER, DELETE_USER, MANAGE_TECHNICIAN, READ_USER, UPDATE_USER } from '../config/settings';
+import {
+  CREATE_CUSTOMER,
+  CREATE_USER,
+  DELETE_USER,
+  MANAGE_TECHNICIAN,
+  READ_USER,
+  UPDATE_USER,
+} from '../config/settings';
 import PasswordEncoder from '../utils/PasswordEncoder';
 import Role from '../models/Role';
 import Permission from '../models/Permission';
@@ -26,7 +33,7 @@ export default class UserController {
   constructor(passwordEncoder: BcryptPasswordEncoder) {
     this.passwordEncoder = passwordEncoder;
   }
-  @HasPermission([MANAGE_TECHNICIAN, READ_USER])
+  @HasPermission([MANAGE_TECHNICIAN, READ_USER, CREATE_CUSTOMER])
   public async user(req: Request) {
     const userId = req.params.userId as string;
     try {
@@ -60,7 +67,7 @@ export default class UserController {
     }
   }
 
-  @HasPermission([MANAGE_TECHNICIAN, READ_USER, CREATE_USER])
+  @HasPermission([MANAGE_TECHNICIAN, READ_USER, CREATE_USER, CREATE_CUSTOMER])
   public async users(req: Request) {
     try {
       const partner = req.user.partner;
@@ -85,7 +92,7 @@ export default class UserController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_TECHNICIAN, CREATE_USER])
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_USER, CREATE_CUSTOMER])
   public async createUser(req: Request) {
     const user = await this.doCreateUser(req);
 
