@@ -1,16 +1,16 @@
 import React, { useContext, useState } from 'react';
-import { Box, Button, Chip, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 // import useCustomer from '../../hooks/useCustomer';
-import moment from 'moment';
-import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { Visibility } from '@mui/icons-material';
+// import moment from 'moment';
+import { GridColDef } from '@mui/x-data-grid';
+// import { Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ICustomer } from '@app-models';
 import { AppContext } from '../../context/AppContextProvider';
 import { AppContextProps } from '@app-interfaces';
 import useNewCustomer from '../../hooks/useNewCustomer';
-import useAdmin from '../../hooks/useAdmin';
+// import useAdmin from '../../hooks/useAdmin';
 import CreateCustomerModal from '../../components/modal/CreateCustomer';
 import ImportCustomerModal from '../../components/modal/ImportCustomer';
 
@@ -21,7 +21,7 @@ function CustomersPage() {
 
   const customer = useNewCustomer();
   const navigate = useNavigate();
-  const { isTechAdmin } = useAdmin();
+  // const { isTechAdmin } = useAdmin();
 
   const handleView = (customer: ICustomer) => {
     setCustomer(customer);
@@ -79,15 +79,16 @@ function CustomersPage() {
             loading={customer.loading}
             rows={customer.rows}
             columns={
-              isTechAdmin
-                ? getPartnerTableColumn({
-                    onDelete: handleDelete,
-                    onView: handleView,
-                  })
-                : getTableColumn({
-                    onDelete: handleDelete,
-                    onView: handleView,
-                  })
+              // isTechAdmin
+              // ?
+              getPartnerTableColumn({
+                onDelete: handleDelete,
+                onView: handleView,
+              })
+              // : getTableColumn({
+              //     onDelete: handleDelete,
+              //     onView: handleView,
+              //   })
             }
             showToolbar
             sortModel={customer.sortModel}
@@ -206,100 +207,100 @@ const getPartnerTableColumn = (options?: any) =>
   ] as GridColDef<ICustomer>[];
 
 // for admin
-const getTableColumn = (options?: any) =>
-  [
-    {
-      field: 'id',
-      headerName: 'ID',
-      headerAlign: 'center',
-      align: 'center',
-      sortable: true,
-      type: 'number',
-    },
-    {
-      field: 'fullName',
-      headerName: 'Full Name',
-      headerAlign: 'center',
-      align: 'center',
-      type: 'string',
-      width: 250,
-      sortable: true,
-      valueGetter: param => {
-        return param ? `${param.row.firstName} ${param.row.lastName}` : '';
-      },
-    },
-    {
-      field: 'enabled',
-      headerName: 'Status',
-      headerAlign: 'center',
-      align: 'center',
-      type: 'boolean',
-      width: 100,
-      sortable: true,
-      renderCell: params => {
-        return params.row.enabled ? (
-          <Chip label="Active" size="small" color="success" />
-        ) : (
-          <Chip label="Inactive" size="small" color="warning" />
-        );
-      },
-    },
-    {
-      field: 'email',
-      headerName: 'Email',
-      headerAlign: 'center',
-      align: 'center',
-      type: 'string',
-      width: 200,
-      sortable: true,
-      valueGetter: param => {
-        return param ? param.value : '';
-      },
-    },
-    {
-      field: 'phone',
-      headerName: 'Phone Number',
-      headerAlign: 'center',
-      align: 'center',
-      type: 'string',
-      width: 150,
-      sortable: true,
-    },
-    {
-      field: 'createdAt',
-      headerName: 'Created Date',
-      headerAlign: 'center',
-      align: 'center',
-      width: 200,
-      type: 'string',
-      valueGetter: ({ value }) => value && moment(value).format('LLL'),
-      sortable: true,
-    },
-    {
-      field: 'updatedAt',
-      headerName: 'Modified Date',
-      headerAlign: 'center',
-      align: 'center',
-      width: 200,
-      type: 'string',
-      valueGetter: ({ value }) => value && moment(value).format('LLL'),
-      sortable: true,
-    },
-    {
-      field: 'actions',
-      type: 'actions',
-      headerAlign: 'center',
-      align: 'center',
-      getActions: (params: any) => [
-        <GridActionsCellItem
-          key={0}
-          icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-          onClick={() => options.onView(params.row)}
-          label="View"
-          showInMenu={false}
-        />,
-      ],
-    },
-  ] as GridColDef<ICustomer>[];
+// const getTableColumn = (options?: any) =>
+//   [
+//     {
+//       field: 'id',
+//       headerName: 'ID',
+//       headerAlign: 'center',
+//       align: 'center',
+//       sortable: true,
+//       type: 'number',
+//     },
+//     {
+//       field: 'fullName',
+//       headerName: 'Full Name',
+//       headerAlign: 'center',
+//       align: 'center',
+//       type: 'string',
+//       width: 250,
+//       sortable: true,
+//       valueGetter: param => {
+//         return param ? `${param.row.firstName} ${param.row.lastName}` : '';
+//       },
+//     },
+//     {
+//       field: 'enabled',
+//       headerName: 'Status',
+//       headerAlign: 'center',
+//       align: 'center',
+//       type: 'boolean',
+//       width: 100,
+//       sortable: true,
+//       renderCell: params => {
+//         return params.row.enabled ? (
+//           <Chip label="Active" size="small" color="success" />
+//         ) : (
+//           <Chip label="Inactive" size="small" color="warning" />
+//         );
+//       },
+//     },
+//     {
+//       field: 'email',
+//       headerName: 'Email',
+//       headerAlign: 'center',
+//       align: 'center',
+//       type: 'string',
+//       width: 200,
+//       sortable: true,
+//       valueGetter: param => {
+//         return param ? param.value : '';
+//       },
+//     },
+//     {
+//       field: 'phone',
+//       headerName: 'Phone Number',
+//       headerAlign: 'center',
+//       align: 'center',
+//       type: 'string',
+//       width: 150,
+//       sortable: true,
+//     },
+//     {
+//       field: 'createdAt',
+//       headerName: 'Created Date',
+//       headerAlign: 'center',
+//       align: 'center',
+//       width: 200,
+//       type: 'string',
+//       valueGetter: ({ value }) => value && moment(value).format('LLL'),
+//       sortable: true,
+//     },
+//     {
+//       field: 'updatedAt',
+//       headerName: 'Modified Date',
+//       headerAlign: 'center',
+//       align: 'center',
+//       width: 200,
+//       type: 'string',
+//       valueGetter: ({ value }) => value && moment(value).format('LLL'),
+//       sortable: true,
+//     },
+//     {
+//       field: 'actions',
+//       type: 'actions',
+//       headerAlign: 'center',
+//       align: 'center',
+//       getActions: (params: any) => [
+//         <GridActionsCellItem
+//           key={0}
+//           icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+//           onClick={() => options.onView(params.row)}
+//           label="View"
+//           showInMenu={false}
+//         />,
+//       ],
+//     },
+//   ] as GridColDef<ICustomer>[];
 
 export default CustomersPage;
