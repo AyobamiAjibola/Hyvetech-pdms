@@ -81,6 +81,7 @@ interface IExpenseState {
   expenseCategories: IExpenseCategory[];
 
   invoiceCode: string;
+  expenseCategoryId: string;
 }
 
 const initialState: IExpenseState = {
@@ -145,7 +146,8 @@ const initialState: IExpenseState = {
   expenseTypes: [],
   expenseCategories: [],
 
-  invoiceCode: ''
+  invoiceCode: '',
+  expenseCategoryId: ''
 };
 
 const expenseSlice = createSlice({
@@ -198,6 +200,10 @@ const expenseSlice = createSlice({
     setInvoiceCode(state: IExpenseState, action: PayloadAction<any>) {
       state.invoiceCode = action.payload;
     },
+
+    setExpenseCategoryId(state: IExpenseState, action: PayloadAction<string>) {
+      state.expenseCategoryId = action.payload
+    }
   },
 
   extraReducers: builder => {
@@ -439,6 +445,7 @@ export const {
   clearCreateExpenseCategoryStatus,
   clearCreateExpenseTypeStatus,
   setInvoiceCode,
+  setExpenseCategoryId
 } = expenseSlice.actions;
 
 export default expenseSlice.reducer;

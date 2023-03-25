@@ -38,7 +38,7 @@ const expenseEndpoints: RouteEndpoints = [
   {
     name: 'expense',
     method: 'patch',
-    path: '/expense/detail',
+    path: '/expense/:id',
     handler: updateExpenseDetailsHandler,
   },
   {

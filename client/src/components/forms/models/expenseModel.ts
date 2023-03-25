@@ -24,5 +24,12 @@ export interface IExpenseUpdateValue {
 }
 
 export interface IExpenseUpdateDetailValue {
+  id: number;
   note: string;
+  amount: number | null;
+  category: IExpenseCategory | null;
+  type: IExpenseType | null;
+  invoice: IInvoice | null;
+  status: string;
+  dateModified: any
 }

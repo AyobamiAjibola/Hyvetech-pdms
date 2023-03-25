@@ -14,6 +14,7 @@ import Appointment from '../models/Appointment';
 import dataStore from '../config/dataStore';
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
+import Expense from '../models/Expense';
 
 const startDate = moment({ hours: 0, minutes: 0, seconds: 0 }).toDate();
 const endDate = moment({ hours: 23, minutes: 59, seconds: 59 }).toDate();
@@ -151,15 +152,22 @@ export default class Generic {
     return result;
   }
 
-  public static generateExpenseCode(count: number) {
-    count = 1;
-    let code = () => {
-      count.toString().padStart(3, '0')
-      count++
-      return code
-    }
-    code()
-  }
+  // public static generateExpenseCode(expenses: Expense) {
+  //   let count = expenses.length + 1;
+  //   let $expense = () => {
+  //     let code: string;
+  //     let res = ''
+  //     code = count.toString().padStart(4, '0')
+  //     let fnd = expenses.find(value => value.expenseCode.toString() === code)
+  //     if(fnd){
+  //       count++
+  //       code = count.toString().padStart(4, '0')
+  //     } else { res = code }
+
+  //     res = code
+  //     return res
+  //   };
+  // }
 
   public static convertTextToCamelcase(text: string) {
     text = text.replace(/[^a-zA-Z0-9 ]/g, '');

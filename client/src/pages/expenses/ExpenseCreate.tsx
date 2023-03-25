@@ -70,6 +70,7 @@ const ExpenseCreate = () => {
       setAmount('');
       setReference('');
       dispatch(clearCreateEspenseStatus());
+      dispatch(setInvoiceCode(''))
       navigate(-1);
     } else if (store.createExpenseStatus === 'failed') {
       setErrorAlert(store.createExpenseError);
@@ -108,22 +109,21 @@ const ExpenseCreate = () => {
     })
     if (findRef !== '') return setErrorAlert('This payment has already been recorded');
 
-    // if (!invoice) return setErrorAlert('Please select invoice');
-
+    const invoiceCode = invoiceStore.invoices.find((inv: IInvoice) => inv.code === expenseReducer.invoiceCode)
+      
     dispatch(
       createExpenseAction({
         category,
         type,
         reference: reference.trim() === '' ? null : reference,
         beneficiary,
-        invoice, //expenseReducer.invoiceCode !== '' ? invoiceCode : invoice,
+        invoice: expenseReducer.invoiceCode !== '' ? invoiceCode : invoice,
         amount: +amount,
         note,
         dateModified,
       }),
     );
 
-    dispatch(setInvoiceCode(''))
   };
 
   useEffect(() => {
@@ -311,7 +311,7 @@ const ExpenseCreate = () => {
                       <TextField
                         {...params}
                         fullWidth
-                        label="Date Modified"
+                        label="Date"
                         variant="outlined"
                       />
                     }
@@ -436,7 +436,7 @@ const ExpenseCreate = () => {
                           }}
                         />
                       )}
-                      value={invoice}
+                      defaultValue={expenseReducer.invoiceCode !== '' ? expenseReducer.invoiceCode : invoice}
                       onChange={(_: any, newValue) => setInvoice(newValue)}
                       options={invoiceStore.invoices}
                     />
