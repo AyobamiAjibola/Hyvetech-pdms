@@ -16,8 +16,8 @@ import ImportCustomerModal from '../../components/modal/ImportCustomer';
 
 function CustomersPage() {
   const { setCustomer } = useContext(AppContext) as AppContextProps;
-  const [createModal, setCreateModal] = useState(false)
-  const [inviteModal, setInviteModal] = useState(false)
+  const [createModal, setCreateModal] = useState(false);
+  const [inviteModal, setInviteModal] = useState(false);
 
   const customer = useNewCustomer();
   const navigate = useNavigate();
@@ -35,31 +35,37 @@ function CustomersPage() {
 
   return (
     <Box>
-
       <Grid container justifyContent="space-between" alignItems="center">
         <Grid item xs={9}>
           <Typography variant="h4" gutterBottom>
             Customers
           </Typography>
         </Grid>
-        <Grid item hidden={!isTechAdmin}>
-          <Button variant="outlined" color="success" size="small" onClick={() => {
-            // s
-            setCreateModal(true)
-          }}>
+        <Grid item>
+          <Button
+            variant="outlined"
+            color="success"
+            size="small"
+            onClick={() => {
+              // s
+              setCreateModal(true);
+            }}>
             ADD CUSTOMER
           </Button>
         </Grid>
 
-        <Grid item hidden={!isTechAdmin}>
-          <Button variant="outlined" color="success" size="small" onClick={() => {
-            // s
-            setInviteModal(true)
-          }}>
+        <Grid item>
+          <Button
+            variant="outlined"
+            color="success"
+            size="small"
+            onClick={() => {
+              // s
+              setInviteModal(true);
+            }}>
             IMPORT CUSTOMER
           </Button>
         </Grid>
-
       </Grid>
 
       <Stack
@@ -73,17 +79,15 @@ function CustomersPage() {
             loading={customer.loading}
             rows={customer.rows}
             columns={
-
-              (isTechAdmin) ? 
-              getPartnerTableColumn({
-                onDelete: handleDelete,
-                onView: handleView,
-              })
-              :
-              getTableColumn({
-                onDelete: handleDelete,
-                onView: handleView,
-              })
+              isTechAdmin
+                ? getPartnerTableColumn({
+                    onDelete: handleDelete,
+                    onView: handleView,
+                  })
+                : getTableColumn({
+                    onDelete: handleDelete,
+                    onView: handleView,
+                  })
             }
             showToolbar
             sortModel={customer.sortModel}
@@ -95,16 +99,24 @@ function CustomersPage() {
       </Stack>
 
       {/* @ts-ignore */}
-      <CreateCustomerModal callback={(e) => {
-        console.log(e);
-        window.location.reload()
-      }} visible={createModal} setVisible={setCreateModal} />
+      <CreateCustomerModal
+        callback={(e: any) => {
+          console.log(e);
+          window.location.reload();
+        }}
+        visible={createModal}
+        setVisible={setCreateModal}
+      />
 
       {/* @ts-ignore */}
-      <ImportCustomerModal callback={(e) => {
-        console.log(e);
-        window.location.reload()
-      }} visible={inviteModal} setVisible={setInviteModal} />
+      <ImportCustomerModal
+        callback={(e: any) => {
+          console.log(e);
+          window.location.reload();
+        }}
+        visible={inviteModal}
+        setVisible={setInviteModal}
+      />
     </Box>
   );
 }
@@ -132,8 +144,10 @@ const getPartnerTableColumn = (options?: any) =>
       //   return param ? `${param.row.firstName} ${param.row.lastName}` : '';
       // },
       renderCell: param => (
-        <div style={{ cursor: 'pointer', color: 'lightblue' }} onClick={() => options.onView(param.row)}>{param ? `${param?.row?.title || ""} ${param.row.firstName} ${param.row.lastName}` : ''}</div>
-      )
+        <div style={{ cursor: 'pointer', color: 'lightblue' }} onClick={() => options.onView(param.row)}>
+          {param ? `${param?.row?.title || ''} ${param.row.firstName} ${param.row.lastName}` : ''}
+        </div>
+      ),
     },
     {
       field: 'company',
@@ -176,7 +190,7 @@ const getPartnerTableColumn = (options?: any) =>
       width: 200,
       type: 'string',
       // @ts-ignore
-      valueGetter: (params) => params.row.creditRating || 'N/A',
+      valueGetter: params => params.row.creditRating || 'N/A',
       sortable: true,
     },
     {

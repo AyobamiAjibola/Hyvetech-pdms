@@ -518,7 +518,13 @@ export default class PartnerController {
    * @name getPartner
    * @param id
    */
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, READ_WORKSHOP_PROFILE, CREATE_WORKSHOP_PROFILE])
+  @HasPermission([
+    MANAGE_ALL,
+    MANAGE_TECHNICIAN,
+    READ_WORKSHOP_PROFILE,
+    CREATE_WORKSHOP_PROFILE,
+    UPDATE_WORKSHOP_PROFILEY,
+  ])
   public async getPartner(req: Request) {
     try {
       const partner = await dataSources.partnerDAOService.findById(+req.params.id || +req.params.partnerId, {
@@ -547,7 +553,7 @@ export default class PartnerController {
    * @param body
    * @param partnerId
    */
-  @HasPermission([MANAGE_ALL])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_WORKSHOP_PROFILE, UPDATE_WORKSHOP_PROFILEY])
   public async addPlan(body: ICreatePlanBody, partnerId: number) {
     try {
       const { error, value } = Joi.object($planSchema).validate(body);
