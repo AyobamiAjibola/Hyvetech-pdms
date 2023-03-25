@@ -103,7 +103,7 @@ export default class User extends Model<InferAttributes<User>, InferCreationAttr
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare active: boolean | null;
 
-  @Column(DataType.STRING(3000))
+  @Column(DataType.TEXT)
   declare loginToken: string | null;
 
   @Column(DataType.DATE)
