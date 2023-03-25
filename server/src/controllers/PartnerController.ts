@@ -179,7 +179,7 @@ export default class PartnerController {
             firstName: 'Admin',
             lastName: 'Admin',
             // active: true,
-            active: false,
+            active: true,
             password,
             rawPassword: password,
           };

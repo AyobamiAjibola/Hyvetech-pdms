@@ -174,8 +174,8 @@ export default class UserController {
 
     const user = await dataSources.userDAOService.create(userValues as CreationAttributes<User>);
 
-    await role?.$set('users', [user]);
-    await user.$set('roles', [role]);
+    await role?.$add('users', [user]);
+    await user.$add('roles', [role]);
 
     return user;
   }

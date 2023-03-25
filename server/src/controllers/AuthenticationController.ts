@@ -149,12 +149,15 @@ export default class AuthenticationController {
       const hash = user.password;
       const password = value.password;
 
-      console.log('iiii> ', password, hash);
-
       const isMatch = await this.passwordEncoder.match(password.trim(), hash.trim());
 
       if (!isMatch)
         return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
+
+      if (!user.active)
+        return Promise.reject(
+          CustomAPIError.response('Account is disabled. Please contact admininstrator', HttpStatus.UNAUTHORIZED.code),
+        );
 
       const role = await dataSources.roleDAOService.findById(user.roleId, { include: [Permission] });
 

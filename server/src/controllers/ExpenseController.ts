@@ -228,19 +228,19 @@ export default class ExpenseController {
   private async doUpdateExpenseDetails(req: Request) {
     // const { error, value } = Joi.object<Expense>($saveExpenseSchema).validate(req.body);
     const value = req.body;
-    console.log(req.params)
+    console.log(req.params);
     // if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
     const expense = await dao.expenseDAOService.findByAny({
-      where: {id: +req.params.id}
+      where: { id: +req.params.id },
     });
 
     if (!expense) {
-      return Promise.reject(CustomAPIError.response("Expense does not exist", HttpStatus.NOT_FOUND.code));
+      return Promise.reject(CustomAPIError.response('Expense does not exist', HttpStatus.NOT_FOUND.code));
     }
 
     return expense.update({
       reference: value.reference,
-      note: value.reference
+      note: value.reference,
     });
   }
 
@@ -297,27 +297,29 @@ export default class ExpenseController {
     if (!invoice && !['overhead', 'others'].includes(category.name.toLowerCase()))
       return Promise.reject(CustomAPIError.response('Invoice not found', HttpStatus.NOT_FOUND.code));
 
-      const expenses = await dao.expenseDAOService.findAll({
-        where: { partnerId: partner.id }
-      });
+    const expenses = await dao.expenseDAOService.findAll({
+      where: { partnerId: partner.id },
+    });
 
     //EXPENSE CODE GENERATOR
     let count = expenses.length + 1;
     let $expense = () => {
       let code: string;
-      let res = ''
-      code = count.toString().padStart(4, '0')
-      let fnd = expenses.find(value => value.expenseCode.toString() === code)
-      if(fnd){
-        count++
-        code = count.toString().padStart(4, '0')
-      } else { res = code }
+      let res = '';
+      code = count.toString().padStart(4, '0');
+      let fnd = expenses.find(value => value.expenseCode.toString() === code);
+      if (fnd) {
+        count++;
+        code = count.toString().padStart(4, '0');
+      } else {
+        res = code;
+      }
 
-      res = code
-      return res
+      res = code;
+      return res;
     };
 
-    const result = $expense()
+    const result = $expense();
     // const invoiceCode = Generic.randomize({ number: true, count: 6 });
 
     const data: Partial<Expense> = {
@@ -332,7 +334,7 @@ export default class ExpenseController {
       invoiceCode: invoice?.code,
       expenseCode: result,
       note: value?.note,
-      dateModified: value.dateModified
+      dateModified: value.dateModified,
     };
 
     const expense = await dao.expenseDAOService.create(data as CreationAttributes<Expense>);
