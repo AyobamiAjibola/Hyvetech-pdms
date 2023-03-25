@@ -159,14 +159,15 @@ function EstimateForm(props: IProps) {
   const admin = useAdmin();
 
   const partnerId = useMemo(() => {
-    if (admin.isTechAdmin && admin.user) {
-      return admin.user.partner.id;
-    }
+    return +(params.id as unknown as string) || admin.user?.partner?.id;
+    // if (admin.isTechAdmin && admin.user) {
+    //   return admin.user.partner.id;
+    // }
 
-    if (params.id) {
-      return +(params.id as unknown as string);
-    }
-  }, [admin.isTechAdmin, admin.user, params.id]);
+    // if (params.id) {
+    //   return +(params.id as unknown as string);
+    // }
+  }, [admin.user, params.id]);
 
   useEffect(() => {
     if (partnerId) {

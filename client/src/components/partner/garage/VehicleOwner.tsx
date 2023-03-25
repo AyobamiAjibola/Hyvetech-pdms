@@ -39,13 +39,13 @@ export default function VehicleOwner() {
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
   // @ts-ignore
-  const [rawOption, setRawOption] = useState<any>([])
-  const [noOptionsText, setNoOptionsText]= useState<any>("Click Enter to Initialize Search");
+  const [rawOption, setRawOption] = useState<any>([]);
+  const [noOptionsText, setNoOptionsText] = useState<any>('Click Enter to Initialize Search');
   const [showDrop, setShowDrop] = useState<boolean>(false);
   const [customer, setCustomer] = useState<ICustomer>();
   const [tabs, setTabs] = useState<ITab[]>(customerSearchResultTabs);
 
-  console.log(options)
+  console.log(options);
 
   const params = useParams();
   const admin = useAdmin();
@@ -57,14 +57,8 @@ export default function VehicleOwner() {
   const dispatch = useAppDispatch();
 
   const partnerId = useMemo(() => {
-    if (admin.isTechAdmin && admin.user) {
-      return admin.user.partner.id;
-    }
-
-    if (params.id) {
-      return +(params.id as unknown as string);
-    }
-  }, [admin.isTechAdmin, admin.user, params.id]);
+    return +(params.id as unknown as string) || admin.user?.partner?.id;
+  }, [admin.user, params.id]);
 
   useEffect(() => {
     if (partner) {
@@ -121,39 +115,38 @@ export default function VehicleOwner() {
     }
   };
 
-  const filterData = (_text: string)=>{
+  const filterData = (_text: string) => {
     const text = _text.toLowerCase();
-    // 
+    //
     // console.log(text)
-    setNoOptionsText("Click Enter to Initialize Search")
+    setNoOptionsText('Click Enter to Initialize Search');
 
     const _temp: any = [];
-    rawOption.map((_item : any) =>{
-
+    rawOption.map((_item: any) => {
       // filter logic
 
-      if( (_item?.raw?.email || "").toLowerCase() == text){
+      if ((_item?.raw?.email || '').toLowerCase() == text) {
         // check if it's an exact match to email
         _temp.push(_item);
-      }else if( (_item?.raw?.phone || "").toLowerCase() == text){
+      } else if ((_item?.raw?.phone || '').toLowerCase() == text) {
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.companyName || "").toLowerCase() == text){
+      } else if ((_item?.raw?.companyName || '').toLowerCase() == text) {
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.firstName || "").toLowerCase() == text){
+      } else if ((_item?.raw?.firstName || '').toLowerCase() == text) {
         // check if it's an exact match to phone
         _temp.push(_item);
-      }else if( (_item?.raw?.lastName || "").toLowerCase() == text){
+      } else if ((_item?.raw?.lastName || '').toLowerCase() == text) {
         // check if it's an exact match to phone
         _temp.push(_item);
       }
-    })
+    });
 
-    console.log(_temp)
+    console.log(_temp);
 
     setOptions(_temp);
-  }
+  };
 
   return (
     <CustomerPageContext.Provider value={{ customer, setCustomer }}>
@@ -186,22 +179,22 @@ export default function VehicleOwner() {
                   label="Search customer by First name, last name, car plate number."
                   onChange={e => {
                     // setInputStack(e.target.value)
-                    filterData(e.target.value)
+                    filterData(e.target.value);
                   }}
                   onKeyDown={e => {
-                    if(e.key === 'Enter'){
-                      if( (inputValue || '').length == 0 ){
-                        setShowDrop(false)
-                      }else{
-                        setNoOptionsText("No result Found");
-                        setShowDrop(true)
+                    if (e.key === 'Enter') {
+                      if ((inputValue || '').length == 0) {
+                        setShowDrop(false);
+                      } else {
+                        setNoOptionsText('No result Found');
+                        setShowDrop(true);
                       }
-                    }else{
-                      setShowDrop(false)
+                    } else {
+                      setShowDrop(false);
                     }
                   }}
-                  onBlur={()=>{
-                    setShowDrop(false)
+                  onBlur={() => {
+                    setShowDrop(false);
                   }}
                   InputProps={{
                     ...props.InputProps,
