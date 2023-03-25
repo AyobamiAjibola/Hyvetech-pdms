@@ -72,6 +72,7 @@ export default class CustomerController {
       });
     } else {
       // user created by workshop
+      console.log('called in here> ', req.user.partner.id);
       customers = await dataSources.customerDAOService.findAll({
         attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
         where: {
@@ -109,6 +110,8 @@ export default class CustomerController {
       accountType: Joi.string().optional().label('Account Type'),
       isEditing: Joi.any().optional().label('Is Editing'),
     }).validate(req.body);
+
+    console.log('req> user> ', req.user.partner.id);
 
     if (error) {
       return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
