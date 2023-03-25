@@ -10,11 +10,11 @@ import datasources from '../services/dao';
 import { appCommonTypes } from '../@types/app-common';
 
 import HttpResponse = appCommonTypes.HttpResponse;
-import { MANAGE_ALL, MANAGE_TECHNICIAN } from '../config/settings';
+import { CREATE_ROLE, MANAGE_ALL, MANAGE_TECHNICIAN, READ_ROLE, UPDATE_ROLE } from '../config/settings';
 
 export default class RoleController {
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE])
   public async createRole(req: Request) {
     const partner = req.user.partner;
     const role = await this.createRoleAndPermission(req);
@@ -29,7 +29,7 @@ export default class RoleController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE])
   public async getRoleAndPermission(req: Request) {
     const partner = req.user.partner;
     const role = await this.doGetRoleAndPermission(req);
@@ -44,7 +44,7 @@ export default class RoleController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE])
   public async getAllPermissions(req: Request) {
     const partner = req.user.partner;
     const permissions = await this.doGetPermissions(req);
@@ -59,7 +59,7 @@ export default class RoleController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE])
   public async getRole(req: Request) {
     const partner = req.user.partner;
     const role = await this.doGetSingleRole(req);
@@ -74,7 +74,7 @@ export default class RoleController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_ROLE, READ_ROLE])
   public async updateRole(req: Request) {
     const partner = req.user.partner;
     const role = await this.doUpdateRoleAndPermission(req);
