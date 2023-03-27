@@ -38,7 +38,6 @@ interface IExpenseState {
   updateExpenseDetailStatus: IThunkAPIStatus;
   updateExpenseDetailSuccess: string;
 
-
   createBeneficiaryError: string;
   createBeneficiaryStatus: IThunkAPIStatus;
   createBeneficiarySuccess: string;
@@ -147,7 +146,7 @@ const initialState: IExpenseState = {
   expenseCategories: [],
 
   invoiceCode: '',
-  expenseCategoryId: ''
+  expenseCategoryId: '',
 };
 
 const expenseSlice = createSlice({
@@ -202,8 +201,8 @@ const expenseSlice = createSlice({
     },
 
     setExpenseCategoryId(state: IExpenseState, action: PayloadAction<string>) {
-      state.expenseCategoryId = action.payload
-    }
+      state.expenseCategoryId = action.payload;
+    },
   },
 
   extraReducers: builder => {
@@ -300,13 +299,13 @@ const expenseSlice = createSlice({
         state.deleteExpenseSuccess = action.payload.message;
       })
       .addCase(deleteExpenseAction.rejected, (state, action) => {
-        state.deleteExpenseSuccess = 'failed';
+        state.deleteExpenseStatus = 'failed';
 
         if (action.payload) {
-          state.getExpenseError = action.payload.message;
+          state.deleteExpenseError = action.payload.message;
           state.deleteExpenseError = action.payload.message;
         } else {
-          state.getExpenseError = action.error.message;
+          state.deleteExpenseError = action.error.message as string;
           state.deleteExpenseError = action.error.message as string;
         }
       });
@@ -445,7 +444,7 @@ export const {
   clearCreateExpenseCategoryStatus,
   clearCreateExpenseTypeStatus,
   setInvoiceCode,
-  setExpenseCategoryId
+  setExpenseCategoryId,
 } = expenseSlice.actions;
 
 export default expenseSlice.reducer;

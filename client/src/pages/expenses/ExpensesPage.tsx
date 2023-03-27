@@ -49,7 +49,10 @@ const Expenses = () => {
 
   useEffect(() => {
     if (expenseReduder.deleteExpenseStatus === 'failed') {
-      setAlert({ type: 'error', message: expenseReduder.deleteExpenseError });
+      setAlert({
+        type: 'error',
+        message: expenseReduder.deleteExpenseError || 'Unable to perform delete. Please try again',
+      });
     } else if (expenseReduder.deleteExpenseStatus === 'completed') {
       setAlert({ type: 'success', message: 'Expense deleted successfully' });
 
@@ -58,6 +61,12 @@ const Expenses = () => {
       dispatch(getExpensesAction());
     }
   }, [expenseReduder.deleteExpenseStatus]);
+
+  useEffect(() => {
+    if (expenseReduder.getExpensesStatus === 'failed') {
+      setAlert({ type: 'error', message: expenseReduder.getExpenseError || '' });
+    }
+  }, [expenseReduder.getExpensesStatus]);
 
   useEffect(() => {
     if (expenseReduder.updateExpenseStatus === 'failed') {

@@ -3,7 +3,12 @@ import { ApiResponseSuccess } from '@app-interfaces';
 import { IBeneficiary, IExpense, IExpenseCategory, IExpenseType } from '@app-models';
 import settings from '../../config/settings';
 import axiosClient from '../../config/axiosClient';
-import { IBeneficiaryValue, IExpenseUpdateDetailValue, IExpenseUpdateValue, IExpenseValues } from '../../components/forms/models/expenseModel';
+import {
+  IBeneficiaryValue,
+  IExpenseUpdateDetailValue,
+  IExpenseUpdateValue,
+  IExpenseValues,
+} from '../../components/forms/models/expenseModel';
 
 const GET_EXPENSES = 'expense:GET_EXPENSES';
 const GET_SINGLE_EXPENSE = 'expense:GET_SINGLE_EXPENSE';
@@ -14,7 +19,7 @@ const CREATE_EXPENSE = 'expense:CREATE_EXPENSE';
 const CREATE_BENEFICIARY = 'expense:CREATE_BENEFICIARY';
 const CREATE_EXPENSE_TYPE = 'expense:CREATE_EXPENSE_TYPE';
 const CREATE_EXPENSE_CATEGORY = 'expense:CREATE_EXPENSE_CATEGORY';
-const DELETE_EXPENSE_CATEGORY = 'expense:DELETE_EXPENSE_CATEGORY';
+const DELETE_EXPENSE = 'expense:DELETE_EXPENSE';
 const UPDATE_EXPENSE_CATEGORY = 'expense:UPDATE_EXPENSE_CATEGORY';
 const UPDATE_EXPENSE_DETAILS = 'expense:UPDATE_EXPENSE_DETAILS';
 
@@ -63,7 +68,7 @@ export const createExpenseAction = asyncThunkWrapper<ApiResponseSuccess<Partial<
             invoiceId: data.invoice?.id,
             reference: data.reference,
             note: data.note,
-            dateModified: data.dateModified
+            dateModified: data.dateModified,
           }
         : {
             amount: data.amount,
@@ -72,7 +77,7 @@ export const createExpenseAction = asyncThunkWrapper<ApiResponseSuccess<Partial<
             beneficiaryId: data.beneficiary?.id,
             invoiceId: data.invoice?.id,
             note: data.note,
-            dateModified: data.dateModified
+            dateModified: data.dateModified,
           },
     );
     return response.data;
@@ -104,7 +109,7 @@ export const createExpenseTypeAction = asyncThunkWrapper<ApiResponseSuccess<IExp
 );
 
 export const deleteExpenseAction = asyncThunkWrapper<ApiResponseSuccess<IExpenseType>, { id: number }>(
-  DELETE_EXPENSE_CATEGORY,
+  DELETE_EXPENSE,
   async data => {
     const response = await axiosClient.delete(`${API_ROOT}/expense/${data.id}`);
     return response.data;
@@ -119,23 +124,23 @@ export const updateExpenseAction = asyncThunkWrapper<ApiResponseSuccess<IExpense
   },
 );
 
-export const updateExpenseDetailAction = asyncThunkWrapper<ApiResponseSuccess<IExpenseType>, Partial<IExpenseUpdateDetailValue>>(
-  UPDATE_EXPENSE_DETAILS,
-  async data => {
-    const response = await axiosClient.patch(`${API_ROOT}/expense/${data.id}`,
-      data.status === "UNPAID" &&
-       {
-          amount: data.amount,
-          expenseCategoryId: data.category?.id,
-          expenseTypeId: data.type?.id,
-          invoiceId: data.invoice?.id,
-          note: data.note,
-          dateModified: data.dateModified
-        }
-    );
-    return response.data;
-  },
-);
+export const updateExpenseDetailAction = asyncThunkWrapper<
+  ApiResponseSuccess<IExpenseType>,
+  Partial<IExpenseUpdateDetailValue>
+>(UPDATE_EXPENSE_DETAILS, async data => {
+  const response = await axiosClient.patch(
+    `${API_ROOT}/expense/${data.id}`,
+    data.status === 'UNPAID' && {
+      amount: data.amount,
+      expenseCategoryId: data.category?.id,
+      expenseTypeId: data.type?.id,
+      invoiceId: data.invoice?.id,
+      note: data.note,
+      dateModified: data.dateModified,
+    },
+  );
+  return response.data;
+});
 
 export const getSingleExpenseAction = asyncThunkWrapper<ApiResponseSuccess<IExpense>, number>(
   GET_SINGLE_EXPENSE,
