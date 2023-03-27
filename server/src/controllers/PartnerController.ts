@@ -3,7 +3,7 @@
 import { Request } from 'express';
 import Joi from 'joi';
 import capitalize from 'capitalize';
-import { CreationAttributes, InferAttributes, Op } from 'sequelize';
+import { CreationAttributes, InferAttributes, InferCreationAttributes, Op } from 'sequelize';
 
 import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
@@ -36,7 +36,8 @@ import ride_share_partner_welcome_email from '../resources/templates/email/ride_
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
 import { generateEstimateHtml, generateInvoiceHtml, generatePdf } from '../utils/pdf';
-import { HasPermission } from '../decorators';
+import { HasPermission, TryCatch } from '../decorators';
+import Preference, { $savePreferenceSchema, PreferenceSchemaType } from '../models/Pereference';
 
 interface IPaymentPlanModelDescription {
   value: string;
@@ -891,6 +892,69 @@ export default class PartnerController {
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_ALL, UPDATE_WORKSHOP_PROFILEY, MANAGE_TECHNICIAN])
+  public async updatePreferences(req: Request) {
+    const res = await this.doUpdatePreferences(req);
+
+    const response: HttpResponse<Preference> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      result: res,
+    };
+
+    return response;
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_WORKSHOP_PROFILEY, READ_WORKSHOP_PROFILE])
+  public async getPreferences(req: Request) {
+    const res = await this.doGetPreferences(req);
+
+    const response: HttpResponse<Preference | null> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      result: res,
+    };
+
+    return response;
+  }
+
+  private doGetPreferences(req: Request) {
+    return dataSources.preferenceDAOService.findByAny({ where: { partnerId: req.user.partnerId } });
+  }
+
+  private async doUpdatePreferences(req: Request) {
+    const { error, value } = Joi.object<PreferenceSchemaType>($savePreferenceSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    const preference = await dataSources.preferenceDAOService.findByAny({ where: { partnerId: req.user.partnerId } });
+    const values: Partial<Preference> = {
+      termsAndCondition: value.termsAndCondition,
+      partnerId: value.partnerId,
+    };
+
+    const partner = await dataSources.partnerDAOService.findById(req.user.partner.id);
+
+    if (!partner) return Promise.reject(CustomAPIError.response(`Partner does not exist`, HttpStatus.NOT_FOUND.code));
+
+    let preferenceUpdate!: Preference;
+
+    if (!preference)
+      preferenceUpdate = await dataSources.preferenceDAOService.create(values as CreationAttributes<Preference>);
+    else
+      preferenceUpdate = await dataSources.preferenceDAOService.update(
+        preference,
+        values as InferCreationAttributes<Preference>,
+      );
+
+    await preferenceUpdate.$set('partner', partner);
+    await partner?.$set('preference', preferenceUpdate);
+
+    return preferenceUpdate;
   }
 
   @HasPermission([READ_CUSTOMER, MANAGE_TECHNICIAN, MANAGE_ALL, READ_DRIVER])

@@ -34,7 +34,7 @@ function InvoicePage() {
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   // const location = useLocation();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const store = useAppSelector(state => state.invoiceReducer);
 
@@ -49,10 +49,10 @@ function InvoicePage() {
   });
 
   const generateExpense = () => {
-    dispatch(setInvoiceCode(invoice?.code))
+    dispatch(setInvoiceCode(invoice?.code));
     // sessionStorage.setItem('inv#*C0', invoice?.code)
-    navigate('/expense/create')
-  }
+    navigate('/expense/create');
+  };
 
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
@@ -167,6 +167,14 @@ function InvoicePage() {
     }, 3000);
   };
 
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    () => {
+      setErrorMessage('');
+    };
+  }, []);
+
   const handlePaymentRecord = async () => {
     setRecording(true);
     try {
@@ -189,7 +197,8 @@ function InvoicePage() {
       }, 3000);
       // alert("Record Updated");
       // window.location.reload();
-    } catch (e) {
+    } catch (e: any) {
+      setErrorMessage(e.response?.data?.message || 'Unable able to process please try again');
       console.log(e);
     }
     setRecording(false);
@@ -265,10 +274,7 @@ function InvoicePage() {
               {'Record Payment'}
             </Button>
           )}
-          <Button variant="outlined" color="success" size="small"
-            sx={{ mr: 2 }}
-            onClick={() => generateExpense()}
-          >
+          <Button variant="outlined" color="success" size="small" sx={{ mr: 2 }} onClick={() => generateExpense()}>
             Record Expense
           </Button>
           <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
@@ -610,6 +616,12 @@ function InvoicePage() {
           show={showMessage}
           message={'record recieved, re-open invoice to see changes'}
           onClose={() => setshowMessage(false)}
+        />
+        <AppAlert
+          alertType="error"
+          show={errorMessage !== ''}
+          message={errorMessage}
+          onClose={() => setErrorMessage('')}
         />
       </React.Fragment>
     );
