@@ -335,7 +335,7 @@ export default class CustomerController {
   // stop
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_CUSTOMER, READ_CUSTOMER])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_CUSTOMER])
   public static async updateCustomers(req: Request) {
     console.log(req.body);
     const { error, value } = Joi.object({

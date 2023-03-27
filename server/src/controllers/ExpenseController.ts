@@ -191,6 +191,8 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, UPDATE_EXPENSE])
   public async updateExpenseDetails(req: Request) {
     await this.doUpdateExpenseDetails(req);
 
