@@ -7,6 +7,14 @@ declare module '@app-models' {
     subjection: string;
   }
 
+  interface IPreference {
+    termsAndCondition: string;
+  }
+
+  interface IPreferenceUpdate {
+    termsAndCondition: string;
+  }
+
   interface IUserUpdate {
     firstName: string;
     lastName: string;
@@ -157,7 +165,7 @@ declare module '@app-models' {
     createdAt: Date;
     updatedAt: Date;
   }
-  IExpenseCategory
+  IExpenseCategory;
   interface ITag {
     id: number;
     name: string;
@@ -615,7 +623,7 @@ declare module '@app-models' {
     expenseCode: number;
     note: string;
     dateModified: any;
-    partnerId: number
+    partnerId: number;
   }
 
   interface IEstimate {

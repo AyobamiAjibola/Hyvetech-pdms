@@ -28,8 +28,9 @@ export default function useAdmin() {
 
       permissions.forEach(permission => {
         if (permission.action === 'manage' && permission.subject === 'all') setIsSuperAdmin(true);
-        if (permission.action === 'manage' && permission.subject === 'technician') setIsTechAdmin(true);
+
         if (permission.action === 'manage' && permission.subject === 'driver') setIsDriverAdmin(true);
+        else setIsTechAdmin(true);
       });
     } else throw new Error('You are not authorized to access this resource');
   }, []);

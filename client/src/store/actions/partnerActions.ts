@@ -3,7 +3,7 @@ import axiosClient from '../../config/axiosClient';
 import { ICreatePartnerModel, IGarageSettings, IKycValues } from '../../components/forms/models/partnerModel';
 import asyncThunkWrapper from '../../helpers/asyncThunkWrapper';
 import { ApiResponseSuccess } from '@app-interfaces';
-import { IPartner, IPaymentPlan, IPlan } from '@app-models';
+import { IPartner, IPaymentPlan, IPlan, IPreference, IPreferenceUpdate } from '@app-models';
 
 const CREATE_PARTNER = 'partner:CREATE_PARTNER';
 const DELETE_PARTNER = 'partner:DELETE_PARTNER';
@@ -20,6 +20,8 @@ const CREATE_PAYMENT_PLAN = 'partner:CREATE_PAYMENT_PLAN';
 const DELETE_PAYMENT_PLAN = 'partner:DELETE_PAYMENT_PLAN';
 const GET_PLANS = 'partner:GET_PLANS';
 const GET_PAYMENT_PLANS = 'partner:GET_PAYMENT_PLANS';
+const GET_PREFERENCES = 'partner:GET_PREFERENCES';
+const UPDATE_PREFENCES = 'partner:UPDATE_PREFENCES';
 const API_ROOT = settings.api.rest;
 
 export const createPartnerAction = asyncThunkWrapper<any, ICreatePartnerModel>(
@@ -153,6 +155,22 @@ export const getOwnersFilterDataAction = asyncThunkWrapper<any, number>(
   GET_OWNERS_FILTER_DATA,
   async (partnerId: number) => {
     const response = await axiosClient.get(`${API_ROOT}/partners/${partnerId}/owners-filter-data`);
+    return response.data;
+  },
+);
+
+export const getPreferencesActions = asyncThunkWrapper<ApiResponseSuccess<IPreference>, any>(
+  GET_PREFERENCES,
+  async () => {
+    const response = await axiosClient.get(`${API_ROOT}/partner/preferences`);
+    return response.data;
+  },
+);
+
+export const updatePreferencesAction = asyncThunkWrapper<ApiResponseSuccess<IPreference>, IPreferenceUpdate>(
+  UPDATE_PREFENCES,
+  async (data: IPreferenceUpdate) => {
+    const response = await axiosClient.patch(`${API_ROOT}/partner/preferences`, data);
     return response.data;
   },
 );

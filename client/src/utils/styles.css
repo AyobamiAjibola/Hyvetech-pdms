@@ -9,7 +9,7 @@
 
 .logout_loader {
   border: 2px solid #f3f3f3;
-  border-top: 2px solid #FBA91A;
+  border-top: 2px solid #fba91a;
   border-radius: 50%;
   width: 25px;
   height: 25px;
@@ -24,4 +24,16 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.rdw-editor-main {
+  padding-left: 16px;
+  padding-right: 16px;
+  min-height: 200px;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.rdw-editor-wrapper {
+  border: 1px solid;
 }

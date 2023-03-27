@@ -3,7 +3,7 @@ import { Box, Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 // import useCustomer from '../../hooks/useCustomer';
 // import moment from 'moment';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 // import { Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ICustomer } from '@app-models';
@@ -13,6 +13,7 @@ import useNewCustomer from '../../hooks/useNewCustomer';
 // import useAdmin from '../../hooks/useAdmin';
 import CreateCustomerModal from '../../components/modal/CreateCustomer';
 import ImportCustomerModal from '../../components/modal/ImportCustomer';
+import { Visibility } from '@mui/icons-material';
 
 function CustomersPage() {
   const { setCustomer } = useContext(AppContext) as AppContextProps;
@@ -203,6 +204,21 @@ const getPartnerTableColumn = (options?: any) =>
       type: 'string',
       valueGetter: () => 'N/A',
       sortable: true,
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerAlign: 'center',
+      align: 'center',
+      getActions: (params: any) => [
+        <GridActionsCellItem
+          key={0}
+          icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+          onClick={() => options.onView(params.row)}
+          label="View"
+          showInMenu={false}
+        />,
+      ],
     },
   ] as GridColDef<ICustomer>[];
 
