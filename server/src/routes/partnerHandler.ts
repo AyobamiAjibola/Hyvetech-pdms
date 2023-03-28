@@ -116,3 +116,17 @@ export const requestPdfHandler = authenticateRouteWrapper(async (req: Request, r
   // @ts-ignore
   res.status(result.code).json(result);
 });
+
+export const updatePreferencesHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
+  const result = await partnerController.updatePreferences(req);
+
+  // @ts-ignore
+  res.status(result.code).json(result);
+});
+
+export const getPreferencesHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
+  const result = await partnerController.getPreferences(req);
+
+  // @ts-ignore
+  res.status(result.code).json(result);
+});

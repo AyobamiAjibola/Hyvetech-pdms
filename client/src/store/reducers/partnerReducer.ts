@@ -15,9 +15,11 @@ import {
   getPartnersAction,
   getPaymentPlansAction,
   getPlansAction,
+  getPreferencesActions,
   togglePartnerAction,
+  updatePreferencesAction,
 } from '../actions/partnerActions';
-import { IPartner, IPaymentPlan, IPlan } from '@app-models';
+import { IPartner, IPaymentPlan, IPlan, IPreference } from '@app-models';
 import { IDriversFilterData } from '@app-interfaces';
 
 interface IPartnerState {
@@ -81,6 +83,14 @@ interface IPartnerState {
   deletePaymentPlanSuccess: string;
   deletePaymentPlanError?: string;
 
+  updatePreferenceStatus: IThunkAPIStatus;
+  updatePreferenceSuccess: string;
+  updatePreferenceError?: string;
+
+  getPreferenceStatus: IThunkAPIStatus;
+  getPreferenceSuccess: string;
+  getPreferenceError?: string;
+
   partner: IPartner | null;
   partners: IPartner[];
   plan: IPlan | null;
@@ -89,6 +99,8 @@ interface IPartnerState {
   paymentPlans: IPaymentPlan[];
   driversFilterData: IDriversFilterData[];
   ownersFilterData: IDriversFilterData[];
+
+  preference: IPreference | null;
 }
 
 const initialState: IPartnerState = {
@@ -128,6 +140,14 @@ const initialState: IPartnerState = {
   getDriversFilterDataStatus: 'idle',
   getDriversFilterDataSuccess: '',
 
+  getPreferenceError: '',
+  getPreferenceStatus: 'idle',
+  getPreferenceSuccess: '',
+
+  updatePreferenceError: '',
+  updatePreferenceStatus: 'idle',
+  updatePreferenceSuccess: '',
+
   getOwnersFilterDataError: '',
   getOwnersFilterDataStatus: 'idle',
   getOwnersFilterDataSuccess: '',
@@ -160,6 +180,8 @@ const initialState: IPartnerState = {
   paymentPlans: [],
   driversFilterData: [],
   ownersFilterData: [],
+
+  preference: null,
 };
 
 const partnerSlice = createSlice({
@@ -176,6 +198,18 @@ const partnerSlice = createSlice({
       state.deletePartnerStatus = 'idle';
       state.deletePartnerSuccess = '';
       state.deletePartnerError = '';
+    },
+
+    clearGetPreferenceStatus(state: IPartnerState) {
+      state.getPreferenceStatus = 'idle';
+      state.getPreferenceSuccess = '';
+      state.getPreferenceError = '';
+    },
+
+    clearUpdatePreferenceStatus(state: IPartnerState) {
+      state.updatePreferenceStatus = 'idle';
+      state.updatePreferenceSuccess = '';
+      state.updatePreferenceError = '';
     },
 
     clearTogglePartnerStatus(state: IPartnerState) {
@@ -443,6 +477,38 @@ const partnerSlice = createSlice({
       });
 
     builder
+      .addCase(getPreferencesActions.pending, state => {
+        state.getPreferenceStatus = 'loading';
+      })
+      .addCase(getPreferencesActions.fulfilled, (state, action) => {
+        state.getPreferenceStatus = 'completed';
+        state.preference = action.payload.result as IPreference;
+      })
+      .addCase(getPreferencesActions.rejected, (state, action) => {
+        state.getPreferenceStatus = 'failed';
+
+        if (action.payload) {
+          state.getPreferenceError = action.payload.message;
+        } else state.getPreferenceError = action.error.message;
+      });
+
+    builder
+      .addCase(updatePreferencesAction.pending, state => {
+        state.updatePreferenceStatus = 'loading';
+      })
+      .addCase(updatePreferencesAction.fulfilled, (state, action) => {
+        state.updatePreferenceStatus = 'completed';
+        state.preference = action.payload.result as IPreference;
+      })
+      .addCase(updatePreferencesAction.rejected, (state, action) => {
+        state.updatePreferenceStatus = 'failed';
+
+        if (action.payload) {
+          state.updatePreferenceError = action.payload.message;
+        } else state.updatePreferenceError = action.error.message;
+      });
+
+    builder
       .addCase(deletePlanAction.pending, state => {
         state.deletePlanStatus = 'loading';
       })
@@ -506,6 +572,8 @@ export const {
   clearDeletePartnerStatus,
   clearTogglePartnerStatus,
   clearGetOwnersFilterDataStatus,
+  clearGetPreferenceStatus,
+  clearUpdatePreferenceStatus,
 } = partnerSlice.actions;
 
 export default partnerSlice.reducer;

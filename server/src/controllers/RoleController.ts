@@ -29,7 +29,7 @@ export default class RoleController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE, UPDATE_ROLE])
   public async getRoleAndPermission(req: Request) {
     const partner = req.user.partner;
     const role = await this.doGetRoleAndPermission(req);
@@ -44,7 +44,7 @@ export default class RoleController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE, UPDATE_ROLE])
   public async getAllPermissions(req: Request) {
     const partner = req.user.partner;
     const permissions = await this.doGetPermissions(req);
@@ -59,7 +59,7 @@ export default class RoleController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ROLE, READ_ROLE, UPDATE_ROLE])
   public async getRole(req: Request) {
     const partner = req.user.partner;
     const role = await this.doGetSingleRole(req);
@@ -74,7 +74,7 @@ export default class RoleController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_ROLE, READ_ROLE])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_ROLE])
   public async updateRole(req: Request) {
     const partner = req.user.partner;
     const role = await this.doUpdateRoleAndPermission(req);
@@ -119,6 +119,7 @@ export default class RoleController {
         name: {
           [Op.notIn]: [MANAGE_ALL],
         },
+        inverted: true,
       },
       order: [
         ['subject', 'ASC'],

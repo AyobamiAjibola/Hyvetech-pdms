@@ -1,7 +1,13 @@
 import { Request } from 'express';
 import { HasPermission, TryCatch } from '../decorators';
 import HttpStatus from '../helpers/HttpStatus';
-import Expense, { $saveExpenseSchema, $updateExpenseSchema, $updateSummaryExpenseSchema, ExpenseSchemaType, expenseType } from '../models/Expense';
+import Expense, {
+  $saveExpenseSchema,
+  $updateExpenseSchema,
+  $updateSummaryExpenseSchema,
+  ExpenseSchemaType,
+  expenseType,
+} from '../models/Expense';
 import dao from '../services/dao';
 import AppLogger from '../utils/AppLogger';
 import { appCommonTypes } from '../@types/app-common';
@@ -185,6 +191,8 @@ export default class ExpenseController {
   }
 
   @TryCatch
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, UPDATE_EXPENSE])
   public async updateExpenseDetails(req: Request) {
     await this.doUpdateExpenseDetails(req);
 
@@ -228,7 +236,7 @@ export default class ExpenseController {
   private async doUpdateExpenseDetails(req: Request) {
     const { error, value } = Joi.object<Expense>($updateSummaryExpenseSchema).validate(req.body);
     // const value = req.body;
-    console.log(value)
+    console.log(value);
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     const category = await dao.expenseCategoryDAOService.findById(value.expenseCategoryId);
@@ -236,7 +244,7 @@ export default class ExpenseController {
       return Promise.reject(CustomAPIError.response('Expense Category not found', HttpStatus.NOT_FOUND.code));
 
     const type = await dao.expenseTypeDAOService.findById(value.expenseTypeId);
-      if (!type) return Promise.reject(CustomAPIError.response('Expense Type not found', HttpStatus.NOT_FOUND.code));
+    if (!type) return Promise.reject(CustomAPIError.response('Expense Type not found', HttpStatus.NOT_FOUND.code));
 
     const invoice = await dao.invoiceDAOService.findById(value.invoiceId);
 
@@ -250,15 +258,15 @@ export default class ExpenseController {
       invoiceId: value.invoiceId,
       invoiceCode: invoice?.code,
       note: value?.note,
-      dateModified: value.dateModified
+      dateModified: value.dateModified,
     };
-    
-    const expense = await dao.expenseDAOService.findById(+req.params.id)
-     if (!expense) {
-      return Promise.reject(CustomAPIError.response("Expense does not exist", HttpStatus.NOT_FOUND.code));
+
+    const expense = await dao.expenseDAOService.findById(+req.params.id);
+    if (!expense) {
+      return Promise.reject(CustomAPIError.response('Expense does not exist', HttpStatus.NOT_FOUND.code));
     }
 
-    await dao.expenseDAOService.update(expense, data as CreationAttributes<Expense> );
+    await dao.expenseDAOService.update(expense, data as CreationAttributes<Expense>);
     await category.$set('expense', [expense]);
     await type.$set('expense', [expense]);
 
@@ -296,7 +304,7 @@ export default class ExpenseController {
     if (!partner) return Promise.reject(CustomAPIError.response('Partner not found', HttpStatus.BAD_REQUEST.code));
 
     const { error, value } = Joi.object<ExpenseSchemaType>($saveExpenseSchema).validate(req.body);
-    console.log(value)
+    console.log(value);
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     const beneficiary = await dao.beneficiaryDAOService.findById(value.beneficiaryId);
@@ -318,27 +326,29 @@ export default class ExpenseController {
     if (!invoice && !['overhead', 'others'].includes(category.name.toLowerCase()))
       return Promise.reject(CustomAPIError.response('Invoice not found', HttpStatus.NOT_FOUND.code));
 
-      const expenses = await dao.expenseDAOService.findAll({
-        where: { partnerId: partner.id }
-      });
+    const expenses = await dao.expenseDAOService.findAll({
+      where: { partnerId: partner.id },
+    });
 
     //EXPENSE CODE GENERATOR
     let count = expenses.length + 1;
     let $expense = () => {
       let code: string;
-      let res = ''
-      code = count.toString().padStart(4, '0')
-      let fnd = expenses.find(value => value.expenseCode.toString() === code)
-      if(fnd){
-        count++
-        code = count.toString().padStart(4, '0')
-      } else { res = code }
+      let res = '';
+      code = count.toString().padStart(4, '0');
+      let fnd = expenses.find(value => value.expenseCode.toString() === code);
+      if (fnd) {
+        count++;
+        code = count.toString().padStart(4, '0');
+      } else {
+        res = code;
+      }
 
-      res = code
-      return res
+      res = code;
+      return res;
     };
 
-    const result = $expense()
+    const result = $expense();
     // const invoiceCode = Generic.randomize({ number: true, count: 6 });
 
     const data: Partial<Expense> = {
@@ -353,7 +363,7 @@ export default class ExpenseController {
       invoiceCode: invoice?.code,
       expenseCode: result,
       note: value?.note,
-      dateModified: value.dateModified
+      dateModified: value.dateModified,
     };
 
     const expense = await dao.expenseDAOService.create(data as CreationAttributes<Expense>);

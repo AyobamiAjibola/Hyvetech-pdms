@@ -93,7 +93,7 @@ export default class CustomerController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER, READ_CUSTOMER, CREATE_USER, READ_USER, UPDATE_USER])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER])
   public static async addCustomers(req: Request) {
     // console.log(req.body)
     const { error, value } = Joi.object({
@@ -213,7 +213,7 @@ export default class CustomerController {
 
   // start
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER, READ_CUSTOMER, CREATE_USER, READ_USER, UPDATE_USER])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER])
   public static async importCustomers(req: Request) {
     // console.log(req.body)
     const { error, value: newValue } = Joi.object({
@@ -335,7 +335,7 @@ export default class CustomerController {
   // stop
 
   @TryCatch
-  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_CUSTOMER, READ_CUSTOMER])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_CUSTOMER])
   public static async updateCustomers(req: Request) {
     console.log(req.body);
     const { error, value } = Joi.object({

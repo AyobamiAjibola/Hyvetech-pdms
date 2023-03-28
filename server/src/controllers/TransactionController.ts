@@ -11,7 +11,7 @@ import {
 } from '../config/constants';
 import { appCommonTypes } from '../@types/app-common';
 import HttpStatus from '../helpers/HttpStatus';
-import { TryCatch } from '../decorators';
+import { HasPermission, TryCatch } from '../decorators';
 import Joi from 'joi';
 import CustomAPIError from '../exceptions/CustomAPIError';
 import dataSources from '../services/dao';
@@ -30,6 +30,7 @@ import Partner from '../models/Partner';
 import Contact from '../models/Contact';
 import BillingInformation from '../models/BillingInformation';
 import DraftInvoice from '../models/DraftInvoice';
+import { CREATE_PAYMENT, DELETE_PAYMENT, MANAGE_TECHNICIAN, READ_PAYMENT, UPDATE_PAYMENT } from '../config/settings';
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
@@ -181,8 +182,9 @@ export default class TransactionController {
       reference: data.reference,
       authorizationUrl: data.authorization_url,
       type: 'Deposit',
-      purpose: `${partner.name}: Estimate-${estimate.code}${value.grandTotal === value.depositAmount ? ' Payment' : ' Deposit Payment'
-        }`,
+      purpose: `${partner.name}: Estimate-${estimate.code}${
+        value.grandTotal === value.depositAmount ? ' Payment' : ' Deposit Payment'
+      }`,
       status: initResponse.data.message,
       amount: value.depositAmount,
     };
@@ -269,18 +271,18 @@ export default class TransactionController {
   }
 
   @TryCatch
-  public static async deletePaymentRecieve(req: Request){
-    
-    try{
-      // 
-      const {trans_id, amount: _amount, invoice} = req.body;
+  @HasPermission([MANAGE_TECHNICIAN, DELETE_PAYMENT])
+  public static async deletePaymentRecieve(req: Request) {
+    try {
+      //
+      const { trans_id, amount: _amount, invoice } = req.body;
 
       // delete transaction
       await dataSources.transactionDAOService.deleteById(trans_id);
 
       // check if invoice exist then perform operation on it
-      if(invoice != null){
-        // 
+      if (invoice != null) {
+        //
         const amount = invoice.depositAmount - parseInt(_amount);
         const newDueAmount = invoice.grandTotal - amount;
 
@@ -294,16 +296,16 @@ export default class TransactionController {
 
         await Invoice.update(payload, {
           where: {
-            id: invoice.id
-          }
-        })
+            id: invoice.id,
+          },
+        });
       }
       return Promise.resolve({
         code: HttpStatus.OK.code,
         message: 'Record Deleted Successfully',
       });
-    }catch(e){
-      // 
+    } catch (e) {
+      //
       console.log(e);
       return Promise.resolve({
         code: HttpStatus.INTERNAL_SERVER_ERROR.code,
@@ -314,8 +316,9 @@ export default class TransactionController {
   }
 
   @TryCatch
-  public static async paymentRecieve(req: Request){
-    try{
+  @HasPermission([MANAGE_TECHNICIAN, READ_PAYMENT])
+  public static async paymentRecieve(req: Request) {
+    try {
       // logic to fetch
       const partner = req.user.partner;
 
@@ -324,12 +327,12 @@ export default class TransactionController {
       const transactions = await dataSources.transactionDAOService.findAll({
         where: {
           // @ts-ignore
-          partnerId: partner.id
+          partnerId: partner.id,
         },
         include: [
           {
             model: Customer,
-            include: [Contact]
+            include: [Contact],
           },
           {
             model: Invoice,
@@ -348,18 +351,17 @@ export default class TransactionController {
               },
               Transaction,
               DraftInvoice,
-            ]
-          }
-        ]
+            ],
+          },
+        ],
       });
-
 
       return Promise.resolve({
         code: HttpStatus.OK.code,
         message: 'Record Fetched Successfully',
         records: transactions || [],
       });
-    }catch(e){
+    } catch (e) {
       console.log(e);
       return Promise.resolve({
         code: HttpStatus.INTERNAL_SERVER_ERROR.code,
@@ -370,6 +372,7 @@ export default class TransactionController {
   }
 
   @TryCatch
+  @HasPermission([READ_PAYMENT, UPDATE_PAYMENT])
   public static async updateTransaction(req: Request) {
     const value = req.body;
 

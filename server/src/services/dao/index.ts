@@ -80,6 +80,8 @@ import ExpenseTypeDAOService from './ExpenseTypeDAOService';
 import ExpenseCategoryDAOService from './ExpenseCategoryDAOService';
 import ExpenseRepository from '../../repositories/ExpenseRepository';
 import ExpenseDAOService from './ExpenseDAOService';
+import PreferenceRepository from '../../repositories/preferenceRepository';
+import PreferenceDAOService from './PreferenceDAOService';
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -118,6 +120,7 @@ const billingInformationRepository = new BillingInformationRepository();
 const invoiceRepository = new InvoiceRepository();
 const customerWorkShopRepository = new CustomerWorkShopRepository();
 const settingRepository = new SettingRepository();
+const preferenceRepository = new PreferenceRepository();
 
 const vehicleDAOService = new VehicleDAOService(vehicleRepository);
 const contactDAOService = new ContactDAOService(contactRepository);
@@ -167,6 +170,7 @@ const beneficiaryDAOService = new BeneficiaryDAOService(beneficiaryRepository);
 const expenseTypeDAOService = new ExpenseTypeDAOService(expenseTypeRepository);
 const expenseCategoryDAOService = new ExpenseCategoryDAOService(expenseCategoryRepository);
 const expenseDAOService = new ExpenseDAOService(expenseRespository);
+const preferenceDAOService = new PreferenceDAOService(preferenceRepository);
 
 export default {
   customerDAOService,
@@ -209,4 +213,5 @@ export default {
   expenseCategoryDAOService,
   expenseTypeDAOService,
   expenseDAOService,
+  preferenceDAOService,
 };

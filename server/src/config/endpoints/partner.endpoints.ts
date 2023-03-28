@@ -12,9 +12,11 @@ import {
   getPartnersHandler,
   getPaymentPlansHandler,
   getPlansHandler,
+  getPreferencesHandler,
   partnerJobsHandler,
   requestPdfHandler,
   togglePartnerHandler,
+  updatePreferencesHandler,
 } from '../../routes/partnerHandler';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -98,7 +100,18 @@ const partnerEndpoints: RouteEndpoints = [
     path: '/partners/:partnerId/jobs',
     handler: partnerJobsHandler,
   },
-
+  {
+    name: 'partners',
+    method: 'get',
+    path: '/partner/preferences',
+    handler: getPreferencesHandler,
+  },
+  {
+    name: 'partners',
+    method: 'patch',
+    path: '/partner/preferences',
+    handler: updatePreferencesHandler,
+  },
   {
     name: 'delete plan',
     method: 'delete',

@@ -1,73 +1,72 @@
-import Estimate from "../models/Estimate";
-import path from 'path'
-import "dotenv/config"
-import fs from 'fs'
-import Invoice from "../models/Invoice";
-import { INVOICE_STATUS } from "../config/constants";
+import Estimate from '../models/Estimate';
+import path from 'path';
+import 'dotenv/config';
+import fs from 'fs';
+import Invoice from '../models/Invoice';
+import { INVOICE_STATUS } from '../config/constants';
 
 export function formatNumberToIntl(amount: number) {
-    return new Intl.NumberFormat('en-GB', {
-      minimumFractionDigits: 2,
-    }).format(amount);
-  }
-
-function base64_encode(file: string) {
-    // read binary data
-    const bitmap = fs.readFileSync(file);
-    // convert binary data to base64 encoded string
-    return new Buffer(bitmap).toString('base64');
+  return new Intl.NumberFormat('en-GB', {
+    minimumFractionDigits: 2,
+  }).format(amount);
 }
 
-export const invoicePdfTemplate = (invoice: Invoice) => {
-    const estimate = invoice.estimate;
-    // console.log((estimate.customer), "estimate")
-    const logo = `${estimate.partner.logo}`;
-    const partner = estimate.partner;
-    const customer = estimate.customer;
-    const vehicle = estimate.vehicle;
+function base64_encode(file: string) {
+  // read binary data
+  const bitmap = fs.readFileSync(file);
+  // convert binary data to base64 encoded string
+  return new Buffer(bitmap).toString('base64');
+}
 
-    // alterer
-    if( (invoice.draftInvoice != null) && (invoice.draftInvoice.parts != null)){
-        if (invoice.edited && INVOICE_STATUS.update.draft) {
-            estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
-            estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
-          } else if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
-            console.log('');
-            estimate.parts = !invoice.draftInvoice.parts.length ? [] : (invoice.draftInvoice.parts);
-            estimate.labours = !invoice.draftInvoice.labours.length ? [] : (invoice.draftInvoice.labours);
-          } else {
-            estimate.parts = !estimate.parts.length ? [] : (estimate.parts);
-            estimate.labours = !estimate.labours.length ? [] : (estimate.labours);
-        }
+export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
+  const estimate = invoice.estimate;
+  // console.log((estimate.customer), "estimate")
+  const logo = `${estimate.partner.logo}`;
+  const partner = estimate.partner;
+  const customer = estimate.customer;
+  const vehicle = estimate.vehicle;
+
+  // alterer
+  if (invoice.draftInvoice != null && invoice.draftInvoice.parts != null) {
+    if (invoice.edited && INVOICE_STATUS.update.draft) {
+      estimate.parts = !invoice.draftInvoice.parts.length ? [] : invoice.draftInvoice.parts;
+      estimate.labours = !invoice.draftInvoice.labours.length ? [] : invoice.draftInvoice.labours;
+    } else if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
+      console.log('');
+      estimate.parts = !invoice.draftInvoice.parts.length ? [] : invoice.draftInvoice.parts;
+      estimate.labours = !invoice.draftInvoice.labours.length ? [] : invoice.draftInvoice.labours;
+    } else {
+      estimate.parts = !estimate.parts.length ? [] : estimate.parts;
+      estimate.labours = !estimate.labours.length ? [] : estimate.labours;
     }
+  }
 
-    try{
-        if((invoice.labours != null)){
-            estimate.parts = !invoice.parts.length ? [] : (invoice.parts.map(part => JSON.parse(part)));
-            estimate.labours = !invoice.labours.length ? [] : (invoice.labours.map(part => JSON.parse(part)));
-        }
-    }catch(e){
-        // 
+  try {
+    if (invoice.labours != null) {
+      estimate.parts = !invoice.parts.length ? [] : invoice.parts.map(part => JSON.parse(part));
+      estimate.labours = !invoice.labours.length ? [] : invoice.labours.map(part => JSON.parse(part));
     }
+  } catch (e) {
+    //
+  }
 
-    // @ts-ignore
-    console.log((invoice.dataValues.labours), invoice.labours);
-    
+  // @ts-ignore
+  console.log(invoice.dataValues.labours, invoice.labours);
 
-    // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
+  // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
 
-    // convert image to base 64
-    let mainUrl = '';
-    
-    try{
-        mainUrl = 'data:image/png;base64,'+base64_encode(path.join(__dirname, "../../", partner.logo));
-    }catch(e){
-        console.log(e)
-    }
+  // convert image to base 64
+  let mainUrl = '';
 
-    // console.log(mainUrl, "mainUrl");
-    // @ts-ignore
-    return `
+  try {
+    mainUrl = 'data:image/png;base64,' + base64_encode(path.join(__dirname, '../../', partner.logo));
+  } catch (e) {
+    console.log(e);
+  }
+
+  // console.log(mainUrl, "mainUrl");
+  // @ts-ignore
+  return `
     <!DOCTYPE html>
     <html lang="en">
     
@@ -439,7 +438,7 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                 <div class="header-section">
                     <span class="estimate-name">Invoice</span>
                     <span class="estimate-num">#${invoice.code}</span>
-                    <span class="estimate-date">Date: ${(new Date(invoice.updatedAt)).toDateString()}</span>
+                    <span class="estimate-date">Date: ${new Date(invoice.updatedAt).toDateString()}</span>
                 </div>
     
                 <div class="header-section">
@@ -449,7 +448,9 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
     
                 <div class="header-section">
                     <span class="addres-head">${partner.name}</span>
-                    <span class="addres-location">${partner?.contact?.address || ""} ${partner?.contact?.city || ""} ${partner?.contact?.district || ""}<br /> ${partner.contact.state}</span>
+                    <span class="addres-location">${partner?.contact?.address || ''} ${partner?.contact?.city || ''} ${
+    partner?.contact?.district || ''
+  }<br /> ${partner.contact.state}</span>
                     <span class="addres-phone">${partner.phone}</span>
                 </div>
     
@@ -462,10 +463,14 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
             <div class="second-section">
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
-                    <div class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</div>
-                    <div class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</div>
-                    <div class="bill-to-address">${customer?.email || ""}</div>
-                    <div class="bill-to-address">${customer?.phone || ""}</div>
+                    <div class="bill-to-name">${
+                      customer?.companyName || `${customer.firstName} ${customer.lastName}`
+                    }</div>
+                    <div class="bill-to-address">${customer?.contacts[0]?.address || ''}, ${
+    customer.contacts[0]?.city || ''
+  } ${customer?.contacts[0]?.district || ''}, ${customer?.contacts[0]?.state || ''}</div>
+                    <div class="bill-to-address">${customer?.email || ''}</div>
+                    <div class="bill-to-address">${customer?.phone || ''}</div>
                 </div>
                 <div>
                     <span class="vehicle-inforTitle">Vehicle Information:</span>
@@ -502,46 +507,50 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-amount">Amount</span>
                 </div>
                 
-                ${
-                    (estimate.parts.map((part: any, idx1)=> {
-                        const amount = formatNumberToIntl(parseInt(part?.amount || 0));
-                        return (
-                            `
+                ${estimate.parts
+                  .map((part: any, idx1) => {
+                    const amount = formatNumberToIntl(parseInt(part?.amount || 0));
+                    return `
                             <div class="item-header-item">
                     <span class="count-num-item">${idx1 + 1}</span>
                     <span class="item-descrip-item">${part.name}</span>
-                    <span class="item-warranty-item">${part?.warranty?.warranty || ''} ${part?.warranty?.interval || ''}</span>
-                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part?.quantity?.quantity || 1} ${part?.quantity?.unit || 'pcs'}</span>
+                    <span class="item-warranty-item">${part?.warranty?.warranty || ''} ${
+                      part?.warranty?.interval || ''
+                    }</span>
+                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${
+                      part?.quantity?.quantity || 1
+                    } ${part?.quantity?.unit || 'pcs'}</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
-                            `
-                        )
-                    })).join().replaceAll(' ,', '')
-                }
+                            `;
+                  })
+                  .join()
+                  .replaceAll(' ,', '')}
                 
-                ${
-                    (estimate.labours.map((labour: any, idx1)=> {
-                        const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
-                        return (
-                            `
+                ${estimate.labours
+                  .map((labour: any, idx1) => {
+                    const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
+                    return `
                             <div class="item-header-item">
-                    <span class="count-num-item">${(estimate.parts).length + 1 + idx1}</span>
+                    <span class="count-num-item">${estimate.parts.length + 1 + idx1}</span>
                     <span class="item-descrip-item">${labour.title}</span>
                     <span class="item-warranty-item"> - </span>
                     <span class="item-cost-item">₦ ${amount} x 1 pcs</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
-                            `
-                        )
-                    })).join().replaceAll(' ,', '')
-                }
+                            `;
+                  })
+                  .join()
+                  .replaceAll(' ,', '')}
                 
                 <div class="item-header-item-total first">
                     <span class="count-num-item"></span>
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Subtotal:</span>
-                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}</span>
+                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(
+                      estimate.partsTotal + estimate.laboursTotal,
+                    )}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -549,7 +558,9 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Discount:</span>
                     <span class="item-amount-item-amount"> 
-                    ${formatNumberToIntl(( invoice?.draftInvoice?.discount || invoice?.discount || estimate?.discount || 0))}
+                    ${formatNumberToIntl(
+                      invoice?.draftInvoice?.discount || invoice?.discount || estimate?.discount || 0,
+                    )}
                     </span>
                 </div>
                 <div class="item-header-item-total">
@@ -558,8 +569,13 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">VAT (7.5%):</span>
                     <span class="item-amount-item-amount">₦ ${
+                      // @ts-ignore
+                      formatNumberToIntl(
                         // @ts-ignore
-                        formatNumberToIntl(parseFloat( invoice?.draftInvoice?.tax || invoice?.tax || estimate?.tax || 0) + parseFloat( invoice?.draftInvoice?.taxPart || invoice?.taxPart || estimate?.taxPart || 0))
+                        parseFloat(invoice?.draftInvoice?.tax || invoice?.tax || estimate?.tax || 0) +
+                          // @ts-ignore
+                          parseFloat(invoice?.draftInvoice?.taxPart || invoice?.taxPart || estimate?.taxPart || 0),
+                      )
                     }</span>
                 </div>
                 <div class="item-header-item-total">
@@ -568,7 +584,9 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-warranty-item"></span>
                     <div class="total-flex" style="background: #E8E8E8;">
                         <span class="item-cost-item-sub-total">Total:</span>
-                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl( invoice.draftInvoice?.grandTotal || invoice?.grandTotal ||  estimate?.grandTotal || 0)}</span>
+                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(
+                          invoice.draftInvoice?.grandTotal || invoice?.grandTotal || estimate?.grandTotal || 0,
+                        )}</span>
                     </div>
     
                 </div>
@@ -591,7 +609,9 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Job Duration:</span>
-                    <span class="item-amount-item-amount">${estimate.jobDurationValue} ${estimate.jobDurationUnit}(s)</span>
+                    <span class="item-amount-item-amount">${estimate.jobDurationValue} ${
+    estimate.jobDurationUnit
+  }(s)</span>
                 </div>
 
                 <!--
@@ -604,6 +624,11 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                 </div> -->
     
                 <p class="terms-header">${partner.name} Terms & Conditions Appy</p>
+                <hr />
+
+                    ${terms}
+                <br />
+                
                 <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACGkAAAABCAYAAABn5mFIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAiSURBVHgB7cAxAQAACMCg2T+0pvCDqTYAAAAAAAAAAD7NAcSZAQJ8yV57AAAAAElFTkSuQmCC" alt=""> -->
 
                 <div class="lineImage" style="border-top: 0.61px solid rgba(0, 0, 0, 0.61); height: 1px;">&nbsp;</div>
@@ -621,17 +646,17 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                         <div style="width: 300px">
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Name</span>
-                                <span class="bold">${partner?.accountName || ""}</span>
+                                <span class="bold">${partner?.accountName || ''}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Bank Name</span>
-                                <span class="bold">${partner?.bankName || ""}</span>
+                                <span class="bold">${partner?.bankName || ''}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Number</span>
-                                <span class="bold">${partner?.accountNumber || ""}</span>
+                                <span class="bold">${partner?.accountNumber || ''}</span>
                             </div>
                         </div>
 
@@ -649,7 +674,9 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
                             href="http://app.myautohyve.com/">app.myautohyve.com</a> </li>
 
                             <li>Sign in with your Email address (username), and Phone number (as password)</li>
-                            <li>Open <span>Estimate #${invoice.code}</span>, and click on <span>“Make Payment”</span></li>
+                            <li>Open <span>Estimate #${
+                              invoice.code
+                            }</span>, and click on <span>“Make Payment”</span></li>
                         </ol>
                         <p style="font-size: 12px;">PS: you can pay using your bank card, transfer, or USSD. once successful, your invoice and receipt is created automatically.</p>
                     </div>
@@ -660,4 +687,4 @@ export const invoicePdfTemplate = (invoice: Invoice) => {
     
     </html>
     `;
-}
+};
