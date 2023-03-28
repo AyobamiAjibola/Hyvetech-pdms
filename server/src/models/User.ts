@@ -45,7 +45,7 @@ export const $saveUserSchema: Joi.SchemaMap<UserSchemaType> = {
   password: Joi.string()
     .regex(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$/)
     .messages({
-      "string.pattern.base": `Password does not meet requirement. your password must contain at least one number, one special character, one lowercase letter, and one uppercase letter.`,
+      "string.pattern.base": `Password does not meet requirement.`,
     })
     .required().label('password'),
   rawPassword: Joi.string().optional().label('rawPassword'),
