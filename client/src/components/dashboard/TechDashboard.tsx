@@ -16,7 +16,8 @@ import { getTechAnalyticsAction } from '../../store/actions/dashboardActions';
 import useAppSelector from '../../hooks/useAppSelector';
 import { formatNumberToIntl } from '../../utils/generic';
 import AppLoader from '../loader/AppLoader';
-// import useAdmin from '../../hooks/useAdmin';
+import useAdmin from '../../hooks/useAdmin';
+import CapitalizeWord from '../../utils/capitalizeWord';
 
 function TechDashboard() {
 
@@ -38,8 +39,8 @@ function TechDashboard() {
 
       <div style={{ display: 'flex', width: window.screen.width - 160, justifyContent: 'space-between' }}>
 
-        <h1 style={{ fontWeight: '500' }}>Welcome,
-          {user?.firstName || ""}
+        <h1 style={{ fontWeight: '500' }}>
+          Welcome {user && CapitalizeWord.capitalizeWord(user?.firstName) || ""}
         </h1>
         <div>
           <Select value={_month} onChange={(e: any) => _setMonth(e.target.value)} native={true}>
