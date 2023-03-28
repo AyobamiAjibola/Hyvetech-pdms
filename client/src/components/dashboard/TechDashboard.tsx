@@ -21,7 +21,7 @@ import AppLoader from '../loader/AppLoader';
 function TechDashboard() {
 
     const dispatch = useDispatch()
-    // const {user} = useAdmin()
+    const {user} = useAdmin()
     const techDashboardReducer = useAppSelector( _ => _.dashboardReducer.techAnalytics)
     const techDashboardReducerMain = useAppSelector( _ => _.dashboardReducer)
     const [_month, _setMonth] = useState<any>( ( (new Date()).getMonth() + 1 )  )
@@ -39,9 +39,8 @@ function TechDashboard() {
       <div style={{ display: 'flex', width: window.screen.width - 160, justifyContent: 'space-between' }}>
 
         <h1 style={{ fontWeight: '500' }}>Welcome,
-          {/* {user?.firstName || ""} {user?.lastName || ""} */}
-          </h1>
-        
+          {user?.firstName || ""}
+        </h1>
         <div>
           <Select value={_month} onChange={(e: any) => _setMonth(e.target.value)} native={true}>
               <option value={"1"}>January</option>
@@ -82,51 +81,17 @@ function TechDashboard() {
                     <DataCard title='Total Receivable' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceivable || 0)} bgColor={orange[900]} />
                 </Grid>
             </Grid>
-          
+
         </Stack>
-        {/* <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
-          <Paper>
-            <AppPieChart title={`Appointments, ${moment().format('MMM YYYY')}.`} series={[]} />
-          </Paper>
-          <Paper>
-            <AppPieChart title={`Customers, ${moment().format('MMM YYYY')}.`} series={[]} />
-          </Paper>
-          <Paper>
-            <AppPieChart title={`DriverVehicles, ${moment().format('MMM YYYY')}.`} series={[]} />
-          </Paper>
-          <Paper>
-            <AppPieChart title={`Transactions, ${moment().format('MMM YYYY')}.`} series={[]} />
-          </Paper>
-        </Stack> */}
         <Stack direction={{ xs: 'column', sm: 'column' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{ width: window.screen.width - 160 }}>
 
-        <AppStackedColumnChart
+          <AppStackedColumnChart
             title="Sales Analysis"
             categories={MONTHS}
             yAxisText="Naira (₦)"
             series={techDashboardReducer?.series || []}
-        />
+          />
 
-          {/* <AppStackedColumnChart
-            title="Sales Analysis"
-            categories={MONTHS}
-            yAxisText="Naira (₦)"
-            series={techDashboardReducer?.seriesOne || []}
-          />
-          
-          <AppStackedColumnChart
-            title="Receipt Analysis"
-            categories={MONTHS}
-            yAxisText="Naira (₦)"
-            series={techDashboardReducer?.seriesTwo || []}
-          />
-          
-          <AppStackedColumnChart
-            title="Expenses Analysis"
-            categories={MONTHS}
-            yAxisText="Naira (₦)"
-            series={techDashboardReducer?.seriesThree || []}
-          /> */}
         </Stack>
       </Stack>
 
