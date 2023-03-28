@@ -7,6 +7,7 @@ import cover from '../../assets/images/cover.png';
 import mechanic from '../../assets/images/mechanic.jpg';
 
 export default function PublicLayout({ children }: any) {
+  // const date = new Date()
   return (
     <Box sx={mainContainerStyle}>
       <span className="rightReserved">© 2022 All Rights Reserved, Jiffix Technologies Limited.</span>
@@ -24,7 +25,7 @@ export default function PublicLayout({ children }: any) {
 
 const mainContainerStyle = {
   height: '100vh',
-  width: '100% !important',
+  width: '100vw',
   backgroundImage: `url(${mechanic})`,
   backgroundRepeat: 'no-repeat',
   backgroundSize: '100% 100%',
