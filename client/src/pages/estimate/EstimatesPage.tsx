@@ -397,7 +397,11 @@ function EstimatesPage() {
           </Typography>
         </Grid>
         <Grid item>
-          <Button variant="outlined" color="success" size="small" onClick={() => estimate.setShowCreate(true)}>
+          <Button variant="outlined" color="success" size="small" onClick={() => estimate.setShowCreate(true)}
+            sx={{
+              mb: {sm: 0, xs: 2}
+            }}
+          >
             Generate
           </Button>
         </Grid>

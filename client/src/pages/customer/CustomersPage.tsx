@@ -42,11 +42,19 @@ function CustomersPage() {
             Customers
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid item
+          sx={{
+            display: 'flex',
+            flexDirection: {sm: 'row', xs: 'column'}
+          }}
+        >
           <Button
             variant="outlined"
             color="success"
             size="small"
+            sx={{
+              mb: {sm: 0, xs: 2}
+            }}
             onClick={() => {
               // s
               setCreateModal(true);
@@ -60,6 +68,9 @@ function CustomersPage() {
             variant="outlined"
             color="success"
             size="small"
+            sx={{
+              mb: {sm: 0, xs: 2}
+            }}
             onClick={() => {
               // s
               setInviteModal(true);
