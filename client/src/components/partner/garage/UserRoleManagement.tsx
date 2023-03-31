@@ -481,7 +481,7 @@ const UserRoleManagement = () => {
       {showCreateRole && (
         <AppModal
           fullWidth
-          size="md"
+          size={document.documentElement.clientWidth <= 375 ? "xs" : "md"}
           show={showCreateRole}
           Content={
             <Formik
@@ -509,7 +509,7 @@ const UserRoleManagement = () => {
                   )}
                 </Typography>
                 <Grid spacing={10} container>
-                  <Grid item md={12} sm={12}>
+                  <Grid item sm={12} xs={8.7}>
                     <TextField
                       value={roleName}
                       onChange={e => setRoleName(e.target.value)}
@@ -522,7 +522,7 @@ const UserRoleManagement = () => {
                   </Grid>
                 </Grid>
                 <Grid style={{ marginTop: 20 }} container>
-                  <Grid item md={12}>
+                  <Grid item sm={12} xs={8}>
                     <Select
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
@@ -566,7 +566,7 @@ const UserRoleManagement = () => {
       {showCreateUser && (
         <AppModal
           fullWidth
-          size="md"
+          size={document.documentElement.clientWidth <= 375 ? "xs" : "md"}
           show={showCreateUser}
           Content={
             <Formik
@@ -648,7 +648,7 @@ const UserRoleManagement = () => {
                       label="Password"
                     />
                   </Grid>
-                  <Grid item md={6}>
+                  <Grid item md={6} sm={6} xs={6.7}>
                     <Select
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"

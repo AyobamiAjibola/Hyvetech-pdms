@@ -37,7 +37,12 @@ function TechDashboard() {
         Total customers: {0}
       </Typography> */}
 
-      <div style={{ display: 'flex', width: window.screen.width - 160, justifyContent: 'space-between' }}>
+      <div style={{
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
 
         <h1 style={{ fontWeight: '500' }}>
           Welcome {user && capitalize.words(user?.firstName) || ""}
@@ -65,26 +70,60 @@ function TechDashboard() {
       <Stack
         direction="column"
         spacing={5}
-        // justifyContent="center"
-        // alignItems="center"
         divider={<Divider orientation="horizontal" flexItem />}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2, md: 4 }}>
-            <Grid container style={{ flex: 1, display: 'flex', }}>
-                <Grid item style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: window.screen.width - 160, marginBottom: 25 }}>
-                    <DataCard title='Total Sales' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mRevenue || 0)} bgColor={teal[400]} />
-                    <DataCard title='Total Receipts' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceipt || 0)} bgColor={cyan[400]} />
-                    <DataCard title='Total Expenses' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mExpense || 0)} bgColor={lime[400]} />
-                </Grid>
-
-                <Grid item style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: window.screen.width - 160, }}>
-                    <DataCard title='Number of Estimate Sent' data={(techDashboardReducer?.mEstimate || 0)} bgColor={orange[300]} />
-                    <DataCard title='Number of Invoice Generated' data={(techDashboardReducer?.mInvoice || 0)} bgColor={orange[600]} />
-                    <DataCard title='Total Receivable' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceivable || 0)} bgColor={orange[900]} />
-                </Grid>
+        <Stack direction={{xs: 'column'}}
+          sx={{
+            display: 'flex', flexDirection: {lg: 'column', xs: 'row'},
+            justifyContent: 'left',
+            alignItems: 'left',
+            width: '100%', gap: 4
+          }}
+        >
+          {/* <Grid container
+            sx={{
+              gap: {md: 5, xs: 3},
+              display: 'flex', flexDirection: 'column',
+              width: '100%', height: 'auto'
+            }}
+          > */}
+            <Grid item
+              sx={{
+                display: 'flex',
+                flexDirection: {lg: 'row', xs: 'column'},
+                // justifyContent: 'center',
+                width: {lg: '100%', xs: '50%'},
+                gap: {lg: 8, md: 4, xs: 2}, ml: {lg: 10}
+              }}
+            >
+                <DataCard title='Total Sales' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mRevenue || 0)} bgColor={teal[400]} />
+                <DataCard title='Total Receipts' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceipt || 0)} bgColor={cyan[400]} />
+                <DataCard title='Total Expenses' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mExpense || 0)} bgColor={lime[400]} />
             </Grid>
 
+            <Grid item
+              sx={{
+                display: 'flex',
+                flexDirection: {lg: 'row', xs: 'column'},
+                // justifyContent: 'center',
+                // width: window.screen.width - 160,
+                width: {lg: '100%', xs: '50%'},
+                gap: {lg: 8, md: 4, xs: 2}, ml: {lg: 10}
+              }}
+            >
+                <DataCard title='Number of Estimate Sent' data={(techDashboardReducer?.mEstimate || 0)} bgColor={orange[300]} />
+                <DataCard title='Number of Invoice Generated' data={(techDashboardReducer?.mInvoice || 0)} bgColor={orange[600]} />
+                <DataCard title='Total Receivable' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceivable || 0)} bgColor={orange[900]} />
+            </Grid>
+          {/* </Grid> */}
+
         </Stack>
-        <Stack direction={{ xs: 'column', sm: 'column' }} spacing={{ xs: 1, sm: 2, md: 4 }} sx={{ width: window.screen.width - 160 }}>
+        <Stack direction={{ xs: 'column', sm: 'column' }}
+          // spacing={{ xs: 1, sm: 2, md: 4 }}
+          sx={{
+            // width: window.screen.width - 160
+            width: '100%'
+          }}
+        >
 
           <AppStackedColumnChart
             title="Sales Analysis"

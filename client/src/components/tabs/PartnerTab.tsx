@@ -1,5 +1,5 @@
 import React, { SyntheticEvent, useRef, useState } from 'react';
-import { Box, Slide, Tab, Tabs, useTheme } from '@mui/material';
+import { Box, Slide, Tab, Tabs, tabsClasses, useTheme } from '@mui/material';
 import a11yProps from './a11yProps';
 import TabPanel from './TabPanel';
 import { ITab } from '@app-interfaces';
@@ -89,10 +89,21 @@ export default function PartnerTab(props: IProps) {
     dispatch(clearGetDriverVehicleSubscriptionStatus());
     dispatch(clearGetVehicleVINStatus());
   };
+  const screenWidth = document.documentElement.clientWidth
 
   return (
     <Box>
-      <Tabs centered value={tabValue} onChange={handleChange} aria-label="icon label tabs example">
+      <Tabs value={tabValue} onChange={handleChange} aria-label="icon label tabs example"
+        variant={screenWidth <= 375 ? "scrollable" : undefined}
+        scrollButtons
+        centered={screenWidth > 375 ? true : false}
+        sx={{
+          [`& .${tabsClasses.scrollButtons}`]: {
+            '&.Mui-disabled': { opacity: {sm: 0, xs: 0.3} },
+          },
+        }}
+        allowScrollButtonsMobile
+      >
         {props.tabMenus.map((tab, index) => {
           return <Tab label={tab.name} key={index} {...a11yProps(index)} />;
         })}

@@ -16,7 +16,7 @@ function WarrantyFields(props: PartArgs) {
         return (
           <Grid key={idx} item xs container>
             {value === 'warranty' && (
-              <Grid item xs>
+              <Grid item sm={12} xs={16}>
                 <TextField
                   fullWidth
                   variant="outlined"

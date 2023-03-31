@@ -15,7 +15,7 @@ export default function DataCard(props: IProps) {
         boxShadow: 5,
         borderRadius: 3,
         p: 2,
-        minWidth: 300,
+        minWidth: {md: 300, sm: 250, xs: 200 }
       }}>
       <Box
         sx={{
@@ -23,7 +23,13 @@ export default function DataCard(props: IProps) {
         }}>
         {props.title}
       </Box>
-      <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>{props.data}</Box>
+      <Box
+        sx={{
+          color: 'text.primary',
+          fontSize: { md: 34, sm: 25, xs: 20 },
+          fontWeight: 'medium'
+        }}
+      >{props.data}</Box>
       <Box
         sx={{
           color: theme => (theme.palette.mode === 'dark' ? '#ffffff' : '#000000'),

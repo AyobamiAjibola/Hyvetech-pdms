@@ -54,3 +54,13 @@
   text-decoration: none;
   color: #000000;
 }
+
+@media(max-width:600px) {
+  .aboutUs {
+    display: none
+  }
+
+  .leftLoginBackgroundImage {
+    width: 100%;
+  }
+}
