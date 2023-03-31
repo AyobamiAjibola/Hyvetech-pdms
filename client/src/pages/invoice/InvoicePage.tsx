@@ -267,17 +267,24 @@ function InvoicePage() {
           {invoice.grandTotal !== invoice.paidAmount && (
             <Button
               style={{ marginRight: 20 }}
-              variant="outlined"
+              variant={document.documentElement.clientWidth <= 375 ? "contained" : "outlined"}
               color="success"
               size="small"
               onClick={() => setShowRecordPayment(true)}>
               {'Record Payment'}
             </Button>
           )}
-          <Button variant="outlined" color="success" size="small" sx={{ mr: 2 }} onClick={() => generateExpense()}>
+          <Button
+            variant={document.documentElement.clientWidth <= 375 ? "contained" : "outlined"}
+            color="success"
+            size="small" sx={{ mr: 2 }} onClick={() => generateExpense()}
+          >
             Record Expense
           </Button>
-          <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
+          <Button
+            variant={document.documentElement.clientWidth <= 375 ? "contained" : "outlined"}
+            color="success" size="small" onClick={() => generateDownload()}
+          >
             {downloading ? 'Downloading...' : 'Download Pdf'}
           </Button>
         </div>
@@ -288,28 +295,40 @@ function InvoicePage() {
               Billing Information
             </Typography>
             <Stack>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1"
+                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+              >
                 {owner}
               </Typography>
               {billingInformation ? (
-                <Typography variant="body1" gutterBottom>
-                  <Typography variant="body2" gutterBottom>
+                <Typography variant="body1"
+                  gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+                >
+                  <Typography variant="body2"
+                    gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+                  >
                     {billingInformation.address} {billingInformation.district} {billingInformation.state}
                   </Typography>
-                  <Typography variant="body2" gutterBottom>
+                  <Typography variant="body2"
+                    gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+                  >
                     {billingInformation.phone}
                   </Typography>
                 </Typography>
               ) : (
-                <Typography variant="body1" gutterBottom>
-                  <p>{_driver?.email || ''}</p>
+                <Typography variant="body1" gutterBottom >
+                  <p
+                    style={{
+                      lineHeight: 0
+                    }}
+                  >{_driver?.email || ''}</p>
                   <p>{_driver?.phone || ''}</p>
                   {estimate.address}
                 </Typography>
               )}
             </Stack>
           </Grid>
-          <Grid item xs>
+          <Grid item xs mt={2}>
             <img
               alt=""
               width="20%"
@@ -318,20 +337,30 @@ function InvoicePage() {
             />
           </Grid>
           <Grid item>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6"
+              gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+            >
               {estimate?.partner.name}
             </Typography>
             <Stack>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1"
+                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+              >
                 {estimate?.partner?.contact.address}
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1"
+                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+              >
                 {estimate?.partner?.contact?.district} {estimate?.partner?.contact?.state}
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1"
+                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+              >
                 {estimate?.partner.phone}
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1"
+                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+              >
                 {estimate?.partner.email}
               </Typography>
             </Stack>

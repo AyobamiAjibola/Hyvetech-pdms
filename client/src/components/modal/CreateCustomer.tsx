@@ -216,7 +216,8 @@ export default function CreateCustomerModal(props: Props) {
                     // color: 'black'
                     borderColor: 'blue',
                     borderWidth: 1,
-                    boxShadow: '1px solid blue'
+                    boxShadow: '1px solid blue',
+                    width: {sm: '60%', xs: '100%'}
                 }}
                 style={{
                     position: 'absolute',
@@ -224,7 +225,6 @@ export default function CreateCustomerModal(props: Props) {
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
                     // width: 400,
-                    width: '60%',
                     padding: 20,
                     borderRadius: 8,
                     borderColor: 'blue',

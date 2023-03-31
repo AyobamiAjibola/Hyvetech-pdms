@@ -111,8 +111,8 @@ function VehicleInformationFields(props: IProps) {
           label={fields.plateNumber.label}
         />
       </Grid>
-      <Grid item xs={4} container spacing={0.5}>
-        <Grid item xs={8}>
+      <Grid item sm={4} xs={12} container spacing={0.5}>
+        <Grid item sm={8} xs={6}>
           <TextInputField
             onChange={props.handleChange}
             disabled={props.disabled}
@@ -121,7 +121,7 @@ function VehicleInformationFields(props: IProps) {
             label={fields.mileageValue.label}
           />
         </Grid>
-        <Grid item xs>
+        <Grid item sm={4} xs={6}>
           <SelectField
             data={[
               { label: 'miles', value: 'miles' },
