@@ -1010,7 +1010,7 @@ function EstimateForm(props: IProps) {
                                 })
                               }
                             >
-                              {'Add Part'}
+                              {'Add Service'}
                             </Button>
                           : <IconButton
                               onClick={() =>

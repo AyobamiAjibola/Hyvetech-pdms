@@ -42,12 +42,7 @@ function CustomersPage() {
             Customers
           </Typography>
         </Grid>
-        <Grid item
-          sx={{
-            display: 'flex',
-            flexDirection: {sm: 'row', xs: 'column'}
-          }}
-        >
+        <Grid item>
           <Button
             variant="outlined"
             color="success"
