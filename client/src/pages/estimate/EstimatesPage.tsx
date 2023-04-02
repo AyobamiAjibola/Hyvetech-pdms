@@ -431,7 +431,8 @@ function EstimatesPage() {
       {estimate.showCreate && (
         <AppModal
           fullWidth
-          size="xl"
+          size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
+          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           show={estimate.showCreate}
           Content={
             <Formik
@@ -467,7 +468,8 @@ function EstimatesPage() {
       {estimate.showEdit && (
         <AppModal
           fullWidth
-          size="xl"
+          size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
+          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           show={estimate.showEdit}
           Content={
             <Formik

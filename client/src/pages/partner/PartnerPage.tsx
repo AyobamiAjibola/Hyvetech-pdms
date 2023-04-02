@@ -210,7 +210,9 @@ function PartnerPage() {
           showDelete,
           setShowDelete,
         }}>
-        <Stack direction="column" spacing={5} divider={<Divider orientation="horizontal" flexItem />}>
+        <Stack direction="column" spacing={5} divider={<Divider orientation="horizontal" flexItem />}
+          sx={{  width: {xs: document.documentElement.clientWidth, sm: '100%'} }}
+        >
           <Paper sx={{ p: 3 }}>
             <PartnerTab tabMenus={tabs} />
           </Paper>

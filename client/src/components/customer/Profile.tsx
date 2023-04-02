@@ -170,14 +170,14 @@ const handleEdit = async ()=>{
             dispatch(getCustomerAction(customer?.id));
             estimate.setShowCreate(true)
         }
-      }} 
-      style={{ 
+      }}
+      style={{
         position: 'absolute',
-        top: '18%',
+        top: '15%',
         right: '7%',
        }}>
             Generate Estimate
-        </Button>
+      </Button>
 
         {
             (
@@ -229,7 +229,7 @@ const handleEdit = async ()=>{
                 value={form.firstName}
                 disabled={!isEditing}
                 fullWidth={true} />
-                
+
             <TextField
                 label='Last Name'
                 onChange={val => setForm({...form, lastName: val.target.value})}
@@ -385,7 +385,8 @@ const handleEdit = async ()=>{
       {estimate.showCreate && (
         <AppModal
           fullWidth
-          size="xl"
+          size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
+          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           show={estimate.showCreate}
           Content={
             <Formik

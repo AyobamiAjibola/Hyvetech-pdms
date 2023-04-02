@@ -267,7 +267,7 @@ function InvoicePage() {
           {invoice.grandTotal !== invoice.paidAmount && (
             <Button
               style={{ marginRight: 20 }}
-              variant={document.documentElement.clientWidth <= 375 ? "contained" : "outlined"}
+              variant="outlined"
               color="success"
               size="small"
               onClick={() => setShowRecordPayment(true)}>
@@ -275,14 +275,14 @@ function InvoicePage() {
             </Button>
           )}
           <Button
-            variant={document.documentElement.clientWidth <= 375 ? "contained" : "outlined"}
+            variant="outlined"
             color="success"
             size="small" sx={{ mr: 2 }} onClick={() => generateExpense()}
           >
             Record Expense
           </Button>
           <Button
-            variant={document.documentElement.clientWidth <= 375 ? "contained" : "outlined"}
+            variant="outlined"
             color="success" size="small" onClick={() => generateDownload()}
           >
             {downloading ? 'Downloading...' : 'Download Pdf'}
@@ -291,12 +291,15 @@ function InvoicePage() {
 
         <Grid container my={3} justifyContent="space-between" alignItems="center">
           <Grid item xs>
-            <Typography variant="h6" gutterBottom>
+            <Typography gutterBottom
+              sx={{fontWeight: 600, fontSize: {xs: '14px', sm: '16px'}}}
+            >
               Billing Information
             </Typography>
             <Stack>
               <Typography variant="body1"
                 gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+                sx={{fontSize: {xs: '13px', sm: '16px'}}}
               >
                 {owner}
               </Typography>
@@ -316,12 +319,10 @@ function InvoicePage() {
                   </Typography>
                 </Typography>
               ) : (
-                <Typography variant="body1" gutterBottom >
-                  <p
-                    style={{
-                      lineHeight: 0
-                    }}
-                  >{_driver?.email || ''}</p>
+                <Typography variant="body1" gutterBottom
+                  sx={{fontSize: {xs: '13px', sm: '16px'}}}
+                >
+                  <p>{_driver?.email || ''}</p>
                   <p>{_driver?.phone || ''}</p>
                   {estimate.address}
                 </Typography>
@@ -337,30 +338,22 @@ function InvoicePage() {
             />
           </Grid>
           <Grid item>
-            <Typography variant="h6"
-              gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+            <Typography gutterBottom
+              sx={{fontSize: {xs: '14px', sm: '16px'}, fontWeight: 600, mt: {xs: 2, sm: 0}}}
             >
               {estimate?.partner.name}
             </Typography>
             <Stack>
-              <Typography variant="body1"
-                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-              >
+              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
                 {estimate?.partner?.contact.address}
               </Typography>
-              <Typography variant="body1"
-                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-              >
+              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
                 {estimate?.partner?.contact?.district} {estimate?.partner?.contact?.state}
               </Typography>
-              <Typography variant="body1"
-                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-              >
+              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
                 {estimate?.partner.phone}
               </Typography>
-              <Typography variant="body1"
-                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-              >
+              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
                 {estimate?.partner.email}
               </Typography>
             </Stack>
@@ -373,24 +366,29 @@ function InvoicePage() {
         </Grid>
         <Grid container my={3}>
           <Grid item xs>
-            <Typography gutterBottom>Vehicle</Typography>
+            <Typography gutterBottom sx={{fontWeight: 600}}>Vehicle</Typography>
             <Typography>
               {estimate?.vehicle.modelYear} {estimate?.vehicle.make} {estimate?.vehicle.model}
             </Typography>
           </Grid>
           <Grid item xs>
-            <Typography gutterBottom>Reg. No</Typography>
+            <Typography gutterBottom sx={{fontWeight: 600}}>Reg. No</Typography>
             <Typography>{estimate?.vehicle.plateNumber}</Typography>
           </Grid>
           <Grid item xs>
-            <Typography gutterBottom>Mileage</Typography>
+            <Typography gutterBottom sx={{fontWeight: 600}}>Mileage</Typography>
             <Typography>
               {estimate?.vehicle.mileageValue} {estimate?.vehicle.mileageUnit}
             </Typography>
           </Grid>
           <Grid item xs>
-            <Typography gutterBottom>VIN</Typography>
-            <Typography>{estimate?.vehicle.vin}</Typography>
+            <Typography gutterBottom sx={{fontWeight: 600}}>VIN</Typography>
+            <Typography
+              sx={{
+                width: '100%',
+                wordBreak: "break-all"
+              }}
+            >{estimate?.vehicle.vin}</Typography>
           </Grid>
         </Grid>
         <Grid container>
@@ -407,19 +405,34 @@ function InvoicePage() {
           justifyContent="center"
           alignItems="center"
           columns={14}>
-          <Grid item xs={2}>
+          <Grid item xs={2} sx={{display: {xs: 'none', sm: 'block'}}}>
             <Avatar src={InsightImg} sx={{ width: 20, height: 20 }} />
           </Grid>
-          <Grid item xs={3}>
-            Item Description
+          <Grid item xs={4} sm={3}
+            sx={{
+              width: '100%',
+              wordBreak: "break-word",
+              fontWeight: 600,
+              fontSize: {xs: '13px', sm: '16px'}
+            }}
+          >
+            {/* Item Description */}
+            {document.documentElement.clientWidth <= 375 ? 'Item Desc' : 'Item Description'}
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={3} sm={3} sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}>
             Warranty
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4} sm={3}
+            sx={{
+              width: '100%',
+              wordBreak: "break-word",
+              fontWeight: 600,
+              fontSize: {xs: '13px', sm: '16px'}
+            }}
+          >
             Unit Cost x Qty
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={3} sx={{textAlign: {xs: 'right'}, fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}}}>
             Amount
           </Grid>
         </Grid>
@@ -440,17 +453,21 @@ function InvoicePage() {
                     sx={{ pb: 2.5 }}
                     borderBottom="0.01px solid"
                     borderColor="#676767">
-                    <Grid item xs={2} />
-                    <Grid item xs={3}>
+                    <Grid item xs={1} sx={{display: {xs: 'none', sm: 'block'}}}/>
+                    <Grid item xs={4} sm={3}
+                      sx={{fontSize: {xs: '13px', sm: '16px'}, wordBreak: 'break-word', width: '100%'}}
+                    >
                       {part.name}
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} sm={3}
+                      sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}
+                    >
                       {part?.warranty?.warranty || ''} {part?.warranty?.interval || ''}
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={4} sm={3} sx={{textAlign: {xs:'left'}, fontSize: {xs: '13px', sm: '16px'}}}>
                       {formatNumberToIntl(+part.price)} x {part?.quantity?.quantity || ''}${part?.quantity?.unit || 0}
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} sx={{textAlign: {xs:'right'}, fontSize: {xs: '13px', sm: '16px'}}}>
                       {amount}
                     </Grid>
                   </Grid>
@@ -470,17 +487,19 @@ function InvoicePage() {
                     sx={{ pb: 2.5 }}
                     borderBottom="0.01px solid"
                     borderColor="#676767">
-                    <Grid item xs={2} />
-                    <Grid item xs={3}>
+                    <Grid item xs={1} sx={{display: {xs: 'none', sm: 'block'}}}/>
+                    <Grid item xs={4} sm={3}
+                      sx={{fontSize: {xs: '13px', sm: '16px'}}}
+                    >
                       {labour?.title}
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} sm={3} sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}>
                       -
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={4} sm={3} sx={{textAlign: {xs:'left'}, fontSize: {xs: '13px', sm: '16px'}}}>
                       {formatNumberToIntl(+labour.cost)} x 1
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} sx={{textAlign: {xs:'right'}, fontSize: {xs: '13px', sm: '16px'}}}>
                       {formatNumberToIntl(+labour.cost)}
                     </Grid>
                   </Grid>
@@ -490,17 +509,19 @@ function InvoicePage() {
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>Subtotal: {formatNumberToIntl(subTotal)}</Typography>
+            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+              Subtotal: {formatNumberToIntl(subTotal)}
+            </Typography>
             {/* @ts-ignore */}
-            <Typography gutterBottom>
+            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
               VAT(7.5%):{' '}
               {
                 // @ts-ignore
                 formatNumberToIntl(calculateTaxTotal(invoice))
               }
             </Typography>
-            <Typography gutterBottom>
-              Discount:
+            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+              Discount:{' '}
               {
                 // @ts-ignore
                 `(${formatNumberToIntl(
@@ -517,7 +538,7 @@ function InvoicePage() {
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>
+            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
               TOTAL:{' '}
               {formatNumberToIntl(
                 grandTotal,
@@ -553,9 +574,9 @@ function InvoicePage() {
                 alignItems: 'center',
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
-              <Typography>Paid</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Paid</Typography>
               <Typography sx={{ ml: 5 }} />
-              <Typography>₦{formatNumberToIntl(invoice.depositAmount)}</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>₦{formatNumberToIntl(invoice.depositAmount)}</Typography>
             </Box>
           </Grid>
         </Grid>
@@ -569,9 +590,9 @@ function InvoicePage() {
                 alignItems: 'center',
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
-              <Typography>Balance Due</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Balance Due</Typography>
               <Typography sx={{ mr: 7 }} />
-              <Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
                 {/* ₦{Math.sign(invoice.dueAmount) === -1 ? '0.00' : formatNumberToIntl(invoice.dueAmount)} */}₦
                 {Math.sign(balance) === -1 ? '0.00' : formatNumberToIntl(balance)}
               </Typography>
@@ -588,10 +609,10 @@ function InvoicePage() {
                 alignItems: 'center',
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
-              <Typography>Refund Due</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Refund Due</Typography>
               <Typography sx={{ mr: 7 }} />
               {/* <Typography>₦{formatNumberToIntl(invoice.refundable)}</Typography> */}
-              <Typography>₦{formatNumberToIntl(refundAmount)}</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>₦{formatNumberToIntl(refundAmount)}</Typography>
             </Box>
           </Grid>
         </Grid>
@@ -601,10 +622,10 @@ function InvoicePage() {
           onClose={() => setShowRecordPayment(false)}
           title="Record Payment"
           size="md"
-          ActionComponent={<Button onClick={() => handlePaymentRecord()}>{recording ? 'Recording' : 'Record'}</Button>}
+          ActionComponent={<Button onClick={() => handlePaymentRecord()} >{recording ? 'Recording' : 'Record'}</Button>}
           // fullWidth
           Content={
-            <div style={{ width: 300 }}>
+            <Box sx={{ width: {sm: 300, xs: 250} }}>
               <Input
                 value={recordData.amount}
                 type="numeric"
@@ -636,7 +657,7 @@ function InvoicePage() {
                 <option value={'POS'}>POS</option>
               </Select>
               <br />
-            </div>
+            </Box>
           }
         />
 

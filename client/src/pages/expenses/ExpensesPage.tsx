@@ -279,7 +279,7 @@ const Expenses = () => {
             Expenses
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid item mb={2}>
           <Link to="/expense/create">
             <Button variant="outlined" color="success" size="small">
               Generate
@@ -322,7 +322,7 @@ const Expenses = () => {
                   Add Payment Reference
                 </Typography>
                 <Grid spacing={10} container>
-                  <Grid item md={12} sm={12}>
+                  <Grid item md={12} xs={12}>
                     <TextField
                       value={reference}
                       onChange={e => setReference(e.target.value)}

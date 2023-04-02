@@ -481,7 +481,8 @@ const UserRoleManagement = () => {
       {showCreateRole && (
         <AppModal
           fullWidth
-          size={document.documentElement.clientWidth <= 375 ? "xs" : "md"}
+          size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
+          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           show={showCreateRole}
           Content={
             <Formik
@@ -509,7 +510,7 @@ const UserRoleManagement = () => {
                   )}
                 </Typography>
                 <Grid spacing={10} container>
-                  <Grid item sm={12} xs={8.7}>
+                  <Grid item sm={12} xs={10} >
                     <TextField
                       value={roleName}
                       onChange={e => setRoleName(e.target.value)}
@@ -522,7 +523,7 @@ const UserRoleManagement = () => {
                   </Grid>
                 </Grid>
                 <Grid style={{ marginTop: 20 }} container>
-                  <Grid item sm={12} xs={8}>
+                  <Grid item sm={12} xs={10}>
                     <Select
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
@@ -566,7 +567,8 @@ const UserRoleManagement = () => {
       {showCreateUser && (
         <AppModal
           fullWidth
-          size={document.documentElement.clientWidth <= 375 ? "xs" : "md"}
+          size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
+          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           show={showCreateUser}
           Content={
             <Formik
@@ -594,7 +596,7 @@ const UserRoleManagement = () => {
                   )}
                 </Typography>
                 <Grid spacing={4} container>
-                  <Grid item md={6} sm={6}>
+                  <Grid item sm={6} xs={10}>
                     <TextField
                       value={firstName}
                       onChange={e => setFirstName(e.target.value)}
@@ -604,7 +606,7 @@ const UserRoleManagement = () => {
                       label="First name"
                     />
                   </Grid>
-                  <Grid item md={6} sm={6}>
+                  <Grid item sm={6} xs={10}>
                     <TextField
                       value={lastName}
                       onChange={e => setLastName(e.target.value)}
@@ -616,7 +618,7 @@ const UserRoleManagement = () => {
                   </Grid>
                 </Grid>
                 <Grid spacing={4} style={{ marginTop: 20 }} container>
-                  <Grid item md={6} sm={6}>
+                  <Grid item sm={6} xs={10}>
                     <TextField
                       value={email}
                       onChange={e => setEmail(e.target.value)}
@@ -626,7 +628,7 @@ const UserRoleManagement = () => {
                       label="Email"
                     />
                   </Grid>
-                  <Grid item md={6} sm={6}>
+                  <Grid item sm={6} xs={10}>
                     <TextField
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
@@ -638,7 +640,7 @@ const UserRoleManagement = () => {
                   </Grid>
                 </Grid>
                 <Grid style={{ marginTop: 20 }} spacing={4} container>
-                  <Grid item md={6} sm={6}>
+                  <Grid item sm={6} xs={10}>
                     <TextField
                       value={password}
                       onChange={e => setPassword(e.target.value)}
@@ -648,7 +650,7 @@ const UserRoleManagement = () => {
                       label="Password"
                     />
                   </Grid>
-                  <Grid item md={6} sm={6} xs={6.7}>
+                  <Grid item sm={6} xs={10}>
                     <Select
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"

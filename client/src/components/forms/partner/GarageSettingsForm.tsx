@@ -163,7 +163,7 @@ function GarageSettingsForm(props: IProps) {
                           {Object.keys(brand).map(value => {
                             return (
                               <React.Fragment key={`${value}`}>
-                                <Grid item xs={value === 'name' ? 4 : 8} sx={{ mb: 2 }}>
+                                <Grid item xs={value === 'name' ? 13 : 12} sm={value === 'name' ? 4 : 8} sx={{ mb: 2 }}>
                                   <TextField
                                     fullWidth
                                     variant="outlined"
@@ -187,15 +187,26 @@ function GarageSettingsForm(props: IProps) {
                       );
                     })}
                   <Grid item xs>
-                    <IconButton
-                      onClick={() =>
-                        arrayHelpers.push({
-                          name: '',
-                          description: '',
-                        })
-                      }>
-                      <Add />
-                    </IconButton>
+                    {document.documentElement.clientWidth <= 375
+                      ? <Button
+                          onClick={() =>
+                            arrayHelpers.push({
+                              name: '',
+                              description: '',
+                            })
+                          }>
+                          {`Add brand`}
+                        </Button>
+                      : <IconButton
+                          onClick={() =>
+                            arrayHelpers.push({
+                              name: '',
+                              description: '',
+                            })
+                          }>
+                          <Add />
+                        </IconButton>
+                    }
                   </Grid>
                 </React.Fragment>
               );
@@ -209,6 +220,7 @@ function GarageSettingsForm(props: IProps) {
           <FieldArray
             name={fields.workingHours.name}
             render={arrayHelpers => {
+              // console.log(arrayHelpers)
               return (
                 <React.Fragment>
                   {values.workingHours.length > 0 &&
@@ -219,7 +231,7 @@ function GarageSettingsForm(props: IProps) {
                             return (
                               <React.Fragment key={`${value}`}>
                                 {value === 'days' ? (
-                                  <Grid item xs={6} sx={{ mb: 2 }}>
+                                  <Grid item xs={12} sx={{ mb: 2 }}>
                                     <Autocomplete
                                       multiple
                                       options={DAYS}
@@ -236,7 +248,7 @@ function GarageSettingsForm(props: IProps) {
                                     />
                                   </Grid>
                                 ) : (
-                                  <Grid item xs={3} sx={{ mb: 2 }}>
+                                  <Grid item sm={3} xs={6} sx={{ mb: 2 }}>
                                     <TimePickerField
                                       fullWidth
                                       variant="outlined"
@@ -259,23 +271,35 @@ function GarageSettingsForm(props: IProps) {
                       );
                     })}
                   <Grid item xs>
-                    <IconButton
-                      onClick={() =>
-                        arrayHelpers.push({
-                          days: [],
-                          from: new Date(),
-                          to: new Date(),
-                        })
-                      }>
-                      <Add />
-                    </IconButton>
+                    {document.documentElement.clientWidth <= 375
+                      ? <Button
+                          onClick={() =>
+                            arrayHelpers.push({
+                              days: [],
+                              from: new Date(),
+                              to: new Date(),
+                            })
+                          }>
+                          {'Add working hour'}
+                        </Button>
+                      : <IconButton
+                          onClick={() =>
+                            arrayHelpers.push({
+                              days: [],
+                              from: new Date(),
+                              to: new Date(),
+                            })
+                          }>
+                          <Add />
+                        </IconButton>
+                    }
                   </Grid>
                 </React.Fragment>
               );
             }}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} mt={2}>
           <LoadingButton
             loading={props.isSubmitting}
             type="submit"

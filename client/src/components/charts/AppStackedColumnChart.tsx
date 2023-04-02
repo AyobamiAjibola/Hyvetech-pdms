@@ -29,7 +29,7 @@ export default function AppStackedColumnChart(props: IProps) {
     chart: {
       // type: 'column',
       type: 'bar',
-      width: window.screen.width - 160,
+      // width: window.screen.width - 160,
     },
     title: {
       text: props.title,
@@ -61,8 +61,8 @@ export default function AppStackedColumnChart(props: IProps) {
       align: 'right',
       x: -30,
       verticalAlign: 'top',
-      itemDistance: 10,
-      y: 10,
+      // itemDistance: 10,
+      y: 20,
       floating: true,
       backgroundColor: Highcharts.defaultOptions.legend?.backgroundColor || 'white',
       borderColor: '#CCC',
@@ -98,14 +98,13 @@ export default function AppStackedColumnChart(props: IProps) {
   return (
     <div
       style={{
-        boxShadow: 5,
-        width: "100%",
-        // minWidth: 1660,
+        boxShadow: 5
       }}>
       <HighchartsReact
         highcharts={Highcharts}
         options={options}
         ref={chartComponentRef}
+        containerProps={{ style: { width: '100%' } }}
         {...props}
       />
     </div>

@@ -19,6 +19,7 @@ const openapiSpecification = swaggerJsdoc(config.swagger); //configure swagger A
 export const corsOptions = {
   origin: [
     'http://localhost:3000',
+    'http://localhost:3002',
     <string>process.env.CLIENT_HOST,
     <string>process.env.CLIENT_HOST_WWW,
     <string>process.env.CLIENT_IP,

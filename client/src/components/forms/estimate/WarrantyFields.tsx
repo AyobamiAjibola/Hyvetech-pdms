@@ -14,9 +14,9 @@ function WarrantyFields(props: PartArgs) {
     <React.Fragment>
       {Object.keys(warranty).map((value, idx) => {
         return (
-          <Grid key={idx} item xs container>
+          <Grid key={idx} item sm={1} xs={14} container>
             {value === 'warranty' && (
-              <Grid item sm={12} xs={16}>
+              <Grid item sm={12} xs={14}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -32,7 +32,7 @@ function WarrantyFields(props: PartArgs) {
               </Grid>
             )}
             {value === 'interval' && (
-              <Grid item xs>
+              <Grid item sm={12} xs={14}>
                 <SelectField
                   data={[
                     { label: 'day', value: 'day' },

@@ -13,9 +13,9 @@ function QuantityFields(props: PartArgs) {
     <React.Fragment>
       {Object.keys(quantity).map((value, idx) => {
         return (
-          <Grid key={idx} item xs container spacing={0.2}>
+          <Grid key={idx} item sm={1} xs={14} container spacing={0.2}>
             {value === 'quantity' && (
-              <Grid item xs>
+              <Grid item sm={12} xs={14}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -31,7 +31,7 @@ function QuantityFields(props: PartArgs) {
               </Grid>
             )}
             {value === 'unit' && (
-              <Grid item xs>
+              <Grid item sm={12} xs={14}>
                 <SelectField
                   data={[
                     { label: 'pcs', value: 'pcs' },

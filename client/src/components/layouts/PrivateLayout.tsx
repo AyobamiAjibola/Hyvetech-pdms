@@ -44,6 +44,7 @@ import PaymentRecieve from '../../pages/paymentRecieve/paymentRecieve';
 import { Settings } from '@mui/icons-material';
 import useAdmin from '../../hooks/useAdmin';
 import settings from '../../config/settings';
+import Main from './Main';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -118,7 +119,8 @@ function PrivateLayout() {
           </Toolbar>
         </AppBar>
         <SideNav />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Main open={openSideNav}>
+        {/* <Box component="main" sx={{ flexGrow: 1, p: 3 }}> */}
           <DrawerHeader />
           <Routes>
             <Route path="/dashboard" element={<DashboardPage />} />
@@ -152,7 +154,8 @@ function PrivateLayout() {
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />
             <Route path="/payment-recieved" element={<PaymentRecieve />} />
           </Routes>
-        </Box>
+        {/* </Box> */}
+        </Main>
       </Box>
       <AppLoader show={appointmentReducer.updateAppointmentStatus === 'loading'} />
     </React.Fragment>

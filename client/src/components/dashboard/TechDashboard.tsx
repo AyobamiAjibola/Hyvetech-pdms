@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Divider,
+import { Box, Divider,
     Grid,
     Select,
     // Paper,
-    Stack } from '@mui/material';
+    Stack, 
+    Typography} from '@mui/material';
 // import AnalyticsCard from '../data/AnalyticsCard';
 import { cyan, lime, orange, teal } from '@mui/material/colors';
 // import AppPieChart from '../charts/AppPieChart';
@@ -37,16 +38,17 @@ function TechDashboard() {
         Total customers: {0}
       </Typography> */}
 
-      <div style={{
+      <Box component='div'
+        sx={{
           display: 'flex',
-          width: '100%',
+          width: {sm: '100%', xs: document.documentElement.clientWidth},
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
 
-        <h1 style={{ fontWeight: '500' }}>
+        <Typography sx={{ fontWeight: 600, fontSize: {sm: 30, xs: 25} }}>
           Welcome {user && capitalize.words(user?.firstName) || ""}
-        </h1>
+        </Typography>
         <div>
           <Select value={_month} onChange={(e: any) => _setMonth(e.target.value)} native={true}>
               <option value={"1"}>January</option>
@@ -63,7 +65,7 @@ function TechDashboard() {
               <option value={"12"}>December</option>
           </Select>
         </div>
-      </div>
+      </Box>
       <br />
       <br />
 
@@ -76,7 +78,8 @@ function TechDashboard() {
             display: 'flex', flexDirection: {lg: 'column', xs: 'row'},
             justifyContent: 'left',
             alignItems: 'left',
-            width: '100%', gap: 4
+            width: {sm: '100%', xs: document.documentElement.clientWidth},
+            gap: 4
           }}
         >
           {/* <Grid container
@@ -110,8 +113,8 @@ function TechDashboard() {
                 gap: {lg: 8, md: 4, xs: 2}, ml: {lg: 10}
               }}
             >
-                <DataCard title='Number of Estimate Sent' data={(techDashboardReducer?.mEstimate || 0)} bgColor={orange[300]} />
-                <DataCard title='Number of Invoice Generated' data={(techDashboardReducer?.mInvoice || 0)} bgColor={orange[600]} />
+                <DataCard title='Estimates Sent' data={(techDashboardReducer?.mEstimate || 0)} bgColor={orange[300]} />
+                <DataCard title='Invoices Generated' data={(techDashboardReducer?.mInvoice || 0)} bgColor={orange[600]} />
                 <DataCard title='Total Receivable' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceivable || 0)} bgColor={orange[900]} />
             </Grid>
           {/* </Grid> */}

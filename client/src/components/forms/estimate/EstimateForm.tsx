@@ -795,7 +795,7 @@ function EstimateForm(props: IProps) {
                               return (
                                 <React.Fragment key={`${value}`}>
                                   {value === 'name' && (
-                                    <Grid item sm={4} xs={9}>
+                                    <Grid item sm={4} xs={14}>
                                       <TextField
                                         fullWidth
                                         variant="outlined"
@@ -943,7 +943,8 @@ function EstimateForm(props: IProps) {
           </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
-              {fields.labours.label}
+              {/* {fields.labours.label} */}
+              Service items
             </Typography>
             <Divider orientation="horizontal" />
           </Grid>
@@ -1075,10 +1076,10 @@ function EstimateForm(props: IProps) {
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>
-                  <Typography variant="h6">Sub-Total:</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Sub-Total:</Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="h6">₦{formatNumberToIntl(subTotal)}</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(subTotal)}</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -1165,35 +1166,43 @@ function EstimateForm(props: IProps) {
               display: 'flex',
               alignItems: 'left',
               justifyContent: 'center',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              mt: 2, mb: 2
             }}
           >
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>
-                  <Typography variant="h6">VAT(7.5%):</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%):</Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="h6">₦{formatNumberToIntl(vatTotal)}</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(vatTotal)}</Typography>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>
-                  <Typography variant="h6">Grand Total:</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total:</Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="h6">₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
           {parseInt(values.depositAmount) > 0 && parseInt(values.depositAmount) <= grandTotal && (
-            <Grid item xs={12}>
+            <Grid item xs={12}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
               <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
               <LoadingButton
                 type="submit"
+                size={document.documentElement.clientWidth <= 375 ? 'small' : 'large'}
                 loading={saveStatus}
                 disabled={
                   saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
