@@ -564,6 +564,7 @@ function EstimateForm(props: IProps) {
                         }}
                         onKeyDown={e => {
                           if (e.key === 'Enter') {
+                            e.preventDefault()
                             if ((inputValue || '').length == 0) {
                               setShowDrop(false);
                             } else {
