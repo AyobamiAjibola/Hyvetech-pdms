@@ -1,20 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, useFormikContext } from 'formik';
-import { Grid } from '@mui/material';
+import { Grid, InputAdornment } from '@mui/material';
 import TextInputField from '../fields/TextInputField';
 import { LoadingButton } from '@mui/lab';
 import { Link } from 'react-router-dom';
 import signInModel from '../models/signInModel';
 import { ISignInModel } from '@app-interfaces';
+import useAppSelector from '../../../hooks/useAppSelector';
+import { VerifiedUser, Visibility, VisibilityOff } from '@mui/icons-material';
 
-interface Props {
-  isSubmitting?: boolean;
-}
+// interface Props {
+//   isSubmitting?: boolean;
+// }
 
-const { fields } = signInModel;
+// const { fields } = signInModel;
 
-function GarageSignUpForm(props: Props) {
-  const { handleChange, values } = useFormikContext<ISignInModel>();
+function GarageSignUpForm() {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [fieldType, setFieldType] = useState<string>('password');
+
+  const { handleChange, handleBlur, values } = useFormikContext<ISignInModel>();
+
+  const authReducer = useAppSelector(state => state.authenticationReducer);
+
+  const togglePasswordVisibility = () => {
+    setFieldType(fieldType === 'text' ? 'password' : 'text');
+    setShowPassword(!showPassword);
+  };
+
   return (
     <Form autoComplete="off" className="formContainer">
       <Grid container direction="column">
@@ -22,9 +35,17 @@ function GarageSignUpForm(props: Props) {
           <TextInputField
             margin="normal"
             onChange={handleChange}
+            onBlur={handleBlur}
             value={values.username}
-            name={fields.username.name}
-            label={fields.username.label}
+            label={signInModel.fields.username.label}
+            name={signInModel.fields.username.name}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <VerifiedUser />
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -32,9 +53,21 @@ function GarageSignUpForm(props: Props) {
             margin="normal"
             onChange={handleChange}
             value={values.password}
-            name={fields.password.name}
-            label={fields.password.label}
-            type="password"
+            label={signInModel.fields.password.label}
+            name={signInModel.fields.password.name}
+            type={fieldType}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Visibility />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment onClick={togglePasswordVisibility} position="start" sx={{ cursor: 'pointer' }}>
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
 
@@ -46,11 +79,11 @@ function GarageSignUpForm(props: Props) {
           </Grid>
           <Grid item>
             <LoadingButton
-              loading={props.isSubmitting}
-              disabled={props.isSubmitting}
+              loading={authReducer.signingInStatus === 'loading'}
+              // disabled={props.isSubmitting}
               type="submit"
               variant="contained"
-              color="warning"
+              color="primary"
               size="large">
               Continue
             </LoadingButton>

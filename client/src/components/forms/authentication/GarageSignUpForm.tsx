@@ -119,7 +119,7 @@ function GarageSignUpForm(props: Props) {
 
         <Grid item container xs spacing={2} justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
-            <Link style={{ color: '#FBA91A' }} to="/garage/login">
+            <Link style={{ color: '#FBA91A' }} to="/">
               Sign in instead
             </Link>
           </Grid>
