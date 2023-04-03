@@ -572,7 +572,9 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
     
                 <p class="terms-header">${partner.name} Terms & Conditions Appy</p>
                 <hr />
+                <p class="terms-header">
                 ${preference?.termsAndCondition || ''}
+                </p>
 
                 <br />
                 <!-- <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACGkAAAABCAYAAABn5mFIAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAiSURBVHgB7cAxAQAACMCg2T+0pvCDqTYAAAAAAAAAAD7NAcSZAQJ8yV57AAAAAElFTkSuQmCC" alt=""> -->
