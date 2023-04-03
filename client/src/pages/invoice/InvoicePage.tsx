@@ -333,20 +333,27 @@ function InvoicePage() {
 
           <Grid item xs>
             <Typography gutterBottom
-              sx={{fontWeight: 600, fontSize: {xs: '14px', sm: '16px'}}}
+              sx={{
+                fontWeight: 600,
+                fontSize: {xs: '14px', sm: '16px'},
+                textAlign: {sm: 'right', xs: 'left'}
+              }}
             >
               Billing Information
             </Typography>
             <Stack>
               <Typography variant="body1"
                 gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-                sx={{fontSize: {xs: '13px', sm: '16px'}}}
+                sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
               >
                 {owner}
               </Typography>
               {billingInformation ? (
                 <Typography variant="body1"
                   gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+                  sx={{
+                    textAlign: {sm: 'right', xs: 'left'}
+                  }}
                 >
                   <Typography variant="body2"
                     gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
@@ -361,7 +368,7 @@ function InvoicePage() {
                 </Typography>
               ) : (
                 <Typography variant="body1" gutterBottom
-                  sx={{fontSize: {xs: '13px', sm: '16px'}}}
+                  sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
                 >
                   <p>{_driver?.email || ''}</p>
                   <p>{_driver?.phone || ''}</p>
@@ -608,9 +615,9 @@ function InvoicePage() {
           </Grid>
         </Grid>
 
-        <Grid item container justifyContent="center" alignItems="center">
-          <Grid item xs={10} />
-          <Grid item flexGrow={1}>
+        <Grid item container justifyContent="center" alignItems="center" xs={12}>
+          <Grid item xs={8}/>
+          <Grid item flexGrow={1} xs>
             <Box
               sx={{
                 display: 'flex',
@@ -619,14 +626,14 @@ function InvoicePage() {
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
               <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Paid</Typography>
-              <Typography sx={{ ml: 5 }} />
+              <Typography sx={{ ml: 7 }} />
               <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>₦{formatNumberToIntl(invoice.depositAmount)}</Typography>
             </Box>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center">
-          <Grid item xs={10} />
-          <Grid item flexGrow={1}>
+          <Grid item xs={8} />
+          <Grid item flexGrow={1} xs>
             <Box
               sx={{
                 display: 'flex',
@@ -634,7 +641,7 @@ function InvoicePage() {
                 alignItems: 'center',
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
-              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Balance Due</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Balance Due:</Typography>
               <Typography sx={{ mr: 7 }} />
               <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
                 {/* ₦{Math.sign(invoice.dueAmount) === -1 ? '0.00' : formatNumberToIntl(invoice.dueAmount)} */}₦
@@ -644,8 +651,8 @@ function InvoicePage() {
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center">
-          <Grid item xs={10} />
-          <Grid item flexGrow={1}>
+          <Grid item xs={8} />
+          <Grid item flexGrow={1} xs>
             <Box
               sx={{
                 display: 'flex',
@@ -653,7 +660,7 @@ function InvoicePage() {
                 alignItems: 'center',
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
-              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Refund Due</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Refund Due:</Typography>
               <Typography sx={{ mr: 7 }} />
               {/* <Typography>₦{formatNumberToIntl(invoice.refundable)}</Typography> */}
               <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>₦{formatNumberToIntl(refundAmount)}</Typography>

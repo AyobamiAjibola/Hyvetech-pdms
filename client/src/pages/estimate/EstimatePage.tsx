@@ -210,19 +210,19 @@ function EstimatePage() {
           </Grid>
           <Grid item xs>
             <Typography gutterBottom
-              sx={{fontWeight: 600, fontSize: {xs: '14px', sm: '16px'}}}
+              sx={{fontWeight: 600, fontSize: {xs: '14px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
             >
               Billing Information
             </Typography>
             <Stack>
               <Typography
                 gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-                sx={{fontSize: {xs: '13px', sm: '16px'}}}
+                sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
               >
                 {owner}
               </Typography>
               {billingInformation ? (
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom sx={{textAlign: {sm: 'right', xs: 'left'}}}>
                   <Typography variant="body2" gutterBottom>
                     {billingInformation.address} {billingInformation.district} {billingInformation.state}
                   </Typography>
@@ -232,7 +232,7 @@ function EstimatePage() {
                 </Typography>
               ) : (
                 <Typography variant="body1" gutterBottom
-                  sx={{fontSize: {xs: '13px', sm: '16px'}}}
+                  sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
                 >
                   <p>{_driver?.email || ''}</p>
                   <p>{_driver?.phone || ''}</p>
