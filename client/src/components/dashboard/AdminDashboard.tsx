@@ -188,7 +188,7 @@ function AdminDashboard() {
                 onChange={(e: any) =>{_setParamYear(null), setMonthly(null), _setParams(e.target.value)}}
               >
                 <MenuItem value=''><em>None</em></MenuItem>
-                <MenuItem value={"this_week"}>This Week's data</MenuItem>
+                <MenuItem value={"this_week"}>This Week&apos;s data</MenuItem>
               </Select>
             </FormControl>
             <FormControl fullWidth>
