@@ -11,3 +11,8 @@ export const dashboardTechHandler = authenticateRouteWrapper(async (req, res) =>
   const result = await DashboardController.getTechData(req);
   res.status(result.code).json(result);
 });
+
+export const dashboardSuperAdminHandler = authenticateRouteWrapper(async (req, res) => {
+  const result = await DashboardController.getDataSuperAdmin(req);
+  res.status(result.code).json(result);
+});

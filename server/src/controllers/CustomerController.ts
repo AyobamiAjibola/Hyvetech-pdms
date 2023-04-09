@@ -30,6 +30,7 @@ import QueueManager from 'rabbitmq-email-manager';
 import { QUEUE_EVENTS } from '../config/constants';
 import main_welcome_corporate_email from '../resources/templates/email/main_welcome_corporate_email';
 import main_welcome_individual_email from '../resources/templates/email/main_welcome_individual_email';
+import Partner from '../models/Partner';
 
 const CUSTOMER_ID = 'Customer Id';
 
@@ -56,7 +57,6 @@ export default class CustomerController {
   @TryCatch
   @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_CUSTOMER, READ_CUSTOMER])
   public static async allNewCustomers(req: Request) {
-    // console.log(req)
 
     // so let's process some information
     // check if requester is a user admin

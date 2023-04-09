@@ -27,9 +27,7 @@ export default function AppStackedColumnChart(props: IProps) {
 
   const options: Highcharts.Options = {
     chart: {
-      // type: 'column',
       type: 'bar',
-      // width: window.screen.width - 160,
     },
     title: {
       text: props.title,
@@ -75,7 +73,7 @@ export default function AppStackedColumnChart(props: IProps) {
     },
     plotOptions: {
       column: {
-        stacking: 'normal',
+        stacking: 'normal'
       },
     },
     series: props.series,

@@ -165,8 +165,6 @@ export default class AuthenticationController {
 
       const permissions = [];
 
-      console.log(role.permissions);
-
       for (const _permission of role.permissions) {
         permissions.push(_permission.toJSON());
       }

@@ -12,6 +12,7 @@ import InvoiceRepository from '../../repositories/InvoiceRepository';
 import Invoice from '../../models/Invoice';
 import { appModelTypes } from '../../@types/app-model';
 import ICrudDAO = appModelTypes.ICrudDAO;
+import Generic from '../../utils/Generic';
 
 export default class InvoiceDAOService implements ICrudDAO<Invoice> {
   private readonly invoiceRepository: InvoiceRepository;
@@ -46,5 +47,9 @@ export default class InvoiceDAOService implements ICrudDAO<Invoice> {
     options: UpdateOptions<Attributes<Invoice>>,
   ): Promise<Invoice> {
     return this.invoiceRepository.updateOne(appointment, values, options);
+  }
+
+  public async getTotalMonthlyInvoice() {
+    return Generic.getMonthlyDataTotal(this.invoiceRepository);
   }
 }

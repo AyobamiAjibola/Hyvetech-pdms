@@ -117,7 +117,7 @@ export default function PartnersPage() {
     if (filterBy == "none") {
       setViewData(images)
     } else {
-      // 
+      //
       if (filterBy == "state") {
         // filter by state
         const temp = images.filter(val => ((val.partner.contact.state).includes(filterTxt)));
