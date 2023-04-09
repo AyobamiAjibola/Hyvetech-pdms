@@ -12,7 +12,7 @@ import { HasPermission } from '../decorators';
 import { MANAGE_ALL, MANAGE_TECHNICIAN, VIEW_ANALYTICS } from '../config/settings';
 
 export default class DashboardController {
-  @HasPermission([VIEW_ANALYTICS, MANAGE_ALL, MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_ALL, VIEW_ANALYTICS, MANAGE_TECHNICIAN])
   public static async getTechData(req: Request) {
     //
     try {
@@ -102,8 +102,6 @@ export default class DashboardController {
 
       for (let i = 0; i < months.length; i++) {
         const _month = months[i];
-
-        //
 
         // sales
         const _invoicesByMonth = await this.filterByMonth(invoices, _month.id);
@@ -245,6 +243,51 @@ export default class DashboardController {
     return newCollection;
   }
 
+  public static async filterByMonthAndYear(collection: any[], year: any, month: any, day: any, params: any, paramYear: any, paramMonth: any) {
+    const newCollection: any[] = [];
+
+    collection.map(_item => {
+      if (_item != null) {
+        const _month = new Date(_item.createdAt).getMonth() + 1;
+        const _year = new Date(_item.createdAt).getFullYear();
+        const _day = new Date(_item.createdAt).getDate();
+        const itemDate = new Date(_item.createdAt);
+        const currYear = new Date().getFullYear();
+
+        const __month = new Date(_item.createdAt).getMonth() + 1;
+        const __year = new Date(_item.createdAt).getFullYear();
+
+        const today = new Date();
+        const lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+
+        if (_month == month && _year == year && _day == day) {
+          newCollection.push(_item);
+        }
+
+        if(params == 'this_week') {
+          if(itemDate >= lastWeek && itemDate <= today) {
+            newCollection.push(_item);
+          }
+        }
+
+        if(paramMonth) {
+          if (__month == paramMonth && __year == currYear) {
+            newCollection.push(_item);
+          }
+        }
+
+        if(paramYear) {
+          if(itemDate.getFullYear() == paramYear) {
+            newCollection.push(_item);
+          }
+        }
+
+      }
+    });
+
+    return newCollection;
+  }
+
   public static async getTransactionsRaw({ partner: { id } }: any) {
     //
     return await Transaction.findAll({
@@ -285,6 +328,41 @@ export default class DashboardController {
       include: [Invoice],
     });
   }
+
+  //Super Admin
+  public static async getEstimateSuperAdminRaw() {
+    return await Estimate.findAll({
+      include: [Invoice],
+    });
+  }
+
+  public static async getInvoiceSuperAdminRaw() {
+    return await Invoice.findAll();
+  }
+
+  public static async getExpensesSuperAdminRaw() {
+    return await Expense.findAll();
+  }
+
+  public static async getTransactionsSuperAdminRaw() {
+    return await Transaction.findAll();
+  }
+
+  public static async getCustomersSuperAdminRaw() {
+    return await Customer.findAll();
+  }
+
+  public static getEstimateValueAdmin(estimates: Estimate[]) {
+    let amount = 0;
+
+    estimates.map(_estimate => {
+      amount = amount + _estimate.grandTotal;
+    });
+
+    return amount;
+  }
+
+  //end
 
   public static async getInvoiceRaw(estimates: Estimate[]) {
     //
@@ -331,6 +409,63 @@ export default class DashboardController {
       appointments: await context.appointmentDAOService.getTotalMonthlyAppointments(),
       vehicles: await context.vehicleDAOService.getTotalMonthlyVehicles(),
       transactions: await context.transactionDAOService.getTotalMonthlyTransactions(),
+      sales: await context.invoiceDAOService.getTotalMonthlyInvoice(),
+      expenses: await context.expenseDAOService.getTotalMonthlyExpenses()
     };
+  }
+
+  public static async getDataSuperAdmin (req: Request) {
+    try {
+      const month = req?.query?.month || new Date().getMonth() + 1;
+      const year = req?.query?.year || new Date().getFullYear();
+      const day = req?.query?.day || new Date().getDate();
+      const { params } = req?.query;
+      const paramYear = req?.query?.paramYear;
+      const paramMonth = req?.query?.paramMonth;
+
+      const estimates = await this.getEstimateSuperAdminRaw();
+      const invoices = await this.getInvoiceSuperAdminRaw();
+      const expenses = await this.getExpensesSuperAdminRaw();
+      const payments = await this.getTransactionsSuperAdminRaw();
+      const customers = await this.getCustomersSuperAdminRaw();
+
+      const allEstimate = await this.filterByMonthAndYear(estimates, year, month, day, params, paramYear, paramMonth);
+      const allInvoice = await this.filterByMonthAndYear(invoices, year, month, day, params, paramYear, paramMonth);
+      const allExpense = await this.filterByMonthAndYear(expenses, year, month, day, params, paramYear, paramMonth);
+      const allPayments = await this.filterByMonthAndYear(payments, year, month, day, params, paramYear, paramMonth);
+      const allCustomers = await this.filterByMonthAndYear(customers, year, month, day, params, paramYear, paramMonth);
+
+      const receivables = this.getReceivable(allInvoice)
+      const paymentReceived = this.getReceipt(allInvoice)
+      const invoiceValue = this.getRevenue(allInvoice);
+      const estimateValue = this.getEstimateValueAdmin(allEstimate);
+      const expenseValue = this.getExpenses(allExpense);
+      const mAllEstimate = allEstimate.length;
+      const mAllInvoice = allInvoice.length;
+      const mAllExpense = allExpense.length;
+      const mAllPayment = allPayments.length;
+      const mAllCustomer = allCustomers.length;
+
+      const response: HttpResponse<any> = {
+        message: HttpStatus.OK.value,
+        code: HttpStatus.OK.code,
+        result: {
+          mAllEstimate,
+          mAllInvoice,
+          mAllExpense,
+          mAllPayment,
+          mAllCustomer,
+          estimateValue,
+          expenseValue,
+          invoiceValue,
+          paymentReceived,
+          receivables
+        },
+      };
+
+      return Promise.resolve(response);
+    } catch (e: any) {
+      return Promise.reject(e);
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IThunkAPIStatus } from '@app-types';
-import { getAnalyticsAction, getTechAnalyticsAction } from '../actions/dashboardActions';
+import { getAnalyticsAction, getSuperAnalyticsAction, getTechAnalyticsAction } from '../actions/dashboardActions';
 import { IDashboardData } from '@app-interfaces';
 
 interface IDashboardState {
@@ -13,6 +13,11 @@ interface IDashboardState {
   getTechAnalyticsSuccess: string;
   getTechAnalyticsError: string;
   techAnalytics: any | null;
+
+  getSuperAnalyticsStatus: IThunkAPIStatus;
+  getSuperAnalyticsSuccess: string;
+  getSuperAnalyticsError: string;
+  superAnalytics: any | null;
 
   stackedMonthlyData: { name: string; data: number[] }[];
 }
@@ -27,6 +32,11 @@ const initialState: IDashboardState = {
   getTechAnalyticsSuccess: '',
   getTechAnalyticsError: '',
   techAnalytics: null,
+
+  getSuperAnalyticsStatus: 'idle',
+  getSuperAnalyticsSuccess: '',
+  getSuperAnalyticsError: '',
+  superAnalytics: null,
 
   stackedMonthlyData: [],
 };
@@ -44,6 +54,11 @@ const dashboardSlice = createSlice({
       state.getTechAnalyticsStatus = 'idle';
       state.getTechAnalyticsSuccess = '';
       state.getTechAnalyticsError = '';
+    },
+    clearGetSuperAnalyticsStatus(state: IDashboardState) {
+      state.getSuperAnalyticsStatus = 'idle';
+      state.getSuperAnalyticsSuccess = '';
+      state.getSuperAnalyticsError = '';
     },
   },
   extraReducers: builder => {
@@ -74,9 +89,27 @@ const dashboardSlice = createSlice({
         state.getTechAnalyticsStatus = 'failed';
         state.getTechAnalyticsError = <string>action.error.message;
       });
+
+      builder
+      .addCase(getSuperAnalyticsAction.pending, state => {
+        state.getSuperAnalyticsStatus = 'loading';
+      })
+      .addCase(getSuperAnalyticsAction.fulfilled, (state, action) => {
+        state.getSuperAnalyticsStatus = 'completed';
+        state.getSuperAnalyticsSuccess = action.payload.message;
+        state.superAnalytics = action.payload.result;
+      })
+      .addCase(getSuperAnalyticsAction.rejected, (state, action) => {
+        state.getSuperAnalyticsStatus = 'failed';
+        state.getSuperAnalyticsError = <string>action.error.message;
+      });
   },
 });
 
-export const { clearGetAnalyticsStatus, clearGetTechAnalyticsStatus } = dashboardSlice.actions;
+export const {
+  clearGetAnalyticsStatus,
+  clearGetTechAnalyticsStatus,
+  clearGetSuperAnalyticsStatus
+} = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

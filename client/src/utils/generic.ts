@@ -72,6 +72,13 @@ export function computeMonthlyColumnChartData(dashboardData: IDashboardData) {
     stack: 'A',
   };
 
+  const invoiceData = dashboardData.monthlyData.sales.data.map((value: any) => value.y);
+  const sales = {
+    name: "Sales",
+    data: invoiceData,
+    stack: 'A',
+  };
+
   const vehicleData = dashboardData.monthlyData.vehicles.data.map((value: any) => value.y);
   const vehicle = {
     name: dashboardData.monthlyData.vehicles.name,
@@ -86,7 +93,14 @@ export function computeMonthlyColumnChartData(dashboardData: IDashboardData) {
     stack: 'B',
   };
 
-  return [appointment, customer, vehicle, transaction];
+  const expensesData = dashboardData.monthlyData.expenses.data.map((value: any) => value.y);
+  const expenses = {
+    name: dashboardData.monthlyData.expenses.name,
+    data: expensesData,
+    stack: 'B',
+  };
+
+  return [appointment, customer, vehicle, transaction, sales, expenses];
 }
 
 interface IGetRideSharePlanJobs {

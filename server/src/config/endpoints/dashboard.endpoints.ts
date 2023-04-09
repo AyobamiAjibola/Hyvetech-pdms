@@ -1,4 +1,8 @@
-import { dashboardHandler, dashboardTechHandler } from '../../routes/dashboardRoute';
+import {
+  dashboardHandler,
+  dashboardTechHandler,
+  dashboardSuperAdminHandler
+ } from '../../routes/dashboardRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 
@@ -15,6 +19,12 @@ const dashboardEndpoints: RouteEndpoints = [
     method: 'get',
     path: '/dashboard-tech',
     handler: dashboardTechHandler,
+  },
+  {
+    name: 'dashboard for super',
+    method: 'get',
+    path: '/dashboard-super',
+    handler: dashboardSuperAdminHandler,
   },
 ];
 export default dashboardEndpoints;

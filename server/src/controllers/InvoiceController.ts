@@ -34,7 +34,7 @@ import DraftInvoice from '../models/DraftInvoice';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
-import { CREATE_INVOICE, CREATE_PAYMENT, MANAGE_TECHNICIAN, READ_INVOICE, UPDATE_PAYMENT } from '../config/settings';
+import { CREATE_INVOICE, CREATE_PAYMENT, MANAGE_ALL, MANAGE_TECHNICIAN, READ_INVOICE, UPDATE_PAYMENT } from '../config/settings';
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
@@ -332,7 +332,7 @@ export default class InvoiceController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_TECHNICIAN, READ_INVOICE, CREATE_INVOICE])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, READ_INVOICE, CREATE_INVOICE])
   public static async invoices(req: Request) {
     const partner = req.user.partner;
 
@@ -396,11 +396,11 @@ export default class InvoiceController {
     }
 
     invoices = invoices.map(invoice => {
-      const parts = invoice.estimate.parts;
-      const labours = invoice.estimate.labours;
+      let parts = invoice.estimate?.parts;
+      let labours = invoice.estimate?.labours;
 
-      invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
-      invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+      parts = parts?.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+      labours = labours?.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
 
       if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
         const parts = invoice.parts;

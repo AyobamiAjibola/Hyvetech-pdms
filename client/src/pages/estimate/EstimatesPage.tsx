@@ -7,7 +7,7 @@ import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
 import moment from 'moment';
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { Cancel, Edit, Visibility } from '@mui/icons-material';
+import { Cancel, Edit } from '@mui/icons-material';
 import { Formik } from 'formik';
 import AppModal from '../../components/modal/AppModal';
 import estimateModel from '../../components/forms/models/estimateModel';
@@ -34,7 +34,7 @@ function EstimatesPage() {
   const [_estimate, _seEstimate] = useState<any>([]);
 
   const estimate = useEstimate();
-  const { isTechAdmin } = useAdmin();
+  const { isTechAdmin, isSuperAdmin } = useAdmin();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,40 +48,42 @@ function EstimatesPage() {
     _seEstimate(_temp01);
   }, [estimate.estimates]);
 
-  const columns = useMemo(() => {
+  const superAdminColumns = useMemo(() => {
     return [
       {
-        field: 'id',
-        headerName: 'ID',
+        field: 'createdAt',
+        headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
+        width: 200,
+        type: 'string',
+        valueFormatter: ({ value }) => {
+          return value ? moment(value).format('DD/MM/YYYY') : '-';
+        },
         sortable: true,
-        type: 'number',
+        sortingOrder: ['desc'],
       },
       {
         field: 'code',
-        headerName: 'Code',
+        headerName: 'Estimate #',
         headerAlign: 'center',
         align: 'center',
         sortable: true,
-        type: 'string',
-      },
-      {
-        field: 'status',
-        headerName: 'Status',
-        headerAlign: 'center',
-        align: 'center',
         type: 'string',
         width: 100,
+      },
+      {
+        field: 'name',
+        headerName: 'Name of workshop',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 200,
         sortable: true,
-        renderCell: params => {
-          return params.row.status === ESTIMATE_STATUS.sent ? (
-            <Chip label={ESTIMATE_STATUS.sent} size="small" color="info" />
-          ) : params.row.status === ESTIMATE_STATUS.draft ? (
-            <Chip label={ESTIMATE_STATUS.draft} size="small" color="warning" />
-          ) : params.row.status === ESTIMATE_STATUS.invoiced ? (
-            <Chip label={ESTIMATE_STATUS.invoiced} size="small" color="success" />
-          ) : null;
+        valueGetter: param => {
+          const partner = param.row.partner;
+
+          return partner ? `${partner?.name}` : '';
         },
       },
       {
@@ -99,21 +101,6 @@ function EstimatesPage() {
           return driver
             ? `${driver?.firstName || ''} ${driver?.lastName || ''}`
             : `${customer?.firstName || ''} ${customer?.lastName || ''}`;
-        },
-      },
-      {
-        field: 'phone',
-        headerName: 'Phone',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
-        width: 100,
-        sortable: true,
-        valueGetter: param => {
-          const driver = param.row.rideShareDriver;
-          const customer = param.row.customer;
-
-          return driver ? `${driver?.phone || ''}` : `${customer?.phone || ''}`;
         },
       },
       {
@@ -140,29 +127,8 @@ function EstimatesPage() {
         sortable: true,
       },
       {
-        field: 'depositAmount',
-        headerName: 'Deposit Amount',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'number',
-        width: 150,
-        sortable: true,
-      },
-      {
-        field: 'createdAt',
-        headerName: 'Created Date',
-        headerAlign: 'center',
-        align: 'center',
-        width: 200,
-        type: 'string',
-        valueFormatter: ({ value }) => {
-          return value ? moment(value).format('LLL') : '-';
-        },
-        sortable: true,
-      },
-      {
         field: 'updatedAt',
-        headerName: 'Modified Date',
+        headerName: 'Last Modified',
         headerAlign: 'center',
         align: 'center',
         width: 200,
@@ -172,51 +138,51 @@ function EstimatesPage() {
         },
         sortable: true,
         sortingOrder: ['desc'],
-      },
-      {
-        field: 'actions',
-        type: 'actions',
-        headerAlign: 'center',
-        align: 'center',
-        getActions: (params: any) => {
-          const row = params.row as IEstimate;
+      }
+      // {
+      //   field: 'actions',
+      //   type: 'actions',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   getActions: (params: any) => {
+      //     const row = params.row as IEstimate;
 
-          return [
-            <GridActionsCellItem
-              key={0}
-              icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-              onClick={() => {
-                void dispatch(getEstimatesAction());
-                navigate(`/estimates/${row.id}`, { state: { estimate: row } });
-              }}
-              label="View"
-              showInMenu={false}
-            />,
+      //     return [
+      //       <GridActionsCellItem
+      //         key={0}
+      //         icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+      //         onClick={() => {
+      //           void dispatch(getEstimatesAction());
+      //           navigate(`/estimates/${row.id}`, { state: { estimate: row } });
+      //         }}
+      //         label="View"
+      //         showInMenu={false}
+      //       />,
 
-            <GridActionsCellItem
-              sx={{ display: isTechAdmin ? 'block' : 'none' }}
-              key={1}
-              icon={<Edit sx={{ color: 'limegreen' }} />}
-              onClick={() => estimate.onEdit(row.id)}
-              //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
-              disabled={!isTechAdmin}
-              label="Edit"
-              showInMenu={false}
-            />,
-            <GridActionsCellItem
-              sx={{ display: isTechAdmin ? 'block' : 'none' }}
-              key={2}
-              icon={<Cancel sx={{ color: 'indianred' }} />}
-              onClick={() => estimate.onDelete(row.id)}
-              label="Delete"
-              disabled={row.status === ESTIMATE_STATUS.invoiced}
-              showInMenu={false}
-            />,
-          ];
-        },
-      },
+      //       <GridActionsCellItem
+      //         sx={{ display: isTechAdmin ? 'block' : 'none' }}
+      //         key={1}
+      //         icon={<Edit sx={{ color: 'limegreen' }} />}
+      //         onClick={() => estimate.onEdit(row.id)}
+      //         //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
+      //         disabled={!isTechAdmin}
+      //         label="Edit"
+      //         showInMenu={false}
+      //       />,
+      //       <GridActionsCellItem
+      //         sx={{ display: isTechAdmin ? 'block' : 'none' }}
+      //         key={2}
+      //         icon={<Cancel sx={{ color: 'indianred' }} />}
+      //         onClick={() => estimate.onDelete(row.id)}
+      //         label="Delete"
+      //         disabled={row.status === ESTIMATE_STATUS.invoiced}
+      //         showInMenu={false}
+      //       />,
+      //     ];
+      //   },
+      // },
     ] as GridColDef<IEstimate>[];
-  }, [isTechAdmin, dispatch, navigate, estimate]);
+  }, [isSuperAdmin, dispatch, navigate, estimate]);
 
   const techColumns = useMemo(() => {
     return [
@@ -396,7 +362,7 @@ function EstimatesPage() {
             Estimates
           </Typography>
         </Grid>
-        <Grid item>
+        {isTechAdmin && <Grid item>
           <Button variant="outlined" color="success" size="small" onClick={() => estimate.setShowCreate(true)}
             sx={{
               mb: {sm: 0, xs: 2}
@@ -404,13 +370,15 @@ function EstimatesPage() {
           >
             Generate
           </Button>
-        </Grid>
+        </Grid>}
       </Grid>
       <Grid container>
         <Grid item xs={12}>
           <AppDataGrid
             rows={estimate.estimates}
-            columns={isTechAdmin ? techColumns : columns}
+            columns={isTechAdmin ? techColumns :
+                      isSuperAdmin ? superAdminColumns : []
+                    }
             showToolbar
             loading={estimateReducer.getEstimatesStatus === 'loading'}
           />

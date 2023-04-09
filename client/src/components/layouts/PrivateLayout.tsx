@@ -45,6 +45,7 @@ import { Settings } from '@mui/icons-material';
 import useAdmin from '../../hooks/useAdmin';
 import settings from '../../config/settings';
 import Main from './Main';
+import Workshops from '../../pages/workshops/Workshops';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -149,6 +150,7 @@ function PrivateLayout() {
             <Route path="/expense/:id" element={<ExpenseDetail />} />
             <Route path="/estimates/:id" element={<EstimatePage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/workshops" element={<Workshops />} />
 
             <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />

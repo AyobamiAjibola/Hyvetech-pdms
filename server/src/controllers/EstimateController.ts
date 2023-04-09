@@ -47,6 +47,7 @@ import {
   MANAGE_TECHNICIAN,
   READ_ESTIMATE,
   UPDATE_ESTIMATE,
+  MANAGE_ALL,
 } from '../config/settings';
 
 export default class EstimateController {
@@ -288,7 +289,7 @@ export default class EstimateController {
   }
 
   @TryCatch
-  @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE, READ_ESTIMATE, DELETE_ESTIMATE])
+  @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, CREATE_ESTIMATE, READ_ESTIMATE, DELETE_ESTIMATE])
   public async estimates(req: Request) {
     const partner = req.user.partner;
 

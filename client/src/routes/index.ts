@@ -16,6 +16,7 @@ import {
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
+  HomeRepairService
 } from '@mui/icons-material';
 import React from 'react';
 
@@ -90,6 +91,7 @@ export const sideNavs: ISideNav[] = [
   },
   { tag: 'super', name: 'Transactions', path: '/transactions', Icon: Payments },
   { tag: 'super', name: 'Vehicles', path: '/vehicles', Icon: TimeToLeave },
+  { tag: 'super', name: 'Workshops/Partners', path: '/workshops', Icon: HomeRepairService },
 ];
 
 export const routes = [
