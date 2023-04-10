@@ -59,6 +59,6 @@ export default class ExpenseDAOService implements ICrudDAO<Expense> {
   }
 
   public async getTotalMonthlyExpenses() {
-    return Generic.getMonthlyDataTotalExpenses(this.expenseRepository);
+    return Generic.getMonthlyData(this.expenseRepository);
   }
 }

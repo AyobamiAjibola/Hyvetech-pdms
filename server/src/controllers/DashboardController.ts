@@ -10,6 +10,8 @@ import Transaction from '../models/Transaction';
 import HttpResponse = appCommonTypes.HttpResponse;
 import { HasPermission } from '../decorators';
 import { MANAGE_ALL, MANAGE_TECHNICIAN, VIEW_ANALYTICS } from '../config/settings';
+import User from '../models/User';
+import Vehicle from '../models/Vehicle';
 
 export default class DashboardController {
   @HasPermission([MANAGE_ALL, VIEW_ANALYTICS, MANAGE_TECHNICIAN])
@@ -243,7 +245,7 @@ export default class DashboardController {
     return newCollection;
   }
 
-  public static async filterByMonthAndYear(collection: any[], year: any, month: any, day: any, params: any, paramYear: any, paramMonth: any) {
+  public static async filterByMonthAndYear(collection: any[], start_date: any, end_date: any, month: any, day: any, year: any) {
     const newCollection: any[] = [];
 
     collection.map(_item => {
@@ -252,36 +254,18 @@ export default class DashboardController {
         const _year = new Date(_item.createdAt).getFullYear();
         const _day = new Date(_item.createdAt).getDate();
         const itemDate = new Date(_item.createdAt);
-        const currYear = new Date().getFullYear();
 
-        const __month = new Date(_item.createdAt).getMonth() + 1;
-        const __year = new Date(_item.createdAt).getFullYear();
-
-        const today = new Date();
-        const lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+        if (start_date && end_date) {
+          const startDate = new Date(start_date);
+          const endDate = new Date(end_date);
+          if(itemDate >= startDate && itemDate <= endDate) {
+            newCollection.push(_item);
+          }
+        }
 
         if (_month == month && _year == year && _day == day) {
           newCollection.push(_item);
         }
-
-        if(params == 'this_week') {
-          if(itemDate >= lastWeek && itemDate <= today) {
-            newCollection.push(_item);
-          }
-        }
-
-        if(paramMonth) {
-          if (__month == paramMonth && __year == currYear) {
-            newCollection.push(_item);
-          }
-        }
-
-        if(paramYear) {
-          if(itemDate.getFullYear() == paramYear) {
-            newCollection.push(_item);
-          }
-        }
-
       }
     });
 
@@ -334,6 +318,14 @@ export default class DashboardController {
     return await Estimate.findAll({
       include: [Invoice],
     });
+  }
+
+  public static async getUsersSuperAdminRaw() {
+    return await User.findAll();
+  }
+
+  public static async getVehicleSuperAdminRaw() {
+    return await Vehicle.findAll();
   }
 
   public static async getInvoiceSuperAdminRaw() {
@@ -406,10 +398,10 @@ export default class DashboardController {
   private static async getMonthlyData(context: { [p: string]: any }) {
     return {
       customers: await context.customerDAOService.getTotalMonthlyCustomers(),
-      appointments: await context.appointmentDAOService.getTotalMonthlyAppointments(),
+      // appointments: await context.appointmentDAOService.getTotalMonthlyAppointments(),
       vehicles: await context.vehicleDAOService.getTotalMonthlyVehicles(),
       transactions: await context.transactionDAOService.getTotalMonthlyTransactions(),
-      sales: await context.invoiceDAOService.getTotalMonthlyInvoice(),
+      // sales: await context.invoiceDAOService.getTotalMonthlyInvoice(),
       expenses: await context.expenseDAOService.getTotalMonthlyExpenses()
     };
   }
@@ -419,21 +411,23 @@ export default class DashboardController {
       const month = req?.query?.month || new Date().getMonth() + 1;
       const year = req?.query?.year || new Date().getFullYear();
       const day = req?.query?.day || new Date().getDate();
-      const { params } = req?.query;
-      const paramYear = req?.query?.paramYear;
-      const paramMonth = req?.query?.paramMonth;
+      const { start_date, end_date } = req?.query
 
       const estimates = await this.getEstimateSuperAdminRaw();
       const invoices = await this.getInvoiceSuperAdminRaw();
       const expenses = await this.getExpensesSuperAdminRaw();
       const payments = await this.getTransactionsSuperAdminRaw();
       const customers = await this.getCustomersSuperAdminRaw();
+      const users = await this.getUsersSuperAdminRaw();
+      const vehicles = await this.getVehicleSuperAdminRaw()
 
-      const allEstimate = await this.filterByMonthAndYear(estimates, year, month, day, params, paramYear, paramMonth);
-      const allInvoice = await this.filterByMonthAndYear(invoices, year, month, day, params, paramYear, paramMonth);
-      const allExpense = await this.filterByMonthAndYear(expenses, year, month, day, params, paramYear, paramMonth);
-      const allPayments = await this.filterByMonthAndYear(payments, year, month, day, params, paramYear, paramMonth);
-      const allCustomers = await this.filterByMonthAndYear(customers, year, month, day, params, paramYear, paramMonth);
+      const allEstimate = await this.filterByMonthAndYear(estimates, start_date, end_date, month, day, year);
+      const allInvoice = await this.filterByMonthAndYear(invoices, start_date, end_date, month, day, year);
+      const allExpense = await this.filterByMonthAndYear(expenses, start_date, end_date, month, day, year);
+      const allPayments = await this.filterByMonthAndYear(payments, start_date, end_date, month, day, year);
+      const allCustomers = await this.filterByMonthAndYear(customers, start_date, end_date, month, day, year);
+      const allUsers = await this.filterByMonthAndYear(users, start_date, end_date, month, day, year);
+      const allVehicles = await this.filterByMonthAndYear(vehicles, start_date, end_date, month, day, year);
 
       const receivables = this.getReceivable(allInvoice)
       const paymentReceived = this.getReceipt(allInvoice)
@@ -445,6 +439,8 @@ export default class DashboardController {
       const mAllExpense = allExpense.length;
       const mAllPayment = allPayments.length;
       const mAllCustomer = allCustomers.length;
+      const mAllUser = allUsers.length;
+      const mAllVehicle = allVehicles.length;
 
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,
@@ -459,7 +455,8 @@ export default class DashboardController {
           expenseValue,
           invoiceValue,
           paymentReceived,
-          receivables
+          receivables,
+          mAllUser, mAllVehicle
         },
       };
 
