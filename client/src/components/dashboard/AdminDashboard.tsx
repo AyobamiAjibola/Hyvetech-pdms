@@ -141,7 +141,7 @@ function AdminDashboard() {
                   }}
                 >
                   <ToggleOn color="success" fontSize='large'/>
-                  &nbsp;<span style={{fontSize: '13px', fontWeight: 500}}>Filter by date range</span>
+                  &nbsp;<span style={{fontSize: '13px', fontWeight: 500}}>Filter by date</span>
                 </Box>
               : <Box
                   sx={{
@@ -150,7 +150,7 @@ function AdminDashboard() {
                   }}
                 >
                   <ToggleOff color="warning" fontSize='large'/>
-                  &nbsp;<span style={{fontSize: '13px', fontWeight: 500}}>Filter by date</span>
+                  &nbsp;<span style={{fontSize: '13px', fontWeight: 500}}>Filter by date range</span>
                 </Box>
             }
           </IconButton>
