@@ -15,10 +15,16 @@ import { MESSAGES } from '../../config/constants';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
 import { CustomHookMessage } from '@app-types';
-import { deletePartnerAction, togglePartnerAction } from '../../store/actions/partnerActions';
+import { createPartnerAction, deletePartnerAction, togglePartnerAction } from '../../store/actions/partnerActions';
 import AppAlert from '../../components/alerts/AppAlert';
-import { clearDeletePartnerStatus, clearTogglePartnerStatus } from '../../store/reducers/partnerReducer';
+import { clearCreatePartnerStatus, clearDeletePartnerStatus, clearTogglePartnerStatus } from '../../store/reducers/partnerReducer';
 import { reload } from '../../utils/generic';
+import { getStatesAndDistrictsAction } from '../../store/actions/miscellaneousActions';
+import { clearGetStatesAndDistrictsStatus } from '../../store/reducers/miscellaneousReducer';
+import partnerModel, { ICreatePartnerModel } from '../../components/forms/models/partnerModel';
+import { Formik, FormikHelpers } from 'formik';
+import CreatePartnerForm from '../../components/forms/partner/CreatePartnerForm';
+import AppLoader from '../../components/loader/AppLoader';
 
 function Workshops() {
   const navigate = useNavigate();
@@ -30,9 +36,10 @@ function Workshops() {
   const [showDelete, setShowDelete] = useState<boolean>(false);
   const [_timeout, _setTimeout] = useState<NodeJS.Timer>();
   const [success, setSuccess] = useState<CustomHookMessage>();
-  const [error, setError] = useState<CustomHookMessage>();
-
+  const [error, setError] = useState<any | undefined>();
+  const [createPartner, setCreatePartner] = useState<boolean>(false);
   const partnerReducer = useAppSelector(state => state.partnerReducer);
+  const miscReducer = useAppSelector(state => state.miscellaneousReducer);
   const dispatch = useAppDispatch();
 
   const onDelete = (partnerId?: number) => {
@@ -54,7 +61,7 @@ function Workshops() {
     if (partnerReducer.deletePartnerStatus === 'completed') {
       setSuccess({ message: partnerReducer.deletePartnerSuccess });
 
-      _setTimeout(setTimeout(() => navigate(-1), 1000));
+      _setTimeout(setTimeout(() => reload(), 1000));
     }
   }, [navigate, partnerReducer.deletePartnerStatus, partnerReducer.deletePartnerSuccess]);
 
@@ -63,7 +70,7 @@ function Workshops() {
       if (partnerReducer.deletePartnerError) setError({ message: partnerReducer.deletePartnerError });
     }
   }, [partnerReducer.deletePartnerStatus, partnerReducer.deletePartnerError]);
-  console.log(success)
+
   useEffect(() => {
     if (partnerReducer.togglePartnerStatus === 'completed') {
       setSuccess({ message: partnerReducer.togglePartnerSuccess });
@@ -77,6 +84,23 @@ function Workshops() {
       if (partnerReducer.togglePartnerError) setError({ message: partnerReducer.togglePartnerError });
     }
   }, [partnerReducer.togglePartnerStatus, partnerReducer.togglePartnerError]);
+
+  useEffect(() => {
+    if (partnerReducer.createPartnerStatus === 'completed') {
+      setSuccess({ message: partnerReducer.createPartnerSuccess });
+
+      setCreatePartner(false);
+      _setTimeout(setTimeout(() => reload(), 1000));
+    }
+  }, [partnerReducer.createPartnerStatus]);
+
+  useEffect(() => {
+    if (partnerReducer.createPartnerStatus === 'failed') {
+      setError({ message: partnerReducer.createPartnerError });
+
+      setCreatePartner(false);
+    }
+  }, [partnerReducer.createPartnerStatus]);
 
   useEffect(() => {
     return () => {
@@ -253,10 +277,36 @@ function Workshops() {
     ] as GridColDef<IPartner>[];
   }, [partners, isSuperAdmin, estimate.estimates, invoice.invoices])
 
+  useEffect(() => {
+    if (miscReducer.getStatesAndDistrictsStatus === 'idle') {
+      dispatch(getStatesAndDistrictsAction());
+    }
+  }, [dispatch, miscReducer.getStatesAndDistrictsStatus]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearGetStatesAndDistrictsStatus());
+      dispatch(clearCreatePartnerStatus());
+    };
+  }, [dispatch]);
+
+  const handleOpenCreatePartner = () => {
+    setCreatePartner(true);
+  };
+
+  const handleCloseCreatePartner = () => {
+    setCreatePartner(false);
+  };
+
+  function handleSubmit(values: ICreatePartnerModel, formikHelper: FormikHelpers<ICreatePartnerModel>) {
+    dispatch(createPartnerAction(values));
+    formikHelper.resetForm();
+  }
+
   return (
     <Box>
-      <Grid container justifyContent="left" alignItems="center">
-        <Grid item xs={9}>
+      <Grid container justifyContent="space-between" alignItems="center" xs={12} mb={2}>
+        <Grid item xs>
           <Typography variant="h4" gutterBottom
             sx={{
               fontWeight: 600
@@ -264,6 +314,18 @@ function Workshops() {
           >
             Workshops
           </Typography>
+        </Grid>
+        <Grid item xs
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end',
+            width: '100%'
+          }}
+        >
+          <Button onClick={handleOpenCreatePartner} variant="outlined" color="secondary">
+            Create Partner
+          </Button>
         </Grid>
       </Grid>
 
@@ -287,6 +349,21 @@ function Workshops() {
         </Stack>
       </Stack>
 
+      <AppModal
+        size="md"
+        fullWidth
+        show={createPartner}
+        Content={
+          <Formik
+            initialValues={partnerModel.initialValues}
+            onSubmit={handleSubmit}
+            validationSchema={partnerModel.schema[0]}>
+            <CreatePartnerForm createPartner={createPartner} />
+          </Formik>
+        }
+        onClose={handleCloseCreatePartner}
+      />
+      <AppLoader show={partnerReducer.getPartnersStatus === 'loading'} />
       <AppModal
         fullWidth
         show={showDelete}
