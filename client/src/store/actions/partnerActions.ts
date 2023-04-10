@@ -54,6 +54,7 @@ export const togglePartnerAction = asyncThunkWrapper<ApiResponseSuccess<void>, n
   TOGGLE_PARTNER,
   async partnerId => {
     const response = await axiosClient.post(`${API_ROOT}/partners-toggle/${partnerId}`);
+    console.log(response)
     return response.data;
   },
 );

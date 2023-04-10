@@ -5,6 +5,7 @@ interface IProps {
   bgColor?: any;
   title?: string;
   data: any;
+  count?: any;
 }
 
 export default function DataCard(props: IProps) {
@@ -33,10 +34,14 @@ export default function DataCard(props: IProps) {
       <Box
         sx={{
           color: theme => (theme.palette.mode === 'dark' ? '#ffffff' : '#000000'),
-          display: 'inline',
-          fontSize: 12,
+          display: 'flex',
+          justifyContent: 'flex-end', alignItems: 'flex-end',
+          fontSize: 14,
         }}
-      />
+      >
+        {props.count || props.count === 0 && `Count: ${props.count}`}
+      </Box>
+
     </Box>
   );
 }
