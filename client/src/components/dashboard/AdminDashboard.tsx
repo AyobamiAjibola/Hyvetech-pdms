@@ -282,7 +282,7 @@ function AdminDashboard() {
               <DataCard title="Total Estimate Value"
                 data={'₦ '+formatNumberToIntl(dashboardReducer.superAnalytics?.estimateValue || 0)}
                 bgColor={amber[600]}
-                count={(dashboardReducer.superAnalytics?.mAllEstimate || 0)}
+                count={(dashboardReducer.superAnalytics?.mAllEstimate)}
               />
             </Grid>
             <Grid item xs={12} md={3}
@@ -293,14 +293,14 @@ function AdminDashboard() {
               <DataCard title="Total Invoice Value"
                 data={'₦ '+formatNumberToIntl(dashboardReducer.superAnalytics?.invoiceValue || 0)}
                 bgColor={lime[600]}
-                count={(dashboardReducer.superAnalytics?.mAllInvoice || 0)}
+                count={(dashboardReducer.superAnalytics?.mAllInvoice)}
               />
             </Grid>
             <Grid item xs={12} md={3}>
               <DataCard title="Total Payments Received"
                 data={'₦ '+formatNumberToIntl(dashboardReducer.superAnalytics?.paymentReceived || 0)}
                 bgColor={pink[300]}
-                count={(dashboardReducer.superAnalytics?.mAllPayment || 0)}
+                count={(dashboardReducer.superAnalytics?.mAllPayment)}
               />
             </Grid>
           </Grid>
@@ -315,7 +315,7 @@ function AdminDashboard() {
               <DataCard title="Total Expense Value"
                 data={'₦ '+formatNumberToIntl(dashboardReducer.superAnalytics?.expenseValue || 0)}
                 bgColor={orange[300]}
-                count={(dashboardReducer.superAnalytics?.mAllExpense || 0)}
+                count={(dashboardReducer.superAnalytics?.mAllExpense)}
               />
             </Grid>
             <Grid item xs={12} md={3}

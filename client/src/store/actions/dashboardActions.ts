@@ -36,7 +36,7 @@ export const getSuperAnalyticsAction = createAsyncThunk<any, void>(
       if(args.start_date !== null && args.end_date !== null) {
         url += `dashboard-super?start_date=${args.start_date.toISOString()}&end_date=${ args.end_date.toISOString()}` }
     }
-    console.log(url)
+
     const response = await axiosClient.get(`${API_ROOT}/${url}`);
     return response.data;
   }),
