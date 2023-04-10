@@ -134,7 +134,7 @@ function InvoicesPage() {
       },
       {
         field: 'fullName',
-        headerName: 'Full Name',
+        headerName: 'Customer Name',
         headerAlign: 'center',
         align: 'center',
         type: 'string',

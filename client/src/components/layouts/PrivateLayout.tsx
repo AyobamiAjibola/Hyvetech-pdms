@@ -46,6 +46,7 @@ import useAdmin from '../../hooks/useAdmin';
 import settings from '../../config/settings';
 import Main from './Main';
 import Workshops from '../../pages/workshops/Workshops';
+import WorkshopPage from '../../pages/workshops/WorkshopPage';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -57,7 +58,7 @@ function PrivateLayout() {
   };
 
   const navigate = useNavigate();
-  const { user } = useAdmin();
+  const { user, isSuperAdmin } = useAdmin();
 
   return (
     <React.Fragment>
@@ -94,12 +95,12 @@ function PrivateLayout() {
                 {user?.partner?.name || ''}
               </Typography>
 
-              <img
+              {!isSuperAdmin && <img
                 style={{ width: 30, height: 30, borderRadius: 6 }}
                 crossOrigin="anonymous"
                 src={`${settings.api.baseURL}/${user?.partner?.logo || ''}`}
                 alt=" "
-              />
+              />}
 
               <IconButton
                 // color="inherit"
@@ -151,6 +152,7 @@ function PrivateLayout() {
             <Route path="/estimates/:id" element={<EstimatePage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/workshops" element={<Workshops />} />
+            <Route path="/workshop/:id" element={<WorkshopPage />} />
 
             <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />

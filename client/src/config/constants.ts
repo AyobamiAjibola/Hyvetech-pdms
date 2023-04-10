@@ -63,6 +63,7 @@ export const DRIVE_IN_CATEGORY = 'Drive-in';
 export const HYBRID_CATEGORY = 'Hybrid';
 export const GARAGE_CATEGORY = 'Garage';
 export const RIDE_SHARE_CATEGORY = 'Ride-Share';
+export const GARAGE_CATEGORY_ADMIN = 'Super-admin'
 
 export const JOB_STATUS = {
   ...APPOINTMENT_STATUS,
