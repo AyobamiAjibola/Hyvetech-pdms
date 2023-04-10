@@ -75,6 +75,7 @@ const UserRoleManagement = () => {
   useEffect(() => {
     getUsers();
   }, [getUsers]);
+
   const userColumns = useMemo(() => {
     return [
       {

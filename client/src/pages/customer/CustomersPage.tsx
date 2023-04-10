@@ -135,6 +135,19 @@ const getPartnerTableColumn = (options?: any) =>
 const getSuperAdminTableColumn = useMemo(() => {
   return [
     {
+      field: 'createdAt',
+      headerName: 'Date',
+      headerAlign: 'center',
+      align: 'center',
+      width: 150,
+      type: 'string',
+      valueFormatter: ({ value }) => {
+        return value ? moment(value).format('DD/MM/YYYY') : '-';
+      },
+      sortable: true,
+      sortingOrder: ['desc'],
+    },
+    {
       field: 'fullName',
       headerName: 'Name',
       headerAlign: 'center',
@@ -204,19 +217,6 @@ const getSuperAdminTableColumn = useMemo(() => {
       },
     },
     {
-      field: 'createdAt',
-      headerName: 'Date',
-      headerAlign: 'center',
-      align: 'center',
-      width: 150,
-      type: 'string',
-      valueFormatter: ({ value }) => {
-        return value ? moment(value).format('DD/MM/YYYY') : '-';
-      },
-      sortable: true,
-      sortingOrder: ['desc'],
-    },
-    {
       field: 'updatedAt',
       headerName: 'Last Modified',
       headerAlign: 'center',
@@ -254,9 +254,11 @@ const getSuperAdminTableColumn = useMemo(() => {
     <Box>
       <Grid container justifyContent="space-between" alignItems="center">
         <Grid item xs={9}>
-          {isTechAdmin && <Typography variant="h4" gutterBottom>
+          <Typography variant="h4" gutterBottom
+            sx={{ fontWeight: 600 }}
+          >
             Customers
-          </Typography>}
+          </Typography>
         </Grid>
         <Grid item>
           {isTechAdmin && <Button

@@ -51,6 +51,7 @@ interface IProps {
 export default function PartnerTab(props: IProps) {
   const [tabValue, setTabValue] = useState(0);
 
+
   const containerRef = useRef(null);
 
   const theme = useTheme();

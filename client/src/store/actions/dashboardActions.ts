@@ -30,14 +30,13 @@ export const getSuperAnalyticsAction = createAsyncThunk<any, void>(
   asyncThunkErrorWrapper(async (args: any) => {
     let url = ``;
 
-    if(args.params === null && args.paramYear === null && args.paramMonth === null) {
+    if(args.start_date === null && args.end_date === null) {
       url += `dashboard-super?year=${args.year}&month=${args.month}&day=${args.day}`
     } else {
-      if(args.params !== null) { url += `dashboard-super?params=${args.params}` }
-      if(args.paramYear !== null) { url += `dashboard-super?paramYear=${args.paramYear}` }
-      if(args.paramMonth !== null) { url += `dashboard-super?paramMonth=${args.paramMonth}` }
+      if(args.start_date !== null && args.end_date !== null) {
+        url += `dashboard-super?start_date=${args.start_date.toISOString()}&end_date=${ args.end_date.toISOString()}` }
     }
-
+    console.log(url)
     const response = await axiosClient.get(`${API_ROOT}/${url}`);
     return response.data;
   }),
