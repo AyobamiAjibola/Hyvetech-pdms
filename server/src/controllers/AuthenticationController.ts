@@ -418,8 +418,9 @@ export default class AuthenticationController {
     await partner.$add('categories', [category]);
     await partner.$set('contact', contact);
     await partner.$set('users', user);
+    await user.$set('roles', [role]);
 
-    await role.$set('users', [user]);
+    await role.$add('users', [user]);
 
     const result = PartnerController.formatPartner(partner);
 
