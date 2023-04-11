@@ -234,7 +234,7 @@ export default class UserController {
 
     await dataSources.userDAOService.update(user, userValues as InferAttributes<User>);
 
-    await role.$set('users', [user]);
+    await role.$add('users', [user]);
     await user.$set('roles', [role]);
     return user;
   }
