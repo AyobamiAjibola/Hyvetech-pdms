@@ -1,12 +1,13 @@
 // @ts-nocheck
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
-import { Box } from '@mui/material';
+// import { Box } from '@mui/material';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 import highchartsAccessibility from 'highcharts/modules/accessibility';
 import highChartsNoDataToDisplay from 'highcharts/modules/no-data-to-display';
+import { width } from '@mui/system';
 
 highchartsAccessibility(Highcharts);
 highChartsNoDataToDisplay(Highcharts);
@@ -26,9 +27,7 @@ export default function AppStackedColumnChart(props: IProps) {
 
   const options: Highcharts.Options = {
     chart: {
-      // type: 'column',
       type: 'bar',
-      width: window.screen.width - 160,
     },
     title: {
       text: props.title,
@@ -60,7 +59,8 @@ export default function AppStackedColumnChart(props: IProps) {
       align: 'right',
       x: -30,
       verticalAlign: 'top',
-      y: 25,
+      // itemDistance: 10,
+      y: 20,
       floating: true,
       backgroundColor: Highcharts.defaultOptions.legend?.backgroundColor || 'white',
       borderColor: '#CCC',
@@ -73,7 +73,7 @@ export default function AppStackedColumnChart(props: IProps) {
     },
     plotOptions: {
       column: {
-        stacking: 'normal',
+        stacking: 'normal'
       },
     },
     series: props.series,
@@ -94,14 +94,17 @@ export default function AppStackedColumnChart(props: IProps) {
   };
 
   return (
-    <Box
-      component="div"
-      sx={{
-        boxShadow: 5,
-        width: '100%',
-        minWidth: 1660,
+    <div
+      style={{
+        boxShadow: 5
       }}>
-      <HighchartsReact highcharts={Highcharts} options={options} ref={chartComponentRef} {...props} />
-    </Box>
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={options}
+        ref={chartComponentRef}
+        containerProps={{ style: { width: '100%' } }}
+        {...props}
+      />
+    </div>
   );
 }

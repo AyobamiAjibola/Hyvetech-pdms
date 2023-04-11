@@ -44,6 +44,9 @@ import PaymentRecieve from '../../pages/paymentRecieve/paymentRecieve';
 import { Settings } from '@mui/icons-material';
 import useAdmin from '../../hooks/useAdmin';
 import settings from '../../config/settings';
+import Main from './Main';
+import Workshops from '../../pages/workshops/Workshops';
+import WorkshopPage from '../../pages/workshops/WorkshopPage';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -55,7 +58,7 @@ function PrivateLayout() {
   };
 
   const navigate = useNavigate();
-  const { user } = useAdmin();
+  const { user, isSuperAdmin } = useAdmin();
 
   return (
     <React.Fragment>
@@ -92,12 +95,12 @@ function PrivateLayout() {
                 {user?.partner?.name || ''}
               </Typography>
 
-              <img
+              {!isSuperAdmin && <img
                 style={{ width: 30, height: 30, borderRadius: 6 }}
                 crossOrigin="anonymous"
                 src={`${settings.api.baseURL}/${user?.partner?.logo || ''}`}
                 alt=" "
-              />
+              />}
 
               <IconButton
                 // color="inherit"
@@ -118,7 +121,8 @@ function PrivateLayout() {
           </Toolbar>
         </AppBar>
         <SideNav />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Main open={openSideNav}>
+        {/* <Box component="main" sx={{ flexGrow: 1, p: 3 }}> */}
           <DrawerHeader />
           <Routes>
             <Route path="/dashboard" element={<DashboardPage />} />
@@ -147,12 +151,15 @@ function PrivateLayout() {
             <Route path="/expense/:id" element={<ExpenseDetail />} />
             <Route path="/estimates/:id" element={<EstimatePage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/workshops" element={<Workshops />} />
+            <Route path="/workshop/:id" element={<WorkshopPage />} />
 
             <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />
             <Route path="/payment-recieved" element={<PaymentRecieve />} />
           </Routes>
-        </Box>
+        {/* </Box> */}
+        </Main>
       </Box>
       <AppLoader show={appointmentReducer.updateAppointmentStatus === 'loading'} />
     </React.Fragment>

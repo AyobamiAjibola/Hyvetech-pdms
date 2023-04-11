@@ -1,7 +1,7 @@
 import './signInForm.css';
 
 import { ISignInModel } from '@app-interfaces';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 
@@ -28,9 +28,17 @@ function SignInPage() {
   return (
     <PublicLayout>
       <img src={logoLogin} alt="" className="loginLogo" />
-      <Typography textAlign="center" sx={headTextStyle}>
+      {/* <Typography textAlign="center" sx={headTextStyle}>
         Welcome to your gateway to boundless opportunities!
-      </Typography>
+      </Typography> */}
+      <Box sx={{ mb: 3 }}>
+        <Typography textAlign="center" sx={{fontWeight: 500, fontSize: {xs: 20, sm: 25}, mb: 2}}>
+          Sign In
+        </Typography>
+        <Typography textAlign="center" sx={headTextStyle}>
+          To continue to your AutoHyve Workshop Profile
+        </Typography>
+      </Box>
       <Formik initialValues={signInModel.initialValues} validationSchema={signInModel.schema} onSubmit={handleSignIn}>
         <SignInForm />
       </Formik>

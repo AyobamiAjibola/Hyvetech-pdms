@@ -208,8 +208,10 @@ const ExpenseDetail = () => {
             }}>
             {() => (
               <Form autoComplete="off" autoCorrect="off">
-                <Grid spacing={6} style={{ marginTop: 3 }} xs={12} container>
-                    {!edit && <Grid item md={6} sm={7}>
+                <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 6}
+                  style={{ marginTop: 3 }} xs={12} container
+                >
+                    {!edit && <Grid item md={6} sm={7} xs={12}>
                       <TextField
                         value={formatDate(date)}
                         // onChange={e => setInvoiceCode(e.target.value)}
@@ -225,45 +227,48 @@ const ExpenseDetail = () => {
                         }}
                       />
                     </Grid>}
-                  {edit && <Grid item md={6} sm={7}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DatePicker
-                        disableFuture
-                        minDate={new Date('2000/01/01')}
-                        openTo="year"
-                        views={['year', 'month', 'day']}
-                        value={dateModified}
-                        onChange={ handleDate }
-                        renderInput={(params: any) =>
-                          <TextField
-                            {...params}
-                            fullWidth
-                            label="Date Created"
-                            variant="outlined"
-                          />
-                        }
-                      />
-                    </LocalizationProvider>
-                  </Grid>}
-                  <Grid item md={6} sm={5}>
+                    {edit && <Grid item md={6} sm={7} xs={12}>
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                          disableFuture
+                          minDate={new Date('2000/01/01')}
+                          openTo="year"
+                          views={['year', 'month', 'day']}
+                          value={dateModified}
+                          onChange={ handleDate }
+                          renderInput={(params: any) =>
+                            <TextField
+                              {...params}
+                              fullWidth
+                              label="Date Created"
+                              variant="outlined"
+                            />
+                          }
+                        />
+                      </LocalizationProvider>
+                    </Grid>}
+                  <Grid item md={6} sm={5} xs={12}>
                     <Grid xs={12} container>
-                        <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.name}</Typography> <br />
-                      </Grid>
-
-                      <Grid xs={12} container>
-                        <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.accountNumber ? expense?.beneficiary?.accountNumber : ''}</Typography> <br />
-                      </Grid>
-
-                      <Grid xs={12} container>
-                        <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.bankName ? expense?.beneficiary?.bankName : ''}</Typography> <br />
-                      </Grid>
+                      <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.name}</Typography> <br />
                     </Grid>
+
+                    <Grid xs={12} container>
+                      <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.accountNumber ? expense?.beneficiary?.accountNumber : ''}</Typography> <br />
+                    </Grid>
+
+                    <Grid xs={12} container>
+                      <Typography sx={{fontSize: '17px', fontWeight: '500'}}>{expense?.beneficiary?.bankName ? expense?.beneficiary?.bankName : ''}</Typography> <br />
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid spacing={6} style={{ marginTop: 3 }} xs={12} container>
-                  <Grid item md={6} sm={12}>
+                <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 6}
+                  style={{ marginTop: 3 }} xs={12} container
+                >
+                  <Grid item md={6} xs={12}>
                     {edit && <Autocomplete
                         getOptionLabel={getOptionLabel}
                         isOptionEqualToValue={isOptionEqualToValue}
+                        fullWidth
                         renderInput={props => (
                           <TextField
                             {...props}
@@ -305,7 +310,7 @@ const ExpenseDetail = () => {
                       />
                     }
                   </Grid>
-                  <Grid item md={6} sm={12}>
+                  <Grid item md={6} xs={12}>
                     <TextField
                       value={amount}
                       onChange={e => setAmount(e.target.value)}
@@ -323,8 +328,10 @@ const ExpenseDetail = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid spacing={6} xs={12} style={{ marginTop: 3 }} container>
-                  <Grid item md={6} sm={12}>
+                <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 6}
+                  xs={12} style={{ marginTop: 3 }} container
+                >
+                  <Grid item md={6} xs={12}>
                     {!edit &&
                       <TextField
                         value={expense?.type?.name}
@@ -344,6 +351,7 @@ const ExpenseDetail = () => {
                     {edit && <Autocomplete
                         getOptionLabel={getOptionLabel}
                         isOptionEqualToValue={isOptionEqualToValue}
+                        fullWidth
                         renderInput={props => (
                           <TextField
                             {...props}
@@ -369,7 +377,7 @@ const ExpenseDetail = () => {
                       />
                     }
                   </Grid>
-                  <Grid item md={6} sm={12}>
+                  <Grid item md={6} xs={12}>
                     <TextField
                       value={note}
                       onChange={e => setNote(e.target.value)}
@@ -388,8 +396,10 @@ const ExpenseDetail = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid spacing={6} xs={12} style={{ marginTop: 3 }} container>
-                  <Grid item md={6} sm={12}>
+                <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 6}
+                  xs={12} style={{ marginTop: 3 }} container
+                >
+                  <Grid item md={6} xs={12}>
                     {!edit &&
                       <TextField
                         value={invoiceCode ? invoiceCode : ''}
@@ -409,6 +419,7 @@ const ExpenseDetail = () => {
                     {edit && <Autocomplete
                         getOptionLabel={getOptionLabelInv}
                         isOptionEqualToValue={isOptionEqualToValueInv}
+                        fullWidth
                         disabled={category?.name === "Others" || category?.name === "Overhead"}
                         renderInput={props => (
                           <TextField
@@ -436,7 +447,7 @@ const ExpenseDetail = () => {
                       />
                     }
                   </Grid>
-                  <Grid item md={6} sm={12}>
+                  <Grid item md={6} xs={12}>
                     {!edit && <TextField
                       value={reference}
                       onChange={e => setReference(e.target.value)}
@@ -461,7 +472,12 @@ const ExpenseDetail = () => {
                   disabled={store.updateExpenseDetailStatus === 'loading' || expense?.status === 'PAID'}
                   variant="contained"
                   color="secondary"
-                  endIcon={<Save />}>
+                  endIcon={<Save />}
+                  sx={{
+                    width: '15%',
+                    pl: 6, pr: 6
+                  }}
+                  >
                   {'Save'}
                 </LoadingButton>}
               </Form>
@@ -474,8 +490,8 @@ const ExpenseDetail = () => {
             endIcon={<Edit />}
             disabled={edit === true}
             sx={{
-              width: '10%',
-              mt: 2
+              width: '15%',
+              mt: 2, pl: 6, pr: 6
             }}
           >
             {'Edit'}

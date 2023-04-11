@@ -11,6 +11,7 @@ import { NullishPropertiesOf } from 'sequelize/types/utils';
 import { appModelTypes } from '../../@types/app-model';
 import Expense from '../../models/Expense';
 import ExpenseRepository from '../../repositories/ExpenseRepository';
+import Generic from '../../utils/Generic';
 import ICrudDAO = appModelTypes.ICrudDAO;
 
 export default class ExpenseDAOService implements ICrudDAO<Expense> {
@@ -55,5 +56,9 @@ export default class ExpenseDAOService implements ICrudDAO<Expense> {
   }
   findAll(options?: FindOptions<InferAttributes<Expense, { omit: never }>> | undefined): Promise<Expense[]> {
     return this.expenseRepository.findAll(options);
+  }
+
+  public async getTotalMonthlyExpenses() {
+    return Generic.getMonthlyData(this.expenseRepository);
   }
 }

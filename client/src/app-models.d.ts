@@ -458,6 +458,7 @@ declare module '@app-models' {
     createdAt: Date;
     updatedAt: Date;
     creditRating?: string;
+    partnerId?: number;
   }
 
   interface ISchedule {

@@ -58,12 +58,12 @@ export const filterPhoneNumber = (phone: any) => {
 }
 
 export function computeMonthlyColumnChartData(dashboardData: IDashboardData) {
-  const appointmentData = dashboardData.monthlyData.appointments.data.map((value: any) => value.y);
-  const appointment = {
-    name: dashboardData.monthlyData.appointments.name,
-    data: appointmentData,
-    stack: 'A',
-  };
+  // const appointmentData = dashboardData.monthlyData.appointments.data.map((value: any) => value.y);
+  // const appointment = {
+  //   name: dashboardData.monthlyData.appointments.name,
+  //   data: appointmentData,
+  //   stack: 'A',
+  // };
 
   const customerData = dashboardData.monthlyData.customers.data.map((value: any) => value.y);
   const customer = {
@@ -72,11 +72,18 @@ export function computeMonthlyColumnChartData(dashboardData: IDashboardData) {
     stack: 'A',
   };
 
+  // const invoiceData = dashboardData.monthlyData.sales.data.map((value: any) => value.y);
+  // const sales = {
+  //   name: "Sales",
+  //   data: invoiceData,
+  //   stack: 'A',
+  // };
+
   const vehicleData = dashboardData.monthlyData.vehicles.data.map((value: any) => value.y);
   const vehicle = {
     name: dashboardData.monthlyData.vehicles.name,
     data: vehicleData,
-    stack: 'B',
+    stack: 'A',
   };
 
   const transactionData = dashboardData.monthlyData.transactions.data.map((value: any) => value.y);
@@ -86,7 +93,14 @@ export function computeMonthlyColumnChartData(dashboardData: IDashboardData) {
     stack: 'B',
   };
 
-  return [appointment, customer, vehicle, transaction];
+  const expensesData = dashboardData.monthlyData.expenses.data.map((value: any) => value.y);
+  const expenses = {
+    name: dashboardData.monthlyData.expenses.name,
+    data: expensesData,
+    stack: 'B',
+  };
+
+  return [customer, vehicle, transaction, expenses];
 }
 
 interface IGetRideSharePlanJobs {

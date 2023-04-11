@@ -10,9 +10,11 @@ import Transaction from '../models/Transaction';
 import HttpResponse = appCommonTypes.HttpResponse;
 import { HasPermission } from '../decorators';
 import { MANAGE_ALL, MANAGE_TECHNICIAN, VIEW_ANALYTICS } from '../config/settings';
+import User from '../models/User';
+import Vehicle from '../models/Vehicle';
 
 export default class DashboardController {
-  @HasPermission([VIEW_ANALYTICS, MANAGE_ALL, MANAGE_TECHNICIAN])
+  @HasPermission([MANAGE_ALL, VIEW_ANALYTICS, MANAGE_TECHNICIAN])
   public static async getTechData(req: Request) {
     //
     try {
@@ -102,8 +104,6 @@ export default class DashboardController {
 
       for (let i = 0; i < months.length; i++) {
         const _month = months[i];
-
-        //
 
         // sales
         const _invoicesByMonth = await this.filterByMonth(invoices, _month.id);
@@ -245,6 +245,33 @@ export default class DashboardController {
     return newCollection;
   }
 
+  public static async filterByMonthAndYear(collection: any[], start_date: any, end_date: any, month: any, day: any, year: any) {
+    const newCollection: any[] = [];
+
+    collection.map(_item => {
+      if (_item != null) {
+        const _month = new Date(_item.createdAt).getMonth() + 1;
+        const _year = new Date(_item.createdAt).getFullYear();
+        const _day = new Date(_item.createdAt).getDate();
+        const itemDate = new Date(_item.createdAt);
+
+        if (start_date && end_date) {
+          const startDate = new Date(start_date);
+          const endDate = new Date(end_date);
+          if(itemDate >= startDate && itemDate <= endDate) {
+            newCollection.push(_item);
+          }
+        }
+
+        if (_month == month && _year == year && _day == day) {
+          newCollection.push(_item);
+        }
+      }
+    });
+
+    return newCollection;
+  }
+
   public static async getTransactionsRaw({ partner: { id } }: any) {
     //
     return await Transaction.findAll({
@@ -285,6 +312,49 @@ export default class DashboardController {
       include: [Invoice],
     });
   }
+
+  //Super Admin
+  public static async getEstimateSuperAdminRaw() {
+    return await Estimate.findAll({
+      include: [Invoice],
+    });
+  }
+
+  public static async getUsersSuperAdminRaw() {
+    return await User.findAll();
+  }
+
+  public static async getVehicleSuperAdminRaw() {
+    return await Vehicle.findAll();
+  }
+
+  public static async getInvoiceSuperAdminRaw() {
+    return await Invoice.findAll();
+  }
+
+  public static async getExpensesSuperAdminRaw() {
+    return await Expense.findAll();
+  }
+
+  public static async getTransactionsSuperAdminRaw() {
+    return await Transaction.findAll();
+  }
+
+  public static async getCustomersSuperAdminRaw() {
+    return await Customer.findAll();
+  }
+
+  public static getEstimateValueAdmin(estimates: Estimate[]) {
+    let amount = 0;
+
+    estimates.map(_estimate => {
+      amount = amount + _estimate.grandTotal;
+    });
+
+    return amount;
+  }
+
+  //end
 
   public static async getInvoiceRaw(estimates: Estimate[]) {
     //
@@ -328,9 +398,71 @@ export default class DashboardController {
   private static async getMonthlyData(context: { [p: string]: any }) {
     return {
       customers: await context.customerDAOService.getTotalMonthlyCustomers(),
-      appointments: await context.appointmentDAOService.getTotalMonthlyAppointments(),
+      // appointments: await context.appointmentDAOService.getTotalMonthlyAppointments(),
       vehicles: await context.vehicleDAOService.getTotalMonthlyVehicles(),
       transactions: await context.transactionDAOService.getTotalMonthlyTransactions(),
+      // sales: await context.invoiceDAOService.getTotalMonthlyInvoice(),
+      expenses: await context.expenseDAOService.getTotalMonthlyExpenses()
     };
+  }
+
+  public static async getDataSuperAdmin (req: Request) {
+    try {
+      const month = req?.query?.month || new Date().getMonth() + 1;
+      const year = req?.query?.year || new Date().getFullYear();
+      const day = req?.query?.day || new Date().getDate();
+      const { start_date, end_date } = req?.query
+
+      const estimates = await this.getEstimateSuperAdminRaw();
+      const invoices = await this.getInvoiceSuperAdminRaw();
+      const expenses = await this.getExpensesSuperAdminRaw();
+      const payments = await this.getTransactionsSuperAdminRaw();
+      const customers = await this.getCustomersSuperAdminRaw();
+      const users = await this.getUsersSuperAdminRaw();
+      const vehicles = await this.getVehicleSuperAdminRaw()
+
+      const allEstimate = await this.filterByMonthAndYear(estimates, start_date, end_date, month, day, year);
+      const allInvoice = await this.filterByMonthAndYear(invoices, start_date, end_date, month, day, year);
+      const allExpense = await this.filterByMonthAndYear(expenses, start_date, end_date, month, day, year);
+      const allPayments = await this.filterByMonthAndYear(payments, start_date, end_date, month, day, year);
+      const allCustomers = await this.filterByMonthAndYear(customers, start_date, end_date, month, day, year);
+      const allUsers = await this.filterByMonthAndYear(users, start_date, end_date, month, day, year);
+      const allVehicles = await this.filterByMonthAndYear(vehicles, start_date, end_date, month, day, year);
+
+      const receivables = this.getReceivable(allInvoice)
+      const paymentReceived = this.getReceipt(allInvoice)
+      const invoiceValue = this.getRevenue(allInvoice);
+      const estimateValue = this.getEstimateValueAdmin(allEstimate);
+      const expenseValue = this.getExpenses(allExpense);
+      const mAllEstimate = allEstimate.length;
+      const mAllInvoice = allInvoice.length;
+      const mAllExpense = allExpense.length;
+      const mAllPayment = allPayments.length;
+      const mAllCustomer = allCustomers.length;
+      const mAllUser = allUsers.length;
+      const mAllVehicle = allVehicles.length;
+
+      const response: HttpResponse<any> = {
+        message: HttpStatus.OK.value,
+        code: HttpStatus.OK.code,
+        result: {
+          mAllEstimate,
+          mAllInvoice,
+          mAllExpense,
+          mAllPayment,
+          mAllCustomer,
+          estimateValue,
+          expenseValue,
+          invoiceValue,
+          paymentReceived,
+          receivables,
+          mAllUser, mAllVehicle
+        },
+      };
+
+      return Promise.resolve(response);
+    } catch (e: any) {
+      return Promise.reject(e);
+    }
   }
 }

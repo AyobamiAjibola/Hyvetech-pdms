@@ -41,7 +41,7 @@ function GarageSignUpForm(props: Props) {
     <Form autoComplete="off" className="formContainer">
       <Grid container direction="column">
         <Grid item container xs={12} columnSpacing={2}>
-          <Grid item xs={6}>
+          <Grid item sm={6} xs={12}>
             <TextInputField
               margin="normal"
               onChange={handleChange}
@@ -50,7 +50,7 @@ function GarageSignUpForm(props: Props) {
               label={fields.firstName.label}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item sm={6} xs={12}>
             <TextInputField
               margin="normal"
               onChange={handleChange}
@@ -119,7 +119,7 @@ function GarageSignUpForm(props: Props) {
 
         <Grid item container xs spacing={2} justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
-            <Link style={{ color: '#FBA91A' }} to="/garage/login">
+            <Link style={{ color: '#FBA91A' }} to="/">
               Sign in instead
             </Link>
           </Grid>

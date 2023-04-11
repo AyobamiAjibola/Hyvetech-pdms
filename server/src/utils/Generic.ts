@@ -14,7 +14,6 @@ import Appointment from '../models/Appointment';
 import dataStore from '../config/dataStore';
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
-import Expense from '../models/Expense';
 
 const startDate = moment({ hours: 0, minutes: 0, seconds: 0 }).toDate();
 const endDate = moment({ hours: 23, minutes: 59, seconds: 59 }).toDate();
@@ -241,6 +240,96 @@ export default class Generic {
       name: repository.model,
       data: result,
     };
+  }
+
+  public static async getMonthlyDataTotal(repository: AbstractCrudRepository) {
+    const year = moment().year();
+
+    const result = [];
+
+    const months = Generic.getMonths();
+    let dataObject: Partial<{ name: string; y: any }> = {};
+
+    for (let i = 0; i < months.length; i++) {
+      const datetime = moment({ year: year, month: i, date: 1 });
+
+      const firstDay = moment(datetime).startOf('month').toDate();
+      const lastDay = moment(datetime).endOf('month').toDate();
+
+      const _repository = await repository.findAll({
+        where: {
+          createdAt: {
+            [Op.between]: [firstDay, lastDay],
+          },
+        },
+      });
+
+      const invTotalValue = this.getRevenue(_repository);
+
+      dataObject = { ...dataObject, y: invTotalValue, name: months[i] };
+
+      result.push(dataObject);
+    }
+
+    return {
+      name: repository.model,
+      data: result,
+    };
+  }
+
+  public static async getMonthlyDataTotalExpenses(repository: AbstractCrudRepository) {
+    const year = moment().year();
+
+    const result = [];
+
+    const months = Generic.getMonths();
+    let dataObject: Partial<{ name: string; y: any }> = {};
+
+    for (let i = 0; i < months.length; i++) {
+      const datetime = moment({ year: year, month: i, date: 1 });
+
+      const firstDay = moment(datetime).startOf('month').toDate();
+      const lastDay = moment(datetime).endOf('month').toDate();
+
+      const _repository = await repository.findAll({
+        where: {
+          createdAt: {
+            [Op.between]: [firstDay, lastDay],
+          },
+        },
+      });
+
+      const expenseTotalValue = this.getExpenses(_repository);
+
+      dataObject = { ...dataObject, y: expenseTotalValue, name: months[i] };
+
+      result.push(dataObject);
+    }
+
+    return {
+      name: repository.model,
+      data: result,
+    };
+  }
+
+  public static getRevenue(invoices: any) {
+    let amount = 0;
+
+    invoices.map((_invoice: any) => {
+      amount = amount + _invoice.grandTotal;
+    });
+
+    return amount;
+  }
+
+  public static getExpenses(expenses: any) {
+    let amount = 0;
+
+    expenses.map((_expense: any) => {
+      amount = amount + _expense.amount;
+    });
+
+    return amount;
   }
 
   public static async getDailyData(repository: AbstractCrudRepository) {

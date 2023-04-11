@@ -257,7 +257,7 @@ export default function PaymentRecieve() {
         <React.Fragment>
             <Grid container justifyContent="space-between" alignItems="center">
                 <Grid item xs={10}>
-                <Typography variant="h4" gutterBottom>
+                <Typography variant="h4" gutterBottom sx={{fontWeight: 600}}>
                     Payments Received
                 </Typography>
                 </Grid>
@@ -296,7 +296,7 @@ export default function PaymentRecieve() {
             <AppModal
               fullWidth
               show={showWarning}
-              Content={<DialogContentText>{`              
+              Content={<DialogContentText>{`
                 Are you sure you want to carry out this action? If you agree to do this, the affected entity, will not be able to execute certain features on the app
               `}</DialogContentText>}
               ActionComponent={
@@ -315,6 +315,8 @@ export default function PaymentRecieve() {
             <AppModal
               fullWidth
               show={showReceipt}
+              size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
+              fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
               Content={
                 <div ref={ref} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                   
@@ -327,22 +329,40 @@ export default function PaymentRecieve() {
                         src={`${settings.api.baseURL}/${user?.partner?.logo}`}
                       />
                     </div>
-                    <div style={{ flex: 0.6, display: 'flex', flexDirection: 'column' }}>
-                    <Typography variant='h4'>
-                      {partnerName}.
-                    </Typography>
-                    <Typography>
-                      {user?.partner?.contact?.address},
-                      &nbsp;
-                      {user?.partner?.contact?.country}
-                    </Typography>
-                    <br />
-
-                    <Typography>
-                      {user?.partner?.phone}
+                    <div
+                      style={{
+                        flex: 0.6, display: 'flex',
+                        flexDirection: 'column'
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: {sm: '30px', xs: '20px'}
+                        }}
+                      >
+                        {partnerName}.
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: {xs: '13px', sm: '16px'}
+                        }}
+                      >
+                        {user?.partner?.contact?.address},
+                        &nbsp;
+                        {user?.partner?.contact?.country}
+                      </Typography>
                       <br />
-                      {user?.partner?.email}
-                    </Typography>
+
+                      <Typography
+                        sx={{
+                          fontSize: {xs: '13px', sm: '16px'}
+                        }}
+                      >
+                        {user?.partner?.phone}
+                        <br />
+                        {user?.partner?.email}
+                      </Typography>
                     </div>
                   </div>
 
@@ -351,7 +371,7 @@ export default function PaymentRecieve() {
                   <br />
                   
                   <div>
-                    <Typography style={{ fontWeight: 'normal', textAlign: 'center' }}>
+                    <Typography style={{ fontWeight: 'normal', textAlign: 'center', fontWeight: '600' }}>
                       PAYMENT RECEIPT
                     </Typography>
                     <br />
@@ -360,18 +380,18 @@ export default function PaymentRecieve() {
                       <div style={{ flex: 1, display: 'flex', flex: 0.68, marginRight: 20, flexDirection: 'column' }}>
                         
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography style={{ fontSize: 13 }}>Payment Date</Typography>
-                          <Typography style={{ fontSize: 13, fontWeight: '600' }}>{new Date((receiptData?.updatedAt || "")).toDateString()}</Typography>
+                          <Typography sx={{ fontSize: {sm: 13, xs: 12} }}>Payment Date</Typography>
+                          <Typography sx={{ fontSize: {sm: 13, xs: 12}, fontWeight: 600 }}>{new Date((receiptData?.updatedAt || "")).toDateString()}</Typography>
                         </div>
 
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography style={{ fontSize: 13 }}>Mode of Payment</Typography>
-                          <Typography style={{ fontSize: 13, fontWeight: '600' }}>{receiptData?.type || ""}</Typography>
+                          <Typography sx={{ fontSize: {sm: 13, xs: 12}}}>Mode of Payment</Typography>
+                          <Typography sx={{ fontSize: {sm: 13, xs: 12}, fontWeight: 600}}>{receiptData?.type || ""}</Typography>
                         </div>
 
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography style={{ fontSize: 13 }}>Payment Reference</Typography>
-                          <Typography style={{ fontSize: 13, fontWeight: '600' }}>
+                          <Typography sx={{ fontSize: {sm: 13, xs: 12}}}>Payment Reference</Typography>
+                          <Typography sx={{ fontSize: {sm: 13, xs: 12}, fontWeight: 600}}>
                           {`${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id || ""}`)}`}
                           </Typography>
                         </div>
@@ -382,7 +402,7 @@ export default function PaymentRecieve() {
                         <Typography style={{ fontSize: 11 }}>
                           Amount Received
                         </Typography>
-                        <Typography style={{ fontSize: 13, fontWeight: '600' }}>
+                        <Typography sx={{ fontSize: {sm: 13, xs: 12}, fontWeight: 600}}>
                           N {formatNumberToIntl(receiptData?.amount || 0)}
                         </Typography>
                       </div>
@@ -427,19 +447,19 @@ export default function PaymentRecieve() {
                         <tr>
                           
                           <td>
-                            <Typography style={{ fontSize: 13, textAlign: 'center' }}>INV-{receiptData?.invoice?.code || ""}</Typography>
+                            <Typography sx={{ fontSize: {sm: 13, xs: 12}, textAlign: 'center'}}>INV-{receiptData?.invoice?.code || ""}</Typography>
                           </td>
 
                           <td>
-                            <Typography style={{ fontSize: 13, textAlign: 'center' }}>{(new Date(receiptData?.invoice?.updatedAt || "")).toDateString()}</Typography>
+                            <Typography sx={{ fontSize: {sm: 13, xs: 12}, textAlign: 'center'}}>{(new Date(receiptData?.invoice?.updatedAt || "")).toDateString()}</Typography>
                           </td>
 
                           <td>
-                            <Typography style={{ fontSize: 13, textAlign: 'center' }}>N {formatNumberToIntl(receiptData?.invoice?.grandTotal || "")}</Typography>
+                            <Typography sx={{ fontSize: {sm: 13, xs: 12}, textAlign: 'center'}}>N {formatNumberToIntl(receiptData?.invoice?.grandTotal || "")}</Typography>
                           </td>
 
                           <td>
-                            <Typography style={{ fontSize: 13, textAlign: 'center' }}>N {formatNumberToIntl(receiptData?.amount || "")}</Typography>
+                            <Typography sx={{ fontSize: {sm: 13, xs: 12}, textAlign: 'center'}}>N {formatNumberToIntl(receiptData?.amount || "")}</Typography>
                           </td>
 
                         </tr>
@@ -463,7 +483,7 @@ export default function PaymentRecieve() {
               }
               onClose={() => setShowReceipt(false)}
             />
-            
+
             <AppLoader show={transactionReducer.getPaymentRecievedStatus === 'loading' || transactionReducer.deletePaymentRecievedStatus === 'loading'} />
         </React.Fragment>
     )

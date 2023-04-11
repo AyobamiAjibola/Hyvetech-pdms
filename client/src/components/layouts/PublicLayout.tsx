@@ -7,9 +7,10 @@ import cover from '../../assets/images/cover.png';
 import mechanic from '../../assets/images/mechanic.jpg';
 
 export default function PublicLayout({ children }: any) {
+  const date = new Date().getFullYear();
   return (
     <Box sx={mainContainerStyle}>
-      <span className="rightReserved">© 2022 All Rights Reserved, Jiffix Technologies Limited.</span>
+      <span className="rightReserved">© {date} All Rights Reserved, Jiffix Technologies Limited.</span>
       <a href="https://www.jiffixtech.com/" className="aboutUs">
         About Us
       </a>
@@ -24,8 +25,8 @@ export default function PublicLayout({ children }: any) {
 
 const mainContainerStyle = {
   height: '100vh',
-  width: '100% !important',
-  backgroundImage: `url(${mechanic})`,
+  width: '100vw',
+  backgroundImage: {sm: `url(${mechanic})`, xs: 'none'},
   backgroundRepeat: 'no-repeat',
   backgroundSize: '100% 100%',
   display: 'flex',
@@ -34,7 +35,7 @@ const mainContainerStyle = {
 };
 
 const childrenWrapperStyle = {
-  width: '40%',
+  width: {md: '40%', sm: '70%', xs: '90%'},
   maxHeight: "90%",
   overflow: "hidden",
   overflowY: "scroll",
@@ -42,8 +43,8 @@ const childrenWrapperStyle = {
   right: '23%',
   left: '0',
   zIndex: 1000,
-  pl: '60px',
-  pr: '60px',
+  pl: {sm: '60px', xs: '10px'},
+  pr: {sm: '60px', xs: '10px'},
   pt: '20px',
   pb: '50px',
   background: (theme: Theme) => (theme.palette.mode === 'dark' ? 'paper.default' : '#FFFFFF'),

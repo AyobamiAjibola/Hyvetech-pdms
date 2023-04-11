@@ -32,7 +32,7 @@ function CustomerTab(props: IProps) {
           <Slide key={index} direction="right" in={tabValue === index} container={containerRef.current}>
             <div>
               <TabPanel value={tabValue} index={index} dir={theme.direction}>
-                <Box sx={{ pt: 6 }}>
+                <Box sx={{ pt: 6}}>
                   <tab.Element />
                 </Box>
               </TabPanel>

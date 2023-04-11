@@ -18,9 +18,11 @@ declare module '@app-interfaces' {
 
   interface IModule {
     customers: { name: string; data: AnyObjectType[] };
-    appointments: { name: string; data: AnyObjectType[] };
+    // appointments: { name: string; data: AnyObjectType[] };
     vehicles: { name: string; data: AnyObjectType[] };
     transactions: { name: string; data: AnyObjectType[] };
+    // sales: { name: string; data: AnyObjectType[] };
+    expenses: { name: string; data: AnyObjectType[] };
   }
 
   interface ITableColumnOptions {

@@ -12,6 +12,7 @@ import React, {
 import { FieldArray, Form, useFormikContext } from 'formik';
 import {
   Autocomplete,
+  Button,
   Checkbox,
   CircularProgress,
   createFilterOptions,
@@ -563,6 +564,7 @@ function EstimateForm(props: IProps) {
                         }}
                         onKeyDown={e => {
                           if (e.key === 'Enter') {
+                            e.preventDefault()
                             if ((inputValue || '').length == 0) {
                               setShowDrop(false);
                             } else {
@@ -590,7 +592,6 @@ function EstimateForm(props: IProps) {
                       />
                     )}
                     options={showDrop ? options : []}
-                    // options={[]}
                   />
                 </Grid>
 
@@ -789,12 +790,12 @@ function EstimateForm(props: IProps) {
                     {values.parts.length > 0 &&
                       values.parts.map((part, index) => {
                         return (
-                          <Grid container item spacing={2} xs={13} key={index} columns={14} mb={2}>
+                          <Grid container item spacing={1} xs={13} key={index} columns={14} mb={2}>
                             {Object.keys(part).map(value => {
                               return (
                                 <React.Fragment key={`${value}`}>
                                   {value === 'name' && (
-                                    <Grid item xs={4}>
+                                    <Grid item sm={4} xs={14}>
                                       <TextField
                                         fullWidth
                                         variant="outlined"
@@ -822,7 +823,7 @@ function EstimateForm(props: IProps) {
                                     />
                                   )}
                                   {value === 'price' && (
-                                    <Grid item xs={2}>
+                                    <Grid item sm={2} xs={14}>
                                       <TextField
                                         fullWidth
                                         variant="outlined"
@@ -839,7 +840,7 @@ function EstimateForm(props: IProps) {
                                   )}
 
                                   {value === 'amount' && (
-                                    <Grid item xs={2}>
+                                    <Grid item sm={2} xs={10}>
                                       <TextField
                                         fullWidth
                                         variant="outlined"
@@ -855,7 +856,7 @@ function EstimateForm(props: IProps) {
                                 </React.Fragment>
                               );
                             })}
-                            <Grid item xs={1}>
+                            <Grid item xs>
                               <IconButton onClick={() => partsProps.remove(index)}>
                                 <Remove />
                               </IconButton>
@@ -864,24 +865,50 @@ function EstimateForm(props: IProps) {
                         );
                       })}
                     <Grid item xs>
-                      <IconButton
-                        onClick={() =>
-                          partsProps.push({
-                            name: '',
-                            warranty: { warranty: '', interval: '' },
-                            quantity: { quantity: '0', unit: '' },
-                            price: '0',
-                            amount: '0',
-                          })
-                        }>
-                        <Add />
-                      </IconButton>
+                      {document.documentElement.clientWidth <= 375
+                          ? <Button
+                              onClick={() =>
+                                partsProps.push({
+                                  name: '',
+                                  warranty: { warranty: '', interval: '' },
+                                  quantity: { quantity: '0', unit: '' },
+                                  price: '0',
+                                  amount: '0',
+                                })
+                              }>
+                              {'Add Part'}
+                            </Button>
+                          : <IconButton
+                              onClick={() =>
+                                partsProps.push({
+                                  name: '',
+                                  warranty: { warranty: '', interval: '' },
+                                  quantity: { quantity: '0', unit: '' },
+                                  price: '0',
+                                  amount: '0',
+                                })
+                              }>
+                              <Add />
+                            </IconButton>
+                      }
                     </Grid>
 
-                    <Grid item xs={12} container spacing={2} columns={13}>
-                      <Grid item xs={6} />
-                      <Grid item xs={4}>
-                        <Typography style={{ marginBottom: 10 }}>
+                    <Grid item xs={12} container spacing={2} columns={13}
+                      sx={{
+                        display: 'flex', flexDirection: 'row',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Divider orientation="horizontal" />
+                      <Grid item sm={4} xs={0} />
+                      <Grid item sm={4} xs={6} mb={2} mt={2}>
+                        <Typography
+                          style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'left'
+                            }}
+                          >
                           Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
                         </Typography>
                         {enableTaxPart && (
@@ -891,13 +918,19 @@ function EstimateForm(props: IProps) {
                             label={`${fields.taxPart.label} (VAT 7.5%)`}
                             variant="outlined"
                             fullWidth
-                            sx={{ mb: 2 }}
+                            sx={{ mb: 2, mt: 2 }}
                           />
                         )}
                       </Grid>
 
-                      <Grid item style={{}}>
-                        <div>
+                      <Grid item sm={4} xs={6} mb={2} mt={2}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center', justifyContent: 'right'
+                          }}
+                        >
                           <span>Apply Tax</span>
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
@@ -910,7 +943,8 @@ function EstimateForm(props: IProps) {
           </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
-              {fields.labours.label}
+              {/* {fields.labours.label} */}
+              Service items
             </Typography>
             <Divider orientation="horizontal" />
           </Grid>
@@ -967,15 +1001,28 @@ function EstimateForm(props: IProps) {
                         );
                       })}
                     <Grid item xs>
-                      <IconButton
-                        onClick={() =>
-                          laboursProps.push({
-                            title: '',
-                            cost: '0',
-                          })
-                        }>
-                        <Add />
-                      </IconButton>
+                      {document.documentElement.clientWidth <= 375
+                          ? <Button
+                              onClick={() =>
+                                laboursProps.push({
+                                  title: '',
+                                  cost: '0',
+                                })
+                              }
+                            >
+                              {'Add Service'}
+                            </Button>
+                          : <IconButton
+                              onClick={() =>
+                                laboursProps.push({
+                                  title: '',
+                                  cost: '0',
+                                })
+                              }
+                            >
+                              <Add />
+                            </IconButton>
+                      }
                     </Grid>
                   </React.Fragment>
                 );
@@ -983,9 +1030,15 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12} container spacing={2} columns={13}>
-            <Grid item xs={6} />
-            <Grid item xs={4}>
-              <Typography style={{ marginBottom: 10 }}>
+            <Grid item sm={4} xs={0}/>
+            <Grid item sm={4} xs={6} mb={2} mt={2}>
+              <Typography
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'left'
+                }}
+              >
                 Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}
               </Typography>
               {enableTaxLabor && (
@@ -995,13 +1048,19 @@ function EstimateForm(props: IProps) {
                   label={`${fields.tax.label} (VAT 7.5%)`}
                   variant="outlined"
                   fullWidth
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, mt: 2}}
                 />
               )}
             </Grid>
 
-            <Grid item style={{}}>
-              <div>
+            <Grid item sm={4} xs={6} mb={2} mt={2}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center', justifyContent: 'right'
+                }}
+              >
                 <span>Apply Tax</span>
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
@@ -1017,19 +1076,19 @@ function EstimateForm(props: IProps) {
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>
-                  <Typography variant="h6">Sub-Total:</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Sub-Total:</Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="h6">₦{formatNumberToIntl(subTotal)}</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(subTotal)}</Typography>
                 </Grid>
               </Grid>
             </Grid>
             <br />
             <Grid container spacing={0}>
-              <Grid item xs={2}>
-                <Typography variant="h6">Discount:</Typography>
+              <Grid item xs={2} mr={5}>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Discount:</Typography>
               </Grid>
-              <Grid container xs={10} spacing={2}>
+              <Grid container xs={8} spacing={2}>
                 <Grid item>
                   <TextInputField
                     onChange={e => setDiscount(parseInt(e.target.value))}
@@ -1054,27 +1113,6 @@ function EstimateForm(props: IProps) {
                     <FormControlLabel value="exact" control={<Radio />} label="₦" />
                     <FormControlLabel value="percent" control={<Radio />} label="%" />
                   </RadioGroup>
-                </Grid>
-              </Grid>
-            </Grid>
-            <br />
-            <Grid item>
-              <Grid container spacing={2}>
-                <Grid item>
-                  <Typography variant="h6">VAT(7.5%):</Typography>
-                </Grid>
-                <Grid item>
-                  <Typography variant="h6">₦{formatNumberToIntl(vatTotal)}</Typography>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item>
-              <Grid container spacing={2}>
-                <Grid item>
-                  <Typography variant="h6">Grand Total:</Typography>
-                </Grid>
-                <Grid item>
-                  <Typography variant="h6">₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -1123,11 +1161,48 @@ function EstimateForm(props: IProps) {
               />
             </Grid>
           </Grid>
+          <Grid item xs={12}
+            sx={{
+              display: 'flex',
+              alignItems: 'left',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              mt: 2, mb: 2
+            }}
+          >
+            <Grid item>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%):</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(vatTotal)}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total:</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
           {parseInt(values.depositAmount) > 0 && parseInt(values.depositAmount) <= grandTotal && (
-            <Grid item xs={12}>
+            <Grid item xs={12}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
               <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
               <LoadingButton
                 type="submit"
+                size={document.documentElement.clientWidth <= 375 ? 'small' : 'large'}
                 loading={saveStatus}
                 disabled={
                   saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
@@ -1145,6 +1220,7 @@ function EstimateForm(props: IProps) {
               </LoadingButton>
               <LoadingButton
                 sx={{ ml: 2 }}
+                size={document.documentElement.clientWidth <= 375 ? 'small' : 'large'}
                 type="submit"
                 loading={sendStatus}
                 disabled={values.status === ESTIMATE_STATUS.invoiced}

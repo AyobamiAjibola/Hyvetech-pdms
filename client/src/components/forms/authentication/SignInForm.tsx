@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Form, useFormikContext } from 'formik';
-import { Grid, InputAdornment, Link } from '@mui/material';
+import { Grid, InputAdornment } from '@mui/material';
 import TextInputField from '../fields/TextInputField';
-import { VerifiedUser, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Lock, VerifiedUser, Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { ISignInModel } from '@app-interfaces';
 import signInModel from '../models/signInModel';
 import { LoadingButton } from '@mui/lab';
 import useAppSelector from '../../../hooks/useAppSelector';
 import './signInForms.css';
+import { Link } from 'react-router-dom';
 
 function SignInForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -55,7 +56,7 @@ function SignInForm() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Visibility />
+                  <Lock />
                 </InputAdornment>
               ),
               endAdornment: (
@@ -66,7 +67,27 @@ function SignInForm() {
             }}
           />
         </Grid>
-        <Grid item container my={2} justifyContent="space-between" alignItems="center" xs>
+
+        <Grid item container xs spacing={2} my={3} justifyContent="space-between" alignItems="center">
+          <Grid item xs={6}>
+            <Link style={{ color: '#FBA91A' }} to="/garage/register">
+              Create Account
+            </Link>
+          </Grid>
+          <Grid item>
+            <LoadingButton
+              loading={authReducer.signingInStatus === 'loading'}
+              type="submit"
+              size="large"
+              fullWidth
+              variant="contained"
+              color="primary">
+              Login
+            </LoadingButton>
+          </Grid>
+        </Grid>
+
+        {/* <Grid item container my={2} justifyContent="space-between" alignItems="center" xs>
           <Grid item />
           <Grid item>
             <Link>Forgot my password</Link>
@@ -82,7 +103,7 @@ function SignInForm() {
             color="primary">
             Login
           </LoadingButton>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Form>
   );

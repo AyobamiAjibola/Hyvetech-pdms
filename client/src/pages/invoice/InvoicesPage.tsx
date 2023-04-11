@@ -6,7 +6,7 @@ import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
 import moment from 'moment';
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { Cancel, Edit, Visibility } from '@mui/icons-material';
+import { Cancel, Edit } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import useInvoice from '../../hooks/useInvoice';
 import AppModal from '../../components/modal/AppModal';
@@ -37,7 +37,7 @@ function InvoicesPage() {
 
   const invoice = useInvoice();
   const navigate = useNavigate();
-  const { isTechAdmin } = useAdmin();
+  const { isTechAdmin, isSuperAdmin } = useAdmin();
   const routerQuery = useRouterQuery();
 
   useEffect(() => {
@@ -94,77 +94,47 @@ function InvoicesPage() {
     transactionReducer.verifyRefundCustomerStatus,
   ]);
 
-  const columns = useMemo(() => {
+  const superAdminColumns = useMemo(() => {
     return [
       {
-        field: 'id',
-        headerName: 'ID',
+        field: 'createdAt',
+        headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
+        width: 150,
+        type: 'string',
+        valueFormatter: ({ value }) => {
+          return value ? moment(value).format('DD/MM/YYYY') : '-';
+        },
         sortable: true,
-        type: 'number',
+        sortingOrder: ['desc'],
       },
       {
         field: 'code',
-        headerName: 'Code',
+        headerName: 'Invoice #',
         headerAlign: 'center',
         align: 'center',
         sortable: true,
         type: 'number',
+        width: 100,
+      },
+      {
+        field: 'name',
+        headerName: 'Name of workshop',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 200,
+        sortable: true,
+        valueGetter: param => {
+          const partner = param.row.estimate?.partner;
+
+          return partner ? `${partner?.name}` : '';
+        },
       },
       {
         field: 'fullName',
-        headerName: 'Full Name',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
-        width: 250,
-        sortable: true,
-        valueGetter: param => {
-          const estimate = param.row.estimate;
-          const customer = estimate.customer;
-
-          return `${customer?.firstName || ''} ${customer?.lastName || ''}`;
-        },
-      },
-      {
-        field: 'status',
-        headerName: 'Status',
-        headerAlign: 'center',
-        align: 'center',
-        sortable: true,
-        type: 'string',
-        renderCell: params => {
-          return params.row.status === INVOICE_STATUS.paid ? (
-            <Chip label={INVOICE_STATUS.paid} size="small" color="success" />
-          ) : params.row.status === INVOICE_STATUS.deposit ? (
-            <Chip label={INVOICE_STATUS.deposit} size="small" color="warning" />
-          ) : params.row.status === INVOICE_STATUS.overDue ? (
-            <Chip label={INVOICE_STATUS.overDue} size="small" color="error" />
-          ) : null;
-        },
-      },
-      {
-        field: 'updateStatus',
-        headerName: 'Update Status',
-        headerAlign: 'center',
-        align: 'center',
-        sortable: true,
-        type: 'string',
-        width: 180,
-        renderCell: params => {
-          return params.row.updateStatus === INVOICE_STATUS.update.sent ? (
-            <Chip label={INVOICE_STATUS.update.sent} size="small" color="success" />
-          ) : params.row.updateStatus === INVOICE_STATUS.update.draft ? (
-            <Chip label={INVOICE_STATUS.update.draft} size="small" color="info" />
-          ) : params.row.updateStatus === INVOICE_STATUS.update.refund ? (
-            <Chip label={INVOICE_STATUS.update.refund} size="small" color="error" />
-          ) : null;
-        },
-      },
-      {
-        field: 'phone',
-        headerName: 'Phone',
+        headerName: 'Customer Name',
         headerAlign: 'center',
         align: 'center',
         type: 'string',
@@ -172,11 +142,29 @@ function InvoicesPage() {
         sortable: true,
         valueGetter: param => {
           const estimate = param.row.estimate;
-          const customer = estimate.customer;
+          const customer = estimate?.customer;
 
-          return `${customer?.phone || ''}`;
+          return `${customer?.firstName || ''} ${customer?.lastName || ''}`;
         },
       },
+      // {
+      //   field: 'updateStatus',
+      //   headerName: 'Update Status',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   sortable: true,
+      //   type: 'string',
+      //   width: 180,
+      //   renderCell: params => {
+      //     return params.row.updateStatus === INVOICE_STATUS.update.sent ? (
+      //       <Chip label={INVOICE_STATUS.update.sent} size="small" color="success" />
+      //     ) : params.row.updateStatus === INVOICE_STATUS.update.draft ? (
+      //       <Chip label={INVOICE_STATUS.update.draft} size="small" color="info" />
+      //     ) : params.row.updateStatus === INVOICE_STATUS.update.refund ? (
+      //       <Chip label={INVOICE_STATUS.update.refund} size="small" color="error" />
+      //     ) : null;
+      //   },
+      // },
       {
         field: 'model',
         headerName: 'Vehicle',
@@ -187,9 +175,9 @@ function InvoicesPage() {
         sortable: true,
         valueGetter: param => {
           const estimate = param.row.estimate;
-          const vehicle = estimate.vehicle;
+          const vehicle = estimate?.vehicle;
 
-          return `${vehicle.modelYear} ${vehicle.make} ${vehicle.model} (${vehicle.plateNumber})`;
+          return vehicle ? `${vehicle?.modelYear} ${vehicle?.make} ${vehicle?.model} (${vehicle?.plateNumber})` : '';
         },
       },
       {
@@ -203,49 +191,28 @@ function InvoicesPage() {
       },
       {
         field: 'depositAmount',
-        headerName: 'Deposit Amount',
+        headerName: 'Amount Paid',
         headerAlign: 'center',
         align: 'center',
         type: 'number',
         width: 150,
         sortable: true,
       },
-      {
-        field: 'dueAmount',
-        headerName: 'Due Amount',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'number',
-        width: 150,
-        sortable: true,
-        valueFormatter: ({ value }) => {
-          return value ? (Math.sign(value) === -1 ? 0 : value) : 0;
-        },
-      },
-      {
-        field: 'refundable',
-        headerName: 'Due Refund',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'number',
-        width: 150,
-        sortable: true,
-      },
-      {
-        field: 'createdAt',
-        headerName: 'Created Date',
-        headerAlign: 'center',
-        align: 'center',
-        width: 200,
-        type: 'string',
-        valueFormatter: ({ value }) => {
-          return value ? moment(value).format('LLL') : '-';
-        },
-        sortable: true,
-      },
+      // {
+      //   field: 'dueAmount',
+      //   headerName: 'Due Amount',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   type: 'number',
+      //   width: 150,
+      //   sortable: true,
+      //   valueFormatter: ({ value }) => {
+      //     return value ? (Math.sign(value) === -1 ? 0 : value) : 0;
+      //   },
+      // },
       {
         field: 'updatedAt',
-        headerName: 'Modified Date',
+        headerName: 'Last Modified',
         headerAlign: 'center',
         align: 'center',
         width: 200,
@@ -255,50 +222,50 @@ function InvoicesPage() {
         },
         sortable: true,
       },
-      {
-        field: 'actions',
-        type: 'actions',
-        headerAlign: 'center',
-        align: 'center',
-        getActions: (params: any) => [
-          <GridActionsCellItem
-            key={0}
-            icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-            onClick={() => {
-              void dispatch(getInvoicesAction());
-              const invoice = params.row as IInvoice;
-              const estimate = invoice.estimate;
+      // {
+      //   field: 'actions',
+      //   type: 'actions',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   getActions: (params: any) => [
+      //     <GridActionsCellItem
+      //       key={0}
+      //       icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+      //       onClick={() => {
+      //         void dispatch(getInvoicesAction());
+      //         const invoice = params.row as IInvoice;
+      //         const estimate = invoice.estimate;
 
-              navigate(`/invoices/${invoice.id}`, { state: { invoice, estimate } });
-            }}
-            label="View"
-            showInMenu={false}
-          />,
-          <GridActionsCellItem
-            key={2}
-            icon={<Edit sx={{ display: isTechAdmin ? 'block' : 'none', color: 'limegreen' }} />}
-            disabled={!isTechAdmin}
-            onClick={() => {
-              const _invoice = params.row as IInvoice;
+      //         navigate(`/invoices/${invoice.id}`, { state: { invoice, estimate } });
+      //       }}
+      //       label="View"
+      //       showInMenu={false}
+      //     />,
+      //     <GridActionsCellItem
+      //       key={2}
+      //       icon={<Edit sx={{ display: isTechAdmin ? 'block' : 'none', color: 'limegreen' }} />}
+      //       disabled={!isTechAdmin}
+      //       onClick={() => {
+      //         const _invoice = params.row as IInvoice;
 
-              invoice.onEdit(_invoice.id);
-            }}
-            label="Edit"
-            showInMenu={false}
-          />,
-          <GridActionsCellItem
-            key={2}
-            icon={<Cancel sx={{ color: 'indianred' }} />}
-            onClick={() => {
-              //
-            }}
-            label="Delete"
-            showInMenu={false}
-          />,
-        ],
-      },
+      //         invoice.onEdit(_invoice.id);
+      //       }}
+      //       label="Edit"
+      //       showInMenu={false}
+      //     />,
+      //     <GridActionsCellItem
+      //       key={2}
+      //       icon={<Cancel sx={{ color: 'indianred' }} />}
+      //       onClick={() => {
+      //         //
+      //       }}
+      //       label="Delete"
+      //       showInMenu={false}
+      //     />,
+      //   ],
+      // },
     ] as GridColDef<IInvoice>[];
-  }, [dispatch, invoice, isTechAdmin, navigate]);
+  }, [dispatch, invoice, isSuperAdmin, navigate]);
 
   const techColumns = useMemo(() => {
     return [
@@ -365,8 +332,9 @@ function InvoicesPage() {
         width: 200,
         sortable: true,
         valueGetter: param => {
+          console.log(param)
           const estimate = param.row.estimate;
-          const customer = estimate.customer;
+          const customer = estimate?.customer;
 
           return `${customer?.firstName || ''} ${customer?.lastName || ''}`;
         },
@@ -381,9 +349,9 @@ function InvoicesPage() {
         sortable: true,
         valueGetter: param => {
           const estimate = param.row.estimate;
-          const vehicle = estimate.vehicle;
+          const vehicle = estimate?.vehicle;
 
-          return `${vehicle.modelYear} ${vehicle.make} ${vehicle.model} (${vehicle.plateNumber})`;
+          return vehicle ? `${vehicle?.modelYear} ${vehicle?.make} ${vehicle?.model} (${vehicle?.plateNumber})` : '';
         },
       },
       {
@@ -507,7 +475,9 @@ function InvoicesPage() {
           <AppDataGrid
             rows={invoice.invoices}
             // columns={columns}
-            columns={isTechAdmin ? techColumns : columns}
+            columns={isTechAdmin ? techColumns :
+                      isSuperAdmin ? superAdminColumns : []
+                    }
             showToolbar
             loading={invoiceReducer.getInvoicesStatus === 'loading'}
           />

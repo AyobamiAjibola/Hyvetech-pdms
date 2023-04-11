@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IBillingInformation, IEstimate } from '@app-models';
 import { useLocation } from 'react-router-dom';
-import { Alert, Avatar, Button, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Divider, Grid, Stack, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -152,12 +152,12 @@ function EstimatePage() {
           #{estimate.code}
         </Typography>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Box component='div' sx={{ display: 'flex', justifyContent: {sm: 'flex-end', xs: 'center'} }}>
           {
             (
               ( ((estimate.status).toLowerCase() === 'sent') || ((estimate.status).toLowerCase() === 'draft') ) &&
-              
-              <Button style={{ marginRight: 20 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
+
+              <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
                 {generating ? 'Generating...' : 'Generate Invoice'}
               </Button>
             )
@@ -166,19 +166,63 @@ function EstimatePage() {
           <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
             {downloading ? 'Downloading...' : 'Download Pdf'}
           </Button>
-        </div>
+        </Box>
 
-        <Grid container my={3} justifyContent="space-between" alignItems="center">
+        <Grid container my={3}
+          // justifyContent="space-between" alignItems="center"
+          sx={{
+            display: 'flex',
+            flexDirection: {xs: 'column', sm: 'row'},
+            justifyContent: {xs: 'left', sm: 'space-between'},
+            alignItems: {xs: 'left', sm: 'center'}
+          }}
+        >
+          <Grid item xs
+            sx={{
+              mb: {xs: 2, sm: 0}
+            }}
+          >
+            <Grid item xs>
+              <img
+                alt=""
+                width="20%"
+                crossOrigin="anonymous"
+                src={`${settings.api.baseURL}/${estimate?.partner?.logo}`}
+              />
+            </Grid>
+            <Typography gutterBottom sx={{fontSize: {xs: '14px', sm: '16px'}, fontWeight: 600}}>
+              {estimate?.partner.name}
+            </Typography>
+            <Stack>
+              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                {estimate?.partner?.contact.address}
+              </Typography>
+              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                {estimate?.partner?.contact?.district} {estimate?.partner?.contact?.state}
+              </Typography>
+              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                {estimate?.partner.phone}
+              </Typography>
+              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                {estimate?.partner.email}
+              </Typography>
+            </Stack>
+          </Grid>
           <Grid item xs>
-            <Typography variant="h6" gutterBottom>
+            <Typography gutterBottom
+              sx={{fontWeight: 600, fontSize: {xs: '14px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
+            >
               Billing Information
             </Typography>
             <Stack>
-              <Typography variant="body1" gutterBottom>
+              <Typography
+                gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
+                sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
+              >
                 {owner}
               </Typography>
               {billingInformation ? (
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom sx={{textAlign: {sm: 'right', xs: 'left'}}}>
                   <Typography variant="body2" gutterBottom>
                     {billingInformation.address} {billingInformation.district} {billingInformation.state}
                   </Typography>
@@ -187,7 +231,9 @@ function EstimatePage() {
                   </Typography>
                 </Typography>
               ) : (
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" gutterBottom
+                  sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
+                >
                   <p>{_driver?.email || ''}</p>
                   <p>{_driver?.phone || ''}</p>
                   {estimate.address}
@@ -195,33 +241,7 @@ function EstimatePage() {
               )}
             </Stack>
           </Grid>
-          <Grid item xs>
-            <img
-              alt=""
-              width="20%"
-              crossOrigin="anonymous"
-              src={`${settings.api.baseURL}/${estimate?.partner?.logo}`}
-            />
-          </Grid>
-          <Grid item>
-            <Typography variant="h6" gutterBottom>
-              {estimate?.partner.name}
-            </Typography>
-            <Stack>
-              <Typography variant="body1" gutterBottom>
-                {estimate?.partner?.contact.address}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                {estimate?.partner?.contact?.district} {estimate?.partner?.contact?.state}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                {estimate?.partner.phone}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                {estimate?.partner.email}
-              </Typography>
-            </Stack>
-          </Grid>
+
         </Grid>
         <Grid container>
           <Grid item xs>
@@ -235,24 +255,34 @@ function EstimatePage() {
         ) : (
           <Grid container my={3}>
             <Grid item xs>
-              <Typography gutterBottom>Vehicle</Typography>
-              <Typography>
+              <Typography gutterBottom sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}, mr: {xs: 2, sm: 0}}}>Vehicle</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, mr: {xs: 2, sm: 0}}}>
                 {estimate?.vehicle.modelYear} {estimate?.vehicle.make} {estimate?.vehicle.model}
               </Typography>
             </Grid>
             <Grid item xs>
-              <Typography gutterBottom>Reg. No</Typography>
-              <Typography>{estimate?.vehicle.plateNumber}</Typography>
+              <Typography gutterBottom sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}}}>Reg. No</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                {estimate?.vehicle.plateNumber}
+              </Typography>
             </Grid>
             <Grid item xs>
-              <Typography gutterBottom>Mileage</Typography>
-              <Typography>
+              <Typography gutterBottom sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}, mr: {xs: 2, sm: 0}}}>Mileage</Typography>
+              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, mr: {xs: 2, sm: 0}}}>
                 {estimate?.vehicle.mileageValue} {estimate?.vehicle.mileageUnit}
               </Typography>
             </Grid>
             <Grid item xs>
-              <Typography gutterBottom>VIN</Typography>
-              <Typography>{estimate?.vehicle.vin}</Typography>
+              <Typography gutterBottom sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}}}>
+                VIN
+              </Typography>
+              <Typography
+                sx={{
+                  width: '100%',
+                  wordBreak: "break-all",
+                  fontSize: {xs: '13px', sm: '16px'}
+                }}
+              >{estimate?.vehicle.vin}</Typography>
             </Grid>
           </Grid>
         )}
@@ -270,19 +300,34 @@ function EstimatePage() {
           justifyContent="center"
           alignItems="center"
           columns={14}>
-          <Grid item xs={2}>
+          <Grid item xs={1} sx={{display: {xs: 'none', sm: 'block'}}}>
             <Avatar src={InsightImg} sx={{ width: 20, height: 20 }} />
           </Grid>
-          <Grid item xs={3}>
-            Item Description
+          <Grid item xs={4} sm={3}
+            sx={{
+              width: '100%',
+              wordBreak: "break-word",
+              fontWeight: 600,
+              fontSize: {xs: '13px', sm: '16px'}
+            }}
+          >
+            {/* Item Description */}
+            {document.documentElement.clientWidth <= 375 ? 'Item Desc' : 'Item Description'}
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={3} sm={3} sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}>
             Warranty
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4} sm={3}
+            sx={{
+              width: '100%',
+              wordBreak: "break-word",
+              fontWeight: 600,
+              fontSize: {xs: '13px', sm: '16px'}
+            }}
+          >
             Unit Cost x Qty
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={3} sx={{textAlign: {xs: 'right'}, fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}}}>
             Amount
           </Grid>
         </Grid>
@@ -301,17 +346,21 @@ function EstimatePage() {
                 sx={{ pb: 2.5 }}
                 borderBottom="0.01px solid"
                 borderColor="#676767">
-                <Grid item xs={2} />
-                <Grid item xs={3}>
+                <Grid item xs={1} sx={{display: {xs: 'none', sm: 'block'}}}/>
+                <Grid item xs={4} sm={3}
+                  sx={{fontSize: {xs: '13px', sm: '16px'}, wordBreak: 'break-word', width: '100%'}}
+                >
                   {part.name}
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} sm={3}
+                  sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}
+                >
                   {part.warranty.warranty} {part.warranty.interval}
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={4} sm={3} sx={{textAlign: {xs:'left'}, fontSize: {xs: '13px', sm: '16px'}}}>
                   {formatNumberToIntl(+part.price)} x {part.quantity.quantity} {part.quantity.unit}
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} sx={{textAlign: {xs:'right'}, fontSize: {xs: '13px', sm: '16px'}}}>
                   {amount}
                 </Grid>
               </Grid>
@@ -329,17 +378,19 @@ function EstimatePage() {
                 sx={{ pb: 2.5 }}
                 borderBottom="0.01px solid"
                 borderColor="#676767">
-                <Grid item xs={2} />
-                <Grid item xs={3}>
+                <Grid item xs={1} sx={{display: {xs: 'none', sm: 'block'}}}/>
+                <Grid item xs={4} sm={3}
+                  sx={{fontSize: {xs: '13px', sm: '16px'}}}
+                >
                   {labour.title}
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} sm={3} sx={{fontSize: {xs: '13px', sm: '16px'}}}>
                   -
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={4} sm={3} sx={{textAlign: {xs:'left'}, fontSize: {xs: '13px', sm: '16px'}}}>
                   {formatNumberToIntl(+labour.cost)} x 1
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} sx={{textAlign: {xs:'right'}, fontSize: {xs: '13px', sm: '16px'}}}>
                   {formatNumberToIntl(+labour.cost)}
                 </Grid>
               </Grid>
@@ -349,18 +400,18 @@ function EstimatePage() {
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>
+            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
               Subtotal: {formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}
             </Typography>
-            <Typography gutterBottom>
-              VAT(7.5%):
+            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+              VAT(7.5%):{' '}
               {
                 // @ts-ignore
                 formatNumberToIntl(calculateTaxTotal(estimate))
               }
             </Typography>
-            <Typography gutterBottom>
-              Discount:
+            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+              Discount:{' '}
               {
                 // @ts-ignore
                 `(${formatNumberToIntl(
@@ -378,7 +429,7 @@ function EstimatePage() {
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom>
+            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
               TOTAL:{' '}
               {formatNumberToIntl(
                 estimate.partsTotal +

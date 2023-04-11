@@ -203,7 +203,9 @@ const ExpenseCreate = () => {
         }}>
         {() => (
           <Form autoComplete="off" autoCorrect="off">
-            <Grid spacing={8} container alignItems={'center'} justifyContent="flex-start">
+            <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 8}
+              container alignItems={'center'} justifyContent="flex-start"
+            >
               <Grid item>
                 <Typography
                   onClick={() => navigate(-1)}
@@ -229,8 +231,16 @@ const ExpenseCreate = () => {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid style={{ marginTop: 40 }} container justifyContent="center" alignItems="center">
-              <Grid item xs={8} md={6}>
+            <Grid
+              sx={{
+                marginTop: 5,
+                display: 'flex',
+                justifyContent: {sm: "center", xs: "normal"},
+                alignItems: "center"
+              }}
+              container
+            >
+              <Grid item sm={8} md={6} xs={10}>
                 <Autocomplete
                   filterOptions={(options, state) => {
                     return options.filter(item => item.name.toLowerCase().startsWith(state.inputValue.toLowerCase()));
@@ -238,7 +248,7 @@ const ExpenseCreate = () => {
                   inputValue={inputValue}
                   value={beneficiary}
                   loading={store.getExpensesStatus === 'loading'}
-                  getOptionLabel={option => `${option.name} ${option.bankName ? option.bankName: ''} ${option.accountNumber ? option.accountNumber : ''}`}
+                  getOptionLabel={option => `${option.name} | ${option.bankName ? option.bankName: ''} | ${option.accountNumber ? option.accountNumber : ''}`}
                   isOptionEqualToValue={(option, value) => option.name === value.name}
                   onChange={(_: any, newValue) => {
                     setValue(newValue);
@@ -282,7 +292,7 @@ const ExpenseCreate = () => {
             </Grid>
             {beneficiary && (
               <Grid style={{ padding: 20 }} xs={12} container>
-                <Grid item xs={11}>
+                <Grid item sm={11} xs={12}>
                   <Grid xs={12} container>
                     <Typography>{beneficiary?.name}</Typography> <br />
                   </Grid>
@@ -297,8 +307,10 @@ const ExpenseCreate = () => {
                 </Grid>
               </Grid>
             )}
-            <Grid spacing={8} style={{ marginTop: 20 }} xs={12} container>
-              <Grid item md={6} sm={12}>
+            <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 8}
+              style={{ marginTop: 20 }} xs={12} container
+            >
+              <Grid item md={6} sm={12} xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     disableFuture
@@ -319,8 +331,8 @@ const ExpenseCreate = () => {
                 </LocalizationProvider>
               </Grid>
             </Grid>
-            <Grid spacing={8} style={{ marginTop: 5 }} xs={12} container>
-            <Grid item md={6} sm={12}>
+            <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 8} style={{ marginTop: 5 }} xs={12} container>
+              <Grid item md={6} sm={12} xs={12}>
                 <Autocomplete
                   getOptionLabel={option => option.name}
                   renderInput={props => (
@@ -347,7 +359,7 @@ const ExpenseCreate = () => {
                   options={store.expenseCategories}
                 />
               </Grid>
-              <Grid item md={6} sm={12}>
+              <Grid item md={6} sm={12} xs={12}>
                 <TextField
                   value={amount}
                   onChange={e => setAmount(e.target.value)}
@@ -359,8 +371,10 @@ const ExpenseCreate = () => {
                 />
               </Grid>
             </Grid>
-            <Grid spacing={8} xs={12} style={{ marginTop: 5 }} container>
-              <Grid item md={6} sm={12}>
+            <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 8}
+              xs={12} style={{ marginTop: 5 }} container
+            >
+              <Grid item md={6} sm={12} xs={12}>
                 <Autocomplete
                   getOptionLabel={option => option.name}
                   renderInput={props => (
@@ -399,7 +413,7 @@ const ExpenseCreate = () => {
                   New Expense type
                 </Typography>
               </Grid>
-              <Grid item md={6} sm={12}>
+              <Grid item md={6} sm={12} xs={12}>
                 <TextField
                   value={note}
                   onChange={e => setNote(e.target.value)}
@@ -412,8 +426,10 @@ const ExpenseCreate = () => {
                 />
               </Grid>
             </Grid>
-            <Grid spacing={8} xs={12} style={{ marginTop: 5 }} container>
-              <Grid item md={6} sm={12}>
+            <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 8}
+              xs={12} style={{ marginTop: 5 }} container
+            >
+              <Grid item md={6} sm={12} xs={12}>
                 {expenseReducer.invoiceCode === ''
                   ? <Autocomplete
                       getOptionLabel={option => option.code}
@@ -449,7 +465,7 @@ const ExpenseCreate = () => {
                     />
                 }
               </Grid>
-              <Grid item md={6} sm={12}>
+              <Grid item md={6} sm={12} xs={12}>
                 <TextField
                   value={reference}
                   onChange={e => setReference(e.target.value)}
@@ -481,6 +497,7 @@ const ExpenseCreate = () => {
         <AppModal
           fullWidth
           size="md"
+          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           show={showBenenficiaryForm}
           Content={
             <Formik
@@ -501,8 +518,10 @@ const ExpenseCreate = () => {
                   <FaPlus style={{ marginRight: 8 }} />
                   New Beneficiary
                 </Typography>
-                <Grid spacing={10} container>
-                  <Grid item md={6} sm={12}>
+                <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 10}
+                  container
+                >
+                  <Grid item md={6} xs={12}>
                     <TextField
                       value={name}
                       onChange={e => setName(e.target.value)}
@@ -512,7 +531,7 @@ const ExpenseCreate = () => {
                       label="Benenficiary Name"
                     />
                   </Grid>
-                  <Grid item md={6} sm={12}>
+                  <Grid item md={6} xs={12}>
                     <TextField
                       value={accountName}
                       onChange={e => setAccountName(e.target.value)}
@@ -523,8 +542,10 @@ const ExpenseCreate = () => {
                     />
                   </Grid>
                 </Grid>
-                <Grid style={{ marginTop: 2 }} spacing={10} container>
-                  <Grid item md={6} sm={12}>
+                <Grid style={{ marginTop: 2 }} spacing={document.documentElement.clientWidth <= 375 ? 4 : 10}
+                  container
+                >
+                  <Grid item md={6} xs={12}>
                     <Autocomplete
                       getOptionLabel={option => option.name}
                       renderInput={props => (
@@ -552,7 +573,7 @@ const ExpenseCreate = () => {
                       loading={miscStore.getBanksStatus === 'loading'}
                     />
                   </Grid>
-                  <Grid item md={6} sm={12}>
+                  <Grid item md={6} xs={12}>
                     <TextField
                       value={accountNumber}
                       onChange={e => setAccountNumber(e.target.value.replace(" ", ""))}
@@ -590,6 +611,7 @@ const ExpenseCreate = () => {
         <AppModal
           fullWidth
           size="md"
+          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           show={showCategoryForm}
           Content={
             <Formik
@@ -610,8 +632,10 @@ const ExpenseCreate = () => {
                   <FaPlus style={{ marginRight: 8 }} />
                   New Expense Category
                 </Typography>
-                <Grid spacing={10} container>
-                  <Grid item md={12} sm={12}>
+                <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 10}
+                  container
+                >
+                  <Grid item md={12} xs={12}>
                     <TextField
                       value={name}
                       onChange={e => setName(e.target.value)}
@@ -646,6 +670,7 @@ const ExpenseCreate = () => {
         <AppModal
           fullWidth
           size="md"
+          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           show={showExpenseTypeForm}
           Content={
             <Formik
@@ -666,8 +691,10 @@ const ExpenseCreate = () => {
                   <FaPlus style={{ marginRight: 8 }} />
                   New Expense Type
                 </Typography>
-                <Grid spacing={10} container>
-                  <Grid item md={12} sm={12}>
+                <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 10}
+                  container
+                >
+                  <Grid item md={12} xs={12}>
                     <TextField
                       value={name}
                       onChange={e => setName(e.target.value)}

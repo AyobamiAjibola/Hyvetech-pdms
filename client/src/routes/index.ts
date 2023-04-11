@@ -16,6 +16,7 @@ import {
   SvgIconComponent,
   TaxiAlert,
   TimeToLeave,
+  HomeRepairService
 } from '@mui/icons-material';
 import React from 'react';
 
@@ -27,7 +28,7 @@ export interface ISideNav {
 }
 
 const SignInPage = React.lazy(() => import('../pages/authentication/SignInPage'));
-const GarageSignInPage = React.lazy(() => import('../pages/authentication/GarageSignInPage'));
+// const GarageSignInPage = React.lazy(() => import('../pages/authentication/GarageSignInPage'));
 const GarageSignUpPage = React.lazy(() => import('../pages/authentication/GarageSignUpPage'));
 const HomePage = React.lazy(() => import('../context/AppContextProvider'));
 
@@ -42,12 +43,12 @@ export const sideNavs: ISideNav[] = [
 
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
   { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },
-  {
-    tag: 'super',
-    name: 'Check Lists',
-    path: '/checkLists',
-    Icon: PlaylistAddCheck,
-  },
+  // {
+  //   tag: 'super',
+  //   name: 'Check Lists',
+  //   path: '/checkLists',
+  //   Icon: PlaylistAddCheck,
+  // },
   {
     tag: 'techs',
     name: 'Estimates',
@@ -74,27 +75,28 @@ export const sideNavs: ISideNav[] = [
     path: '/expenses',
     Icon: CurrencyExchange,
   },
-  { tag: 'drivers', name: 'Drivers', path: '/drivers', Icon: TaxiAlert },
+  // { tag: 'drivers', name: 'Drivers', path: '/drivers', Icon: TaxiAlert },
   // {
   //   tag: 'techs',
   //   name: 'Technicians',
   //   path: '/technicians',
   //   Icon: HomeRepairService,
   // },
-  { tag: 'super', name: 'Partners', path: '/partners', Icon: Handshake },
-  {
-    tag: 'super',
-    name: 'Appointments',
-    path: '/appointments',
-    Icon: BookOnline,
-  },
-  { tag: 'super', name: 'Transactions', path: '/transactions', Icon: Payments },
+  // { tag: 'super', name: 'Partners', path: '/partners', Icon: Handshake },
+  // {
+  //   tag: 'super',
+  //   name: 'Appointments',
+  //   path: '/appointments',
+  //   Icon: BookOnline,
+  // },
+  // { tag: 'super', name: 'Transactions', path: '/transactions', Icon: Payments },
   { tag: 'super', name: 'Vehicles', path: '/vehicles', Icon: TimeToLeave },
+  { tag: 'super', name: 'Workshops', path: '/workshops', Icon: HomeRepairService },
 ];
 
 export const routes = [
   { name: 'Sign in', path: '/', Element: SignInPage, isPublic: true },
-  { name: 'Workshop Login', path: '/garage/login', Element: GarageSignInPage, isPublic: true },
+  { name: 'Workshop Login', path: '/garage/login', Element: SignInPage, isPublic: true },
   { name: 'Workshop Register', path: '/garage/register', Element: GarageSignUpPage, isPublic: true },
   {
     name: 'Home',

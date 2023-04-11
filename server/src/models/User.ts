@@ -42,7 +42,12 @@ export const $saveUserSchema: Joi.SchemaMap<UserSchemaType> = {
   firstName: Joi.string().required().label('firstName'),
   lastName: Joi.string().required().label('lastName'),
   email: Joi.string().required().label('email'),
-  password: Joi.string().required().label('password'),
+  password: Joi.string()
+    .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+    .messages({
+      "string.pattern.base": `Password does not meet requirement.`,
+    })
+    .required().label('password'),
   rawPassword: Joi.string().optional().label('rawPassword'),
   phone: Joi.string().required().label('phone'),
   roleId: Joi.number().required().label('roleId'),
@@ -51,7 +56,12 @@ export const $saveUserSchema: Joi.SchemaMap<UserSchemaType> = {
 export const $updateUserSchema: Joi.SchemaMap<UserSchemaType> = {
   ...$saveUserSchema,
   id: Joi.number().required().label('id'),
-  password: Joi.string().optional().label('password'),
+  password: Joi.string()
+    .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+    .messages({
+      "string.pattern.base": `Password does not meet requirement.`,
+    })
+    .optional().label('password'),
 };
 
 @Table({

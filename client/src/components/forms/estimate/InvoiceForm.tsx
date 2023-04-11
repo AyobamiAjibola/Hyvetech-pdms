@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import { Checkbox, Divider, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography } from '@mui/material';
+import { Button, Checkbox, Divider, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Save, Send } from '@mui/icons-material';
 import estimateModel, { IEstimateValues } from '../models/estimateModel';
@@ -385,16 +385,17 @@ function InvoiceForm(props: IProps) {
             </Typography>
             <Divider orientation="horizontal" />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item sm={3} xs={12}>
             <TextInputField
               onChange={handleChange}
               disabled
+              fullWidth
               label={fields.firstName.label}
               value={values.firstName}
               name={fields.firstName.name}
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item sm={3} xs={12}>
             <TextInputField
               onChange={handleChange}
               disabled
@@ -403,7 +404,7 @@ function InvoiceForm(props: IProps) {
               name={fields.lastName.name}
             />
           </Grid>
-          <Grid item xs={2}>
+          <Grid item sm={2} xs={12}>
             <TextInputField
               type="tel"
               onChange={handleChange}
@@ -413,8 +414,8 @@ function InvoiceForm(props: IProps) {
               name={fields.phone.name}
             />
           </Grid>
-          <Grid item container xs spacing={0.2}>
-            <Grid item xs={3}>
+          <Grid item container sm={4} xs={12} spacing={0.2}>
+            <Grid item sm={3} xs={4}>
               <SelectField
                 data={[
                   { label: 'Home', value: 'Home' },
@@ -428,7 +429,7 @@ function InvoiceForm(props: IProps) {
                 fullWidth
               />
             </Grid>
-            <Grid item xs={9}>
+            <Grid item sm={9} xs={8}>
               <TextInputField
                 onChange={handleChange}
                 disabled
@@ -464,7 +465,7 @@ function InvoiceForm(props: IProps) {
                               return (
                                 <React.Fragment key={`${value}`}>
                                   {value === 'name' && (
-                                    <Grid item xs={4}>
+                                    <Grid item sm={4} xs={14}>
                                       <TextField
                                         fullWidth
                                         variant="outlined"
@@ -492,7 +493,7 @@ function InvoiceForm(props: IProps) {
                                     />
                                   )}
                                   {value === 'price' && (
-                                    <Grid item xs={2}>
+                                    <Grid item sm={2} xs={14}>
                                       <TextField
                                         fullWidth
                                         variant="outlined"
@@ -509,7 +510,7 @@ function InvoiceForm(props: IProps) {
                                   )}
 
                                   {value === 'amount' && (
-                                    <Grid item xs={2}>
+                                    <Grid item sm={2} xs={10}>
                                       <TextField
                                         fullWidth
                                         variant="outlined"
@@ -525,7 +526,7 @@ function InvoiceForm(props: IProps) {
                                 </React.Fragment>
                               );
                             })}
-                            <Grid item xs={1}>
+                            <Grid item xs>
                               <IconButton onClick={() => partsProps.remove(index)}>
                                 <Remove />
                               </IconButton>
@@ -534,23 +535,48 @@ function InvoiceForm(props: IProps) {
                         );
                       })}
                     <Grid item xs>
-                      <IconButton
-                        onClick={() =>
-                          partsProps.push({
-                            name: '',
-                            warranty: { warranty: '', interval: '' },
-                            quantity: { quantity: '0', unit: '' },
-                            price: '0',
-                            amount: '0',
-                          })
-                        }>
-                        <Add />
-                      </IconButton>
+                      {document.documentElement.clientWidth <= 375
+                        ? <Button
+                            onClick={() =>
+                              partsProps.push({
+                                name: '',
+                                warranty: { warranty: '', interval: '' },
+                                quantity: { quantity: '0', unit: '' },
+                                price: '0',
+                                amount: '0',
+                              })
+                            }>
+                            {'Add Part'}
+                          </Button>
+                        : <IconButton
+                            onClick={() =>
+                              partsProps.push({
+                                name: '',
+                                warranty: { warranty: '', interval: '' },
+                                quantity: { quantity: '0', unit: '' },
+                                price: '0',
+                                amount: '0',
+                              })
+                            }>
+                            <Add />
+                          </IconButton>
+                      }
                     </Grid>
-                    <Grid item xs={12} container spacing={2} columns={13}>
-                      <Grid item xs={6} />
-                      <Grid item xs={4}>
-                        <Typography style={{ marginBottom: 10 }}>
+                    <Grid item xs={12} container spacing={2} columns={13}
+                      sx={{
+                        display: 'flex', flexDirection: 'row',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Grid sm={2} xs={0} />
+                      <Grid item sm={5} xs={6} mb={2} mt={2}>
+                        <Typography
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'left'
+                          }}
+                        >
                           Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
                         </Typography>
                         {enableTaxPart && (
@@ -560,13 +586,19 @@ function InvoiceForm(props: IProps) {
                             label={`${fields.taxPart.label} (VAT 7.5%)`}
                             variant="outlined"
                             fullWidth
-                            sx={{ mb: 2 }}
+                            sx={{ mb: 2, mt: 2 }}
                           />
                         )}
                       </Grid>
 
-                      <Grid item style={{}}>
-                        <div>
+                      <Grid item sm={4} xs={6} mb={2} mt={2}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center', justifyContent: 'right'
+                          }}
+                        >
                           <span>Apply Tax</span>
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
@@ -579,7 +611,8 @@ function InvoiceForm(props: IProps) {
           </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
-              {fields.labours.label}
+              {/* {fields.labours.label} */}
+              Service items
             </Typography>
             <Divider orientation="horizontal" />
           </Grid>
@@ -636,15 +669,28 @@ function InvoiceForm(props: IProps) {
                         );
                       })}
                     <Grid item xs>
-                      <IconButton
-                        onClick={() =>
-                          laboursProps.push({
-                            title: '',
-                            cost: '0',
-                          })
-                        }>
-                        <Add />
-                      </IconButton>
+                      {document.documentElement.clientWidth <= 375
+                        ? <Button
+                            onClick={() =>
+                              laboursProps.push({
+                                title: '',
+                                cost: '0',
+                              })
+                            }
+                          >
+                            {'Add Part'}
+                          </Button>
+                        : <IconButton
+                            onClick={() =>
+                              laboursProps.push({
+                                title: '',
+                                cost: '0',
+                              })
+                            }
+                          >
+                            <Add />
+                          </IconButton>
+                      }
                     </Grid>
                   </React.Fragment>
                 );
@@ -652,9 +698,15 @@ function InvoiceForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12} container spacing={2} columns={13}>
-            <Grid item xs={6} />
-            <Grid item xs={4}>
-              <Typography style={{ marginBottom: 10 }}>
+            <Grid item sm={4} xs={0} />
+            <Grid item sm={4} xs={6} mb={2} mt={2}>
+              <Typography
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'left'
+                }}
+              >
                 {' '}
                 Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}
               </Typography>
@@ -665,13 +717,19 @@ function InvoiceForm(props: IProps) {
                   label={`${fields.tax.label} (VAT 7.5%)`}
                   variant="outlined"
                   fullWidth
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, mt: 2}}
                 />
               )}
             </Grid>
 
-            <Grid item style={{}}>
-              <div>
+            <Grid item sm={4} xs={6} mb={2} mt={2}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center', justifyContent: 'right'
+                }}
+              >
                 <span>Apply Tax</span>
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
@@ -686,19 +744,19 @@ function InvoiceForm(props: IProps) {
           <Grid item>
             <Grid container spacing={2}>
               <Grid item>
-                <Typography variant="h6">Sub-Total:</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Sub-Total:</Typography>
               </Grid>
               <Grid item>
-                <Typography variant="h6">₦{formatNumberToIntl(subTotal)}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(subTotal)}</Typography>
               </Grid>
             </Grid>
           </Grid>
           <br />
-          <Grid container spacing={0}>
-            <Grid item xs={2}>
-              <Typography variant="h6">Discount:</Typography>
+          <Grid item mt={2} container spacing={0}>
+            <Grid item xs={2} mr={5}>
+              <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Discount:</Typography>
             </Grid>
-            <Grid container xs={10} spacing={2}>
+            <Grid container xs={8} spacing={2}>
               <Grid item>
                 <TextInputField
                   onChange={e => setDiscount(parseInt(e.target.value))}
@@ -731,30 +789,23 @@ function InvoiceForm(props: IProps) {
           <Grid style={{ marginTop: 20 }} container spacing={2}>
             <Grid item md={6}>
               <Grid item>
-                <Grid container spacing={2}>
-                  <Grid item>
-                    <Typography variant="h6">VAT(7.5%):</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="h6">₦{formatNumberToIntl(vatTotal)}</Typography>
-                  </Grid>
-                </Grid>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%): ₦{formatNumberToIntl(vatTotal)}</Typography>
               </Grid>
               <Grid item>
-                <Typography variant="h6">Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
               </Grid>
               <Grid item justifyContent="space-around" alignItems="center">
-                <Typography variant="h6">Amount Paid: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Amount Paid: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
               </Grid>
               <Grid item>
-                <Typography variant="h6">Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
               </Grid>
               <Grid item justifyContent="space-around" alignItems="center">
-                <Typography variant="h6">Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
               </Grid>
             </Grid>
 
-            <Grid item md={6}>
+            <Grid item md={6} mt={2}>
               <Grid container spacing={0.5}>
                 <Grid item xs={6}>
                   <TextInputField
@@ -790,7 +841,13 @@ function InvoiceForm(props: IProps) {
           <Grid item xs={12}>
             <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
             <Stack direction="row" spacing={2}>
               <LoadingButton
                 // disabled={values.status === ESTIMATE_STATUS.invoiced}
