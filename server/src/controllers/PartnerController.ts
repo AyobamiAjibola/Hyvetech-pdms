@@ -215,6 +215,8 @@ export default class PartnerController {
             });
           }
 
+          console.log('called oo');
+
           //Ride-Share Partner
           if (value.category === CATEGORIES[4].name) {
             mailSubject = `Welcome to Auto Hyve!`;
@@ -262,11 +264,11 @@ export default class PartnerController {
 
           const contact = await dataSources.contactDAOService.create(contactValues);
 
-          await user.$add('roles', [role]);
+          await user.$set('roles', [role]);
           await partner.$add('categories', [category]);
           await partner.$set('contact', contact);
           await partner.$set('users', user);
-          await role.$set('users', [user]);
+          await role.$add('users', [user]);
 
           const result = PartnerController.formatPartner(partner);
 
