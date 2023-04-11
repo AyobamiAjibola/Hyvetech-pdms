@@ -174,7 +174,7 @@ function PartnerPage() {
         )}
 
         <Grid item>
-          <AppCan I="manage" a="all">
+          {!admin.isSuperAdmin && <AppCan I="manage" a="all">
             <LoadingButton
               onClick={() => onDelete(partnerId)}
               endIcon={<Delete />}
@@ -183,11 +183,11 @@ function PartnerPage() {
               size="small">
               Delete
             </LoadingButton>
-          </AppCan>
+          </AppCan>}
         </Grid>
 
         <Grid item>
-          <AppCan I="manage" a="all">
+          {!admin.isSuperAdmin && <AppCan I="manage" a="all">
             <LoadingButton
               onClick={() => handleToggleAccount(partnerId)}
               // endIcon={<Delete />}
@@ -196,7 +196,7 @@ function PartnerPage() {
               size="small">
               {(partner?.users[0]?.active == true ? 'Disable Partner' : 'Enable Partner') || ''}
             </LoadingButton>
-          </AppCan>
+          </AppCan>}
         </Grid>
       </Grid>
       <PartnerPageContext.Provider

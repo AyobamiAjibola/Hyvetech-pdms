@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Divider, Grid, IconButton,
     // InputLabel, MenuItem,
     Paper, TextField
@@ -47,7 +47,7 @@ function AdminDashboard() {
   const customers = useNewCustomer();
   const rideShareReducer = useAppSelector(state => state.rideShareReducer);
   const technicianReducer = useAppSelector(state => state.technicianReducer);
-  const partnerReducer = useAppSelector(state => state.partnerReducer);
+  // const partnerReducer = useAppSelector(state => state.partnerReducer);
 
   const handleChange = () => {
     setToggle(!toggle)
@@ -92,7 +92,7 @@ function AdminDashboard() {
   }, [dashboardReducer.analytics, dashboardReducer.stackedMonthlyData, dashboardReducer.getAnalyticsStatus]);
 
   // const totalTechnicians = useMemo(() => technicianReducer.technicians.length, [technicianReducer.technicians]);
-  const totalPartners = useMemo(() => partnerReducer.partners.length, [partnerReducer.partners]);
+  // const totalPartners = useMemo(() => partnerReducer.partners.length, [partnerReducer.partners]);
 
   const handleDate = (newValue: any) => {
     setFilterDate(newValue)
@@ -228,6 +228,7 @@ function AdminDashboard() {
                   </IconButton>
                 </Box>
                 <DateRangePicker
+                  maxDate={new Date()}
                   ranges={[
                     {
                       startDate: _startDate,
@@ -258,7 +259,7 @@ function AdminDashboard() {
         >
           <Grid item container xs spacing={2}>
             <Grid item xs={12} md={3}>
-              <DataCard title="Total Partners" data={totalPartners} bgColor={green[600]} />
+              <DataCard title="Total Partners" data={(dashboardReducer.superAnalytics?.mAllPartner || 0)} bgColor={green[600]} />
             </Grid>
             <Grid item xs={12} md={3}
               sx={{

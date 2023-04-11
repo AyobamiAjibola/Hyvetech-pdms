@@ -43,6 +43,7 @@ import {
   clearGetDriverVehicleSubscriptionStatus,
   clearGetVehicleVINStatus,
 } from '../../store/reducers/vehicleReducer';
+import useAdmin from '../../hooks/useAdmin';
 
 interface IProps {
   tabMenus: ITab[];
@@ -50,7 +51,7 @@ interface IProps {
 
 export default function PartnerTab(props: IProps) {
   const [tabValue, setTabValue] = useState(0);
-
+  const { isSuperAdmin } = useAdmin()
 
   const containerRef = useRef(null);
 
@@ -106,7 +107,9 @@ export default function PartnerTab(props: IProps) {
         allowScrollButtonsMobile
       >
         {props.tabMenus.map((tab, index) => {
-          return <Tab label={tab.name} key={index} {...a11yProps(index)} />;
+          let admin = '';
+          if(tab.name === 'Account Settings') admin = tab.name;
+          return isSuperAdmin ? <Tab label={admin} key={index} {...a11yProps(index)} /> : <Tab label={tab.name} key={index} {...a11yProps(index)} />;
         })}
       </Tabs>
 

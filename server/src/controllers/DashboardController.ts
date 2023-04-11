@@ -12,6 +12,7 @@ import { HasPermission } from '../decorators';
 import { MANAGE_ALL, MANAGE_TECHNICIAN, VIEW_ANALYTICS } from '../config/settings';
 import User from '../models/User';
 import Vehicle from '../models/Vehicle';
+import Partner from '../models/Partner';
 
 export default class DashboardController {
   @HasPermission([MANAGE_ALL, VIEW_ANALYTICS, MANAGE_TECHNICIAN])
@@ -328,6 +329,10 @@ export default class DashboardController {
     return await Vehicle.findAll();
   }
 
+  public static async getPartnerSuperAdminRaw() {
+    return await Partner.findAll();
+  }
+
   public static async getInvoiceSuperAdminRaw() {
     return await Invoice.findAll();
   }
@@ -419,7 +424,8 @@ export default class DashboardController {
       const payments = await this.getTransactionsSuperAdminRaw();
       const customers = await this.getCustomersSuperAdminRaw();
       const users = await this.getUsersSuperAdminRaw();
-      const vehicles = await this.getVehicleSuperAdminRaw()
+      const vehicles = await this.getVehicleSuperAdminRaw();
+      const partners = await this.getPartnerSuperAdminRaw();
 
       const allEstimate = await this.filterByMonthAndYear(estimates, start_date, end_date, month, day, year);
       const allInvoice = await this.filterByMonthAndYear(invoices, start_date, end_date, month, day, year);
@@ -428,9 +434,10 @@ export default class DashboardController {
       const allCustomers = await this.filterByMonthAndYear(customers, start_date, end_date, month, day, year);
       const allUsers = await this.filterByMonthAndYear(users, start_date, end_date, month, day, year);
       const allVehicles = await this.filterByMonthAndYear(vehicles, start_date, end_date, month, day, year);
+      const allPartners = await this.filterByMonthAndYear(partners, start_date, end_date, month, day, year);
 
       const receivables = this.getReceivable(allInvoice)
-      const paymentReceived = this.getReceipt(allInvoice)
+      const paymentReceived = this.getReceipt(allPayments)
       const invoiceValue = this.getRevenue(allInvoice);
       const estimateValue = this.getEstimateValueAdmin(allEstimate);
       const expenseValue = this.getExpenses(allExpense);
@@ -441,6 +448,7 @@ export default class DashboardController {
       const mAllCustomer = allCustomers.length;
       const mAllUser = allUsers.length;
       const mAllVehicle = allVehicles.length;
+      const mAllPartner = allPartners.length;
 
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,
@@ -456,7 +464,7 @@ export default class DashboardController {
           invoiceValue,
           paymentReceived,
           receivables,
-          mAllUser, mAllVehicle
+          mAllUser, mAllVehicle, mAllPartner
         },
       };
 
