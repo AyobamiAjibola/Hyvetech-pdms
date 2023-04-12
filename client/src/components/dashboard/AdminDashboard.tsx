@@ -91,9 +91,6 @@ function AdminDashboard() {
     }
   }, [dashboardReducer.analytics, dashboardReducer.stackedMonthlyData, dashboardReducer.getAnalyticsStatus]);
 
-  // const totalTechnicians = useMemo(() => technicianReducer.technicians.length, [technicianReducer.technicians]);
-  // const totalPartners = useMemo(() => partnerReducer.partners.length, [partnerReducer.partners]);
-
   const handleDate = (newValue: any) => {
     setFilterDate(newValue)
   }

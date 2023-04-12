@@ -4,6 +4,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import Invoice from '../models/Invoice';
 import { INVOICE_STATUS } from '../config/constants';
+import Generic from './Generic';
 
 export function formatNumberToIntl(amount: number) {
   return new Intl.NumberFormat('en-GB', {
@@ -464,7 +465,7 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
                     <div class="bill-to-name">${
-                      customer?.companyName || `${customer.firstName} ${customer.lastName}`
+                      customer?.companyName || `${Generic.capitalizeWord(customer.title)} ${Generic.capitalizeWord(customer.firstName)} ${Generic.capitalizeWord(customer.lastName)}`
                     }</div>
                     <div class="bill-to-address">${customer?.contacts[0]?.address || ''}, ${
     customer.contacts[0]?.city || ''

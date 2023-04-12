@@ -1,7 +1,7 @@
 import { CustomHookMessage } from '@app-types';
 import { Cancel } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Box, Grid, MenuItem, Modal, Radio, Select, Stack, TextField, Typography } from '@mui/material';
+import { Box, Grid, MenuItem, Modal, Radio, Select, Stack, Typography, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { STATES } from '../../config/constants';
 import AppAlert from '../alerts/AppAlert';
@@ -12,6 +12,7 @@ import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
 import { addCustomerAction } from '../../store/actions/customerActions';
 import { clearAddCustomerStatus } from '../../store/reducers/customerReducer';
+import useNewCustomer from '../../hooks/useNewCustomer';
 
 type Props = {
     callback?: any;
@@ -44,6 +45,8 @@ export default function CreateCustomerModal(props: Props) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<CustomHookMessage>();
     const [success, setSuccess] = useState<CustomHookMessage>();
+
+    const customer = useNewCustomer();
 
     useEffect(()=>{
         if((props.data == null) || (props.data == undefined)){
@@ -145,7 +148,6 @@ export default function CreateCustomerModal(props: Props) {
     }, [customerReducer.addCustomerStatus, dispatch])
 
     const handleCreate = async ()=>{
-        console.log(form, "form")
         // check if all entry are valid
         const {error} = Joi.object({
             firstName: Joi.string().required().label("First Name"),
@@ -173,6 +175,12 @@ export default function CreateCustomerModal(props: Props) {
             return
         }
 
+        const customer_email = customer.rows.find(data => data.email === form.email)
+        const customer_phone = customer.rows.find(data => data.phone === form.phone)
+        if(customer_email || customer_phone) {
+            setError({message: "Customer with this phone number or email already exists"})
+            return
+        }
         // filter phone
         const _val = filterPhoneNumber(form.phone)
 
@@ -188,6 +196,10 @@ export default function CreateCustomerModal(props: Props) {
         }
 
         const payload = form;
+
+        payload.title = payload.title.trim();
+        payload.firstName = payload.firstName.trim();
+        payload.lastName = payload.lastName.trim();
 
         payload.phone = _val.phone;
         // @ts-ignore
@@ -205,7 +217,7 @@ export default function CreateCustomerModal(props: Props) {
                 onClose={()=>{
                     props.setVisible(false)
                 }}
-                sx={{ 
+                sx={{
                     // color: 'black'
                 }}
                 >
@@ -287,7 +299,7 @@ export default function CreateCustomerModal(props: Props) {
                                 onChange={val => setForm({...form, firstName: val.target.value})}
                                 value={form.firstName}
                                 fullWidth={true} />
-                                
+            
                             <TextField
                                 label='Last Name'
                                 onChange={val => setForm({...form, lastName: val.target.value})}
@@ -307,13 +319,14 @@ export default function CreateCustomerModal(props: Props) {
                             <br />
                         </Stack>
                         ))}
-                            
+
                         <TextField
                             label='Email'
-                            onChange={val => setForm({...form, email: val.target.value})}
+                            onChange={val => setForm({...form, email: val.target.value.trim()})}
                             value={form.email}
                             type="email"
-                            fullWidth={true} />
+                            fullWidth={true}
+                        />
                         <br />
                         <br />
 

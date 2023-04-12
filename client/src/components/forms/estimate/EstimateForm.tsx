@@ -184,7 +184,6 @@ function EstimateForm(props: IProps) {
   }, [partTotal, labourTotal]);
 
   useEffect(() => {
-    console.log('dis', subTotal - calculateDiscount(subTotal));
     setGrandTotal(subTotal - calculateDiscount(subTotal));
   }, [subTotal]);
 
@@ -217,7 +216,8 @@ function EstimateForm(props: IProps) {
 
     for (let i = 0; i < values.parts.length; i++) {
       if (values.parts[i].amount) {
-        total += parseInt(values.parts[i].amount);
+        // total += parseInt(values.parts[i].amount);
+        total += +values.parts[i].amount
       }
     }
     setPartTotal(total);
@@ -228,9 +228,11 @@ function EstimateForm(props: IProps) {
 
     for (let i = 0; i < values.labours.length; i++) {
       if (values.labours[i].cost) {
-        total += parseInt(values.labours[i].cost);
+        // total += parseInt(values.labours[i].cost);
+        total += +values.labours[i].cost;
       }
     }
+
     setLabourTotal(total);
   }, [setLabourTotal, values.labours]);
 
@@ -394,6 +396,7 @@ function EstimateForm(props: IProps) {
   const handleGetDriverInfo = (id?: number) => {
     if (id) {
       dispatch(getCustomerAction(id));
+      // dispatch(getNewCustomerAction(id))
     }
   };
 
@@ -831,7 +834,7 @@ function EstimateForm(props: IProps) {
                                         label={value}
                                         value={part[value]}
                                         onChange={e => handleChangeQtyAndPrice(e, index)}
-                                        type="number"
+                                        type="string"
                                         inputProps={{
                                           min: '0',
                                         }}
@@ -909,7 +912,8 @@ function EstimateForm(props: IProps) {
                               justifyContent: 'left'
                             }}
                           >
-                          Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
+                          {/* Part(s): ₦{formatNumberToIntl(Math.round(partTotal))} */}
+                          Part(s): ₦{formatNumberToIntl(+partTotal.toFixed(2))}
                         </Typography>
                         {enableTaxPart && (
                           <TextField
@@ -982,7 +986,7 @@ function EstimateForm(props: IProps) {
                                         label={value}
                                         value={labour[value]}
                                         onChange={handleChange}
-                                        type="number"
+                                        type="string"
                                         inputProps={{
                                           min: '0',
                                         }}
@@ -1039,7 +1043,8 @@ function EstimateForm(props: IProps) {
                   justifyContent: 'left'
                 }}
               >
-                Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}
+                {/* Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))} */}
+                Service Charge(s): ₦{formatNumberToIntl(+labourTotal.toFixed(2))}
               </Typography>
               {enableTaxLabor && (
                 <TextField
@@ -1186,7 +1191,7 @@ function EstimateForm(props: IProps) {
                   <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total:</Typography>
                 </Grid>
                 <Grid item>
-                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(+grandTotal.toFixed(2))}</Typography>
                 </Grid>
               </Grid>
             </Grid>

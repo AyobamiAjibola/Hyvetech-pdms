@@ -32,6 +32,10 @@ interface IRandomize {
   count?: number;
 }
 
+interface Expense {
+  expenseCode: string;
+}
+
 interface IFuncIntervalCallerConfig {
   //call your functions here
   onTick: (args: this) => void | Promise<void>;
@@ -84,6 +88,12 @@ export default class Generic {
     } catch (e) {
       return false;
     }
+  }
+
+  public static capitalizeWord (sentence: string): string {
+    const words = sentence.split(' ');
+    const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+    return capitalizedWords.join(' ');
   }
 
   public static async getImagePath(params: IGetImagePath) {
@@ -151,22 +161,19 @@ export default class Generic {
     return result;
   }
 
-  // public static generateExpenseCode(expenses: Expense) {
-  //   let count = expenses.length + 1;
-  //   let $expense = () => {
-  //     let code: string;
-  //     let res = ''
-  //     code = count.toString().padStart(4, '0')
-  //     let fnd = expenses.find(value => value.expenseCode.toString() === code)
-  //     if(fnd){
-  //       count++
-  //       code = count.toString().padStart(4, '0')
-  //     } else { res = code }
+  public static generateCode(data: any): string {
 
-  //     res = code
-  //     return res
-  //   };
-  // }
+    let count = data.length + 1;
+    let code: string;
+
+    do {
+      code = count.toString().padStart(4, '0');
+      count++;
+    } while (data.some((expense: any) => expense.expenseCode === code));
+
+    return code;
+
+  }
 
   public static convertTextToCamelcase(text: string) {
     text = text.replace(/[^a-zA-Z0-9 ]/g, '');

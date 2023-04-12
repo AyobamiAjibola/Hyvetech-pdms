@@ -17,6 +17,7 @@ import useEstimate from '../../hooks/useEstimate';
 import AppModal from '../modal/AppModal';
 import { Formik } from 'formik';
 import estimateModel from '../forms/models/estimateModel';
+import capitalize from 'capitalize';
 // import { getCustomerVehiclesAction } from '../../store/actions/customerActions';
 // import moment from 'moment';
 // import { IVehicle } from '@app-models';
@@ -148,8 +149,9 @@ const handleEdit = async ()=>{
     const _id = customer?.id;
     const payload = {
         id: _id,
-        firstName: form.firstName,
-        lastName: form.lastName,
+        firstName: form.firstName.trim(),
+        email: form.email,
+        lastName: form.lastName.trim(),
         phone: form.phone,
         creditRating: form.creditRating,
         companyName: form.companyName,
@@ -188,14 +190,14 @@ const handleEdit = async ()=>{
                         <Grid item xs={11}>
                             <Grid xs={12} container>
                             <Typography>
-                                {form?.firstName || 'First Name & '} {form?.lastName || 'Last Name'}
+                                {capitalize.words(form?.firstName) || 'First Name & '}&nbsp;{capitalize.words(form?.lastName) || 'Last Name'}
                             </Typography>{' '}
                             <br />
                             </Grid>
 
                             {(form?.companyName || '').length != 0 && (
                             <Grid xs={12} container>
-                                <Typography>{form?.companyName || 'First Name & '}</Typography> <br />
+                                <Typography>{capitalize.words(form?.companyName) || 'First Name & '}</Typography> <br />
                             </Grid>
                             )}
 
@@ -208,7 +210,7 @@ const handleEdit = async ()=>{
                             </Grid>
 
                             <Grid xs={12} container>
-                            <Typography>{form?.address || 'Address'}</Typography> <br />
+                            <Typography>{capitalize.words(form?.address) || 'Address'}</Typography> <br />
                             </Grid>
 
                             <Grid xs={12} container>
@@ -256,7 +258,7 @@ const handleEdit = async ()=>{
             
         <TextField
             label='Email'
-            onChange={val => setForm({...form, email: val.target.value})}
+            onChange={val => setForm({...form, email: val.target.value.trim()})}
             disabled={true && !isEditing}
             value={form.email}
             fullWidth={true} />
