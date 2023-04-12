@@ -39,7 +39,12 @@ export default function DataCard(props: IProps) {
           fontSize: 14,
         }}
       >
-        Count: {props.count ? `${props.count}` : 0}
+        {props.count
+          ? props.count > 0
+            ? `Count: ${props.count}`
+            : props.count == 0 && 'Count: 0'
+          : ''
+        }
       </Box>
 
     </Box>

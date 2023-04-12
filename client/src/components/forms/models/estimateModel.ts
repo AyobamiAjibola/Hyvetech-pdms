@@ -274,7 +274,7 @@ const fields = {
 const initialValues: IEstimateValues = {
   mileage: { count: '', unit: '' },
   plateNumber: '',
-  depositAmount: '0',
+  depositAmount: '1',
   additionalDeposit: '0',
   paidAmount: '0',
   jobDuration: { count: '0', interval: '' },

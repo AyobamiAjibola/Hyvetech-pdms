@@ -538,6 +538,10 @@ export default class EstimateController {
       // });
     }
 
+    const estimates = await dataSources.estimateDAOService.findAll({
+      where: { id: partner.id },
+    });
+
     const estimateValues: Partial<Estimate> = {
       jobDurationUnit: value.jobDurationUnit,
       labours: value.labours.map(value => JSON.stringify(value)),
@@ -551,7 +555,8 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
-      code: Generic.randomize({ count: 6, number: true }),
+      // code: Generic.randomize({ count: 6, number: true }),
+      code: `EST-${partner.id}${Generic.generateCode(estimates)}`,
       expiresIn: ESTIMATE_EXPIRY_DAYS,
       discount: value.discount,
       discountType: value.discountType,
@@ -744,7 +749,9 @@ export default class EstimateController {
       customer = findCustomer;
     }
 
-    console.log('values> ', value);
+    const estimates = await dataSources.estimateDAOService.findAll({
+      where: { id: partner.id },
+    });
 
     const estimateValues: Partial<Estimate> = {
       jobDurationUnit: value.jobDurationUnit,
@@ -759,7 +766,8 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
-      code: Generic.randomize({ count: 6, number: true }),
+      code: `EST-${partner.id}${Generic.generateCode(estimates)}`,
+      // code: Generic.randomize({ count: 6, number: true }),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
       discount: value.discount,
       discountType: value.discountType,

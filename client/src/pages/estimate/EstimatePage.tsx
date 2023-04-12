@@ -122,8 +122,8 @@ function EstimatePage() {
       parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join('')),
     );
     if (!estimate) return 0;
-
-    return parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+    const tax = parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+    return tax
   };
 
   if (!estimate)
@@ -333,7 +333,7 @@ function EstimatePage() {
         </Grid>
         <Grid container>
           {parts.map((part, idx1) => {
-            const amount = formatNumberToIntl(parseInt(part.amount));
+            const amount = formatNumberToIntl(+part.amount);
 
             return (
               <Grid
@@ -407,7 +407,7 @@ function EstimatePage() {
               VAT(7.5%):{' '}
               {
                 // @ts-ignore
-                formatNumberToIntl(calculateTaxTotal(estimate))
+                formatNumberToIntl(calculateTaxTotal(estimate).toFixed(2))
               }
             </Typography>
             <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>

@@ -119,12 +119,14 @@ export default class CustomerController {
 
     value.email = value.email.toLowerCase();
 
+
     // check if user exist
     const customer = await dataSources.customerDAOService.findByAny({
       where: {
         [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
       },
     });
+
 
     if (customer) {
       if (value.isEditing) {
@@ -156,8 +158,9 @@ export default class CustomerController {
         };
 
         return Promise.resolve(response);
+      // }
       } else {
-        return Promise.reject(CustomAPIError.response('Customer already exist', HttpStatus.NOT_FOUND.code));
+        return Promise.reject(CustomAPIError.response('Customer with this phone number or email already exists', HttpStatus.NOT_FOUND.code));
       }
     }
 
@@ -172,6 +175,16 @@ export default class CustomerController {
       );
 
     const passwordEncoder = new PasswordEncoder();
+
+    const customer_check = await dataSources.customerDAOService.findByAny({
+      where: {
+        [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
+      },
+    });
+
+    if(customer_check) {
+      return Promise.reject(CustomAPIError.response('Customer with this phone number or email already exists', HttpStatus.NOT_FOUND.code));
+    }
 
     const payload = {
       rawPassword: value.phone,
@@ -341,6 +354,7 @@ export default class CustomerController {
     const { error, value } = Joi.object({
       id: Joi.any().required().label('Customer Id'),
       firstName: Joi.string().optional().label('First Name'),
+      email: Joi.string().email().optional().label('Email'),
       lastName: Joi.string().optional().label('Last Name'),
       phone: Joi.string().optional().label('Phone'),
       creditRating: Joi.any().optional().label('Credit Rating'),
@@ -361,7 +375,20 @@ export default class CustomerController {
       return Promise.reject(CustomAPIError.response('Customer not found', HttpStatus.NOT_FOUND.code));
     }
 
+    const customer_check = await dataSources.customerDAOService.findByAny({
+      where: {
+        [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
+      },
+    });
+
+    if(customer.email !== value.email || customer.phone !== value.phone) {
+      if(customer_check){
+        return Promise.reject(CustomAPIError.response('Customer with this phone number or email already exists', HttpStatus.NOT_FOUND.code));
+      }
+    }
+
     customer.phone = value.phone;
+    customer.email = value.email;
     customer.firstName = value.firstName;
     customer.companyName = value.companyName;
     customer.lastName = value.lastName;

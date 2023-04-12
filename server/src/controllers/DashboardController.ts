@@ -413,9 +413,9 @@ export default class DashboardController {
 
   public static async getDataSuperAdmin (req: Request) {
     try {
-      const month = req?.query?.month || new Date().getMonth() + 1;
-      const year = req?.query?.year || new Date().getFullYear();
-      const day = req?.query?.day || new Date().getDate();
+      const month = req?.query?.month;
+      const year = req?.query?.year;
+      const day = req?.query?.day;
       const { start_date, end_date } = req?.query
 
       const estimates = await this.getEstimateSuperAdminRaw();
@@ -437,7 +437,7 @@ export default class DashboardController {
       const allPartners = await this.filterByMonthAndYear(partners, start_date, end_date, month, day, year);
 
       const receivables = this.getReceivable(allInvoice)
-      const paymentReceived = this.getReceipt(allPayments)
+      const paymentReceived = this.getTransaction(allPayments)
       const invoiceValue = this.getRevenue(allInvoice);
       const estimateValue = this.getEstimateValueAdmin(allEstimate);
       const expenseValue = this.getExpenses(allExpense);
@@ -449,7 +449,8 @@ export default class DashboardController {
       const mAllUser = allUsers.length;
       const mAllVehicle = allVehicles.length;
       const mAllPartner = allPartners.length;
-
+      // console.log(paymentReceived, "checking payments")
+      // console.log(mAllExpense, "checking length")
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,
         code: HttpStatus.OK.code,
