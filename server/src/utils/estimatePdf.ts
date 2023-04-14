@@ -2,6 +2,7 @@ import Estimate from '../models/Estimate';
 import path from 'path';
 import 'dotenv/config';
 import fs from 'fs';
+import Generic from './Generic';
 
 export function formatNumberToIntl(amount: number) {
   return new Intl.NumberFormat('en-GB', {
@@ -34,6 +35,12 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
   }
 
   const preference = await partner.$get('preference');
+
+  const calculateTaxTotal = (estimate: any | undefined) => {
+    if (!estimate) return 0;
+    const tax = parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+    return tax
+  };
 
   // console.log(mainUrl, "mainUrl");
   // @ts-ignore
@@ -319,11 +326,22 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
         text-align: right;
         padding: 5px 10px;
     }
-    
-    .first {
-        margin-top: 15px;
+
+    .item-note-item-note {
+        font-size: 12px;
+        font-weight: 400;
+        width: 120px;
+        text-align: left;
+        padding: 5px 10px;
     }
     
+    .wrapper-for-note {
+        margin-top: 15px;
+        width: 100%
+        display: flex;
+        justify-content: space-between;
+    }
+
     .total {
         font-weight: 700;
     }
@@ -436,7 +454,7 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
                     <div class="bill-to-name">${
-                      customer?.companyName || `${customer.firstName} ${customer.lastName}`
+                      customer?.companyName || `${Generic.capitalizeWord(customer.title)} ${Generic.capitalizeWord(customer.firstName)} ${Generic.capitalizeWord(customer.lastName)}`
                     }</div>
                     <div class="bill-to-address">${customer?.contacts[0]?.address || ''}, ${
     customer.contacts[0]?.city || ''
@@ -512,44 +530,51 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
                   })
                   .join()
                   .replaceAll(' ,', '')}
-                
-                <div class="item-header-item-total first">
-                    <span class="count-num-item"></span>
-                    <span class="item-descrip-item"></span>
-                    <span class="item-warranty-item"></span>
-                    <span class="item-cost-item-sub">Subtotal:</span>
-                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(
-                      estimate.partsTotal + estimate.laboursTotal,
-                    )}</span>
-                </div>
-                <div class="item-header-item-total">
-                    <span class="count-num-item"></span>
-                    <span class="item-descrip-item"></span>
-                    <span class="item-warranty-item"></span>
-                    <span class="item-cost-item-sub">Discount:</span>
-                    <span class="item-amount-item-amount"> 
-                    ${formatNumberToIntl(estimate?.discount || 0)}
-                    </span>
-                </div>
-                <div class="item-header-item-total">
-                    <span class="count-num-item"></span>
-                    <span class="item-descrip-item"></span>
-                    <span class="item-warranty-item"></span>
-                    <span class="item-cost-item-sub">VAT (7.5%):</span>
-                    <span class="item-amount-item-amount">₦ ${
-                      // @ts-ignore
-                      formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
-                    }</span>
-                </div>
-                <div class="item-header-item-total">
-                    <span class="count-num-item"></span>
-                    <span class="item-descrip-item"></span>
-                    <span class="item-warranty-item"></span>
-                    <div class="total-flex" style="background: #E8E8E8;">
-                        <span class="item-cost-item-sub-total">Total:</span>
-                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(estimate.grandTotal)}</span>
+                <div class="wrapper-for-note">
+                    <div class="second-wrap">
+                        <span class="item-note-item-note">${estimate.note}</span>
                     </div>
-    
+                    <div class="first-wrap">
+                        <div class="item-header-item-total first">
+                            <span class="count-num-item"></span>
+                            <span class="item-descrip-item"></span>
+                            <span class="item-warranty-item"></span>
+                            <span class="item-cost-item-sub">Subtotal:</span>
+                            <span class="item-amount-item-amount">₦ ${formatNumberToIntl(
+                            estimate.partsTotal + estimate.laboursTotal,
+                            )}</span>
+                        </div>
+                        <div class="item-header-item-total">
+                            <span class="count-num-item"></span>
+                            <span class="item-descrip-item"></span>
+                            <span class="item-warranty-item"></span>
+                            <span class="item-cost-item-sub">Discount:</span>
+                            <span class="item-amount-item-amount"> 
+                            ${formatNumberToIntl(estimate?.discount || 0)}
+                            </span>
+                        </div>
+                        <div class="item-header-item-total">
+                            <span class="count-num-item"></span>
+                            <span class="item-descrip-item"></span>
+                            <span class="item-warranty-item"></span>
+                            <span class="item-cost-item-sub">VAT (7.5%):</span>
+                            <span class="item-amount-item-amount">₦ ${
+                            // @ts-ignore
+                            //   formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
+                            formatNumberToIntl(calculateTaxTotal(estimate).toFixed(2))
+                            }</span>
+                        </div>
+                        <div class="item-header-item-total">
+                            <span class="count-num-item"></span>
+                            <span class="item-descrip-item"></span>
+                            <span class="item-warranty-item"></span>
+                            <div class="total-flex" style="background: #E8E8E8;">
+                                <span class="item-cost-item-sub-total">Total:</span>
+                                <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(estimate.grandTotal)}</span>
+                            </div>
+            
+                        </div>
+                    </div>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>

@@ -133,6 +133,19 @@ export default class EstimateController {
   }
 
   @TryCatch
+  public async updateCount(req: Request) {
+    const { estimate } = await this.doUpdateEstimateCount(req)
+
+    const response: HttpResponse<Estimate> = {
+      code: HttpStatus.OK.code,
+      message: 'Estimate updated successfully.',
+      result: estimate,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
   @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE, UPDATE_ESTIMATE])
   public async sendDraft(req: Request) {
     const estimateId = req.params.estimateId as string;
@@ -392,7 +405,7 @@ export default class EstimateController {
         mileageValue: value.mileageValue,
         mileageUnit: value.mileageUnit,
         disount: value.discount,
-        discountType: value.discountType,
+        discountType: value.discountType
       };
 
       const vin = await dataSources.vinDAOService.findByAny({
@@ -452,7 +465,7 @@ export default class EstimateController {
       };
 
       // check if it's not super admin
-      console.log(req?.user.partner?.id);
+      // console.log(req?.user.partner?.id);
       if (req?.user.partner?.id != 0) {
         data.partnerId = req?.user.partner?.id;
         console.log(req?.user.partner?.id, data);
@@ -538,9 +551,13 @@ export default class EstimateController {
       // });
     }
 
-    const estimates = await dataSources.estimateDAOService.findAll({
-      where: { id: partner.id },
-    });
+    const estimates = await dataSources.estimateDAOService.findAll();
+    const est: any = []
+    estimates.map((estimate) => {
+      if(estimate.partnerId === partner.id) {
+        est.push(estimate)
+      }
+    })
 
     const estimateValues: Partial<Estimate> = {
       jobDurationUnit: value.jobDurationUnit,
@@ -555,11 +572,13 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
-      code: Generic.randomize({ count: 6, number: true }),
-      // code: `EST-${partner.id}${Generic.generateCode(estimates)}`,
+      // code: Generic.randomize({ count: 6, number: true }),
+      code: Generic.generateCode(est, 'EST', partner.id),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
       discount: value.discount,
       discountType: value.discountType,
+      note: value.note,
+      count: 0
     };
 
     const estimate = await dataSources.estimateDAOService.create(estimateValues as CreationAttributes<Estimate>);
@@ -749,9 +768,13 @@ export default class EstimateController {
       customer = findCustomer;
     }
 
-    const estimates = await dataSources.estimateDAOService.findAll({
-      where: { id: partner.id },
-    });
+    const estimates_save = await dataSources.estimateDAOService.findAll();
+    const esti: any = []
+    estimates_save.map((estimate) => {
+      if(estimate.partnerId === partner.id) {
+        esti.push(estimate)
+      }
+    })
 
     const estimateValues: Partial<Estimate> = {
       jobDurationUnit: value.jobDurationUnit,
@@ -766,11 +789,12 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
-      // code: `EST-${partner.id}${Generic.generateCode(estimates)}`,
-      code: Generic.randomize({ count: 6, number: true }),
+      code: Generic.generateCode(esti, 'EST', partner.id),
+      // code: Generic.randomize({ count: 6, number: true }),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
       discount: value.discount,
       discountType: value.discountType,
+      note: value.note
     };
 
     const estimate = await dataSources.estimateDAOService.create(estimateValues as CreationAttributes<Estimate>);
@@ -854,6 +878,29 @@ export default class EstimateController {
       taxPart: value.taxPart,
       discount: value.discount,
       discountType: value.discountType,
+      note: value.note
+    };
+
+    await estimate.update(estimateValues);
+
+    return { estimate };
+  }
+
+  private async doUpdateEstimateCount(req: Request) {
+    const estimateId = req.params.estimateId as string;
+
+    const estimate = await dataSources.estimateDAOService.findById(+estimateId);
+
+    if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found`, HttpStatus.NOT_FOUND.code));
+
+    const { error, value } = Joi.object<CreateEstimateType>($updateEstimateSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    const count = estimate.count + value.count
+    console.log(count)
+    const estimateValues: Partial<Estimate> = {
+      count: count
     };
 
     await estimate.update(estimateValues);

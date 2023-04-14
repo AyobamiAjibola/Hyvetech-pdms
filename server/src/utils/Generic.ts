@@ -161,15 +161,15 @@ export default class Generic {
     return result;
   }
 
-  public static generateCode(data: any): string {
+  public static generateCode(data: any, prefix: string, id: number): string {
 
     let count = data.length + 1;
     let code: string;
 
     do {
-      code = count.toString().padStart(4, '0');
+      code = `${prefix}-${id}${count.toString().padStart(4, '0')}`;
       count++;
-    } while (data.some((expense: any) => expense.expenseCode === code));
+    } while (data.some((expense: any) => expense.code === code));
 
     return code;
 

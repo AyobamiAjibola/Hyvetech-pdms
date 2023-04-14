@@ -18,6 +18,7 @@ import AppModal from '../modal/AppModal';
 import { Formik } from 'formik';
 import estimateModel from '../forms/models/estimateModel';
 import capitalize from 'capitalize';
+import { filterPhoneNumber } from '../../utils/generic';
 // import { getCustomerVehiclesAction } from '../../store/actions/customerActions';
 // import moment from 'moment';
 // import { IVehicle } from '@app-models';
@@ -147,12 +148,27 @@ useEffect(()=>{
 const handleEdit = async ()=>{
     setIsLoading(true)
     const _id = customer?.id;
+
+    // filter phone
+    const _val = filterPhoneNumber(form.phone)
+
+    if (_val.error) {
+        setError({ message: _val?.message || "" })
+        return
+    }
+
+    // check if phone number isn't valid
+    if( _val.phone.length !== 11 ){
+        setError({ message: "Phone number must be of 11 digit" })
+        return
+    }
+
     const payload = {
         id: _id,
         firstName: form.firstName.trim(),
         email: form.email,
         lastName: form.lastName.trim(),
-        phone: form.phone,
+        phone: _val.phone,
         creditRating: form.creditRating,
         companyName: form.companyName,
         state: form.state,
@@ -266,10 +282,36 @@ const handleEdit = async ()=>{
         <Stack direction={"row"} spacing={2}>
             <TextField
                 label='Phone'
-                onChange={val => setForm({...form, phone: val.target.value})}
+                // onChange={val => setForm({...form, phone: val.target.value})}
                 value={form.phone}
                 disabled={!isEditing}
-                fullWidth={true} />
+                fullWidth={true}
+                onChange={val => {
+                    // check length
+                    if((val.target.value).length > 11){
+                        setError({
+                            message: "phone number can't be more than 11"
+                        })
+                        return
+                    }
+
+                    // check alphabet
+                    if( /[A-Za-z]/g.test(val.target.value) ){
+                        setError({
+                            message: "phone number can't be alphabetical"
+                        })
+                        return
+                    }
+
+                    const _val = filterPhoneNumber(val.target.value)
+                    if(_val.error){
+                        setError({
+                            message: _val.message
+                        })
+                    }
+                    setForm({...form, phone: _val.phone})
+                }}
+            />
                 
             <TextField
                 label='Credit Rating'

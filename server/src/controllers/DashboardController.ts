@@ -264,8 +264,11 @@ export default class DashboardController {
           }
         }
 
-        if (_month == month && _year == year && _day == day) {
-          newCollection.push(_item);
+        if(month && year && day) {
+          if (_month == month && _year == year && _day == day) {
+            // newCollection.push(_item);
+            console.log("hello checking est length")
+          }
         }
       }
     });
@@ -449,8 +452,7 @@ export default class DashboardController {
       const mAllUser = allUsers.length;
       const mAllVehicle = allVehicles.length;
       const mAllPartner = allPartners.length;
-      // console.log(paymentReceived, "checking payments")
-      // console.log(mAllExpense, "checking length")
+      console.log(mAllEstimate, "checking est length")
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,
         code: HttpStatus.OK.code,

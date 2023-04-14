@@ -111,8 +111,6 @@ export default class CustomerController {
       isEditing: Joi.any().optional().label('Is Editing'),
     }).validate(req.body);
 
-    console.log('req> user> ', req.user.partner.id);
-
     if (error) {
       return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.NOT_FOUND.code));
     }
@@ -375,15 +373,23 @@ export default class CustomerController {
       return Promise.reject(CustomAPIError.response('Customer not found', HttpStatus.NOT_FOUND.code));
     }
 
-    const customer_check = await dataSources.customerDAOService.findByAny({
-      where: {
-        [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
-      },
+    const customer_mail = await dataSources.customerDAOService.findByAny({
+      where: { email: value.email },
     });
 
-    if(customer.email !== value.email || customer.phone !== value.phone) {
-      if(customer_check){
-        return Promise.reject(CustomAPIError.response('Customer with this phone number or email already exists', HttpStatus.NOT_FOUND.code));
+    const customer_phone = await dataSources.customerDAOService.findByAny({
+      where: { phone: value.phone },
+    });
+
+    if(customer.email !== value.email) {
+      if(customer_mail){
+        return Promise.reject(CustomAPIError.response('Customer with this email already exists', HttpStatus.NOT_FOUND.code));
+      }
+    }
+
+    if(customer.phone !== value.phone) {
+      if(customer_phone){
+        return Promise.reject(CustomAPIError.response('Customer with this phone number already exists', HttpStatus.NOT_FOUND.code));
       }
     }
 

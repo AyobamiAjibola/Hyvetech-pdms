@@ -42,6 +42,7 @@ export interface IEstimateValues {
   additionalDeposit: string;
   paidAmount: string;
   estimate?: any;
+  note?: string;
 }
 
 const fields = {
@@ -269,6 +270,14 @@ const fields = {
       required: 'Job Duration Unit is required',
     },
   },
+  note: {
+    name: 'note',
+    label: 'Note/Remarks',
+    error: {
+      invalid: 'Note is invalid',
+      required: 'Note is required',
+    },
+  },
 };
 
 const initialValues: IEstimateValues = {
@@ -299,6 +308,7 @@ const initialValues: IEstimateValues = {
   labours: [{ title: '', cost: '0' }],
   tax: '0',
   taxPart: '0',
+  note: ''
 };
 
 const schema = Yup.object().shape({

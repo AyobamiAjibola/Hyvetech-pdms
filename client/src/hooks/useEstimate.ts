@@ -215,6 +215,7 @@ export default function useEstimate() {
       // grandTotal: Math.round(grandTotal),
       discount,
       discountType,
+      note: values.note
     };
 
     console.log(Object.keys(data), 'realsentdata');
@@ -260,6 +261,7 @@ export default function useEstimate() {
       // grandTotal: Math.round(grandTotal),
       discount,
       discountType,
+      note: values.note
     };
 
     console.log(data);
@@ -306,6 +308,7 @@ export default function useEstimate() {
       // grandTotal: Math.round(grandTotal),
       discount,
       discountType,
+      note: values.note
     };
 
     console.log(1, data);
@@ -368,6 +371,7 @@ export default function useEstimate() {
       // grandTotal: Math.round(grandTotal),
       discount,
       discountType,
+      note: values.note
     };
 
     void dispatch(sendDraftEstimateAction(data));

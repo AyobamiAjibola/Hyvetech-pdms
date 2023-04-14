@@ -16,9 +16,9 @@ export const expenseFields = {
       required: 'Date is required',
     },
   },
-  expenseCode: {
+  code: {
     name: 'Expense Number',
-    label: 'expenseCode',
+    label: 'code',
     error: {
       invalid: 'Expense Number is invalid',
       required: 'Expense Number is required',
@@ -194,7 +194,7 @@ export default class Expense extends Model<InferAttributes<Expense>, InferCreati
   declare invoiceCode: string;
 
   @Column(DataType.STRING)
-  declare expenseCode: string;
+  declare code: string;
 
   @Column(DataType.STRING)
   declare note: string;

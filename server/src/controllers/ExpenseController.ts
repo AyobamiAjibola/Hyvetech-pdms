@@ -31,6 +31,7 @@ import {
   READ_EXPENSE_TYPE,
   UPDATE_EXPENSE,
 } from '../config/settings';
+import Generic from '../utils/Generic';
 
 export default class ExpenseController {
   private static LOGGER = AppLogger.init(ExpenseController.name).logger;
@@ -304,7 +305,7 @@ export default class ExpenseController {
     if (!partner) return Promise.reject(CustomAPIError.response('Partner not found', HttpStatus.BAD_REQUEST.code));
 
     const { error, value } = Joi.object<ExpenseSchemaType>($saveExpenseSchema).validate(req.body);
-    console.log(value);
+    // console.log(value);
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     const beneficiary = await dao.beneficiaryDAOService.findById(value.beneficiaryId);
@@ -330,27 +331,6 @@ export default class ExpenseController {
       where: { partnerId: partner.id },
     });
 
-    //EXPENSE CODE GENERATOR
-    let count = expenses.length + 1;
-    let $expense = () => {
-      let code: string;
-      let res = '';
-      code = count.toString().padStart(4, '0');
-      let fnd = expenses.find(value => value.expenseCode.toString() === code);
-      if (fnd) {
-        count++;
-        code = count.toString().padStart(4, '0');
-      } else {
-        res = code;
-      }
-
-      res = code;
-      return res;
-    };
-
-    const result = $expense();
-    // const invoiceCode = Generic.randomize({ number: true, count: 6 });
-
     const data: Partial<Expense> = {
       amount: value.amount,
       reference: value.reference,
@@ -361,7 +341,7 @@ export default class ExpenseController {
       invoiceId: value.invoiceId,
       partnerId: partner.id,
       invoiceCode: invoice?.code,
-      expenseCode: result,
+      code: Generic.generateCode(expenses, 'EXP', partner.id),
       note: value?.note,
       dateModified: value.dateModified,
     };
