@@ -164,8 +164,16 @@ export default class InvoiceController {
       transferTransactionValues as CreationAttributes<Transaction>,
     );
 
+    const fetch_invoice = await dataSources.invoiceDAOService.findAll({
+      include: [{
+        model: Estimate,
+        where: { partnerId: partner.id }
+      }],
+    });
+
     const invoiceValues: Partial<Attributes<Invoice>> = {
-      code: Generic.randomize({ number: true, count: 6 }),
+      // code: Generic.randomize({ number: true, count: 6 }),
+      code: Generic.generateCode(fetch_invoice, 'INV', partner.id),
       depositAmount: estimate.depositAmount,
       paidAmount: estimate.depositAmount,
       tax: estimate.tax,
@@ -215,6 +223,7 @@ export default class InvoiceController {
   public static async generateInvoiceManually(req: Request) {
     //
     try {
+      const partner = req.user.partner
       const estimate = await dataSources.estimateDAOService.findById(req.body.id);
 
       if (!estimate) {
@@ -226,9 +235,17 @@ export default class InvoiceController {
         return Promise.resolve(response);
       }
 
-      const invoiceCode = Generic.randomize({ number: true, count: 6 });
+      const fetch_invoice = await dataSources.invoiceDAOService.findAll({
+        include: [{
+          model: Estimate,
+          where: { partnerId: partner.id }
+        }],
+      });
+
+      // const invoiceCode = Generic.randomize({ number: true, count: 6 });
       const invoiceValues: Partial<Attributes<Invoice>> = {
-        code: invoiceCode,
+        code: Generic.generateCode(fetch_invoice, 'INV', partner.id),
+        // code: invoiceCode,
         depositAmount: 0,
         paidAmount: 0,
         tax: estimate.tax,

@@ -276,6 +276,8 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   jobDurationUnit: Joi.string().required().label(estimateFields.jobDurationUnit.label),
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
+  note: Joi.string().optional().label('note'),
+  // partnerId: Joi.number().optional()
 };
 
 export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
@@ -309,10 +311,16 @@ export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   jobDurationUnit: Joi.string().allow('').label(estimateFields.jobDurationUnit.label),
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
+  count: Joi.number().optional().label('count')
 };
 
 export const $updateEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   ...$saveEstimateSchema,
+  id: Joi.number().required().label('Estimate Id'),
+};
+
+export const $updateEstimateCountSchema: Joi.SchemaMap<CreateEstimateType> = {
+  count: Joi.number().optional().label('count'),
   id: Joi.number().required().label('Estimate Id'),
 };
 
@@ -374,6 +382,12 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
 
   @Column(DataType.STRING)
   declare url: string;
+
+  @Column(DataType.STRING)
+  declare note: string;
+
+  @Column(DataType.INTEGER)
+  declare count: number;
 
   @HasOne(() => Invoice)
   declare invoice: NonAttribute<Invoice>;

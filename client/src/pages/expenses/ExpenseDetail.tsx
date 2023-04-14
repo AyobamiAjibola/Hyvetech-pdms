@@ -198,7 +198,7 @@ const ExpenseDetail = () => {
               Summary
             </Typography>
             <Typography sx={{fontSize: '20px', fontWeight: 500}}>
-              {expense?.expenseCode ? `EXP-00${expense?.partnerId}${expense?.expenseCode}` : ''}
+              {expense?.code ? expense?.code : ''}
             </Typography>
           </Box>
           <Formik

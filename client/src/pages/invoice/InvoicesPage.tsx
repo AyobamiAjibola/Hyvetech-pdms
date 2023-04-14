@@ -332,7 +332,6 @@ function InvoicesPage() {
         width: 200,
         sortable: true,
         valueGetter: param => {
-          console.log(param)
           const estimate = param.row.estimate;
           const customer = estimate?.customer;
 

@@ -6,6 +6,7 @@ import axiosClient from '../../config/axiosClient';
 
 const CREATE_ESTIMATE = 'estimate:CREATE_ESTIMATE';
 const UPDATE_ESTIMATE = 'estimate:UPDATE_ESTIMATE';
+const UPDATE_ESTIMATE_COUNT = 'estimate:UPDATE_ESTIMATE_COUNT';
 const DELETE_ESTIMATE = 'estimate:DELETE_ESTIMATE';
 const SAVE_ESTIMATE = 'estimate:SAVE_ESTIMATE';
 const SEND_DRAFT_ESTIMATE = 'estimate:SEND_DRAFT_ESTIMATE';
@@ -34,6 +35,14 @@ export const updateEstimateAction = asyncThunkWrapper<ApiResponseSuccess<IEstima
   UPDATE_ESTIMATE,
   async args => {
     const response = await axiosClient.patch(`${API_ROOT}/estimate/${args.id}`, args);
+    return response.data;
+  },
+);
+
+export const updateEstimateCountAction = asyncThunkWrapper<ApiResponseSuccess<IEstimate>, any>(
+  UPDATE_ESTIMATE_COUNT,
+  async args => {
+    const response = await axiosClient.put(`${API_ROOT}/estimate-count/${args.id}`, args);
     return response.data;
   },
 );

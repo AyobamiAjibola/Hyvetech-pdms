@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IBillingInformation, IEstimate } from '@app-models';
 import { useLocation } from 'react-router-dom';
-import { Alert, Avatar, Box, Button, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -87,6 +87,10 @@ function EstimatePage() {
       const code = response.data.invoiceCode;
       console.log(code)
       // window.location.href = ('/invoices/'+code);
+      // const count = 1
+      // const res = await axiosClient.put(`${API_ROOT}/estimate-count/${estimate?.id}`, count);
+      // console.log(res, "checking count")
+
       window.location.replace('/invoices');
 
     }catch(e){
@@ -397,62 +401,90 @@ function EstimatePage() {
             );
           })}
         </Grid>
-        <Grid item container justifyContent="center" alignItems="center" my={3}>
-          <Grid item xs={10} />
-          <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
-              Subtotal: {formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}
-            </Typography>
-            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
-              VAT(7.5%):{' '}
-              {
-                // @ts-ignore
-                formatNumberToIntl(calculateTaxTotal(estimate).toFixed(2))
-              }
-            </Typography>
-            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
-              Discount:{' '}
-              {
-                // @ts-ignore
-                `(${formatNumberToIntl(
-                  calculateDiscount({
-                    total: estimate.partsTotal + estimate.laboursTotal,
-                    discount: estimate.discount,
-                    discountType: estimate.discountType,
-                  }),
-                )})`
-              }
-            </Typography>
-            {/* <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography> */}
+        <Grid item xs={12} my={3}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}
+        >
+          <Grid item xs>
+            <TextField
+              value={estimate?.note}
+              InputProps={{
+                readOnly: true
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              // fullWidth
+              multiline
+              rows={4}
+              name='note'
+              label='Note/Remarks'
+              sx={{
+                width: '50%'
+              }}
+            />
           </Grid>
-        </Grid>
-        <Grid item container justifyContent="center" alignItems="center" my={3}>
-          <Grid item xs={10} />
-          <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
-              TOTAL:{' '}
-              {formatNumberToIntl(
-                estimate.partsTotal +
-                  estimate.laboursTotal -
-                  calculateDiscount({
-                    total: estimate.partsTotal + estimate.laboursTotal,
-                    discount: estimate.discount,
-                    discountType: estimate.discountType,
-                  }) +
-                  calculateTaxTotal(estimate),
-              )}
-            </Typography>
-          </Grid>
-        </Grid>
-        <Grid item container justifyContent="center" alignItems="center" my={3}>
-          <Grid item xs={10} />
-          <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right">
-            <Typography
-              gutterBottom
-              fontStyle="italic"
-              color={theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238')}>
-              Job Duration: {estimate.jobDurationValue} {estimate.jobDurationUnit}
-            </Typography>
+          <Grid item xs>
+            <Grid item container justifyContent="center" alignItems="center">
+              <Grid item xs={10} />
+              <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                  Subtotal: {formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}
+                </Typography>
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                  VAT(7.5%):{' '}
+                  {
+                    // @ts-ignore
+                    formatNumberToIntl(calculateTaxTotal(estimate).toFixed(2))
+                  }
+                </Typography>
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                  Discount:{' '}
+                  {
+                    // @ts-ignore
+                    `(${formatNumberToIntl(
+                      calculateDiscount({
+                        total: estimate.partsTotal + estimate.laboursTotal,
+                        discount: estimate.discount,
+                        discountType: estimate.discountType,
+                      }),
+                    )})`
+                  }
+                </Typography>
+                {/* <Typography gutterBottom>VAT-Part(7.5%): {estimate.taxPart}</Typography> */}
+              </Grid>
+            </Grid>
+            <Grid item container justifyContent="center" alignItems="center" my={3}>
+              <Grid item xs={10} />
+              <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                  TOTAL:{' '}
+                  {formatNumberToIntl(
+                    +(estimate.partsTotal +
+                      estimate.laboursTotal -
+                      calculateDiscount({
+                        total: estimate.partsTotal + estimate.laboursTotal,
+                        discount: estimate.discount,
+                        discountType: estimate.discountType,
+                      }) +
+                      calculateTaxTotal(estimate)).toFixed(2)
+                  )}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid item container justifyContent="center" alignItems="center" my={3}>
+              <Grid item xs={10} />
+              <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right">
+                <Typography
+                  gutterBottom
+                  fontStyle="italic"
+                  color={theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238')}>
+                  Job Duration: {estimate.jobDurationValue} {estimate.jobDurationUnit}
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </React.Fragment>

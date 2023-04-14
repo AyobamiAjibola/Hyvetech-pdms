@@ -116,7 +116,7 @@ function AdminDashboard() {
       _setEndDate(endOfDay(new Date()))
     }
   }, [toggle]);
-
+  console.log(startOfMonth(new Date()), "getting month")
   return (
     <React.Fragment>
       <Box

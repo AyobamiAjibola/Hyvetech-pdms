@@ -1054,6 +1054,7 @@ function EstimateForm(props: IProps) {
                   variant="outlined"
                   fullWidth
                   sx={{ mb: 2, mt: 2}}
+                  type="number"
                 />
               )}
             </Grid>
@@ -1169,31 +1170,42 @@ function EstimateForm(props: IProps) {
           <Grid item xs={12}
             sx={{
               display: 'flex',
-              alignItems: 'left',
-              justifyContent: 'center',
-              flexDirection: 'column',
+              flexDirection: {sm: 'row', xs: 'column'},
               mt: 2, mb: 2
             }}
           >
-            <Grid item>
-              <Grid container spacing={2}>
-                <Grid item>
-                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%):</Typography>
+            <Grid item sm={6} xs={12}>
+              <Grid item>
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%):</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(+vatTotal.toFixed(2))}</Typography>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(vatTotal)}</Typography>
+              </Grid>
+              <Grid item>
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total:</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(+grandTotal.toFixed(2))}</Typography>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item>
-              <Grid container spacing={2}>
-                <Grid item>
-                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total:</Typography>
-                </Grid>
-                <Grid item>
-                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(+grandTotal.toFixed(2))}</Typography>
-                </Grid>
-              </Grid>
+            <Grid item sm={6} xs={12}>
+              <TextField
+                value={values.note}
+                onChange={handleChange}
+                fullWidth
+                multiline
+                rows={3}
+                name={fields.note.name}
+                label={fields.note.label}
+              />
             </Grid>
           </Grid>
           {parseInt(values.depositAmount) > 0 && parseInt(values.depositAmount) <= grandTotal && (

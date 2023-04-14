@@ -621,7 +621,7 @@ declare module '@app-models' {
     expenseTypeId: number;
     expenseCategoryId: number;
     invoiceCode: string;
-    expenseCode: number;
+    code: any;
     note: string;
     dateModified: any;
     partnerId: number;
@@ -658,6 +658,7 @@ declare module '@app-models' {
     deletedAt: string;
     discount?: number;
     discountType?: string;
+    note?: string;
   }
 
   interface IPayStackBank {

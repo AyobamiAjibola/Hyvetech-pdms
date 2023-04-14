@@ -23,6 +23,11 @@ export const updateEstimateHandler = authenticateRouteWrapper(async (req, res) =
   res.status(response.code).json(response);
 });
 
+export const updateEstimateCountHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await estimateController.updateCount(req);
+  res.status(response.code).json(response);
+});
+
 export const sendDraftEstimateHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await estimateController.sendDraft(req);
   res.status(response.code).json(response);
