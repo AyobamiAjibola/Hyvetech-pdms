@@ -76,7 +76,7 @@ function EstimatePage() {
   };
 
   const generateInvoice = async ()=>{
-    // 
+    //
     try{
       const payload = {
         id: estimate?.id

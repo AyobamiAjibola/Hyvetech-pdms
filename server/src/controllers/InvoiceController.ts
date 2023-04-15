@@ -34,7 +34,7 @@ import DraftInvoice from '../models/DraftInvoice';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
-import { CREATE_INVOICE, CREATE_PAYMENT, MANAGE_ALL, MANAGE_TECHNICIAN, READ_INVOICE, UPDATE_PAYMENT } from '../config/settings';
+import { CREATE_ESTIMATE, CREATE_INVOICE, CREATE_PAYMENT, DELETE_ESTIMATE, MANAGE_ALL, MANAGE_TECHNICIAN, READ_INVOICE, UPDATE_PAYMENT } from '../config/settings';
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
@@ -335,6 +335,13 @@ export default class InvoiceController {
       invoice.estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
       invoice.estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
 
+      if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
+        const parts = invoice.draftInvoice.parts;
+        const labours = invoice.draftInvoice.labours;
+
+        invoice.draftInvoice.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+        invoice.draftInvoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+      }
       if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
         const parts = invoice.parts;
         const labours = invoice.labours;
@@ -865,6 +872,7 @@ export default class InvoiceController {
       await invoice.$set('draftInvoice', draftInvoice);
     }
 
+    await estimate.update({ note: value.note });
     appEventEmitter.emit(UPDATE_INVOICE, { invoice, customer });
 
     return Promise.resolve({
@@ -925,6 +933,7 @@ export default class InvoiceController {
       await invoice.$set('draftInvoice', null);
     }
 
+    await estimate.update({ note: value.note });
     appEventEmitter.emit(UPDATE_INVOICE, { invoice, customer });
 
     return Promise.resolve({
@@ -1035,5 +1044,22 @@ export default class InvoiceController {
     await vehicle.$add('jobs', [job]);
 
     return job;
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE, DELETE_ESTIMATE])
+  public static async delete(req: Request) {
+    const invoiceId = req.params.invoiceId as string;
+
+    const invoice = await dataSources.invoiceDAOService.findById(+invoiceId);
+
+    if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found`, HttpStatus.NOT_FOUND.code));
+
+    await Invoice.destroy({ where: { id: +invoiceId }, force: true });
+
+    return Promise.resolve({
+      code: HttpStatus.ACCEPTED.code,
+      message: 'Invoice deleted successfully',
+    } as HttpResponse<void>);
   }
 }

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IInvoice } from '@app-models';
 import useAppDispatch from './useAppDispatch';
 import useAppSelector from './useAppSelector';
-import { getInvoicesAction, saveInvoiceAction, sendInvoiceAction } from '../store/actions/invoiceActions';
+import { deleteInvoiceAction, getInvoicesAction, saveInvoiceAction, sendInvoiceAction } from '../store/actions/invoiceActions';
 import { clearGetInvoicesStatus } from '../store/reducers/invoiceReducer';
 import { CustomHookMessage } from '@app-types';
 import estimateModel, { IEstimateValues, ILabour, IPart } from '../components/forms/models/estimateModel';
@@ -31,11 +31,17 @@ function getUpdateData(
     additionalDeposit: values.additionalDeposit,
     jobDurationValue: values.jobDuration.count,
     jobDurationUnit: values.jobDuration.interval,
-    partsTotal: Math.round(partTotal),
-    laboursTotal: Math.round(labourTotal),
-    grandTotal: Math.round(grandTotal),
-    refundable: Math.round(refundable),
-    dueAmount: Math.round(dueAmount),
+    // partsTotal: Math.round(partTotal),
+    // laboursTotal: Math.round(labourTotal),
+    // grandTotal: Math.round(grandTotal),
+    // refundable: Math.round(refundable),
+    // dueAmount: Math.round(dueAmount),
+    partsTotal: partTotal.toFixed(2),
+    laboursTotal: labourTotal.toFixed(2),
+    grandTotal: grandTotal.toFixed(2),
+    refundable: refundable.toFixed(2),
+    dueAmount: dueAmount.toFixed(2),
+    note: values.note
   };
 }
 
@@ -56,6 +62,7 @@ export default function useInvoice() {
   const [invoiceId, setInvoiceId] = useState<number>();
   const [save, setSave] = useState<boolean>(false);
   const [discount, setDiscount] = useState(0);
+  const [showDelete, setShowDelete] = useState<boolean>(false);
 
   const [discountType, setDiscountType] = useState('exact');
 
@@ -183,6 +190,7 @@ export default function useInvoice() {
           count: vehicle && vehicle.mileageValue ? vehicle.mileageValue : '',
           unit: vehicle && vehicle.mileageUnit ? vehicle.mileageUnit : '',
         };
+        const note = invoice.estimate.note ? invoice.estimate.note : ''
 
         if (invoice.edited && invoice.draftInvoice) {
           const draftInvoice = invoice.draftInvoice;
@@ -216,6 +224,7 @@ export default function useInvoice() {
             status,
             invoice,
             taxPart,
+            note
           }));
 
           setGrandTotal(draftInvoice.grandTotal);
@@ -254,6 +263,7 @@ export default function useInvoice() {
             labours,
             status,
             invoice,
+            note
           }));
 
           setGrandTotal(invoice.grandTotal);
@@ -294,6 +304,7 @@ export default function useInvoice() {
             labours,
             status,
             invoice,
+            note
           }));
 
           setGrandTotal(estimate.grandTotal);
@@ -307,10 +318,22 @@ export default function useInvoice() {
         setInvoice(invoice);
         setEstimateId(estimateId);
         setShowEdit(true);
+
       }
+
     },
     [dispatch, estimateId, invoices],
   );
+
+  const onDelete = useCallback((id: number) => {
+    setInvoiceId(id);
+    setShowDelete(true);
+  }, []);
+
+  const handleDelete = useCallback(() => {
+    if (invoiceId) void dispatch(deleteInvoiceAction(invoiceId));
+    setShowDelete(false);
+  }, [dispatch, invoiceId]);
 
   const handleInitiateRefund = () => {
     void dispatch(
@@ -393,5 +416,9 @@ export default function useInvoice() {
     invoice,
     setDiscountType,
     setDiscount,
+    showDelete,
+    setShowDelete,
+    onDelete,
+    handleDelete,
   };
 }

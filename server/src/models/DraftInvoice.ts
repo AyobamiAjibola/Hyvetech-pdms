@@ -88,7 +88,10 @@ export default class DraftInvoice extends Model<InferAttributes<DraftInvoice>, I
   @Column(DataType.STRING)
   declare discountType?: string;
 
-  @BelongsTo(() => Invoice)
+  @Column(DataType.STRING)
+  declare note?: string;
+
+  @BelongsTo(() => Invoice, { onDelete: 'CASCADE' })
   declare invoice: NonAttribute<Invoice>;
 
   @ForeignKey(() => Invoice)

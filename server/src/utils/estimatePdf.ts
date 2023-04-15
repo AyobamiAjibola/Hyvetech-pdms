@@ -324,22 +324,16 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
         font-weight: 400;
         width: 120px;
         text-align: right;
-        padding: 5px 10px;
+        padding: 10px 10px;
     }
 
-    .item-note-item-note {
+    .note-title {
         font-size: 12px;
-        font-weight: 400;
-        width: 120px;
-        text-align: left;
-        padding: 5px 10px;
-    }
-    
-    .wrapper-for-note {
-        margin-top: 15px;
-        width: 100%
-        display: flex;
-        justify-content: space-between;
+        font-weight: 600;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 5px;
     }
 
     .total {
@@ -530,12 +524,16 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
                   })
                   .join()
                   .replaceAll(' ,', '')}
-                <div class="wrapper-for-note">
-                    <div class="second-wrap">
-                        <span class="item-note-item-note">${estimate.note}</span>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px">
+                    <div style="width: 40%">
+                        <div>
+                            <span class="note-title">Note/Remarks:</span>
+                            <br />
+                            <span class="item-amount-item-amount">${estimate.note}</span>
+                        </div>
                     </div>
-                    <div class="first-wrap">
-                        <div class="item-header-item-total first">
+                    <div style="width: 60%">
+                        <div class="item-header-item-total">
                             <span class="count-num-item"></span>
                             <span class="item-descrip-item"></span>
                             <span class="item-warranty-item"></span>

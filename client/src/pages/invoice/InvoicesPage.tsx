@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IInvoice } from '@app-models';
-import { Chip, Grid, Typography } from '@mui/material';
+import { Button, Chip, DialogActions, DialogContentText, Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
@@ -23,22 +23,44 @@ import {
 } from '../../store/reducers/transactionReducer';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useRouterQuery from '../../hooks/useRouterQuery';
-import { INVOICE_STATUS, LOCAL_STORAGE } from '../../config/constants';
+import { INVOICE_STATUS, LOCAL_STORAGE, MESSAGES } from '../../config/constants';
 import { verifyRefundCustomerAction } from '../../store/actions/transactionActions';
 import useAdmin from '../../hooks/useAdmin';
 import { getInvoicesAction } from '../../store/actions/invoiceActions';
-import { clearSaveInvoiceStatus, clearSendInvoiceStatus } from '../../store/reducers/invoiceReducer';
-import { formatNumberToIntl } from '../../utils/generic';
+import { clearDeleteInvoiceStatus, clearSaveInvoiceStatus, clearSendInvoiceStatus } from '../../store/reducers/invoiceReducer';
+import { formatNumberToIntl, reload } from '../../utils/generic';
+import { CustomHookMessage } from '@app-types';
 
 function InvoicesPage() {
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
   const transactionReducer = useAppSelector(state => state.transactionReducer);
   const dispatch = useAppDispatch();
+  const [error, setError] = useState<CustomHookMessage>();
+  const [success, setSuccess] = useState<CustomHookMessage>();
 
   const invoice = useInvoice();
   const navigate = useNavigate();
   const { isTechAdmin, isSuperAdmin } = useAdmin();
   const routerQuery = useRouterQuery();
+
+  useEffect(() => {
+    if(invoiceReducer.deleteInvoiceStatus === 'completed') {
+      dispatch(clearDeleteInvoiceStatus())
+        setSuccess({
+            message: "Invoice Deleted Successfully"
+        })
+
+        reload()
+    }
+
+    if(invoiceReducer.deleteInvoiceStatus === 'failed') {
+      dispatch(clearDeleteInvoiceStatus())
+      setError({
+        message: invoiceReducer?.deleteInvoiceError || ""
+    })
+    }
+
+  }, [dispatch, invoiceReducer.deleteInvoiceStatus])
 
   useEffect(() => {
     const reference = routerQuery.get('reference');
@@ -440,10 +462,12 @@ function InvoicesPage() {
             showInMenu={false}
           />,
           <GridActionsCellItem
+            sx={{ display: isTechAdmin ? 'block' : 'none' }}
             key={2}
             icon={<Cancel sx={{ color: 'indianred' }} />}
             onClick={() => {
-              //
+              const _invoice = params.row as IInvoice;
+              invoice.onDelete(_invoice.id)
             }}
             label="Delete"
             showInMenu={false}
@@ -546,6 +570,32 @@ function InvoicesPage() {
       />
       <AppLoader show={transactionReducer.initRefundCustomerStatus === 'loading'} />
       <AppLoader show={transactionReducer.verifyRefundCustomerStatus === 'loading'} />
+      <AppModal
+        fullWidth
+        show={invoice.showDelete}
+        Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => invoice.setShowDelete(false)}>Disagree</Button>
+            <Button onClick={invoice.handleDelete}>Agree</Button>
+          </DialogActions>
+        }
+        onClose={() => invoice.setShowDelete(false)}
+      />
+
+      <AppAlert
+        alertType="error"
+        show={undefined !== error}
+        message={error?.message}
+        onClose={() => setError(undefined)}
+      />
+
+      <AppAlert
+        alertType="success"
+        show={undefined !== success}
+        message={success?.message}
+        onClose={() => setSuccess(undefined)}
+      />
     </React.Fragment>
   );
 }

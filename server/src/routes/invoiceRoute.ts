@@ -53,3 +53,8 @@ export const getSingleInvoiceHandler = authenticateRouteWrapper(async (req, res)
 
   res.status(response.code).json(response);
 });
+
+export const deleteInvoiceHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await InvoiceController.delete(req);
+  res.status(response.code).json(response);
+});

@@ -1124,6 +1124,18 @@ function EstimateForm(props: IProps) {
             </Grid>
           </Grid>
           <Grid item xs={6}>
+            <Grid item xs={12}>
+              <TextField
+                value={values.note}
+                onChange={handleChange}
+                fullWidth
+                multiline
+                rows={3}
+                name={fields.note.name}
+                label={fields.note.label}
+              />
+            </Grid>
+            <br />
             <Grid item xs={12} container spacing={0.5}>
               <Grid item xs={8}>
                 <TextInputField
@@ -1196,17 +1208,7 @@ function EstimateForm(props: IProps) {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField
-                value={values.note}
-                onChange={handleChange}
-                fullWidth
-                multiline
-                rows={3}
-                name={fields.note.name}
-                label={fields.note.label}
-              />
-            </Grid>
+            <Grid item sm={6} xs={12} />
           </Grid>
           {parseInt(values.depositAmount) > 0 && parseInt(values.depositAmount) <= grandTotal && (
             <Grid item xs={12}
