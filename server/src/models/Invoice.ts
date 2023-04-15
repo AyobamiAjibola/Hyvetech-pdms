@@ -40,6 +40,7 @@ export const $sendInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   dueAmount: Joi.number().allow().label('Due Amount'),
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
+  note: Joi.string().allow('').label('note')
 };
 
 export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
@@ -62,6 +63,7 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   dueAmount: Joi.number().allow().label('Due Amount'),
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
+  note: Joi.string().allow('').label('note')
 };
 
 @Table({ tableName: 'invoices', timestamps: true, paranoid: true })
@@ -148,6 +150,9 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
 
   @Column(DataType.BOOLEAN)
   declare edited: boolean;
+
+  @Column(DataType.STRING)
+  declare note: string;
 
   @HasMany(() => Transaction)
   declare transactions: NonAttribute<Transaction[]>;

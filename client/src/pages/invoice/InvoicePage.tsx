@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IBillingInformation, IEstimate, IInvoice } from '@app-models';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, Avatar, Box, Button, Divider, Grid, Input, Select, Stack, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Divider, Grid, Input, Select, Stack, TextField, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -17,6 +17,7 @@ import AppAlert from '../../components/alerts/AppAlert';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
 import { setInvoiceCode } from '../../store/reducers/expenseReducer';
+// import useInvoice from '../../hooks/useInvoice';
 
 const API_ROOT = settings.api.rest;
 // interface ILocationState {
@@ -48,6 +49,8 @@ function InvoicePage() {
     type: 'Cash',
   });
 
+  // const { invoices } = useInvoice();
+
   const generateExpense = () => {
     dispatch(setInvoiceCode(invoice?.code));
     // sessionStorage.setItem('inv#*C0', invoice?.code)
@@ -56,7 +59,6 @@ function InvoicePage() {
 
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
-
   const [showMessage, setshowMessage] = useState<boolean>(false);
 
   const params = useParams() as unknown as { id: number };
@@ -66,12 +68,6 @@ function InvoicePage() {
   }, [params]);
 
   useEffect(() => {
-    // if (location.state) {
-    //   const state = location.state as ILocationState;
-
-    //   setInvoice(state.invoice);
-    //   setEstimate(state.estimate);
-    // }
     setInvoice(store.invoice);
     setEstimate(store.invoice?.estimate);
   }, [store.invoice]);
@@ -86,15 +82,15 @@ function InvoicePage() {
       let _parts: IPart[];
       let _labours: ILabour[];
 
-      if (invoice.edited && INVOICE_STATUS.update.draft) {
-        _parts = !invoice.parts.length ? [] : (invoice.parts as unknown as IPart[]);
-        _labours = !invoice.labours.length ? [] : (invoice.labours as unknown as ILabour[]);
+      if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
+        _parts = !invoice.draftInvoice.parts?.length ? [] : (invoice.draftInvoice.parts as unknown as IPart[]);
+        _labours = !invoice.draftInvoice.labours?.length ? [] : (invoice.draftInvoice.labours as unknown as ILabour[]);
       } else if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
-        _parts = !invoice.parts.length ? [] : (invoice.parts as unknown as IPart[]);
-        _labours = !invoice.labours.length ? [] : (invoice.labours as unknown as ILabour[]);
+        _parts = !invoice.parts?.length ? [] : (invoice.parts as unknown as IPart[]);
+        _labours = !invoice.labours?.length ? [] : (invoice.labours as unknown as ILabour[]);
       } else {
-        _parts = !estimate.parts.length ? [] : (estimate.parts as unknown as IPart[]);
-        _labours = !estimate.labours.length ? [] : (estimate.labours as unknown as ILabour[]);
+        _parts = !estimate.parts?.length ? [] : (estimate.parts as unknown as IPart[]);
+        _labours = !estimate.labours?.length ? [] : (estimate.labours as unknown as ILabour[]);
       }
 
       setParts(_parts);
@@ -107,8 +103,16 @@ function InvoicePage() {
 
   const subTotal = useMemo(() => {
     if (invoice && estimate) {
-      const laboursTotal = invoice.edited ? invoice.laboursTotal : estimate.laboursTotal;
-      const partsTotal = invoice && invoice.edited ? invoice.partsTotal : estimate.partsTotal;
+      const laboursTotal = invoice.edited
+                            ? invoice.updateStatus === INVOICE_STATUS.update.draft
+                              ? invoice.draftInvoice.laboursTotal
+                              : invoice.laboursTotal
+                            : estimate.laboursTotal;
+      const partsTotal = invoice && invoice.edited
+                          ? invoice.updateStatus === INVOICE_STATUS.update.draft
+                            ? invoice.draftInvoice.partsTotal
+                            : invoice.partsTotal
+                          : estimate.partsTotal;
 
       return laboursTotal + partsTotal;
     }
@@ -117,8 +121,11 @@ function InvoicePage() {
 
   const grandTotal = useMemo(() => {
     if (invoice && estimate) {
-      console.log('rices> ', invoice);
-      return invoice.edited ? invoice.grandTotal : estimate.partsTotal + estimate.laboursTotal;
+      return invoice.edited
+              ? invoice.updateStatus === INVOICE_STATUS.update.draft
+                ? invoice.draftInvoice.grandTotal
+                : invoice.grandTotal
+              : estimate.partsTotal + estimate.laboursTotal;
       // return estimate.partsTotal + estimate.laboursTotal;
     }
     return 0;
@@ -222,17 +229,30 @@ function InvoicePage() {
     return Math.ceil(total * (discount / 100));
   };
 
-  const calculateTaxTotal = (estimate: IInvoice | IEstimate | undefined) => {
+  const calculateTaxTotal = (estimate: IInvoice | undefined) => {
     if (!estimate) return 0;
 
-    if (estimate.taxPart && estimate.tax)
+    if(estimate.updateStatus === INVOICE_STATUS.update.draft ) {
+      if (estimate.draftInvoice.taxPart && estimate.draftInvoice.tax)
       return (
-        parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''))
+        parseFloat(`${estimate?.draftInvoice?.tax}`.split(',').join('')) + parseFloat(`${estimate?.draftInvoice?.taxPart}`.split(',').join(''))
       );
 
-    if (estimate.tax && !estimate.taxPart) return parseFloat(`${estimate?.tax}`.split(',').join(''));
+      if (estimate.draftInvoice.tax && !estimate.draftInvoice.taxPart) return parseFloat(`${estimate?.draftInvoice?.tax}`.split(',').join(''));
 
-    if (!estimate.tax && estimate.taxPart) return parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+      if (!estimate.draftInvoice.tax && estimate.draftInvoice.taxPart) return parseFloat(`${estimate?.draftInvoice?.taxPart}`.split(',').join(''));
+    }
+
+    if(estimate.updateStatus === INVOICE_STATUS.update.sent ) {
+      if (estimate.taxPart && estimate.tax)
+        return (
+          parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''))
+        );
+
+      if (estimate.tax && !estimate.taxPart) return parseFloat(`${estimate?.tax}`.split(',').join(''));
+
+      if (!estimate.tax && estimate.taxPart) return parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+    }
 
     return 0;
   };
@@ -460,6 +480,7 @@ function InvoicePage() {
             <Avatar src={InsightImg} sx={{ width: 20, height: 20 }} />
           </Grid>
           <Grid item xs={4} sm={3}
+            alignItems='left'
             sx={{
               width: '100%',
               wordBreak: "break-word",
@@ -491,7 +512,7 @@ function InvoicePage() {
           {!parts.length
             ? null
             : parts.map((part, idx1) => {
-                const amount = formatNumberToIntl(parseInt(part.amount));
+                const amount = formatNumberToIntl(+part.amount);
 
                 return (
                   <Grid
@@ -508,15 +529,15 @@ function InvoicePage() {
                     <Grid item xs={4} sm={3}
                       sx={{fontSize: {xs: '13px', sm: '16px'}, wordBreak: 'break-word', width: '100%'}}
                     >
-                      {part.name}
+                      {part && part.name}
                     </Grid>
                     <Grid item xs={3} sm={3}
                       sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}
                     >
-                      {part?.warranty?.warranty || ''} {part?.warranty?.interval || ''}
+                      {part?.warranty?.warranty} {part?.warranty?.interval}
                     </Grid>
                     <Grid item xs={4} sm={3} sx={{textAlign: {xs:'left'}, fontSize: {xs: '13px', sm: '16px'}}}>
-                      {formatNumberToIntl(+part.price)} x {part?.quantity?.quantity || ''}${part?.quantity?.unit || 0}
+                      {formatNumberToIntl(+part.price)} x {part?.quantity?.quantity || ''} {part?.quantity?.unit || 0}
                     </Grid>
                     <Grid item xs={3} sx={{textAlign: {xs:'right'}, fontSize: {xs: '13px', sm: '16px'}}}>
                       {amount}
@@ -557,33 +578,69 @@ function InvoicePage() {
                 );
               })}
         </Grid>
-        <Grid item container justifyContent="center" alignItems="center" my={3}>
-          <Grid item xs={10} />
-          <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
-              Subtotal: {formatNumberToIntl(subTotal)}
-            </Typography>
-            {/* @ts-ignore */}
-            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
-              VAT(7.5%):{' '}
-              {
-                // @ts-ignore
-                formatNumberToIntl(calculateTaxTotal(invoice))
-              }
-            </Typography>
-            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
-              Discount:{' '}
-              {
-                // @ts-ignore
-                `(${formatNumberToIntl(
-                  calculateDiscount({
-                    total: grandTotal,
-                    discount: invoice.discount,
-                    discountType: invoice.discountType,
-                  }),
-                )})`
-              }
-            </Typography>
+        <Grid item xs={12} my={3}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}
+        >
+          <Grid item xs>
+            <TextField
+              value={estimate?.note}
+              InputProps={{
+                readOnly: true
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              // fullWidth
+              multiline
+              rows={4}
+              name='note'
+              label='Note/Remarks'
+              sx={{
+                width: '50%'
+              }}
+            />
+          </Grid>
+          <Grid item xs>
+            <Grid item container justifyContent="center" alignItems="center" my={3}>
+              <Grid item xs={10} />
+              <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                  Subtotal: {formatNumberToIntl(subTotal)}
+                </Typography>
+                {/* @ts-ignore */}
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                  VAT(7.5%):{' '}
+                  {
+                    // @ts-ignore
+                    formatNumberToIntl(calculateTaxTotal(invoice))
+                  }
+                </Typography>
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                  Discount:{' '}
+                  {
+                    // @ts-ignore
+                    `(${ formatNumberToIntl(
+                          calculateDiscount({
+                            total: grandTotal,
+                            discount: invoice.edited
+                                        ? invoice.updateStatus === INVOICE_STATUS.update.draft
+                                          ? invoice.draftInvoice.discount
+                                          : invoice.discount
+                                        : estimate.discount,
+                            discountType: invoice.edited
+                                            ? invoice.updateStatus === INVOICE_STATUS.update.draft
+                                              ? invoice.draftInvoice.discountType
+                                              : invoice.discountType
+                                            : estimate.discountType
+                          }))
+                      })`
+                  }
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
         <Grid item container justifyContent="center" alignItems="center" my={3}>

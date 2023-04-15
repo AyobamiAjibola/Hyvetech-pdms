@@ -87,7 +87,7 @@ function InvoiceForm(props: IProps) {
     setDueBalance,
     setRefundable,
     refundable,
-    setSave,
+    setSave
   } = props;
 
   // useEffect(() => {
@@ -501,7 +501,7 @@ function InvoiceForm(props: IProps) {
                                         label={value}
                                         value={part[value]}
                                         onChange={e => handleChangeQtyAndPrice(e, index)}
-                                        type="number"
+                                        type="string"
                                         inputProps={{
                                           min: '0',
                                         }}
@@ -577,7 +577,7 @@ function InvoiceForm(props: IProps) {
                             justifyContent: 'left'
                           }}
                         >
-                          Part(s): ₦{formatNumberToIntl(Math.round(partTotal))}
+                          Part(s): ₦{formatNumberToIntl(+partTotal.toFixed(2))}
                         </Typography>
                         {enableTaxPart && (
                           <TextField
@@ -650,7 +650,7 @@ function InvoiceForm(props: IProps) {
                                         label={value}
                                         value={labour[value]}
                                         onChange={handleChange}
-                                        type="number"
+                                        type="string"
                                         inputProps={{
                                           min: '0',
                                         }}
@@ -708,7 +708,7 @@ function InvoiceForm(props: IProps) {
                 }}
               >
                 {' '}
-                Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))}
+                Service Charge(s): ₦{formatNumberToIntl(+labourTotal.toFixed(2))}
               </Typography>
               {enableTaxLabor && (
                 <TextField
@@ -789,23 +789,35 @@ function InvoiceForm(props: IProps) {
           <Grid style={{ marginTop: 20 }} container spacing={2}>
             <Grid item md={6}>
               <Grid item>
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%): ₦{formatNumberToIntl(vatTotal)}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%): ₦{formatNumberToIntl(+vatTotal.toFixed(2))}</Typography>
               </Grid>
               <Grid item>
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total: ₦{formatNumberToIntl(Math.round(grandTotal))}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total: ₦{formatNumberToIntl(+grandTotal.toFixed(2))}</Typography>
               </Grid>
               <Grid item justifyContent="space-around" alignItems="center">
                 <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Amount Paid: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
               </Grid>
               <Grid item>
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Due Balance: ₦{formatNumberToIntl(Math.round(dueBalance))}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Due Balance: ₦{formatNumberToIntl(+dueBalance.toFixed(2))}</Typography>
               </Grid>
               <Grid item justifyContent="space-around" alignItems="center">
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Refundable: ₦{formatNumberToIntl(refundable)}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Refundable: ₦{formatNumberToIntl(+refundable.toFixed(2))}</Typography>
               </Grid>
             </Grid>
 
             <Grid item md={6} mt={2}>
+              <Grid item xs={12}>
+                <TextField
+                  value={values.note}
+                  onChange={handleChange}
+                  fullWidth
+                  multiline
+                  rows={3}
+                  name={fields.note.name}
+                  label={fields.note.label}
+                />
+              </Grid>
+              <br />
               <Grid container spacing={0.5}>
                 <Grid item xs={6}>
                   <TextInputField

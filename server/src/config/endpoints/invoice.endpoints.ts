@@ -8,6 +8,7 @@ import {
   updateCompletedInvoicePaymentHandler,
   updateCompletedInvoicePaymentManuallyHandler,
   getSingleInvoiceHandler,
+  deleteInvoiceHandler,
 } from '../../routes/invoiceRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -68,6 +69,12 @@ const invoiceEndpoints: RouteEndpoints = [
     method: 'get',
     path: '/invoice/:id',
     handler: getSingleInvoiceHandler,
+  },
+  {
+    name: 'delete invoice',
+    method: 'delete',
+    path: '/invoice/:invoiceId',
+    handler: deleteInvoiceHandler,
   },
 ];
 

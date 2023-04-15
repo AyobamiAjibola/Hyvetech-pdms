@@ -725,5 +725,6 @@ declare module '@app-models' {
     deletedAt: string;
     discount: number;
     discountType: string;
+    updateStatus: string;
   }
 }

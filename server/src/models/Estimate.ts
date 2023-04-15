@@ -276,8 +276,7 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   jobDurationUnit: Joi.string().required().label(estimateFields.jobDurationUnit.label),
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
-  note: Joi.string().optional().label('note'),
-  // partnerId: Joi.number().optional()
+  note: Joi.string().allow('').label('note')
 };
 
 export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
@@ -311,7 +310,8 @@ export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   jobDurationUnit: Joi.string().allow('').label(estimateFields.jobDurationUnit.label),
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
-  count: Joi.number().optional().label('count')
+  count: Joi.number().optional().label('count'),
+  note: Joi.string().allow('').label('note')
 };
 
 export const $updateEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {

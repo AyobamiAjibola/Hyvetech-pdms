@@ -1,7 +1,7 @@
 import { IThunkAPIStatus } from '@app-types';
 import { IInvoice } from '@app-models';
 import { createSlice } from '@reduxjs/toolkit';
-import { getInvoicesAction, getSingleInvoice, saveInvoiceAction, sendInvoiceAction } from '../actions/invoiceActions';
+import { deleteInvoiceAction, getInvoicesAction, getSingleInvoice, saveInvoiceAction, sendInvoiceAction } from '../actions/invoiceActions';
 
 interface IInvoiceState {
   getInvoicesStatus: IThunkAPIStatus;
@@ -11,6 +11,10 @@ interface IInvoiceState {
   saveInvoiceStatus: IThunkAPIStatus;
   saveInvoiceSuccess: string;
   saveInvoiceError: string;
+
+  deleteInvoiceStatus: IThunkAPIStatus;
+  deleteInvoiceSuccess: string;
+  deleteInvoiceError: string;
 
   sendInvoiceStatus: IThunkAPIStatus;
   sendInvoiceSuccess: string;
@@ -28,6 +32,10 @@ const initialState: IInvoiceState = {
   saveInvoiceStatus: 'idle',
   saveInvoiceSuccess: '',
   saveInvoiceError: '',
+
+  deleteInvoiceError: '',
+  deleteInvoiceStatus: 'idle',
+  deleteInvoiceSuccess: '',
 
   sendInvoiceStatus: 'idle',
   sendInvoiceSuccess: '',
@@ -51,6 +59,12 @@ const invoiceSlice = createSlice({
       state.saveInvoiceStatus = 'idle';
       state.saveInvoiceSuccess = '';
       state.saveInvoiceError = '';
+    },
+
+    clearDeleteInvoiceStatus(state: IInvoiceState) {
+      state.deleteInvoiceStatus = 'idle';
+      state.deleteInvoiceSuccess = '';
+      state.deleteInvoiceError = '';
     },
 
     clearSendInvoiceStatus(state: IInvoiceState) {
@@ -124,9 +138,30 @@ const invoiceSlice = createSlice({
           state.sendInvoiceError = action.payload.message;
         } else state.sendInvoiceError = action.error.message as string;
       });
+
+    builder
+      .addCase(deleteInvoiceAction.pending, state => {
+        state.deleteInvoiceStatus = 'loading';
+      })
+      .addCase(deleteInvoiceAction.fulfilled, (state, action) => {
+        state.deleteInvoiceStatus = 'completed';
+        state.deleteInvoiceSuccess = action.payload.message;
+      })
+      .addCase(deleteInvoiceAction.rejected, (state, action) => {
+        state.deleteInvoiceStatus = 'failed';
+
+        if (action.payload) {
+          state.deleteInvoiceError = action.payload.message;
+        } else state.deleteInvoiceError = action.error.message as string;
+      });
   },
 });
 
-export const { clearGetInvoicesStatus, clearSaveInvoiceStatus, clearSendInvoiceStatus } = invoiceSlice.actions;
+export const {
+  clearGetInvoicesStatus,
+  clearSaveInvoiceStatus,
+  clearSendInvoiceStatus,
+  clearDeleteInvoiceStatus
+} = invoiceSlice.actions;
 
 export default invoiceSlice.reducer;

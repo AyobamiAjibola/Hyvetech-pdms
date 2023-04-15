@@ -29,13 +29,13 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
 
   // alterer
   if (invoice.draftInvoice != null && invoice.draftInvoice.parts != null) {
-    if (invoice.edited && INVOICE_STATUS.update.draft) {
+    if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
       estimate.parts = !invoice.draftInvoice.parts.length ? [] : invoice.draftInvoice.parts;
       estimate.labours = !invoice.draftInvoice.labours.length ? [] : invoice.draftInvoice.labours;
     } else if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
       console.log('');
-      estimate.parts = !invoice.draftInvoice.parts.length ? [] : invoice.draftInvoice.parts;
-      estimate.labours = !invoice.draftInvoice.labours.length ? [] : invoice.draftInvoice.labours;
+      estimate.parts = !invoice.parts.length ? [] : invoice.parts;
+      estimate.labours = !invoice.labours.length ? [] : invoice.labours;
     } else {
       estimate.parts = !estimate.parts.length ? [] : estimate.parts;
       estimate.labours = !estimate.labours.length ? [] : estimate.labours;
@@ -65,12 +65,19 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
     console.log(e);
   }
 
+//   const calculateTaxTotal = (invoice: any | undefined) => {
+//     if (!invoice) return 0;
+//     if(invoice.edited && invoice.updateStatus === )
+//     const tax = parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+//     return tax
+//   };
+
   // console.log(mainUrl, "mainUrl");
   // @ts-ignore
   return `
     <!DOCTYPE html>
     <html lang="en">
-    
+
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -333,6 +340,15 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
         padding: 10px 10px;
         /* flex: 1; */
     }
+
+    .note-title {
+        font-size: 12px;
+        font-weight: 600;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 5px;
+    }
     
     .item-cost-item {
         font-size: 12px;
@@ -345,9 +361,9 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
     .item-amount-item-amount {
         font-size: 12px;
         font-weight: 400;
-        width: 120px;
+        width: 200px;
         text-align: right;
-        padding: 5px 10px;
+        padding: 10px 10px;
     }
     
     .first {
@@ -511,6 +527,7 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
                 ${estimate.parts
                   .map((part: any, idx1) => {
                     const amount = formatNumberToIntl(parseInt(part?.amount || 0));
+                    console.log(part)
                     return `
                             <div class="item-header-item">
                     <span class="count-num-item">${idx1 + 1}</span>
@@ -543,41 +560,71 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
                   })
                   .join()
                   .replaceAll(' ,', '')}
-                
-                <div class="item-header-item-total first">
-                    <span class="count-num-item"></span>
-                    <span class="item-descrip-item"></span>
-                    <span class="item-warranty-item"></span>
-                    <span class="item-cost-item-sub">Subtotal:</span>
-                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(
-                      estimate.partsTotal + estimate.laboursTotal,
-                    )}</span>
-                </div>
-                <div class="item-header-item-total">
-                    <span class="count-num-item"></span>
-                    <span class="item-descrip-item"></span>
-                    <span class="item-warranty-item"></span>
-                    <span class="item-cost-item-sub">Discount:</span>
-                    <span class="item-amount-item-amount"> 
-                    ${formatNumberToIntl(
-                      invoice?.draftInvoice?.discount || invoice?.discount || estimate?.discount || 0,
-                    )}
-                    </span>
-                </div>
-                <div class="item-header-item-total">
-                    <span class="count-num-item"></span>
-                    <span class="item-descrip-item"></span>
-                    <span class="item-warranty-item"></span>
-                    <span class="item-cost-item-sub">VAT (7.5%):</span>
-                    <span class="item-amount-item-amount">₦ ${
-                      // @ts-ignore
-                      formatNumberToIntl(
-                        // @ts-ignore
-                        parseFloat(invoice?.draftInvoice?.tax || invoice?.tax || estimate?.tax || 0) +
-                          // @ts-ignore
-                          parseFloat(invoice?.draftInvoice?.taxPart || invoice?.taxPart || estimate?.taxPart || 0),
-                      )
-                    }</span>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px">
+                    <div style="width: 40%">
+                        <div>
+                            <span class="note-title">Note/Remarks:</span>
+                            <br />
+                            <span class="item-amount-item-amount">${estimate.note}</span>
+                        </div>
+                    </div>
+                    <div style="width: 60%;">
+                        <div class="item-header-item-total" style="width: 100%;">
+                            <span class="count-num-item"></span>
+                            <span class="item-descrip-item"></span>
+                            <span class="item-warranty-item"></span>
+                            <span class="item-cost-item-sub">Subtotal:</span>
+                            <span class="item-amount-item-amount">₦ ${
+                                invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                                    ? formatNumberToIntl(
+                                        invoice?.draftInvoice?.partsTotal + invoice?.draftInvoice?.laboursTotal)
+                                    : formatNumberToIntl(invoice?.partsTotal + invoice?.laboursTotal)
+                            }</span>
+                        </div>
+                        <div class="item-header-item-total">
+                            <span class="count-num-item"></span>
+                            <span class="item-descrip-item"></span>
+                            <span class="item-warranty-item"></span>
+                            <span class="item-cost-item-sub">Discount:</span>
+                            <span class="item-amount-item-amount">
+                            ${
+                                invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                                    ? formatNumberToIntl(invoice?.draftInvoice?.discount || 0)
+                                    : formatNumberToIntl(invoice?.discount || 0)
+                                // formatNumberToIntl(invoice?.draftInvoice?.discount || 0) ||
+                                // formatNumberToIntl(invoice?.discount || 0)
+                            }
+                            </span>
+                        </div>
+                        <div class="item-header-item-total">
+                            <span class="count-num-item"></span>
+                            <span class="item-descrip-item"></span>
+                            <span class="item-warranty-item"></span>
+                            <span class="item-cost-item-sub">VAT (7.5%):</span>
+                            <span class="item-amount-item-amount">₦ ${
+                            //@ts-ignore
+                            // formatNumberToIntl(
+                            //     // @ts-ignore
+                            //     +invoice?.draftInvoice?.tax || +invoice?.tax || +estimate?.tax || 0 +
+                            //     // @ts-ignore
+                            //     +invoice?.draftInvoice?.taxPart || +invoice?.taxPart || +estimate?.taxPart || 0,
+                            // )
+                                invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                                    ? formatNumberToIntl(
+                                        // @ts-ignore
+                                        +invoice?.draftInvoice?.tax +
+                                        // @ts-ignore
+                                        +invoice?.draftInvoice?.taxPart,
+                                    )
+                                    : formatNumberToIntl(
+                                        // @ts-ignore
+                                        +invoice?.tax || 0 +
+                                        // @ts-ignore
+                                        +invoice?.taxPart || 0,
+                                    )
+                            }</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -585,9 +632,15 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
                     <span class="item-warranty-item"></span>
                     <div class="total-flex" style="background: #E8E8E8;">
                         <span class="item-cost-item-sub-total">Total:</span>
-                        <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(
-                          invoice.draftInvoice?.grandTotal || invoice?.grandTotal || estimate?.grandTotal || 0,
-                        )}</span>
+                        <span class="item-amount-item-amount total">₦ ${
+                        //     formatNumberToIntl(
+                        //   +invoice.draftInvoice?.grandTotal.toFixed(2) || +invoice?.grandTotal.toFixed || +estimate?.grandTotal.toFixed(2) || 0,
+                        // )
+                        invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                            ? formatNumberToIntl(
+                                +invoice?.draftInvoice?.grandTotal.toFixed(2))
+                            : formatNumberToIntl(+invoice?.grandTotal.toFixed(2))
+                    }</span>
                     </div>
     
                 </div>
