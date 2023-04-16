@@ -418,6 +418,7 @@ export default function useEstimate() {
           labours,
           status: estimate.status,
           estimate: { ...estimate },
+          note: estimate.note
         }));
 
         setGrandTotal(estimate.grandTotal);

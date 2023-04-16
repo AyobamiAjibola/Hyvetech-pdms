@@ -897,7 +897,8 @@ export default class EstimateController {
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-    const count = estimate.count + value.count
+    const count = +estimate.count + value.count
+    console.log(value.count, "checking count value")
     console.log(count)
     const estimateValues: Partial<Estimate> = {
       count: count

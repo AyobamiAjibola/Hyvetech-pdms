@@ -129,6 +129,7 @@ function EstimateForm(props: IProps) {
   const dispatch = useAppDispatch();
 
   const { values, handleChange, setFieldValue, setFieldTouched, resetForm } = useFormikContext<IEstimateValues>();
+
   // @ts-ignore
   const [enableTaxLabor, setEnableTaxLabor] = useState<boolean>(false);
 
@@ -1053,7 +1054,7 @@ function EstimateForm(props: IProps) {
                   label={`${fields.tax.label} (VAT 7.5%)`}
                   variant="outlined"
                   fullWidth
-                  sx={{ mb: 2, mt: 2}}
+                  sx={{ mb: 2, mt: 2, color: 'black'}}
                   type="number"
                 />
               )}

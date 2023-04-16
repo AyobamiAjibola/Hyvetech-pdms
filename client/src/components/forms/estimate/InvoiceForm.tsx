@@ -73,7 +73,7 @@ function InvoiceForm(props: IProps) {
   const dispatch = useAppDispatch();
 
   const { values, handleChange, setFieldValue, resetForm } = useFormikContext<IEstimateValues>();
-
+  // console.log(values, "checking values for edit form")
   const {
     setGrandTotal,
     setPartTotal,
@@ -318,6 +318,7 @@ function InvoiceForm(props: IProps) {
     },
     [setFieldValue, values.parts],
   );
+
 
   useEffect(() => {
     return () => {
@@ -577,7 +578,7 @@ function InvoiceForm(props: IProps) {
                             justifyContent: 'left'
                           }}
                         >
-                          Part(s): ₦{formatNumberToIntl(+partTotal.toFixed(2))}
+                          Part(s): ₦{formatNumberToIntl(+partTotal?.toFixed(2))}
                         </Typography>
                         {enableTaxPart && (
                           <TextField
@@ -708,7 +709,7 @@ function InvoiceForm(props: IProps) {
                 }}
               >
                 {' '}
-                Service Charge(s): ₦{formatNumberToIntl(+labourTotal.toFixed(2))}
+                Service Charge(s): ₦{formatNumberToIntl(+labourTotal?.toFixed(2))}
               </Typography>
               {enableTaxLabor && (
                 <TextField
@@ -789,19 +790,19 @@ function InvoiceForm(props: IProps) {
           <Grid style={{ marginTop: 20 }} container spacing={2}>
             <Grid item md={6}>
               <Grid item>
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%): ₦{formatNumberToIntl(+vatTotal.toFixed(2))}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%): ₦{formatNumberToIntl(+vatTotal?.toFixed(2))}</Typography>
               </Grid>
               <Grid item>
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total: ₦{formatNumberToIntl(+grandTotal.toFixed(2))}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total: ₦{formatNumberToIntl(+grandTotal?.toFixed(2))}</Typography>
               </Grid>
               <Grid item justifyContent="space-around" alignItems="center">
                 <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Amount Paid: ₦{formatNumberToIntl(+values.depositAmount)}</Typography>
               </Grid>
               <Grid item>
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Due Balance: ₦{formatNumberToIntl(+dueBalance.toFixed(2))}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Due Balance: ₦{formatNumberToIntl(+dueBalance?.toFixed(2))}</Typography>
               </Grid>
               <Grid item justifyContent="space-around" alignItems="center">
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Refundable: ₦{formatNumberToIntl(+refundable.toFixed(2))}</Typography>
+                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Refundable: ₦{formatNumberToIntl(+refundable?.toFixed(2))}</Typography>
               </Grid>
             </Grid>
 

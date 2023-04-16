@@ -277,12 +277,15 @@ export default function useInvoice() {
         if (!invoice.edited) {
           const estimate = invoice.estimate;
 
-          const parts = estimate.parts as unknown as IPart[];
-          const labours = estimate.labours as unknown as ILabour[];
+          const parts = estimate.parts as unknown as any;
+          const labours = estimate.labours as unknown as any;
           const jobDuration = { count: `${estimate.jobDurationValue}`, interval: estimate.jobDurationUnit };
           const depositAmount = `${invoice.depositAmount}`;
           const tax = `${estimate.tax}`;
           const status = estimate.status;
+
+          const _parts = parts?.length && parts.map((part: any) => JSON.parse(part))
+          const _labours = labours?.length && labours.map((labour: any) => JSON.parse(labour))
 
           setInitialValues(prevState => ({
             ...prevState,
@@ -300,8 +303,8 @@ export default function useInvoice() {
             depositAmount,
             tax,
             mileage,
-            parts,
-            labours,
+            parts: _parts,
+            labours: _labours,
             status,
             invoice,
             note

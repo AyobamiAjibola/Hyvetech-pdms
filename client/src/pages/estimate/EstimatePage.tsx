@@ -87,10 +87,6 @@ function EstimatePage() {
       const code = response.data.invoiceCode;
       console.log(code)
       // window.location.href = ('/invoices/'+code);
-      // const count = 1
-      // const res = await axiosClient.put(`${API_ROOT}/estimate-count/${estimate?.id}`, count);
-      // console.log(res, "checking count")
-
       window.location.replace('/invoices');
 
     }catch(e){
@@ -156,20 +152,25 @@ function EstimatePage() {
           #{estimate.code}
         </Typography>
 
-        <Box component='div' sx={{ display: 'flex', justifyContent: {sm: 'flex-end', xs: 'center'} }}>
-          {
-            (
-              ( ((estimate.status).toLowerCase() === 'sent') || ((estimate.status).toLowerCase() === 'draft') ) &&
+        <Box component='div' sx={{ display: 'flex', justifyContent: {sm: 'space-between', xs: 'center'}, alignItems: 'center' }}>
+          <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            {/* <span style={{ fontWeight: 600 }}>{`Invoice Generated: ${estimate.count || 0}x`}</span> */}
+          </Box>
+          <Box>
+            {
+              (
+                ( ((estimate.status).toLowerCase() === 'sent') || ((estimate.status).toLowerCase() === 'draft') ) &&
 
-              <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
-                {generating ? 'Generating...' : 'Generate Invoice'}
-              </Button>
-            )
-          }
+                <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
+                  {generating ? 'Generating...' : 'Generate Invoice'}
+                </Button>
+              )
+            }
 
-          <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
-            {downloading ? 'Downloading...' : 'Download Pdf'}
-          </Button>
+            <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
+              {downloading ? 'Downloading...' : 'Download Pdf'}
+            </Button>
+          </Box>
         </Box>
 
         <Grid container my={3}
