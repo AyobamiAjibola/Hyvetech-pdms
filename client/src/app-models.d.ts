@@ -659,6 +659,7 @@ declare module '@app-models' {
     discount?: number;
     discountType?: string;
     note?: string;
+    count?: number;
   }
 
   interface IPayStackBank {

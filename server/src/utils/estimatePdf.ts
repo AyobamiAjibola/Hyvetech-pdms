@@ -322,7 +322,7 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
     .item-amount-item-amount {
         font-size: 12px;
         font-weight: 400;
-        width: 120px;
+        width: 200px;
         text-align: right;
         padding: 10px 10px;
     }

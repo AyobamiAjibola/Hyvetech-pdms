@@ -260,8 +260,10 @@ export default class InvoiceController {
 
       const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
 
-      await estimate.update({ status: ESTIMATE_STATUS.invoiced });
-      await estimate.$set('invoice', invoice);
+      const count = estimate.count + 1
+      await estimate.update({ status: ESTIMATE_STATUS.invoiced, count: count });
+      //@ts-ignore
+      await estimate.setInvoice(invoice);
 
       const response: any = {
         code: HttpStatus.OK.code,
@@ -434,9 +436,25 @@ export default class InvoiceController {
         invoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
       }
 
+      if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
+        let parts = invoice?.draftInvoice.parts;
+        let labours = invoice?.draftInvoice.labours;
+
+        parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+        labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+      }
+
+      if (!invoice.edited) {
+        let parts = invoice.estimate?.parts;
+        let labours = invoice.estimate?.labours;
+
+        parts = parts?.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
+        labours = labours?.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+      }
+
       return invoice;
     });
-
+    console.log(invoices)
     return Promise.resolve({
       code: HttpStatus.OK.code,
       message: HttpStatus.OK.value,
@@ -1052,9 +1070,12 @@ export default class InvoiceController {
     const invoiceId = req.params.invoiceId as string;
 
     const invoice = await dataSources.invoiceDAOService.findById(+invoiceId);
+    const estimate = await invoice?.$get('estimate');
 
     if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found`, HttpStatus.NOT_FOUND.code));
 
+    const count = estimate?.count && estimate?.count - 1
+    await estimate?.update({ status: ESTIMATE_STATUS.draft, count: count });
     await Invoice.destroy({ where: { id: +invoiceId }, force: true });
 
     return Promise.resolve({

@@ -32,7 +32,7 @@ const estimateEndpoints: RouteEndpoints = [
   },
   {
     name: 'update estimate count',
-    method: 'put',
+    method: 'patch',
     path: `/estimate-count/:estimateId`,
     handler: updateEstimateCountHandler,
   },

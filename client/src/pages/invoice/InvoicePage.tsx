@@ -475,7 +475,7 @@ function InvoicePage() {
           borderColor={theme => (theme.palette.mode === 'dark' ? '#676767' : '#000000')}
           justifyContent="center"
           alignItems="center"
-          columns={14}>
+          columns={14} item>
           <Grid item xs={2} sx={{display: {xs: 'none', sm: 'block'}}}>
             <Avatar src={InsightImg} sx={{ width: 20, height: 20 }} />
           </Grid>
@@ -508,7 +508,7 @@ function InvoicePage() {
             Amount
           </Grid>
         </Grid>
-        <Grid container>
+        <Grid container item>
           {!parts.length
             ? null
             : parts.map((part, idx1) => {
