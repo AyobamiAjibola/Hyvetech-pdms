@@ -63,7 +63,7 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   dueAmount: Joi.number().allow().label('Due Amount'),
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
-  note: Joi.string().allow('').label('note')
+  note: Joi.string().allow('').label('note'),
 };
 
 @Table({ tableName: 'invoices', timestamps: true, paranoid: true })

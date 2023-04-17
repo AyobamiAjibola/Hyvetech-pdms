@@ -154,18 +154,12 @@ function EstimatePage() {
 
         <Box component='div' sx={{ display: 'flex', justifyContent: {sm: 'space-between', xs: 'center'}, alignItems: 'center' }}>
           <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            {/* <span style={{ fontWeight: 600 }}>{`Invoice Generated: ${estimate.count || 0}x`}</span> */}
+            <span style={{ fontWeight: 600 }}>{`Invoice Generated: ${estimate.count || 0}x`}</span>
           </Box>
           <Box>
-            {
-              (
-                ( ((estimate.status).toLowerCase() === 'sent') || ((estimate.status).toLowerCase() === 'draft') ) &&
-
-                <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
-                  {generating ? 'Generating...' : 'Generate Invoice'}
-                </Button>
-              )
-            }
+            <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
+              {generating ? 'Generating...' : 'Generate Invoice'}
+            </Button>
 
             <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
               {downloading ? 'Downloading...' : 'Download Pdf'}

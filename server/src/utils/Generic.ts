@@ -91,9 +91,9 @@ export default class Generic {
   }
 
   public static capitalizeWord (sentence: string): string {
-    const words = sentence.split(' ');
-    const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
-    return capitalizedWords.join(' ');
+    const words = sentence?.split(' ');
+    const capitalizedWords = words?.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+    return capitalizedWords?.join(' ');
   }
 
   public static async getImagePath(params: IGetImagePath) {

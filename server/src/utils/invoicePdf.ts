@@ -485,7 +485,8 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
                     <div class="bill-to-name">${
-                      customer?.companyName || `${Generic.capitalizeWord(customer.title)} ${Generic.capitalizeWord(customer.firstName)} ${Generic.capitalizeWord(customer.lastName)}`
+                      customer?.companyName ? customer?.companyName : '' ||
+                      `${Generic.capitalizeWord(customer?.title ? customer?.title : '')} ${Generic.capitalizeWord(customer?.firstName ? customer?.firstName : '')} ${Generic.capitalizeWord(customer?.lastName ? customer?.lastName : '')}`
                     }</div>
                     <div class="bill-to-address">${customer?.contacts[0]?.address || ''}, ${
     customer.contacts[0]?.city || ''
@@ -569,7 +570,7 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
                         <div>
                             <span class="note-title">Note/Remarks:</span>
                             <br />
-                            <span class="item-amount-item-amount">${estimate.note}</span>
+                            <span class="item-amount-item-amount">${estimate.note ? estimate.note : ''}</span>
                         </div>
                     </div>
                     <div style="width: 60%;">

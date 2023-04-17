@@ -264,6 +264,8 @@ export default class EstimateController {
       status: ESTIMATE_STATUS.sent,
     });
 
+    // send mail
+    // @ts-ignore
     let user: any = customer;
     const mail = new_estimate_template({
       firstName: customer.firstName,
@@ -273,22 +275,61 @@ export default class EstimateController {
       vehichleData: `${value.modelYear} ${value.make} ${value.model} `,
     });
 
-    await QueueManager.publish({
-      queue: QUEUE_EVENTS.name,
-      data: {
-        to: user.email,
-        replyTo: partner.email,
-        // @ts-ignore
-        'reply-to': partner.email,
-        from: {
-          name: 'AutoHyve',
-          address: <string>process.env.SMTP_EMAIL_FROM2,
-        },
-        subject: `${partner.name} has sent you an estimate on AutoHyve`,
-        html: mail,
-        bcc: [<string>process.env.SMTP_BCC],
-      },
-    });
+    try {
+      // create pdf before sending
+      const html = await generateEstimateHtml(estimate.id);
+      const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+      await generatePdf(html, rName);
+
+      // set seperate listener to send mail after 6 seconds
+      setTimeout(() => {
+        (async () => {
+          try {
+            await sendMail({
+              to: user.email,
+              replyTo: partner.email,
+              // @ts-ignore
+              'reply-to': partner.email,
+              from: {
+                name: 'AutoHyve',
+                address: <string>process.env.SMTP_EMAIL_FROM2,
+              },
+              subject: `${partner.name} has sent you an estimate on AutoHyve`,
+              html: mail,
+              bcc: [<string>process.env.SMTP_BCC],
+              attachments: [
+                {
+                  filename: rName,
+                  path: path.join(__dirname, '../../uploads/', 'pdf', rName),
+                  cid: rName,
+                },
+              ],
+            });
+          } catch (err) {
+            console.log(err);
+          }
+        })();
+      }, 5000);
+    } catch (e) {
+      console.log(e);
+    }
+
+    // await QueueManager.publish({
+    //   queue: QUEUE_EVENTS.name,
+    //   data: {
+    //     to: user.email,
+    //     replyTo: partner.email,
+    //     // @ts-ignore
+    //     'reply-to': partner.email,
+    //     from: {
+    //       name: 'AutoHyve',
+    //       address: <string>process.env.SMTP_EMAIL_FROM2,
+    //     },
+    //     subject: `${partner.name} has sent you an estimate on AutoHyve`,
+    //     html: mail,
+    //     bcc: [<string>process.env.SMTP_BCC],
+    //   },
+    // });
 
     appEventEmitter.emit(CREATED_ESTIMATE, { estimate, customer, vehicle, partner });
 

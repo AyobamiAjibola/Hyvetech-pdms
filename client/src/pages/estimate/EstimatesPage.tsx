@@ -400,7 +400,8 @@ function EstimatesPage() {
         <AppModal
           fullWidth
           size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
-          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
+          // fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
+          fullScreen={true}
           show={estimate.showCreate}
           Content={
             <Formik
@@ -424,7 +425,8 @@ function EstimatesPage() {
                 partTotal={estimate.partTotal}
                 grandTotal={estimate.grandTotal}
                 isSubmitting={
-                  estimateReducer.createEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading'
+                  estimateReducer.createEstimateStatus === 'loading' ||
+                  estimateReducer.saveEstimateStatus === 'loading'
                 }
                 setSave={estimate.setSave}
               />
@@ -437,7 +439,8 @@ function EstimatesPage() {
         <AppModal
           fullWidth
           size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
-          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
+          // fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
+          fullScreen={true}
           show={estimate.showEdit}
           Content={
             <Formik
