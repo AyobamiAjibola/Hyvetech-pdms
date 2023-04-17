@@ -221,7 +221,6 @@ export default class InvoiceController {
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async generateInvoiceManually(req: Request) {
-    //
     try {
       const partner = req.user.partner
       const estimate = await dataSources.estimateDAOService.findById(req.body.id);
@@ -263,7 +262,8 @@ export default class InvoiceController {
       const count = estimate.count + 1
       await estimate.update({ status: ESTIMATE_STATUS.invoiced, count: count });
       //@ts-ignore
-      await estimate.setInvoice(invoice);
+      // await estimate.setInvoice(invoice);
+      await estimate.$add('invoices', [invoice])
 
       const response: any = {
         code: HttpStatus.OK.code,
@@ -1070,9 +1070,12 @@ export default class InvoiceController {
     const invoiceId = req.params.invoiceId as string;
 
     const invoice = await dataSources.invoiceDAOService.findById(+invoiceId);
-    const estimate = await invoice?.$get('estimate');
-
     if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found`, HttpStatus.NOT_FOUND.code));
+
+    const expense = await dataSources.expenseDAOService.findByAny({ where: {invoiceCode: invoice.code} });
+    if (expense) return Promise.reject(CustomAPIError.response(`You are unable to delete this invoice because a payment and/or expenses has been recorded on it.`, HttpStatus.NOT_FOUND.code));
+
+    const estimate = await invoice?.$get('estimate');
 
     const count = estimate?.count && estimate?.count - 1
     await estimate?.update({ status: ESTIMATE_STATUS.sent, count: count });

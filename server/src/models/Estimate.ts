@@ -4,6 +4,7 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   // HasMany,
   HasOne,
   Model,
@@ -426,6 +427,9 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: NonAttribute<number>;
+
+  @HasMany(() => Invoice)
+  declare invoices: NonAttribute<Array<Invoice>>;
 
   // @BelongsTo(() => Invoice, { onDelete: 'SET NULL' })
   // // declare estimate: NonAttribute<Estimate>;

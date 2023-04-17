@@ -159,7 +159,7 @@ function InvoicePage() {
       rName,
     };
     setDownloading(true);
-
+    console.log(rName, "checking pdf name")
     try {
       const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
       console.log(response.data);
@@ -171,6 +171,7 @@ function InvoicePage() {
     setTimeout(() => {
       setDownloading(false);
       window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
+      console.log(rName, "checking rName after posting")
     }, 3000);
   };
 
