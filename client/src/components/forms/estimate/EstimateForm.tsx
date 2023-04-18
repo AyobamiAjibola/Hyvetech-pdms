@@ -24,7 +24,7 @@ import {
   Typography,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Save, Send, SendAndArchive } from '@mui/icons-material';
+import { Remove, Save, Send, SendAndArchive } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -868,7 +868,8 @@ function EstimateForm(props: IProps) {
                           </Grid>
                         );
                       })}
-                    <Grid item xs>
+                    <br />
+                    <Grid item xs={12} justifyContent='left'>
                       {document.documentElement.clientWidth <= 375
                           ? <Button
                               onClick={() =>
@@ -882,7 +883,7 @@ function EstimateForm(props: IProps) {
                               }>
                               {'Add Part'}
                             </Button>
-                          : <IconButton
+                          : <Typography
                               onClick={() =>
                                 partsProps.push({
                                   name: '',
@@ -890,10 +891,17 @@ function EstimateForm(props: IProps) {
                                   quantity: { quantity: '0', unit: '' },
                                   price: '0',
                                   amount: '0',
-                                })
-                              }>
-                              <Add />
-                            </IconButton>
+                                })}
+                              color={'skyblue'}
+                              style={{
+                                // marginLeft: 20,
+                                display: 'flex',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                              }}>
+                              <FaPlus style={{ marginRight: 8 }} />
+                              New Part
+                            </Typography>
                       }
                     </Grid>
 
@@ -953,7 +961,7 @@ function EstimateForm(props: IProps) {
             </Typography>
             <Divider orientation="horizontal" />
           </Grid>
-          <Grid item xs={12} container>
+          <Grid item xs={12}>
             <FieldArray
               name={fields.labours.name}
               render={laboursProps => {
@@ -1005,7 +1013,8 @@ function EstimateForm(props: IProps) {
                           </Grid>
                         );
                       })}
-                    <Grid item xs>
+                    <br />
+                    <Grid item xs={12} justifyContent='left'>
                       {document.documentElement.clientWidth <= 375
                           ? <Button
                               onClick={() =>
@@ -1017,16 +1026,23 @@ function EstimateForm(props: IProps) {
                             >
                               {'Add Service'}
                             </Button>
-                          : <IconButton
+                          : <Typography
                               onClick={() =>
                                 laboursProps.push({
                                   title: '',
                                   cost: '0',
                                 })
                               }
-                            >
-                              <Add />
-                            </IconButton>
+                              color={'skyblue'}
+                              style={{
+                                // marginLeft: 20,
+                                display: 'flex',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                              }}>
+                              <FaPlus style={{ marginRight: 8 }} />
+                                Add Service
+                            </Typography>
                       }
                     </Grid>
                   </React.Fragment>

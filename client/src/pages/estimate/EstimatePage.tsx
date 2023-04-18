@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IBillingInformation, IEstimate } from '@app-models';
 import { useLocation } from 'react-router-dom';
-import { Alert, Avatar, Box, Button, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, DialogActions, DialogContentText, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -9,6 +9,8 @@ import { formatNumberToIntl } from '../../utils/generic';
 import settings from '../../config/settings';
 import { ArrowBackIosNew } from '@mui/icons-material';
 import axiosClient from '../../config/axiosClient';
+import AppModal from '../../components/modal/AppModal';
+import { MESSAGES } from '../../config/constants';
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -22,6 +24,7 @@ function EstimatePage() {
   const [labours, setLabours] = useState<ILabour[]>([]);
   const [_driver, setDriver] = useState<any>(null);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
+  const [count, setCount] = useState<boolean>(false);
   const location = useLocation();
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
@@ -52,7 +55,8 @@ function EstimatePage() {
   }, [estimate]);
 
   const generateDownload = async () => {
-    const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+    // const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+    const rName = estimate?.code + '.pdf';
     // @ts-ignore
     const payload = {
       type: 'ESTIMATE',
@@ -76,7 +80,7 @@ function EstimatePage() {
   };
 
   const generateInvoice = async ()=>{
-    //
+
     try{
       const payload = {
         id: estimate?.id
@@ -95,6 +99,16 @@ function EstimatePage() {
     }
 
     setGenerating(false);
+  }
+
+  const checkInvoiceCount = () => {
+    if(estimate?.count && estimate?.count >= 1) {
+      setCount(true)
+    }
+
+    if(estimate?.count === 0 || estimate?.count === null) {
+      generateInvoice()
+    }
   }
 
   const calculateDiscount = ({
@@ -154,10 +168,10 @@ function EstimatePage() {
 
         <Box component='div' sx={{ display: 'flex', justifyContent: {sm: 'space-between', xs: 'center'}, alignItems: 'center' }}>
           <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <span style={{ fontWeight: 600 }}>{`Invoice Generated: ${estimate.count || 0}x`}</span>
+            <span style={{ color: 'green' }}>{`Invoiced (${estimate.count || 0})`}</span>
           </Box>
           <Box>
-            <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => generateInvoice()}>
+            <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => checkInvoiceCount()}>
               {generating ? 'Generating...' : 'Generate Invoice'}
             </Button>
 
@@ -482,6 +496,19 @@ function EstimatePage() {
             </Grid>
           </Grid>
         </Grid>
+
+        <AppModal
+          fullWidth
+          show={count}
+          Content={<DialogContentText>{MESSAGES.invoiceCount}</DialogContentText>}
+          ActionComponent={
+            <DialogActions>
+              <Button onClick={() => {generateInvoice(), setCount(false)}} >Yes</Button>
+              <Button onClick={() => setCount(false)} >No</Button>
+            </DialogActions>
+          }
+          onClose={() => setCount(false)}
+        />
       </React.Fragment>
     );
 }

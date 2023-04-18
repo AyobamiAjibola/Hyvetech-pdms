@@ -29,6 +29,11 @@ export const MESSAGES = {
   cancelText: `Are you sure you want to carry out this action? 
   If you agree to do this, the affected entity, will not be able to execute certain features on the app.`,
   internalError: 'An error occurred. Please contact support',
+  closeEstimateModal: `Are you sure you want to carry out this action? If you click yes all the information 
+  entered will be lost`,
+  deleteInvoice: `You are unable to delete this invoice because a payment and/or expenses 
+  has been recorded on it.`,
+  invoiceCount: `This estimate has already been invoiced. Do you still want to proceed?`
 };
 
 export const MOBILE_PLAN = 'Mobile';

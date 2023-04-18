@@ -32,6 +32,7 @@ function EstimatesPage() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
   const dispatch = useAppDispatch();
   const [_estimate, _seEstimate] = useState<any>([]);
+  const [closeEstimateModal, setCloseEstimateModal] = useState<boolean>(false);
 
   const estimate = useEstimate();
   const { isTechAdmin, isSuperAdmin } = useAdmin();
@@ -400,7 +401,6 @@ function EstimatesPage() {
         <AppModal
           fullWidth
           size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
-          // fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           fullScreen={true}
           show={estimate.showCreate}
           Content={
@@ -432,14 +432,14 @@ function EstimatesPage() {
               />
             </Formik>
           }
-          onClose={() => estimate.setShowCreate(false)}
+          // onClose={() => estimate.setShowCreate(false)}
+          onClose={() => setCloseEstimateModal(true)}
         />
       )}
       {estimate.showEdit && (
         <AppModal
           fullWidth
           size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
-          // fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
           fullScreen={true}
           show={estimate.showEdit}
           Content={
@@ -486,6 +486,18 @@ function EstimatesPage() {
         }
         onClose={() => estimate.setShowDelete(false)}
       />
+      {closeEstimateModal && <AppModal
+        fullWidth
+        show={closeEstimateModal}
+        Content={<DialogContentText>{MESSAGES.closeEstimateModal}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => {setCloseEstimateModal(false), estimate.setShowCreate(false)}}>Yes</Button>
+            <Button onClick={() => setCloseEstimateModal(false)}>No</Button>
+          </DialogActions>
+        }
+        onClose={() => setCloseEstimateModal(false)}
+      />}
       <AppLoader show={estimateReducer.deleteEstimateStatus === 'loading'} />
     </EstimatePageContext.Provider>
   );

@@ -262,8 +262,8 @@ export default class InvoiceController {
       const count = estimate.count + 1
       await estimate.update({ status: ESTIMATE_STATUS.invoiced, count: count });
       //@ts-ignore
-      // await estimate.setInvoice(invoice);
-      await estimate.$add('invoices', [invoice])
+      await estimate.addInvoice(invoice);
+      // await estimate.$set('invoices', [invoice])
 
       const response: any = {
         code: HttpStatus.OK.code,
@@ -1073,12 +1073,20 @@ export default class InvoiceController {
     if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found`, HttpStatus.NOT_FOUND.code));
 
     const expense = await dataSources.expenseDAOService.findByAny({ where: {invoiceCode: invoice.code} });
-    if (expense) return Promise.reject(CustomAPIError.response(`You are unable to delete this invoice because a payment and/or expenses has been recorded on it.`, HttpStatus.NOT_FOUND.code));
+    const transaction = await dataSources.transactionDAOService.findAll()
+    const find_transaction = transaction.find(transaction => transaction.invoiceId === invoice.id)
+
+    if (expense || find_transaction) return Promise.reject(CustomAPIError.response(`transExpError`, HttpStatus.NOT_FOUND.code));
 
     const estimate = await invoice?.$get('estimate');
 
     const count = estimate?.count && estimate?.count - 1
-    await estimate?.update({ status: ESTIMATE_STATUS.sent, count: count });
+    let status: any;
+    if(estimate?.count && estimate?.count === 1) {
+        status = ESTIMATE_STATUS.sent
+    }
+
+    await estimate?.update({ status: status, count: count });
     await Invoice.destroy({ where: { id: +invoiceId }, force: true });
 
     return Promise.resolve({
