@@ -36,7 +36,6 @@ export default class DashboardController {
       const customersByMonth = await this.filterByMonth(customers, month);
       // const transactionsByMonth = await this.filterByMonth(transactions, month);
 
-      // console.log(estimates.length, invoices.length);
       const mRevenue = this.getRevenue(invoicesByMonth);
       const mReceipt = this.getReceipt(invoicesByMonth);
       const mReceivable = this.getReceivable(invoicesByMonth);
@@ -365,18 +364,27 @@ export default class DashboardController {
   //end
 
   public static async getInvoiceRaw(estimates: Estimate[]) {
-    //
-    // const invoices: Invoice[] = [];
-    let invoices: any;
+
+    const invoices: any = [];
 
     estimates.map(_estimate => {
-      if (_estimate.invoice != null) {
-        // invoices.push(_estimate.invoice);
-        invoices = _estimate.invoice
+      if (_estimate.invoice) {
+        invoices.push(_estimate.invoice);
       }
     });
 
-    return invoices;
+    // const filteredArray = invoices.filter((array: any) => array.length > 0);
+    // const arrayOfInvoices = filteredArray.map((array: any) => array.filter((item: any) => item instanceof Invoice));
+    // const arrayOfDataValues = arrayOfInvoices.map((array: any) => array.map((invoice: any) => invoice.dataValues));
+    // const concat = [].concat(...arrayOfDataValues);
+    const result = invoices
+      .filter((array: any) => array.length > 0)
+      .map((array: any) => array.filter((item: any) => item instanceof Invoice))
+      .map((array: any) => array.map((invoice: any) => invoice.dataValues))
+      .flat();
+
+
+    return result;
   }
 
   public static async getData(req: Request) {

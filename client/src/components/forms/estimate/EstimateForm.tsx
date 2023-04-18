@@ -900,7 +900,7 @@ function EstimateForm(props: IProps) {
                                 cursor: 'pointer',
                               }}>
                               <FaPlus style={{ marginRight: 8 }} />
-                              New Part
+                              Add Part
                             </Typography>
                       }
                     </Grid>

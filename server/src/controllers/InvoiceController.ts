@@ -187,7 +187,9 @@ export default class InvoiceController {
     const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
 
     await estimate.update({ status: ESTIMATE_STATUS.invoiced });
-    await estimate.$set('invoice', invoice);
+    //@ts-ignore
+    await estimate.addInvoice(invoice);
+    // await estimate.$set('invoice', invoice);
     await invoice.$set('transactions', [transaction]);
     await partner.$set('transactions', [transferTransaction]);
 
@@ -1073,10 +1075,15 @@ export default class InvoiceController {
     if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found`, HttpStatus.NOT_FOUND.code));
 
     const expense = await dataSources.expenseDAOService.findByAny({ where: {invoiceCode: invoice.code} });
-    const transaction = await dataSources.transactionDAOService.findAll()
-    const find_transaction = transaction.find(transaction => transaction.invoiceId === invoice.id)
+    const transaction = await dataSources.transactionDAOService.findByAny({
+      where: {
+        // @ts-ignore
+        invoiceId: invoice.id
+      }
+    })
+    // const find_transaction = transaction.find(transaction => transaction.invoiceId === invoice.id)
 
-    if (expense || find_transaction) return Promise.reject(CustomAPIError.response(`transExpError`, HttpStatus.NOT_FOUND.code));
+    if (expense || transaction) return Promise.reject(CustomAPIError.response(`transExpError`, HttpStatus.NOT_FOUND.code));
 
     const estimate = await invoice?.$get('estimate');
 

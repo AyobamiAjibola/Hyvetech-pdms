@@ -151,7 +151,8 @@ function InvoicePage() {
   }, [grandTotal, invoice]);
 
   const generateDownload = async () => {
-    const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+    // const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+    const rName = invoice?.code + '.pdf';
     // @ts-ignore
     const payload = {
       type: 'INVOICE',
@@ -159,7 +160,7 @@ function InvoicePage() {
       rName,
     };
     setDownloading(true);
-    console.log(rName, "checking pdf name")
+
     try {
       const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
       console.log(response.data);
