@@ -366,11 +366,13 @@ export default class DashboardController {
 
   public static async getInvoiceRaw(estimates: Estimate[]) {
     //
-    const invoices: Invoice[] = [];
+    // const invoices: Invoice[] = [];
+    let invoices: any;
 
     estimates.map(_estimate => {
       if (_estimate.invoice != null) {
-        invoices.push(_estimate.invoice);
+        // invoices.push(_estimate.invoice);
+        invoices = _estimate.invoice
       }
     });
 
@@ -414,6 +416,7 @@ export default class DashboardController {
     };
   }
 
+  // @HasPermission([MANAGE_ALL])
   public static async getDataSuperAdmin (req: Request) {
     try {
       const month = req?.query?.month;
@@ -452,7 +455,7 @@ export default class DashboardController {
       const mAllUser = allUsers.length;
       const mAllVehicle = allVehicles.length;
       const mAllPartner = allPartners.length;
-      console.log(mAllEstimate, "checking est length")
+
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,
         code: HttpStatus.OK.code,

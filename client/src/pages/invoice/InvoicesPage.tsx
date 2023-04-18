@@ -37,6 +37,7 @@ function InvoicesPage() {
   const dispatch = useAppDispatch();
   const [error, setError] = useState<CustomHookMessage>();
   const [success, setSuccess] = useState<CustomHookMessage>();
+  const [invDel, setInvDel] = useState<boolean>(false);
 
   const invoice = useInvoice();
   const navigate = useNavigate();
@@ -55,9 +56,9 @@ function InvoicesPage() {
 
     if(invoiceReducer.deleteInvoiceStatus === 'failed') {
       dispatch(clearDeleteInvoiceStatus())
-      setError({
-        message: invoiceReducer?.deleteInvoiceError || ""
-    })
+      if(invoiceReducer?.deleteInvoiceError === "transExpError") {
+        setInvDel(true)
+      }
     }
 
   }, [dispatch, invoiceReducer.deleteInvoiceStatus])
@@ -595,6 +596,18 @@ function InvoicesPage() {
         show={undefined !== success}
         message={success?.message}
         onClose={() => setSuccess(undefined)}
+      />
+
+      <AppModal
+        fullWidth
+        show={invDel}
+        Content={<DialogContentText>{MESSAGES.deleteInvoice}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => setInvDel(false)}>Cancel</Button>
+          </DialogActions>
+        }
+        onClose={() => setInvDel(false)}
       />
     </React.Fragment>
   );

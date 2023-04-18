@@ -5,7 +5,6 @@ import {
   DataType,
   ForeignKey,
   HasMany,
-  // HasMany,
   HasOne,
   Model,
   PrimaryKey,
@@ -391,9 +390,6 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
   @Column(DataType.INTEGER)
   declare count: number;
 
-  @HasOne(() => Invoice)
-  declare invoice: NonAttribute<Invoice>;
-
   @BelongsTo(() => Customer, { onDelete: 'CASCADE' })
   declare customer: NonAttribute<Customer>;
 
@@ -429,12 +425,6 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
   declare partnerId: NonAttribute<number>;
 
   @HasMany(() => Invoice)
-  declare invoices: NonAttribute<Array<Invoice>>;
+  declare invoice: NonAttribute<Array<Invoice>>;
 
-  // @BelongsTo(() => Invoice, { onDelete: 'SET NULL' })
-  // // declare estimate: NonAttribute<Estimate>;
-
-  // @ForeignKey(() => Invoice)
-  // @Column(DataType.INTEGER)
-  // declare invoiceId: NonAttribute<number>;
 }
