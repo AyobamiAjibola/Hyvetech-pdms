@@ -265,8 +265,7 @@ export default class DashboardController {
 
         if(month && year && day) {
           if (_month == month && _year == year && _day == day) {
-            // newCollection.push(_item);
-            console.log("hello checking est length")
+            newCollection.push(_item);
           }
         }
       }
