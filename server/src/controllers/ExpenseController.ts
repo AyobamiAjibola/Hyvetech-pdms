@@ -305,7 +305,7 @@ export default class ExpenseController {
     if (!partner) return Promise.reject(CustomAPIError.response('Partner not found', HttpStatus.BAD_REQUEST.code));
 
     const { error, value } = Joi.object<ExpenseSchemaType>($saveExpenseSchema).validate(req.body);
-    // console.log(value);
+
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     const beneficiary = await dao.beneficiaryDAOService.findById(value.beneficiaryId);
