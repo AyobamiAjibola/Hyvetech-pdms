@@ -1,5 +1,4 @@
 // noinspection JSUnfilteredForInLoop
-
 import { Request } from 'express';
 import Joi from 'joi';
 import Estimate, {
@@ -32,10 +31,10 @@ import { HasPermission, TryCatch } from '../decorators';
 import { CreationAttributes } from 'sequelize/types';
 import { Op } from 'sequelize';
 import HttpResponse = appCommonTypes.HttpResponse;
-import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
-import email_content from '../resources/templates/email/email_content';
-import QueueManager from 'rabbitmq-email-manager';
-import create_customer_from_estimate from '../resources/templates/email/create_customer_from_estimate';
+// import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
+// import email_content from '../resources/templates/email/email_content';
+// import QueueManager from 'rabbitmq-email-manager';
+// import create_customer_from_estimate from '../resources/templates/email/create_customer_from_estimate';
 import User from '../models/User';
 import new_estimate_template from '../resources/templates/email/new_estimate';
 import { sendMail } from '../utils/sendMail';
@@ -122,19 +121,6 @@ export default class EstimateController {
   @HasPermission([MANAGE_TECHNICIAN, CREATE_ESTIMATE, UPDATE_ESTIMATE])
   public async update(req: Request) {
     const { estimate } = await this.doUpdateEstimate(req);
-
-    const response: HttpResponse<Estimate> = {
-      code: HttpStatus.OK.code,
-      message: 'Estimate updated successfully.',
-      result: estimate,
-    };
-
-    return Promise.resolve(response);
-  }
-
-  @TryCatch
-  public async updateCount(req: Request) {
-    const { estimate } = await this.doUpdateEstimateCount(req)
 
     const response: HttpResponse<Estimate> = {
       code: HttpStatus.OK.code,
@@ -278,7 +264,7 @@ export default class EstimateController {
     try {
       // create pdf before sending
       const html = await generateEstimateHtml(estimate.id);
-      const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+      const rName = estimate.code + '.pdf';
       await generatePdf(html, rName);
 
       // set seperate listener to send mail after 6 seconds
@@ -409,8 +395,6 @@ export default class EstimateController {
   private async doCreateEstimate(req: Request) {
     const { error, value } = Joi.object<CreateEstimateType>($createEstimateSchema).validate(req.body);
 
-    // console.log(error)
-
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     if (!value)
@@ -505,8 +489,6 @@ export default class EstimateController {
         email: value.email,
       };
 
-      // check if it's not super admin
-      // console.log(req?.user.partner?.id);
       if (req?.user.partner?.id != 0) {
         data.partnerId = req?.user.partner?.id;
         console.log(req?.user.partner?.id, data);
@@ -642,13 +624,11 @@ export default class EstimateController {
       vehichleData: `${value.modelYear} ${value.make} ${value.model} `,
     });
 
-    // console.log('reach1')
-
     //todo: Send email with credentials
     try {
       // create pdf before sending
       const html = await generateEstimateHtml(estimate.id);
-      const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+      const rName = estimate.code + '.pdf';
       await generatePdf(html, rName);
 
       // set seperate listener to send mail after 6 seconds
@@ -927,26 +907,4 @@ export default class EstimateController {
     return { estimate };
   }
 
-  private async doUpdateEstimateCount(req: Request) {
-    const estimateId = req.params.estimateId as string;
-
-    const estimate = await dataSources.estimateDAOService.findById(+estimateId);
-
-    if (!estimate) return Promise.reject(CustomAPIError.response(`Estimate not found`, HttpStatus.NOT_FOUND.code));
-
-    const { error, value } = Joi.object<CreateEstimateType>($updateEstimateSchema).validate(req.body);
-
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-
-    const count = +estimate.count + value.count
-    console.log(value.count, "checking count value")
-    console.log(count)
-    const estimateValues: Partial<Estimate> = {
-      count: count
-    };
-
-    await estimate.update(estimateValues);
-
-    return { estimate };
-  }
 }
