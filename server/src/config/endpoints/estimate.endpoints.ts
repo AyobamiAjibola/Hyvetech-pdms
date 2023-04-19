@@ -4,7 +4,6 @@ import {
   getEstimatesHandler,
   saveEstimateHandler,
   sendDraftEstimateHandler,
-  updateEstimateCountHandler,
   updateEstimateHandler,
 } from '../../routes/estimateRoute';
 import { appCommonTypes } from '../../@types/app-common';
@@ -29,12 +28,6 @@ const estimateEndpoints: RouteEndpoints = [
     method: 'patch',
     path: `/estimate/:estimateId`,
     handler: updateEstimateHandler,
-  },
-  {
-    name: 'update estimate count',
-    method: 'patch',
-    path: `/estimate-count/:estimateId`,
-    handler: updateEstimateCountHandler,
   },
   {
     name: 'save updated estimate',

@@ -27,6 +27,7 @@ import useAppDispatch from '../../hooks/useAppDispatch';
 import EstimatePageContext from '../../context/EstimatePageContext';
 import AppLoader from '../../components/loader/AppLoader';
 import { getEstimatesAction } from '../../store/actions/estimateActions';
+import { reload } from '../../utils/generic';
 
 function EstimatesPage() {
   const estimateReducer = useAppSelector(state => state.estimateReducer);
@@ -471,7 +472,8 @@ function EstimatesPage() {
               />
             </Formik>
           }
-          onClose={() => estimate.setShowEdit(false)}
+          // onClose={() => estimate.setShowEdit(false)}
+          onClose={() => setCloseEstimateModal(true)}
         />
       )}
       <AppModal
@@ -492,7 +494,15 @@ function EstimatesPage() {
         Content={<DialogContentText>{MESSAGES.closeEstimateModal}</DialogContentText>}
         ActionComponent={
           <DialogActions>
-            <Button onClick={() => {setCloseEstimateModal(false), estimate.setShowCreate(false)}}>Yes</Button>
+            <Button
+              onClick={() => {
+                setCloseEstimateModal(false),
+                estimate.setShowCreate(false),
+                estimate.setShowEdit(false), reload()
+              }}
+            >
+              Yes
+            </Button>
             <Button onClick={() => setCloseEstimateModal(false)}>No</Button>
           </DialogActions>
         }
