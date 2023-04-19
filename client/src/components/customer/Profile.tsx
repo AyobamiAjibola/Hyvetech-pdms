@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, Stack, TextField, Select, MenuItem, Grid, Typography, Button } from '@mui/material';
-import { STATES } from '../../config/constants';
+import { Box, Stack, TextField, Select, MenuItem, Grid, Typography, Button, DialogActions, DialogContentText } from '@mui/material';
+import { MESSAGES, STATES } from '../../config/constants';
 import { ISelectData } from '../forms/fields/SelectField'
 import { CustomerPageContext } from '../../pages/customer/CustomerPage';
 import { CustomerPageContextProps } from '@app-interfaces';
@@ -19,23 +19,15 @@ import { Formik } from 'formik';
 import estimateModel from '../forms/models/estimateModel';
 import capitalize from 'capitalize';
 import { filterPhoneNumber } from '../../utils/generic';
-// import { getCustomerVehiclesAction } from '../../store/actions/customerActions';
-// import moment from 'moment';
-// import { IVehicle } from '@app-models';
-// import TextInputField from '../forms/fields/TextInputField';
-// import AppDataGrid from '../tables/AppDataGrid';
-// import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-// import { Visibility } from '@mui/icons-material';
-// import { useNavigate } from 'react-router-dom';
 
 function ProfileNew() {
-//   const [_vehicles, _setVehicles] = useState<IVehicle[]>([]);
 const [states, setStates] = useState<ISelectData[]>([]);
 const [district, setDistrict] = useState<ISelectData[]>([]);
 const [isLoading, setIsLoading] = useState<boolean>(false);
 const [isEditing, setIsEditing] = useState<boolean>(false);
 const [error, setError] = useState<CustomHookMessage>();
 const [success, setSuccess] = useState<CustomHookMessage>();
+const [closeEstimateModal, setCloseEstimateModal] = useState<boolean>(false);
 const [form, setForm] = useState<any>({
     firstName: "",
     email: "",
@@ -430,7 +422,7 @@ const handleEdit = async ()=>{
         <AppModal
           fullWidth
           size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
-          fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
+          fullScreen={true}
           show={estimate.showCreate}
           Content={
             <Formik
@@ -460,7 +452,8 @@ const handleEdit = async ()=>{
               />
             </Formik>
           }
-          onClose={() => estimate.setShowCreate(false)}
+        //   onClose={() => estimate.setShowCreate(false)}
+          onClose={() => setCloseEstimateModal(true)}
         />
       )}
 
@@ -477,6 +470,19 @@ const handleEdit = async ()=>{
         message={success?.message}
         onClose={() => setSuccess(undefined)}
       />
+
+      {closeEstimateModal && <AppModal
+        fullWidth
+        show={closeEstimateModal}
+        Content={<DialogContentText>{MESSAGES.closeEstimateModal}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button onClick={() => {setCloseEstimateModal(false), estimate.setShowCreate(false)}}>Yes</Button>
+            <Button onClick={() => setCloseEstimateModal(false)}>No</Button>
+          </DialogActions>
+        }
+        onClose={() => setCloseEstimateModal(false)}
+      />}
     </Box>
   );
 }
