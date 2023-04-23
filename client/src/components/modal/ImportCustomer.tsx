@@ -40,7 +40,7 @@ export default function ImportCustomerModal(props: Props) {
     }, [props.visible])
 
     const dispatch = useAppDispatch()
-    const customerReducer = useAppSelector(state => state.customerReducer);    
+    const customerReducer = useAppSelector(state => state.customerReducer);
 
     // listen
     // listen to edit event

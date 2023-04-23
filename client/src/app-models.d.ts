@@ -75,6 +75,17 @@ declare module '@app-models' {
     updatedAt: Date;
   }
 
+  interface IItem {
+    id: number;
+    name: string;
+    type: string;
+    buyingPrice: number;
+    sellingPrice: number;
+    unit: string;
+    quantity: number;
+    description: string;
+  }
+
   interface IState {
     id: number;
     name: string;

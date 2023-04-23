@@ -143,14 +143,10 @@ const ExpenseCreate = () => {
 
   const handleOnCreateBeneficiary = () => {
     if (!name || name.trim() === '') return setErrorAlert('Please provide beneficiary name');
-    // if (!accountName || accountName.trim() === '') return setErrorAlert('Please provide account name');
-
-    // if (!accountNumber || accountNumber.trim() === '') return setErrorAlert('Please provide account number');
     if(accountNumber) {
       if (accountNumber.length < 10 || accountNumber.length > 10) return setErrorAlert('Please account number must be 10 digits');
       // if (accountNumber.replace(/[0-9]/g, '')) return setErrorAlert('Only numbers are allowed'); // PLEASE CHECK THIS
     }
-    // if (!bank) return setErrorAlert('Please select bank');
 
     dispatch(
       createBeneficiaryAction({

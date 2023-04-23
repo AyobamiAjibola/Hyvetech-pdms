@@ -6,6 +6,7 @@ declare module '@app-interfaces' {
     ICustomer,
     ICustomerSubscription,
     IEstimate,
+    IItem,
     IJob,
     IPartner,
     IPermission,
@@ -45,6 +46,12 @@ declare module '@app-interfaces' {
   interface IDriversFilterData {
     id: number;
     fullName: string;
+    query: string;
+  }
+
+  interface IItemFilterData {
+    id: number;
+    name: string;
     query: string;
   }
 
@@ -198,6 +205,15 @@ declare module '@app-interfaces' {
     setDriver: React.Dispatch<React.SetStateAction<IRideShareDriver | null>>;
     estimates: IEstimate[];
     setEstimates: React.Dispatch<React.SetStateAction<IEstimate[]>>;
+    showCreate: boolean;
+    setShowCreate: React.Dispatch<React.SetStateAction<boolean>>;
+    showEdit: boolean;
+    setShowEdit: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+
+  interface ItemPageContextProps {
+    items: IItem[];
+    setItems: React.Dispatch<React.SetStateAction<IItem[]>>;
     showCreate: boolean;
     setShowCreate: React.Dispatch<React.SetStateAction<boolean>>;
     showEdit: boolean;
