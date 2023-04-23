@@ -3,7 +3,7 @@ declare module '@app-types' {
   import { ICheckList } from '@app-models';
   type IThunkAPIStatus = 'idle' | 'loading' | 'completed' | 'failed';
   type CallableFunction = () => void;
-  type CustomHookMessage = { message: string };
+  type CustomHookMessage = { message: string | undefined };
   type AnyObjectType = { [t: string]: any };
   type CheckListAnswerType = {
     id: string;

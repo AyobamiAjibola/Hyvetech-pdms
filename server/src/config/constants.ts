@@ -413,6 +413,7 @@ export const CANCEL_APPOINTMENT = 'event:CANCEL_APPOINTMENT';
 export const TXN_CANCELLED = 'event:TXN_CANCELLED';
 export const TXN_REFERENCE = 'event:TXN_REFERENCE';
 export const CREATED_ESTIMATE = 'event:CREATED_ESTIMATE';
+export const CREATED_ITEMSTOCK = 'event:CREATED_ITEMSTOCK';
 export const UPDATE_INVOICE = 'event:UPDATE_INVOICE';
 export const NOTIFICATION_SEEN = 'event:NOTIFICATION_SEEN';
 export const INIT_TRANSACTION = 'event:INIT_TRANSACTION';

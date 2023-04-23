@@ -30,6 +30,7 @@ import Beneficiary from './Beneficiary';
 import ExpenseType from './ExpenseType';
 import Role from './Role';
 import Preference from './Pereference';
+import ItemStock from './ItemStock';
 
 @Table({
   timestamps: true,
@@ -142,4 +143,7 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
 
   @HasMany(() => Transaction)
   declare transactions: NonAttribute<Transaction[]>;
+
+  @HasMany(() => ItemStock)
+  declare itemStocks: NonAttribute<Array<ItemStock>>;
 }

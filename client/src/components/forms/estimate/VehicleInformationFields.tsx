@@ -17,7 +17,6 @@ interface IProps {
 
 function VehicleInformationFields(props: IProps) {
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
-  console.log(props.vinOptions, "props.vinOptions")
 
   return (
     <React.Fragment>

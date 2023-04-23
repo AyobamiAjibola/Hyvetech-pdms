@@ -19,6 +19,7 @@ import {
   Divider,
   FormControlLabel,
   Grid,
+  // InputAdornment,
   Radio,
   RadioGroup,
   Typography,
@@ -330,6 +331,21 @@ function EstimateForm(props: IProps) {
     [dispatch, setFieldValue],
   );
 
+  // const handleChangePart = useCallback(
+  //   (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const part = e.target.value;
+
+  //     setTimer(
+  //       setTimeout(() => {
+  //         dispatch(getVehicleVINAction(vin));
+  //       }, 2000),
+  //     );
+
+  //     setFieldValue('vin', vin);
+  //   },
+  //   [dispatch, setFieldValue],
+  // );
+
   const handleChangeQtyAndPrice = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number) => {
       const quantityValue = `parts.${index}.quantity.quantity`;
@@ -465,8 +481,6 @@ function EstimateForm(props: IProps) {
 
     setStates(newStates);
   }, []);
-
-  // console.log(options, "optionsoptions")
 
   const filterData = (_text: string) => {
     const text = _text.toLowerCase();
@@ -808,6 +822,34 @@ function EstimateForm(props: IProps) {
                                         value={part[value]}
                                         onChange={handleChange}
                                       />
+                                      {/* <Autocomplete
+                                        options={partOptions || []}
+                                        // @ts-ignore
+                                        onChange={(_, newValue) => {
+                                          // console.log(newValue)
+                                          handleChangePart({ target: { value: newValue } })
+                                        }}
+                                        value={part[value]}
+                                        // disabled={props.disabled}
+                                        renderInput={params =>
+                                          <TextField
+                                            {...params}
+                                            label={value}
+                                            name={`parts.${index}.${value}`}
+                                            onChange={(e) => {
+                                              // console.log(e.target.value)
+                                              handleChangePart(e)
+                                            }}
+                                            InputProps={{
+                                              ...params.InputProps,
+                                              endAdornment: (
+                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                                                  {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
+                                                </InputAdornment>
+                                              ),
+                                            }}
+                                          />}
+                                      /> */}
                                     </Grid>
                                   )}
                                   {value === 'warranty' && (
