@@ -33,7 +33,6 @@ function VehicleInformationFields(props: IProps) {
           // onChange={props.handleChangeVIN}
           // @ts-ignore
           onChange={(_, newValue) => {
-            // console.log(newValue)
             props.handleChangeVIN({ target: { value: newValue } })
           }}
           value={props.values.vin}

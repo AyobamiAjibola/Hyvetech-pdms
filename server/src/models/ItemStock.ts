@@ -61,6 +61,14 @@ export const itemFields = {
         required: 'Quantity is required',
       },
     },
+    partNumber: {
+      name: 'Part Number',
+      label: 'partNumber',
+      error: {
+        invalid: 'Part Number is invalid',
+        required: 'Part Number is required',
+      },
+    },
 };
 
 export const $createItemStockSchema: Joi.SchemaMap<ItemStockSchemaType> = {
@@ -68,6 +76,11 @@ export const $createItemStockSchema: Joi.SchemaMap<ItemStockSchemaType> = {
     name: Joi.string().required().label(itemFields.name.label),
     description: Joi.string().allow('').optional().label(itemFields.description.label),
     type: Joi.string().required().label(itemFields.type.label),
+    partNumber: Joi.when('type', {
+      is: 'part',
+      then: Joi.string().required(),
+      otherwise: Joi.string().allow('')
+    }).required().label(itemFields.partNumber.label),
     sellingPrice: Joi.number().required().label(itemFields.sellingPrice.label),
     buyingPrice: Joi.number().allow(null).optional().label(itemFields.buyingPrice.label),
     unit: Joi.string().allow('').optional().label(itemFields.unit.label),
@@ -87,6 +100,11 @@ export const $updateItemStockSchema: Joi.SchemaMap<ItemStockSchemaType> = {
       otherwise: Joi.string().allow('')
     }).label(itemFields.unit.label),
     quantity: Joi.number().allow(null).optional().label(itemFields.quantity.label),
+    partNumber: Joi.when('type', {
+      is: 'part',
+      then: Joi.string().required(),
+      otherwise: Joi.string().allow('')
+    }).required().label(itemFields.partNumber.label),
 };
 
 export const $addStockSchema: Joi.SchemaMap<ItemStockSchemaType> = {
@@ -117,6 +135,9 @@ export default class ItemStock extends Model<InferAttributes<ItemStock>, InferCr
 
     @Column(DataType.STRING)
     declare type: string;
+
+    @Column(DataType.STRING)
+    declare partNumber: string;
 
     @Column(DataType.DOUBLE)
     declare buyingPrice: number;

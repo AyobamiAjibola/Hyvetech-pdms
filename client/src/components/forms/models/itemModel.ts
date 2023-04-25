@@ -9,6 +9,7 @@ export interface IItemValues {
     sellingPrice?: number;
     quantity?: number;
     type?: string;
+    partNumber?: string;
 }
 
 const fields = {
@@ -68,16 +69,25 @@ const fields = {
           required: 'Item Unit is required',
         },
     },
+    partNumber: {
+      name: 'partNumber',
+      label: 'Part Number',
+      error: {
+        invalid: 'Part Number is invalid',
+        required: 'Part Number is required',
+      },
+  },
 }
 
 const initialValues: IItemValues = {
-    name: '',
-    description: '',
-    unit: '',
-    buyingPrice: 0,
-    sellingPrice: 0,
-    quantity: 1,
-    type: ''
+  name: '',
+  description: '',
+  unit: '',
+  buyingPrice: 0,
+  sellingPrice: 0,
+  quantity: 0,
+  type: '',
+  partNumber: ''
 }
 
 const schema = Yup.object().shape({
@@ -87,7 +97,8 @@ const schema = Yup.object().shape({
     buyingPrice: Yup.number().nullable().label(fields.buyingPrice.label),
     sellingPrice: Yup.number().nullable().label(fields.sellingPrice.label),
     quantity: Yup.number().nullable().label(fields.quantity.label),
-    type: Yup.string().nullable().label(fields.type.label)
+    type: Yup.string().nullable().label(fields.type.label),
+    partNumber: Yup.string().nullable().label(fields.partNumber.label)
 })
 
 const itemModel = {

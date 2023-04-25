@@ -44,6 +44,12 @@ export const sideNavs: ISideNav[] = [
 
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
   { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },
+  {
+    tag: 'techs',
+    name: 'Items & Inventory',
+    path: '/items',
+    Icon: PostAdd,
+  },
   // {
   //   tag: 'super',
   //   name: 'Check Lists',
@@ -75,12 +81,6 @@ export const sideNavs: ISideNav[] = [
     name: 'Expenses',
     path: '/expenses',
     Icon: CurrencyExchange,
-  },
-  {
-    tag: 'techs',
-    name: 'Items & Inventory',
-    path: '/items',
-    Icon: PostAdd,
   },
   // { tag: 'drivers', name: 'Drivers', path: '/drivers', Icon: TaxiAlert },
   // {

@@ -595,7 +595,6 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
-      // code: Generic.randomize({ count: 6, number: true }),
       code: Generic.generateCode(est, 'EST', partner.id),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
       discount: value.discount,

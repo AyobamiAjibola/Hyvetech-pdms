@@ -68,8 +68,6 @@ const estimate = useEstimate();
         value: district.name,
         }));
 
-        console.log(newDistrict)
-
         setDistrict(newDistrict);
     }catch(e){
         console.log(e)
@@ -106,7 +104,7 @@ const estimate = useEstimate();
 
 // listen to edit event
 useEffect(()=>{
-    
+
     if( customerReducer.updateCustomerStatus == 'idle' ){
         setIsLoading(false)
     }

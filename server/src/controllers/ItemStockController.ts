@@ -158,10 +158,12 @@ export default class ItemStockController {
         CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
       );
 
-    const slug = Generic.generateSlug(value.name);
-    const itemSlug = await dataSources.itemStockDAOService.findByAny({where: {slug}});
-    if (itemSlug?.slug === slug) {
-      if(itemSlug?.slug) {
+    const fetchItem = await dataSources.itemStockDAOService.findById(value.id);
+
+    const slug = Generic.generateSlug(value.partNumber);
+    // const itemSlug = await dataSources.itemStockDAOService.findByAny({where: {slug}});
+    if (fetchItem?.slug !== slug) {
+      if(slug) {
         return Promise.reject(
           CustomAPIError.response(`The Part/Service already exist`, HttpStatus.NOT_FOUND.code),
         );
@@ -174,7 +176,8 @@ export default class ItemStockController {
         type: value.type,
         unit: value.unit,
         buyingPrice: value.buyingPrice,
-        sellingPrice: value.sellingPrice
+        sellingPrice: value.sellingPrice,
+        partNumber: value.partNumber
     }
 
     await item.update(itemStockValues)
@@ -199,11 +202,11 @@ export default class ItemStockController {
           CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code),
       );
 
-    const slug = Generic.generateSlug(value.name);
+    const slug = Generic.generateSlug(value.partNumber);
     const item = await dataSources.itemStockDAOService.findByAny({where: {slug}});
     if (item)
       return Promise.reject(
-        CustomAPIError.response(`The Part/Service already exist`, HttpStatus.NOT_FOUND.code),
+        CustomAPIError.response(`Part Number already exist`, HttpStatus.NOT_FOUND.code),
       );
 
     const itemStockValues: Partial<ItemStock> = {
@@ -214,7 +217,8 @@ export default class ItemStockController {
         buyingPrice: value.buyingPrice,
         sellingPrice: value.sellingPrice,
         quantity: value.quantity,
-        slug: Generic.generateSlug(value.name)
+        partNumber: value.partNumber,
+        slug: Generic.generateSlug(value.partNumber)
     }
 
     const itemStock = await dataSources.itemStockDAOService.create(itemStockValues as CreationAttributes<ItemStock>)

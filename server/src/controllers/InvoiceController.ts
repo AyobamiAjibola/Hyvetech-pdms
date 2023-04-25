@@ -171,6 +171,44 @@ export default class InvoiceController {
       }],
     });
 
+    //DEDUCT FROM ITEM QUANTITY LOGIC
+    const items = await dataSources.itemStockDAOService.findAll({where: {
+      //@ts-ignore
+      partnerId: partner.id
+    }})
+
+    for (const item of items) {
+      const { name, type } = item;
+
+      if (type === 'part') {
+        const findEstimate: string | undefined = estimate.parts.find((value: string) => {
+          try {
+            const object = JSON.parse(value);
+            return name === object.name;
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+        });
+
+        if (findEstimate) {
+          const obj: { partNumber: string, quantity: { quantity: number } } = JSON.parse(findEstimate);
+          const itemQty: number = obj.quantity.quantity;
+
+          const findItem = await dataSources.itemStockDAOService.findByAny({ where: { slug: obj.partNumber } });
+
+          if(findItem && (findItem?.quantity < itemQty)) {
+            const response: HttpResponse<any> = {
+              code: HttpStatus.BAD_REQUEST.code,
+              message: 'Low on stock, please add stock',
+            };
+            return Promise.resolve(response);
+          }
+          await findItem?.update({ quantity: findItem.quantity - itemQty });
+        }
+      }
+    }
+
     const invoiceValues: Partial<Attributes<Invoice>> = {
       // code: Generic.randomize({ number: true, count: 6 }),
       code: Generic.generateCode(fetch_invoice, 'INV', partner.id),
@@ -243,10 +281,47 @@ export default class InvoiceController {
         }],
       });
 
-      // const invoiceCode = Generic.randomize({ number: true, count: 6 });
+      const items = await dataSources.itemStockDAOService.findAll({where: {
+        //@ts-ignore
+        partnerId: partner.id
+      }})
+
+    
+      //DEDUCT FROM ITEM QUANTITY LOGIC
+      for (const item of items) {
+        const { name, type } = item;
+
+        if (type === 'part') {
+          const findEstimate: string | undefined = estimate.parts.find((value: string) => {
+            try {
+              const object = JSON.parse(value);
+              return name === object.name;
+            } catch (error) {
+              console.error(error);
+              return false;
+            }
+          });
+
+          if (findEstimate) {
+            const obj: { partNumber: string, quantity: { quantity: number } } = JSON.parse(findEstimate);
+            const itemQty: number = obj.quantity.quantity;
+
+            const findItem = await dataSources.itemStockDAOService.findByAny({ where: { slug: obj.partNumber } });
+
+            if(findItem && (findItem?.quantity < itemQty)) {
+              const response: HttpResponse<any> = {
+                code: HttpStatus.BAD_REQUEST.code,
+                message: 'Low on stock, please add stock',
+              };
+              return Promise.resolve(response);
+            }
+            await findItem?.update({ quantity: findItem.quantity - itemQty });
+          }
+        }
+      }
+
       const invoiceValues: Partial<Attributes<Invoice>> = {
         code: Generic.generateCode(fetch_invoice, 'INV', partner.id),
-        // code: invoiceCode,
         depositAmount: 0,
         paidAmount: 0,
         tax: estimate.tax,

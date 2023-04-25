@@ -71,7 +71,7 @@ function ItemForm(props: IProps) {
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
-        <Grid container justifyContent='center' alignItems='center' mb={4}
+        <Grid item container justifyContent='center' alignItems='center' mb={4}
           sx={{
             gap: 4
           }}
@@ -91,7 +91,7 @@ function ItemForm(props: IProps) {
           </Grid>
           <Grid item xs={5}/>
         </Grid>
-        <Grid container justifyContent='center' alignItems='center'
+        <Grid item container justifyContent='center' alignItems='center'
           sx={{
             gap: 4
           }}
@@ -115,6 +115,7 @@ function ItemForm(props: IProps) {
                 { label: 'service', value: 'service' }
                 ]}
                 fullWidth
+                disabled={showEdit}
                 label={fields.type.label}
                 name={fields.type.name}
                 value={values.type}
@@ -186,7 +187,7 @@ function ItemForm(props: IProps) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid container justifyContent='center' alignItems='center' mt={4} mb={4}
+        <Grid item container justifyContent='center' mt={4} mb={4}
           sx={{gap: 4}}
         >
           <Grid item xs={5}>
@@ -201,7 +202,17 @@ function ItemForm(props: IProps) {
               label={fields.description.label}
             />
           </Grid>
-          <Grid xs={5}/>
+          <Grid xs={5} item>
+            <TextField
+              value={values.partNumber}
+              onChange={handleChange}
+              fullWidth
+              type='string'
+              disabled={values.type === 'service'}
+              name={fields.partNumber.name}
+              label={fields.partNumber.label}
+            />
+          </Grid>
         </Grid>
         <Grid item xs={12}
           sx={{

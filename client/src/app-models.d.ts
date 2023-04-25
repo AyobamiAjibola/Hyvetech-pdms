@@ -84,6 +84,7 @@ declare module '@app-models' {
     unit: string;
     quantity: number;
     description: string;
+    partNumber: string;
   }
 
   interface IState {

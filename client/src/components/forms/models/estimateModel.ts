@@ -9,6 +9,7 @@ export interface IPart {
   quantity: IPartQuantity;
   price: string;
   amount: string;
+  partNumber?: string;
 }
 
 export interface ILabour {
@@ -303,6 +304,7 @@ const initialValues: IEstimateValues = {
       quantity: { quantity: '0', unit: '' },
       price: '0',
       amount: '0',
+      partNumber: ''
     },
   ],
   labours: [{ title: '', cost: '0' }],
