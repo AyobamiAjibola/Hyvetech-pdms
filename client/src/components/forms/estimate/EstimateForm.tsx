@@ -19,6 +19,7 @@ import {
   Divider,
   FormControlLabel,
   Grid,
+  InputAdornment,
   // InputAdornment,
   Radio,
   RadioGroup,
@@ -51,6 +52,7 @@ import { useParams } from 'react-router-dom';
 import { getOwnersFilterDataAction, getPartnerAction } from '../../../store/actions/partnerActions';
 import { FaPlus } from 'react-icons/fa';
 import CreateCustomerModal from '../../modal/CreateCustomer';
+import useItemStock from '../../../hooks/useItemStock';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -121,11 +123,11 @@ function EstimateForm(props: IProps) {
 
   // @ts-ignore
   const [states, setStates] = useState<ISelectData[]>([]);
-
   const vehicleReducer = useAppSelector(state => state.vehicleReducer);
   const estimateReducer = useAppSelector(state => state.estimateReducer);
   const partnerReducer = useAppSelector(state => state.partnerReducer);
   const customerReducer = useAppSelector(state => state.customerReducer);
+  const itemReducer = useAppSelector(state => state.itemStockReducer);
 
   const dispatch = useAppDispatch();
 
@@ -156,10 +158,11 @@ function EstimateForm(props: IProps) {
   const { setGrandTotal, setPartTotal, setLabourTotal, showCreate, showEdit, grandTotal, labourTotal, partTotal } =
     props;
 
-  // const estimate = useEstimate();
-  // const { isTechAdmin } = useAdmin();
   const params = useParams();
   const admin = useAdmin();
+  const { items } = useItemStock();
+  const partsOnly = items.filter(partsItem => {return partsItem.type === 'part'});
+  const serviceOnly = items.filter(serviceItem => {return serviceItem.type === 'service'});
 
   const partnerId = useMemo(() => {
     return +(params.id as unknown as string) || admin.user?.partner?.id;
@@ -331,20 +334,40 @@ function EstimateForm(props: IProps) {
     [dispatch, setFieldValue],
   );
 
-  // const handleChangePart = useCallback(
-  //   (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const part = e.target.value;
+  const _handleChangePart = useCallback(
+    (e: any, index: number) => {
+      const partName = e.target.value;
 
-  //     setTimer(
-  //       setTimeout(() => {
-  //         dispatch(getVehicleVINAction(vin));
-  //       }, 2000),
-  //     );
+      setFieldValue(`parts.${index}.name`, partName?.name || '');
+      setFieldTouched(`parts.${index}.name`, false);
+      const tempItem = itemReducer.items;
+      const newDetail = tempItem.find((item: any) => item.name === partName?.name)
+      setFieldValue(`parts.${index}.quantity.unit`, newDetail?.unit || '');
+      setFieldValue(`parts.${index}.price`, newDetail?.sellingPrice || 0);
+      setFieldValue(`parts.${index}.quantity.quantity`, 1);
+      setFieldValue(`parts.${index}.amount`, newDetail?.sellingPrice || 0);
+      //@ts-ignore
+      setFieldValue(`parts.${index}.partNumber`, newDetail?.slug || '');
 
-  //     setFieldValue('vin', vin);
-  //   },
-  //   [dispatch, setFieldValue],
-  // );
+      // setFieldTouched(`parts.${index}.quantity.unit`, false);
+    },
+    [ setFieldValue, setFieldTouched, itemReducer.items],
+  );
+
+  const _handleChangeService = useCallback(
+    (e: any, index: number) => {
+      const partName = e.target.value;
+
+      setFieldValue(`labours.${index}.title`, partName?.name || '');
+      setFieldTouched(`labours.${index}.title`, false);
+      const tempItem = itemReducer.items;
+      const newDetail = tempItem.find((item: any) => item.name === partName?.name)
+      setFieldValue(`labours.${index}.cost`, newDetail?.sellingPrice || 0);
+
+      setFieldTouched(`labours.${index}.cost`, false);
+    },
+    [ setFieldValue, setFieldTouched, itemReducer.items],
+  );
 
   const handleChangeQtyAndPrice = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, index: number) => {
@@ -473,6 +496,20 @@ function EstimateForm(props: IProps) {
     }
   }, [enableTaxLabor, enableTaxPart]);
 
+  // validate available stock
+  useEffect(() => {
+    const valueItems = values.parts;
+
+    valueItems.forEach(({ quantity: { quantity }, partNumber }) => {
+      //@ts-ignore
+      const foundItem = items.find((item) => item.slug === partNumber);
+
+      if (foundItem && +foundItem.quantity < +quantity) {
+        setError({ message: 'Low on stock, please add stock' });
+      }
+    });
+  }, [items, values])
+
   useEffect(() => {
     const newStates = STATES.map(state => ({
       label: state.name,
@@ -535,6 +572,20 @@ function EstimateForm(props: IProps) {
     },
     [discount, discountType],
   );
+
+  const getOptionLabel = (option: any) => {
+    if (typeof option === 'string') {
+      return option;
+    }
+    if (option && option.name) {
+      return option.name;
+    }
+    return '';
+  };
+
+  const isOptionEqualToValue = (option: any, value: any) => {
+    return option === value || option.name === value
+  }
 
   return (
     <React.Fragment>
@@ -738,7 +789,7 @@ function EstimateForm(props: IProps) {
           {userInfo.firstName.length != 0 && (
             <Grid style={{ padding: 20 }} xs={12} container>
               <Grid item xs={11}>
-                <Grid xs={12} container>
+                <Grid item xs={12} container>
                   <Typography>
                     {values?.firstName || 'First Name & '} {values?.lastName || 'Last Name'}
                   </Typography>{' '}
@@ -751,19 +802,19 @@ function EstimateForm(props: IProps) {
                   </Grid>
                 )}
 
-                <Grid xs={12} container>
+                <Grid item xs={12} container>
                   <Typography>{values?.email || 'Email'}</Typography> <br />
                 </Grid>
 
-                <Grid xs={12} container>
+                <Grid item xs={12} container>
                   <Typography>{values?.phone || 'Phone'}</Typography> <br />
                 </Grid>
 
-                <Grid xs={12} container>
+                <Grid item xs={12} container>
                   <Typography>{values?.address || 'Address'}</Typography> <br />
                 </Grid>
 
-                <Grid xs={12} container>
+                <Grid item xs={12} container>
                   <Typography>{values?.state || 'State'}</Typography> <br />
                 </Grid>
               </Grid>
@@ -808,48 +859,45 @@ function EstimateForm(props: IProps) {
                     {values.parts.length > 0 &&
                       values.parts.map((part, index) => {
                         return (
-                          <Grid container item spacing={1} xs={13} key={index} columns={14} mb={2}>
+                          <Grid container item spacing={1} xs={14} key={index} columns={14} mb={2}>
                             {Object.keys(part).map(value => {
                               return (
                                 <React.Fragment key={`${value}`}>
                                   {value === 'name' && (
-                                    <Grid item sm={4} xs={14}>
-                                      <TextField
+                                    <Grid item sm={4.5} xs={14}>
+                                      {/* <TextField
                                         fullWidth
                                         variant="outlined"
                                         name={`parts.${index}.${value}`}
                                         label={value}
                                         value={part[value]}
                                         onChange={handleChange}
-                                      />
-                                      {/* <Autocomplete
-                                        options={partOptions || []}
+                                      /> */}
+                                      <Autocomplete
+                                        options={partsOnly}
+                                        getOptionLabel={getOptionLabel}
+                                        isOptionEqualToValue={isOptionEqualToValue}
                                         // @ts-ignore
                                         onChange={(_, newValue) => {
-                                          // console.log(newValue)
-                                          handleChangePart({ target: { value: newValue } })
+                                          _handleChangePart({ target: { value: newValue } }, index)
                                         }}
+                                        //@ts-ignore
                                         value={part[value]}
-                                        // disabled={props.disabled}
                                         renderInput={params =>
                                           <TextField
                                             {...params}
                                             label={value}
                                             name={`parts.${index}.${value}`}
-                                            onChange={(e) => {
-                                              // console.log(e.target.value)
-                                              handleChangePart(e)
-                                            }}
                                             InputProps={{
                                               ...params.InputProps,
                                               endAdornment: (
-                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
-                                                  {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
+                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '85%' }}>
+                                                  {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
                                                 </InputAdornment>
                                               ),
                                             }}
                                           />}
-                                      /> */}
+                                      />
                                     </Grid>
                                   )}
                                   {value === 'warranty' && (
@@ -1012,21 +1060,46 @@ function EstimateForm(props: IProps) {
                     {values.labours.length > 0 &&
                       values.labours.map((labour, index) => {
                         return (
-                          <Grid container item spacing={2} xs={12} key={index} columns={13} mb={2}>
+                          <Grid container item spacing={2} xs={14} key={index} columns={13} mb={2}>
                             {Object.keys(labour).map(value => {
                               return (
                                 <React.Fragment key={`${value}`}>
                                   {value === 'title' && (
                                     <Grid item xs={8}>
-                                      <TextField
+                                      {/* <TextField
                                         fullWidth
                                         variant="outlined"
                                         name={`labours.${index}.${value}`}
                                         label={value}
                                         value={labour[value]}
                                         onChange={handleChange}
-                                      />
-                                    </Grid>
+                                      /> */}
+                                    <Autocomplete
+                                      options={serviceOnly}
+                                      getOptionLabel={getOptionLabel}
+                                      isOptionEqualToValue={isOptionEqualToValue}
+                                      // @ts-ignore
+                                      onChange={(_, newValue) => {
+                                        _handleChangeService({ target: { value: newValue } }, index)
+                                      }}
+                                      //@ts-ignore
+                                      value={labour[value]}
+                                      renderInput={params =>
+                                        <TextField
+                                          {...params}
+                                          label={value}
+                                          name={`labours.${index}.${value}`}
+                                          InputProps={{
+                                            ...params.InputProps,
+                                            endAdornment: (
+                                              <InputAdornment position="end" sx={{ position: 'absolute', left: '85%' }}>
+                                                {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
+                                              </InputAdornment>
+                                            ),
+                                          }}
+                                        />}
+                                    />
+                                  </Grid>
                                   )}
                                   {value === 'cost' && (
                                     <Grid item xs={4}>
@@ -1055,7 +1128,7 @@ function EstimateForm(props: IProps) {
                           </Grid>
                         );
                       })}
-                    <br />
+                    {/* <br /> */}
                     <Grid item xs={12} justifyContent='left'>
                       {document.documentElement.clientWidth <= 375
                           ? <Button

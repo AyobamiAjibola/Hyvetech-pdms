@@ -168,7 +168,7 @@ function ItemPage() {
                     justifyContent: 'center', gap: 4, m: 2
                 }}
             >
-              <Box sx={{width: '45%'}}>
+              <Box sx={{width: '45%'}} mt={-3}>
                 <TextField
                     value={item?.unit}
                     fullWidth
@@ -185,7 +185,7 @@ function ItemPage() {
               </Box>
               <Box
                 sx={{
-                  width: '45%', mt: 4
+                  width: '45%'
                 }}
               >
                 <>
@@ -218,7 +218,7 @@ function ItemPage() {
             </Box>
             <Box
                 sx={{
-                    width: '100%', display: 'flex', alignItems: 'center',
+                    width: '100%', display: 'flex',
                     justifyContent: 'center', gap: 4, m: 2
                 }}
             >
@@ -239,7 +239,21 @@ function ItemPage() {
                     }}
                 />
               </Box>
-              <Box sx={{width: '45%'}}/>
+              <Box sx={{width: '45%'}}>
+                <TextField
+                    value={item?.partNumber.toUpperCase()}
+                    fullWidth
+                    type='string'
+                    name={fields.partNumber.name}
+                    label={fields.partNumber.label}
+                    InputLabelProps={{
+                    shrink: true,
+                    }}
+                    InputProps={{
+                    readOnly: true
+                    }}
+                />
+              </Box>
             </Box>
           </Box>
         </Box>

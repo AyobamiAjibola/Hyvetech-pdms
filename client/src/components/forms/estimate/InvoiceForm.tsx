@@ -11,7 +11,7 @@ import React, {
 import { FieldArray, Form, useFormikContext } from 'formik';
 import { Button, Checkbox, Divider, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Save, Send } from '@mui/icons-material';
+import { Remove, Save, Send } from '@mui/icons-material';
 import estimateModel, { IEstimateValues } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -28,6 +28,7 @@ import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
 import { IInvoice } from '@app-models';
+import { FaPlus } from 'react-icons/fa';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -461,12 +462,12 @@ function InvoiceForm(props: IProps) {
                     {values.parts.length > 0 &&
                       values.parts.map((part, index) => {
                         return (
-                          <Grid container item spacing={2} xs={13} key={index} columns={14} mb={2}>
+                          <Grid container item spacing={2} xs={14} key={index} columns={14} mb={2}>
                             {Object.keys(part).map(value => {
                               return (
                                 <React.Fragment key={`${value}`}>
                                   {value === 'name' && (
-                                    <Grid item sm={4} xs={14}>
+                                    <Grid item sm={4.5} xs={14}>
                                       <TextField
                                         fullWidth
                                         variant="outlined"
@@ -549,7 +550,7 @@ function InvoiceForm(props: IProps) {
                             }>
                             {'Add Part'}
                           </Button>
-                        : <IconButton
+                        : <Typography
                             onClick={() =>
                               partsProps.push({
                                 name: '',
@@ -557,10 +558,17 @@ function InvoiceForm(props: IProps) {
                                 quantity: { quantity: '0', unit: '' },
                                 price: '0',
                                 amount: '0',
-                              })
-                            }>
-                            <Add />
-                          </IconButton>
+                              })}
+                            color={'skyblue'}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                            }}
+                          >
+                          <FaPlus style={{ marginRight: 8 }} />
+                          Add Part
+                        </Typography>
                       }
                     </Grid>
                     <Grid item xs={12} container spacing={2} columns={13}
@@ -626,7 +634,7 @@ function InvoiceForm(props: IProps) {
                     {values.labours.length > 0 &&
                       values.labours.map((labour, index) => {
                         return (
-                          <Grid container item spacing={2} xs={12} key={index} columns={13} mb={2}>
+                          <Grid container item spacing={2} xs={14} key={index} columns={13} mb={2}>
                             {Object.keys(labour).map(value => {
                               return (
                                 <React.Fragment key={`${value}`}>
@@ -681,16 +689,23 @@ function InvoiceForm(props: IProps) {
                           >
                             {'Add Part'}
                           </Button>
-                        : <IconButton
+                        : <Typography
                             onClick={() =>
                               laboursProps.push({
                                 title: '',
                                 cost: '0',
                               })
                             }
+                            color={'skyblue'}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                            }}
                           >
-                            <Add />
-                          </IconButton>
+                          <FaPlus style={{ marginRight: 8 }} />
+                            Add Service
+                        </Typography>
                       }
                     </Grid>
                   </React.Fragment>

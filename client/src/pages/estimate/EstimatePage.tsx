@@ -11,6 +11,8 @@ import { ArrowBackIosNew } from '@mui/icons-material';
 import axiosClient from '../../config/axiosClient';
 import AppModal from '../../components/modal/AppModal';
 import { MESSAGES } from '../../config/constants';
+import AppAlert from '../../components/alerts/AppAlert';
+import { CustomHookMessage } from '@app-types';
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -25,6 +27,7 @@ function EstimatePage() {
   const [_driver, setDriver] = useState<any>(null);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   const [count, setCount] = useState<boolean>(false);
+  const [error, setError] = useState<CustomHookMessage>();
   const location = useLocation();
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
@@ -93,9 +96,8 @@ function EstimatePage() {
       // window.location.href = ('/invoices/'+code);
       window.location.replace('/invoices');
 
-    }catch(e){
-      alert('an error occurred');
-      console.log(e)
+    }catch(e: any){
+      setError({message: e.response.data.message});
     }
 
     setGenerating(false);
@@ -508,6 +510,12 @@ function EstimatePage() {
             </DialogActions>
           }
           onClose={() => setCount(false)}
+        />
+        <AppAlert
+          alertType="error"
+          show={undefined !== error}
+          message={error?.message}
+          onClose={() => setError(undefined)}
         />
       </React.Fragment>
     );

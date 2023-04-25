@@ -154,7 +154,8 @@ export default function useItemStock() {
       buyingPrice: values.type === 'service' ? null : values.buyingPrice,
       sellingPrice: values.sellingPrice,
       type: values.type,
-      quantity: values.type === 'service' ? null : values.quantity
+      quantity: values.type === 'service' ? null : values.quantity,
+      partNumber: values.partNumber
     };
 
     dispatch(createItemAction(data));
@@ -187,14 +188,14 @@ export default function useItemStock() {
       unit: values.unit,
       buyingPrice: values.buyingPrice,
       sellingPrice: values.sellingPrice,
-      type: values.type
+      type: values.type,
+      partNumber: values.partNumber
     };
 
     dispatch(updateItemAction(data));
   };
 
   const handleAddStock = (values: IItemValues) => {
-    console.log(values, 'checking data passed')
     const data = {
       id: values.id,
       // unit: values.unit,
@@ -220,7 +221,8 @@ export default function useItemStock() {
                 sellingPrice: item.sellingPrice,
                 buyingPrice: item.buyingPrice,
                 unit: item.unit,
-                quantity: item.quantity
+                quantity: item.quantity,
+                partNumber: item.partNumber
             }));
             setItemId(itemId)
             setShowEdit(true);
