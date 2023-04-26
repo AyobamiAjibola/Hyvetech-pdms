@@ -49,6 +49,12 @@ declare module '@app-interfaces' {
     query: string;
   }
 
+  interface IPartFilterData {
+    id: number;
+    name: string;
+    query: string
+  }
+
   interface IItemFilterData {
     id: number;
     name: string;

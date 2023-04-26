@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { FieldArray, Form, useFormikContext } from 'formik';
-import { Button, Checkbox, Divider, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography } from '@mui/material';
+import { Autocomplete, Button, Checkbox, CircularProgress, Divider, FormControlLabel, Grid, InputAdornment, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Remove, Save, Send } from '@mui/icons-material';
 import estimateModel, { IEstimateValues } from '../models/estimateModel';
@@ -29,6 +29,8 @@ import AppAlert from '../../alerts/AppAlert';
 import { clearGetVehicleVINStatus } from '../../../store/reducers/vehicleReducer';
 import { IInvoice } from '@app-models';
 import { FaPlus } from 'react-icons/fa';
+import capitalize from 'capitalize';
+import useItemStock from '../../../hooks/useItemStock';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -70,6 +72,11 @@ function InvoiceForm(props: IProps) {
   const [discountType, setDiscountType] = useState('exact');
 
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
+  const itemReducer = useAppSelector(state => state.itemStockReducer);
+  const { items } = useItemStock();
+  const partsOnly = items.filter((partsItem: any) => {return partsItem.type === 'part'});
+  const serviceOnly = items.filter((serviceItem: any) => {return serviceItem.type === 'service'});
+
 
   const dispatch = useAppDispatch();
 
@@ -377,6 +384,93 @@ function InvoiceForm(props: IProps) {
     }
   }, [invoiceReducer.saveInvoiceStatus, invoiceReducer.sendInvoiceSuccess]);
 
+  const _handleChangePart = useCallback(
+    (e: any, index: number) => {
+      const partName = e.target.value;
+
+      const tempItem = itemReducer.items;
+      const newDetail = tempItem.find((item: any) => item.name === partName?.name)
+      setFieldValue(`parts.${index}.quantity.unit`, newDetail?.unit || '');
+      setFieldValue(`parts.${index}.price`, newDetail?.sellingPrice || 0);
+      setFieldValue(`parts.${index}.quantity.quantity`, 1);
+      setFieldValue(`parts.${index}.amount`, newDetail?.sellingPrice || 0);
+      //@ts-ignore
+      setFieldValue(`parts.${index}.partNumber`, newDetail?.slug || '');
+      //@ts-ignore
+      setFieldValue(`parts.${index}.name`, `${capitalize.words(partName?.name)} [${newDetail?.slug}]` || '');
+
+    },
+    [ setFieldValue, itemReducer.items],
+  );
+
+  const _handleChangeService = useCallback(
+    (e: any, index: number) => {
+      const partName = e.target.value;
+
+      setFieldValue(`labours.${index}.title`, partName?.name || '');
+      // setFieldTouched(`labours.${index}.title`, false);
+      const tempItem = itemReducer.items;
+      const newDetail = tempItem.find((item: any) => item.name === partName?.name)
+      setFieldValue(`labours.${index}.cost`, newDetail?.sellingPrice || 0);
+
+      // setFieldTouched(`labours.${index}.cost`, false);
+    },
+    [ setFieldValue, itemReducer.items],
+  );
+
+  const getOptionLabel = (option: any) => {
+    if (typeof option === 'string') {
+      return option;
+    }
+    if (option && option.name) {
+      return `${capitalize.words(option.name)} | ${option.slug} --------- Stock: ${option.quantity}`
+    }
+    return '';
+  };
+
+  const renderOption = (props: any, option: any) => {
+    const label = getOptionLabel(option);
+    return (
+      <li {...props}>
+        <span style={{ fontSize: "15px", textAlign: 'left' }}>{label}</span>
+      </li>
+    );
+  };
+
+  const getOptionLabelLabour = (option: any) => {
+    if (typeof option === 'string') {
+      return option;
+    }
+    if (option && option.title) {
+      return option.title;
+    }
+    return '';
+  };
+
+  const isOptionEqualToValue = (option: any, value: any) => {
+    return option === value || option.name === value
+  }
+
+  const filterOptionsParts = (partsOnly: any, state: any) => {
+    if (state.inputValue === "") {
+      return [];
+    } else {
+      return partsOnly.filter((option: any) =>
+        option.name.toLowerCase().includes(state.inputValue.toLowerCase())
+      );
+    }
+  };
+
+  const filterOptionsLabour = (labourOnly: any, state: any) => {
+    if (state.inputValue === "") {
+      return [];
+    } else {
+      return labourOnly.filter((option: any) =>
+        option.title.toLowerCase().includes(state.inputValue.toLowerCase())
+      );
+    }
+  };
+
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
@@ -468,13 +562,43 @@ function InvoiceForm(props: IProps) {
                                 <React.Fragment key={`${value}`}>
                                   {value === 'name' && (
                                     <Grid item sm={4.5} xs={14}>
-                                      <TextField
+                                      {/* <TextField
                                         fullWidth
                                         variant="outlined"
                                         name={`parts.${index}.${value}`}
                                         label={value}
                                         value={part[value]}
                                         onChange={handleChange}
+                                      /> */}
+                                      <Autocomplete
+                                        filterOptions={filterOptionsParts}
+                                        options={partsOnly}
+                                        openOnFocus
+                                        getOptionLabel={getOptionLabel}
+                                        renderOption={renderOption}
+                                        noOptionsText="Enter Part Name to Initialize Search"
+                                        isOptionEqualToValue={isOptionEqualToValue}
+                                        // @ts-ignore
+                                        onChange={(_, newValue) => {
+                                          _handleChangePart({ target: { value: newValue } }, index)
+                                        }}
+                                        //@ts-ignore
+                                        value={part[value]}
+                                        renderInput={params =>
+                                          <TextField
+                                            {...params}
+                                            label={value}
+                                            onChange={handleChange}
+                                            name={`parts.${index}.${value}`}
+                                            InputProps={{
+                                              ...params.InputProps,
+                                              endAdornment: (
+                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '85%' }}>
+                                                  {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
+                                                </InputAdornment>
+                                              ),
+                                            }}
+                                          />}
                                       />
                                     </Grid>
                                   )}
@@ -550,7 +674,7 @@ function InvoiceForm(props: IProps) {
                             }>
                             {'Add Part'}
                           </Button>
-                        : <Typography
+                        : <IconButton
                             onClick={() =>
                               partsProps.push({
                                 name: '',
@@ -559,16 +683,19 @@ function InvoiceForm(props: IProps) {
                                 price: '0',
                                 amount: '0',
                               })}
-                            color={'skyblue'}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              cursor: 'pointer',
-                            }}
                           >
-                          <FaPlus style={{ marginRight: 8 }} />
-                          Add Part
-                        </Typography>
+                            <Typography
+                              color={'skyblue'}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                              }}
+                            >
+                            <FaPlus style={{ marginRight: 8 }} />
+                            Add Part
+                          </Typography>
+                        </IconButton>
                       }
                     </Grid>
                     <Grid item xs={12} container spacing={2} columns={13}
@@ -640,13 +767,41 @@ function InvoiceForm(props: IProps) {
                                 <React.Fragment key={`${value}`}>
                                   {value === 'title' && (
                                     <Grid item xs={8}>
-                                      <TextField
+                                      {/* <TextField
                                         fullWidth
                                         variant="outlined"
                                         name={`labours.${index}.${value}`}
                                         label={value}
                                         value={labour[value]}
                                         onChange={handleChange}
+                                      /> */}
+                                      <Autocomplete
+                                        options={serviceOnly}
+                                        filterOptions={filterOptionsLabour}
+                                        openOnFocus
+                                        getOptionLabel={getOptionLabelLabour}
+                                        isOptionEqualToValue={isOptionEqualToValue}
+                                        // @ts-ignore
+                                        onChange={(_, newValue) => {
+                                          _handleChangeService({ target: { value: newValue } }, index)
+                                        }}
+                                        //@ts-ignore
+                                        value={labour[value]}
+                                        renderInput={params =>
+                                          <TextField
+                                            {...params}
+                                            label={value}
+                                            onChange={handleChange}
+                                            name={`labours.${index}.${value}`}
+                                            InputProps={{
+                                              ...params.InputProps,
+                                              endAdornment: (
+                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                                                  {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
+                                                </InputAdornment>
+                                              ),
+                                            }}
+                                          />}
                                       />
                                     </Grid>
                                   )}
@@ -689,23 +844,26 @@ function InvoiceForm(props: IProps) {
                           >
                             {'Add Part'}
                           </Button>
-                        : <Typography
+                        : <IconButton
                             onClick={() =>
                               laboursProps.push({
                                 title: '',
                                 cost: '0',
                               })
                             }
-                            color={'skyblue'}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              cursor: 'pointer',
-                            }}
                           >
-                          <FaPlus style={{ marginRight: 8 }} />
-                            Add Service
-                        </Typography>
+                            <Typography
+                              color={'skyblue'}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                              }}
+                            >
+                            <FaPlus style={{ marginRight: 8 }} />
+                              Add Service
+                          </Typography>
+                        </IconButton>
                       }
                     </Grid>
                   </React.Fragment>

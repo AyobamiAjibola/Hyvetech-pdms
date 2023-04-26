@@ -178,13 +178,13 @@ export default class InvoiceController {
     }})
 
     for (const item of items) {
-      const { name, type } = item;
+      const { slug, type } = item;
 
       if (type === 'part') {
         const findEstimate: string | undefined = estimate.parts.find((value: string) => {
           try {
             const object = JSON.parse(value);
-            return name === object.name;
+            return slug === object.partNumber;
           } catch (error) {
             console.error(error);
             return false;
@@ -197,13 +197,13 @@ export default class InvoiceController {
 
           const findItem = await dataSources.itemStockDAOService.findByAny({ where: { slug: obj.partNumber } });
 
-          if(findItem && (findItem?.quantity < itemQty)) {
-            const response: HttpResponse<any> = {
-              code: HttpStatus.BAD_REQUEST.code,
-              message: 'Low on stock, please add stock',
-            };
-            return Promise.resolve(response);
-          }
+          // if(findItem && (findItem?.quantity < itemQty)) {
+          //   const response: HttpResponse<any> = {
+          //     code: HttpStatus.BAD_REQUEST.code,
+          //     message: 'Low on stock, please add stock',
+          //   };
+          //   return Promise.resolve(response);
+          // }
           await findItem?.update({ quantity: findItem.quantity - itemQty });
         }
       }
@@ -286,16 +286,15 @@ export default class InvoiceController {
         partnerId: partner.id
       }})
 
-    
       //DEDUCT FROM ITEM QUANTITY LOGIC
       for (const item of items) {
-        const { name, type } = item;
+        const { slug, type } = item;
 
         if (type === 'part') {
           const findEstimate: string | undefined = estimate.parts.find((value: string) => {
             try {
               const object = JSON.parse(value);
-              return name === object.name;
+              return slug === object.partNumber;
             } catch (error) {
               console.error(error);
               return false;
@@ -308,13 +307,13 @@ export default class InvoiceController {
 
             const findItem = await dataSources.itemStockDAOService.findByAny({ where: { slug: obj.partNumber } });
 
-            if(findItem && (findItem?.quantity < itemQty)) {
-              const response: HttpResponse<any> = {
-                code: HttpStatus.BAD_REQUEST.code,
-                message: 'Low on stock, please add stock',
-              };
-              return Promise.resolve(response);
-            }
+            // if(findItem && (findItem?.quantity < itemQty)) {
+            //   const response: HttpResponse<any> = {
+            //     code: HttpStatus.BAD_REQUEST.code,
+            //     message: 'Low on stock, please add stock',
+            //   };
+            //   return Promise.resolve(response);
+            // }
             await findItem?.update({ quantity: findItem.quantity - itemQty });
           }
         }

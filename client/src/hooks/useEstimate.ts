@@ -182,7 +182,6 @@ export default function useEstimate() {
         'depositAmount',
         `Deposit  must be less than or equal to Grand Total ${Math.round(grandTotal)}`,
       );
-    console.log(values.parts, "checking parts")
 
     const data = {
       id: partnerId,

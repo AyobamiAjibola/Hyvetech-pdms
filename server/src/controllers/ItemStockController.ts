@@ -42,6 +42,27 @@ export default class ItemStockController {
 
     const item = await dataSources.itemStockDAOService.findById(+itemId);
 
+    // const estimates = await dataSources.estimateDAOService.findAll({
+    //   //@ts-ignore
+    //   where: {partnerId: req.user.partner.id}
+    // });
+
+    // let partNumbers: any = [];
+    // for( const estimate of estimates ) {
+    //   //@ts-ignore
+    //   estimate.parts.forEach(element => {
+    //     const object = JSON.parse(element)
+    //     if(object.partNumber) {
+    //       partNumbers.push(object.partNumber)
+    //     }
+    //   });
+    // }
+
+    // const isPartNum = partNumbers.find((item: any) => item === item.slug)
+    // if(isPartNum) {
+    //   return Promise.reject(CustomAPIError.response(`Item can not be deleted.`, HttpStatus.NOT_FOUND.code));
+    // }
+
     if (!item) return Promise.reject(CustomAPIError.response(`Item not found`, HttpStatus.NOT_FOUND.code));
 
     await ItemStock.destroy({ where: { id: +itemId }, force: true });
@@ -204,7 +225,7 @@ export default class ItemStockController {
 
     const slug = Generic.generateSlug(value.partNumber);
     const item = await dataSources.itemStockDAOService.findByAny({where: {slug}});
-    if (item)
+    if (item && value.type === 'part')
       return Promise.reject(
         CustomAPIError.response(`Part Number already exist`, HttpStatus.NOT_FOUND.code),
       );
