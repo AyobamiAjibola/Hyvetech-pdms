@@ -85,6 +85,14 @@ function ItemsPage() {
         width: 100
       },
       {
+        field: 'slug',
+        headerName: 'Part Number',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 150
+      },
+      {
         field: 'sellingPrice',
         headerName: 'Selling Rate/Price',
         headerAlign: 'center',
@@ -114,7 +122,17 @@ function ItemsPage() {
         headerAlign: 'center',
         align: 'center',
         type: 'number',
-        width: 100
+        width: 100,
+        renderCell: params => {
+          return (
+            <>
+              {params.row.quantity < 0
+                ? <span style={{color: 'red'}}>{params.row.quantity}</span>
+                : <span>{params.row.quantity}</span>
+              }
+            </>
+          )
+        }
       },
       {
         field: 'actions',
@@ -167,7 +185,7 @@ function ItemsPage() {
       <Grid container justifyContent="space-between" alignItems="center">
         <Grid item xs={10}>
           <Typography variant="h4" gutterBottom>
-            Items
+            Items & Inventory
           </Typography>
         </Grid>
         <Grid item>
@@ -195,6 +213,12 @@ function ItemsPage() {
         show={undefined !== item.success}
         message={item.success?.message}
         onClose={() => item.setSuccess(undefined)}
+      />
+      <AppAlert
+        alertType="error"
+        show={undefined !== item.error}
+        message={item.error?.message}
+        onClose={() => item.setError(undefined)}
       />
       <AppAlert
         alertType="error"

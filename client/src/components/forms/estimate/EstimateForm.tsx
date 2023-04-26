@@ -53,6 +53,7 @@ import { getOwnersFilterDataAction, getPartnerAction } from '../../../store/acti
 import { FaPlus } from 'react-icons/fa';
 import CreateCustomerModal from '../../modal/CreateCustomer';
 import useItemStock from '../../../hooks/useItemStock';
+import capitalize from 'capitalize';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -120,6 +121,9 @@ function EstimateForm(props: IProps) {
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
   const [showDrop, setShowDrop] = useState<boolean>(false);
   const [vinOptions, setvinOptions] = useState<any>([]);
+
+  // const [showDropParts, setShowDropParts] = useState<boolean>(false);
+  // const [inputValuePart, setInputValuePart] = React.useState('');
 
   // @ts-ignore
   const [states, setStates] = useState<ISelectData[]>([]);
@@ -338,8 +342,6 @@ function EstimateForm(props: IProps) {
     (e: any, index: number) => {
       const partName = e.target.value;
 
-      setFieldValue(`parts.${index}.name`, partName?.name || '');
-      setFieldTouched(`parts.${index}.name`, false);
       const tempItem = itemReducer.items;
       const newDetail = tempItem.find((item: any) => item.name === partName?.name)
       setFieldValue(`parts.${index}.quantity.unit`, newDetail?.unit || '');
@@ -348,8 +350,11 @@ function EstimateForm(props: IProps) {
       setFieldValue(`parts.${index}.amount`, newDetail?.sellingPrice || 0);
       //@ts-ignore
       setFieldValue(`parts.${index}.partNumber`, newDetail?.slug || '');
+      //@ts-ignore
+      setFieldValue(`parts.${index}.name`, `${capitalize.words(partName?.name)} [${newDetail?.slug}]` || '');
+      setFieldTouched(`parts.${index}.name`, false);
 
-      // setFieldTouched(`parts.${index}.quantity.unit`, false);
+      setFieldTouched(`parts.${index}.quantity.quantity`, false);
     },
     [ setFieldValue, setFieldTouched, itemReducer.items],
   );
@@ -501,14 +506,16 @@ function EstimateForm(props: IProps) {
     const valueItems = values.parts;
 
     valueItems.forEach(({ quantity: { quantity }, partNumber }) => {
-      //@ts-ignore
-      const foundItem = items.find((item) => item.slug === partNumber);
+      if(partNumber) {
+        //@ts-ignore
+        const foundItem = items.find((item) => item.slug === partNumber);
 
-      if (foundItem && +foundItem.quantity < +quantity) {
-        setError({ message: 'Low on stock, please add stock' });
+        if (foundItem?.quantity && +foundItem.quantity < +quantity) {
+          setError({ message: 'Low on stock, please add stock' });
+        }
       }
     });
-  }, [items, values])
+  }, [values.parts])
 
   useEffect(() => {
     const newStates = STATES.map(state => ({
@@ -573,12 +580,69 @@ function EstimateForm(props: IProps) {
     [discount, discountType],
   );
 
+  // const getOptionLabel = (option: any) => {
+  //   if (typeof option === 'string') {
+  //     return option;
+  //   }
+  //   if (option && option.name) {
+  //     return `${capitalize.words(option.name)} | ${option.slug} (Stock: ${option.quantity})`
+  //   }
+  //   return '';
+  // };
+
+  // const renderOption = (props: any, option: any) => {
+  //   const label = getOptionLabel(option);
+  //   const labelParts = label.split(' ');
+  //   return (
+  //     <li {...props}>
+  //       {/* <span style={{ fontSize: "16px", textAlign: 'left', fontWeight: 400 }}>{label}</span> */}
+  //         {labelParts.map((part, index) => (
+  //           <span key={index} style={{ fontSize: "16px", textAlign: 'left', fontWeight: 400 }}>
+  //             {part}
+  //             {index !== labelParts.length - 1 && ' '}
+  //           </span>
+  //         ))}
+  //     </li>
+  //   );
+  // };
+
   const getOptionLabel = (option: any) => {
     if (typeof option === 'string') {
       return option;
     }
     if (option && option.name) {
-      return option.name;
+      return `${capitalize.words(option.name)} | ${option.slug} (Stock: ${option.quantity})`
+    }
+    return '';
+  };
+
+  const renderOption = (props: any, option: any) => {
+    const label = getOptionLabel(option);
+    const labelParts = label.split('(');
+    return (
+      <li {...props} style={{ display: 'block' }}>
+        <span style={{ fontSize: "16px", textAlign: 'left', fontWeight: 400, display: 'block' }}>
+          {labelParts[0]}
+        </span>
+        {labelParts[1] && (
+          <>
+            <span style={{ fontSize: "12px", textAlign: 'left', marginBottom: '1px', display: 'block' }}>
+              {'('}
+              {labelParts[1]}
+            </span>
+            <Divider orientation="horizontal" />
+          </>
+        )}
+      </li>
+    );
+  };
+
+  const getOptionLabelLabour = (option: any) => {
+    if (typeof option === 'string') {
+      return option;
+    }
+    if (option && option.title) {
+      return option.title;
     }
     return '';
   };
@@ -586,6 +650,26 @@ function EstimateForm(props: IProps) {
   const isOptionEqualToValue = (option: any, value: any) => {
     return option === value || option.name === value
   }
+
+  const filterOptionsParts = (partsOnly: any, state: any) => {
+    if (state.inputValue === "") {
+      return [];
+    } else {
+      return partsOnly.filter((option: any) =>
+        option.name.toLowerCase().includes(state.inputValue?.toLowerCase())
+      );
+    }
+  };
+
+  const filterOptionsLabour = (labourOnly: any, state: any) => {
+    if (state.inputValue === "") {
+      return [];
+    } else {
+      return labourOnly.filter((option: any) =>
+        option.title.toLowerCase().includes(state.inputValue.toLowerCase())
+      );
+    }
+  };
 
   return (
     <React.Fragment>
@@ -874,8 +958,12 @@ function EstimateForm(props: IProps) {
                                         onChange={handleChange}
                                       /> */}
                                       <Autocomplete
+                                        filterOptions={filterOptionsParts}
                                         options={partsOnly}
+                                        openOnFocus
                                         getOptionLabel={getOptionLabel}
+                                        renderOption={renderOption}
+                                        noOptionsText="Enter Part Name to Initialize Search"
                                         isOptionEqualToValue={isOptionEqualToValue}
                                         // @ts-ignore
                                         onChange={(_, newValue) => {
@@ -887,6 +975,7 @@ function EstimateForm(props: IProps) {
                                           <TextField
                                             {...params}
                                             label={value}
+                                            onChange={handleChange}
                                             name={`parts.${index}.${value}`}
                                             InputProps={{
                                               ...params.InputProps,
@@ -973,7 +1062,7 @@ function EstimateForm(props: IProps) {
                               }>
                               {'Add Part'}
                             </Button>
-                          : <Typography
+                          : <IconButton
                               onClick={() =>
                                 partsProps.push({
                                   name: '',
@@ -982,16 +1071,19 @@ function EstimateForm(props: IProps) {
                                   price: '0',
                                   amount: '0',
                                 })}
-                              color={'skyblue'}
-                              style={{
-                                // marginLeft: 20,
-                                display: 'flex',
-                                alignItems: 'center',
-                                cursor: 'pointer',
-                              }}>
-                              <FaPlus style={{ marginRight: 8 }} />
-                              Add Part
-                            </Typography>
+                            >
+                              <Typography
+                                color={'skyblue'}
+                                style={{
+                                  // marginLeft: 20,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  cursor: 'pointer',
+                                }}>
+                                <FaPlus style={{ marginRight: 8 }} />
+                                Add Part
+                              </Typography>
+                            </IconButton>
                       }
                     </Grid>
 
@@ -1076,7 +1168,9 @@ function EstimateForm(props: IProps) {
                                       /> */}
                                     <Autocomplete
                                       options={serviceOnly}
-                                      getOptionLabel={getOptionLabel}
+                                      filterOptions={filterOptionsLabour}
+                                      openOnFocus
+                                      getOptionLabel={getOptionLabelLabour}
                                       isOptionEqualToValue={isOptionEqualToValue}
                                       // @ts-ignore
                                       onChange={(_, newValue) => {
@@ -1088,11 +1182,12 @@ function EstimateForm(props: IProps) {
                                         <TextField
                                           {...params}
                                           label={value}
+                                          onChange={handleChange}
                                           name={`labours.${index}.${value}`}
                                           InputProps={{
                                             ...params.InputProps,
                                             endAdornment: (
-                                              <InputAdornment position="end" sx={{ position: 'absolute', left: '85%' }}>
+                                              <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
                                                 {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
                                               </InputAdornment>
                                             ),
@@ -1141,13 +1236,15 @@ function EstimateForm(props: IProps) {
                             >
                               {'Add Service'}
                             </Button>
-                          : <Typography
+                          : <IconButton
                               onClick={() =>
                                 laboursProps.push({
                                   title: '',
                                   cost: '0',
                                 })
                               }
+                            >
+                            <Typography
                               color={'skyblue'}
                               style={{
                                 // marginLeft: 20,
@@ -1158,6 +1255,7 @@ function EstimateForm(props: IProps) {
                               <FaPlus style={{ marginRight: 8 }} />
                                 Add Service
                             </Typography>
+                            </IconButton>
                       }
                     </Grid>
                   </React.Fragment>
@@ -1284,6 +1382,7 @@ function EstimateForm(props: IProps) {
               <Grid item xs>
                 <SelectField
                   data={[
+                    { label: 'hour(s)', value: 'hour' },
                     { label: 'day', value: 'day' },
                     { label: 'week', value: 'week' },
                     { label: 'month', value: 'month' },

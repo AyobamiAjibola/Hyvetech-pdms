@@ -38,6 +38,7 @@ function InvoicesPage() {
   const [error, setError] = useState<CustomHookMessage>();
   const [success, setSuccess] = useState<CustomHookMessage>();
   const [invDel, setInvDel] = useState<boolean>(false);
+  const [closeEstimateModal, setCloseEstimateModal] = useState<boolean>(false);
 
   const invoice = useInvoice();
   const navigate = useNavigate();
@@ -556,7 +557,8 @@ function InvoicesPage() {
               />
             </Formik>
           }
-          onClose={() => invoice.handleCloseEdit()}
+          // onClose={() => invoice.handleCloseEdit()}
+          onClose={() => setCloseEstimateModal(true)}
         />
       )}
       <PaymentGateway
@@ -569,6 +571,25 @@ function InvoicesPage() {
           dispatch(setOpenTransactionPopup(false));
         }}
       />
+      {closeEstimateModal && <AppModal
+        fullWidth
+        show={closeEstimateModal}
+        Content={<DialogContentText>{MESSAGES.closeEstimateModal}</DialogContentText>}
+        ActionComponent={
+          <DialogActions>
+            <Button
+              onClick={() => {
+                setCloseEstimateModal(false),
+                invoice.handleCloseEdit()
+              }}
+            >
+              Yes
+            </Button>
+            <Button onClick={() => setCloseEstimateModal(false)}>No</Button>
+          </DialogActions>
+        }
+        onClose={() => setCloseEstimateModal(false)}
+      />}
       <AppLoader show={transactionReducer.initRefundCustomerStatus === 'loading'} />
       <AppLoader show={transactionReducer.verifyRefundCustomerStatus === 'loading'} />
       <AppModal

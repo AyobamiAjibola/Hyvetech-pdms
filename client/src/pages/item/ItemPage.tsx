@@ -66,9 +66,9 @@ function ItemPage() {
           <Box
             sx={{
                 display: 'flex', alignItems: 'center',
-                justifyContent: 'center', width: '80%',
+                justifyContent: 'center', width: {lg: '80%', xs: '100%'},
                 flexDirection: 'column', border: '0.5px solid whitesmoke',
-                p: 4
+                p: {md: 4, xs: 2}
             }}
           >
             <Box
@@ -83,7 +83,7 @@ function ItemPage() {
               />
               <Typography
                 sx={{
-                  fontSize: 30,
+                  fontSize: {sm: 30, xs: 20},
                   fontWeight: 500, ml: 4
                 }}
               >Item Detail</Typography>
@@ -91,11 +91,12 @@ function ItemPage() {
             <Box
                 sx={{
                     width: '100%', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', gap: 4, m: 2
+                    justifyContent: 'center', gap: 4, m: 2,
+                    flexDirection: {md: 'row', xs: 'column'}
                 }}
             >
-                <Box sx={{width: '45%'}}>
-                <TextField
+                <Box sx={{width: {md: '45%', xs: '100%'}}}>
+                  <TextField
                     value={item?.name}
                     fullWidth
                     type='string'
@@ -107,10 +108,10 @@ function ItemPage() {
                     InputProps={{
                     readOnly: true
                     }}
-                />
+                  />
                 </Box>
-                <Box sx={{width: '45%'}}>
-                <TextField
+                <Box sx={{width: {md: '45%', xs: '100%'}}}>
+                  <TextField
                     value={item?.sellingPrice}
                     fullWidth
                     type='string'
@@ -122,17 +123,18 @@ function ItemPage() {
                     InputProps={{
                     readOnly: true
                     }}
-                />
+                  />
                 </Box>
             </Box>
             <Box
                 sx={{
                     width: '100%', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', gap: 4, m: 2
+                    justifyContent: 'center', gap: 4, m: 2,
+                    flexDirection: {md: 'row', xs: 'column'}
                 }}
             >
-                <Box sx={{width: '45%'}}>
-                <TextField
+                <Box sx={{width: {md: '45%', xs: '100%'}}}>
+                  <TextField
                     value={item?.type}
                     fullWidth
                     type='string'
@@ -144,9 +146,9 @@ function ItemPage() {
                     InputProps={{
                     readOnly: true
                     }}
-                />
+                  />
                 </Box>
-                <Box sx={{width: '45%'}}>
+                <Box sx={{width: {md: '45%', xs: '100%'}}}>
                   <TextField
                     value={item?.buyingPrice}
                     fullWidth
@@ -165,10 +167,11 @@ function ItemPage() {
             <Box
                 sx={{
                     width: '100%', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', gap: 4, m: 2
+                    justifyContent: 'center', gap: 4, m: 2,
+                    flexDirection: {md: 'row', xs: 'column'}
                 }}
             >
-              <Box sx={{width: '45%'}} mt={-3}>
+              <Box sx={{width: {md: '45%', xs: '100%'}, mt: {md: -3, xs: 0}}}>
                 <TextField
                     value={item?.unit}
                     fullWidth
@@ -183,11 +186,7 @@ function ItemPage() {
                     }}
                 />
               </Box>
-              <Box
-                sx={{
-                  width: '45%'
-                }}
-              >
+              <Box sx={{width: {md: '45%', xs: '100%'}}}>
                 <>
                   <TextField
                     value={item?.quantity}
@@ -219,10 +218,11 @@ function ItemPage() {
             <Box
                 sx={{
                     width: '100%', display: 'flex',
-                    justifyContent: 'center', gap: 4, m: 2
+                    justifyContent: 'center', gap: 4, m: 2,
+                    flexDirection: {md: 'row', xs: 'column'}
                 }}
             >
-              <Box sx={{width: '45%'}}>
+              <Box sx={{width: {md: '45%', xs: '100%'}}}>
                 <TextField
                     value={item?.description}
                     fullWidth
@@ -239,9 +239,9 @@ function ItemPage() {
                     }}
                 />
               </Box>
-              <Box sx={{width: '45%'}}>
+              <Box sx={{width: {md: '45%', xs: '100%'}}}>
                 <TextField
-                    value={item?.partNumber.toUpperCase()}
+                    value={item?.partNumber?.toUpperCase()}
                     fullWidth
                     type='string'
                     name={fields.partNumber.name}
