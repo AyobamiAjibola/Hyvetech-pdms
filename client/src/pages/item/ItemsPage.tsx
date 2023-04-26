@@ -86,7 +86,7 @@ function ItemsPage() {
       },
       {
         field: 'slug',
-        headerName: 'Part Number',
+        headerName: 'Part #',
         headerAlign: 'center',
         align: 'center',
         type: 'string',
