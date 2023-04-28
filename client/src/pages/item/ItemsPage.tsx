@@ -1,19 +1,19 @@
 /* eslint-disable */
 import React, { useEffect, useMemo, useState } from 'react';
 import { IItem } from '@app-models';
-import { Button, DialogActions, DialogContentText, Grid, Typography } from '@mui/material';
+import { Button, Chip, DialogActions, DialogContentText, Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
 // import moment from 'moment';
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { Cancel, Edit } from '@mui/icons-material';
+import { Cancel, Edit, ToggleOff, ToggleOn } from '@mui/icons-material';
 import { Formik } from 'formik';
 import AppModal from '../../components/modal/AppModal';
 import itemModel from '../../components/forms/models/itemModel';
 import useItemStock from '../../hooks/useItemStock';
 import useAppDispatch from '../../hooks/useAppDispatch';
-import { getItemsAction } from '../../store/actions/itemStockAction';
+import { getItemsAction, updateItemStatusAction } from '../../store/actions/itemStockAction';
 import { useNavigate } from 'react-router-dom';
 import { clearCreateItemStatus, clearGetItemStatus, clearUpdateItemStatus } from '../../store/reducers/itemStockReducer';
 import ItemPageContext from '../../context/ItemPageContext';
@@ -21,12 +21,17 @@ import ItemForm from '../../components/forms/item/ItemForm';
 import AppLoader from '../../components/loader/AppLoader';
 import { MESSAGES } from '../../config/constants';
 import { reload } from '../../utils/generic';
+import { CustomHookMessage } from '@app-types';
+import { clearItemActiveStatus } from '../../store/reducers/itemStockReducer';
 
 
 function ItemsPage() {
   const itemReducer = useAppSelector(state => state.itemStockReducer);
   const dispatch = useAppDispatch();
-  const [_item, _setItem] = useState<any>([])
+  const [_item, _setItem] = useState<any>([]);
+  // const [editMode, setEditMode] = useState(false);
+  const [success, setSuccess] = useState<CustomHookMessage>();
+  const [error, setError] = useState<CustomHookMessage>()
   const navigate = useNavigate()
 
   const item = useItemStock();
@@ -101,6 +106,22 @@ function ItemsPage() {
         width: 150
       },
       {
+        field: 'active',
+        headerName: 'Status',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'string',
+        width: 100,
+        sortable: true,
+        renderCell: params => {
+          return params.row.active ? (
+            <Chip label={'Active'} size="small" color="success" />
+          ) : (
+            <Chip label={'InActive'} size="small" color="info" />
+          );
+        },
+      },
+      {
         field: 'unit',
         headerName: 'Item Unit',
         headerAlign: 'center',
@@ -157,19 +178,46 @@ function ItemsPage() {
               label="Delete"
               showInMenu={false}
             />,
+            <GridActionsCellItem
+              sx={{ display: 'block' }}
+              key={2}
+              onClick={() => handleDisableItem(row)}
+              icon={row.active ? <ToggleOn color="success" /> : <ToggleOff color="warning" />}
+              label="Toggle"
+              //  disabled={row.status === ESTIMATE_STATUS.invoiced}
+              showInMenu={false}
+            />,
           ];
         },
       },
     ] as GridColDef<IItem>[];
   }, [ dispatch, navigate, item]);
 
+  const handleDisableItem = (item: IItem) => {
+    dispatch(updateItemStatusAction({ itemId: item.id }));
+  };
+
   useEffect(() => {
     return () => {
       dispatch(clearCreateItemStatus());
       dispatch(clearUpdateItemStatus());
       dispatch(clearGetItemStatus());
+      dispatch(clearItemActiveStatus());
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    if(itemReducer.createItemActiveStatus === 'completed') {
+      setSuccess({message: "Item updated successfully"})
+      dispatch(getItemsAction())
+    }
+  }, [itemReducer.createItemActiveStatus]);
+
+  useEffect(() => {
+    if(itemReducer.createItemActiveStatus === 'failed') {
+      setError({message: itemReducer.createItemActiveError})
+    }
+  }, [itemReducer.createItemActiveStatus])
 
   return (
     <ItemPageContext.Provider
@@ -292,6 +340,18 @@ function ItemsPage() {
         onClose={() => item.setShowDelete(false)}
       />
       <AppLoader show={itemReducer.deleteItemStatus === 'loading'} />
+      <AppAlert
+        alertType="success"
+        show={undefined !== success}
+        message={success?.message}
+        onClose={() => setSuccess(undefined)}
+      />
+      <AppAlert
+        alertType="error"
+        show={undefined !== error}
+        message={error?.message}
+        onClose={() => setError(undefined)}
+      />
     </ItemPageContext.Provider>
   )
 }

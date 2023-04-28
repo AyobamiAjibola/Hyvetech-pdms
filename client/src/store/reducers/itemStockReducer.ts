@@ -5,7 +5,8 @@ import {
     updateItemAction,
     deleteItemAction,
     getItemsAction,
-    addStockAction
+    addStockAction,
+    updateItemStatusAction
 } from '../actions/itemStockAction';
 import { IItem } from '@app-models';
 
@@ -30,6 +31,10 @@ interface IItemState {
   addStockSuccess: string;
   addStockError?: string;
 
+  createItemActiveStatus: IThunkAPIStatus;
+  createItemActiveSuccess: string;
+  createItemActiveError?: string;
+
   item: IItem | null;
   items: IItem[];
 }
@@ -38,6 +43,10 @@ const initialState: IItemState = {
   createItemStatus: 'idle',
   createItemSuccess: '',
   createItemError: '',
+
+  createItemActiveStatus: 'idle',
+  createItemActiveSuccess: '',
+  createItemActiveError: '',
 
   updateItemStatus: 'idle',
   updateItemSuccess: '',
@@ -91,6 +100,12 @@ const itemSlice = createSlice({
         state.addStockStatus = 'idle';
         state.addStockSuccess = '';
         state.addStockError = '';
+      },
+
+      clearItemActiveStatus(state: IItemState) {
+        state.createItemActiveStatus = 'idle';
+        state.createItemActiveSuccess = '';
+        state.createItemActiveError = '';
       },
     },
 
@@ -179,6 +194,23 @@ const itemSlice = createSlice({
                 state.addStockError = action.payload.message;
             } else state.addStockError = action.error.message;
           });
+
+        builder
+          .addCase(updateItemStatusAction.pending, state => {
+            state.createItemActiveStatus = 'loading';
+          })
+          .addCase(updateItemStatusAction.fulfilled, (state, action) => {
+            state.createItemActiveStatus = 'completed';
+            state.createItemActiveSuccess = action.payload.message;
+            state.item = action.payload.result as IItem;
+          })
+          .addCase(updateItemStatusAction.rejected, (state, action) => {
+            state.createItemActiveStatus = 'failed';
+
+            if(action.payload) {
+                state.createItemActiveError = action.payload.message;
+            } else state.createItemActiveError = action.error.message;
+          });
     }
 })
 
@@ -187,7 +219,8 @@ export const {
     clearCreateItemStatus,
     clearDeleteItemStatus,
     clearGetItemStatus,
-    clearUpdateItemStatus
+    clearUpdateItemStatus,
+    clearItemActiveStatus
 } = itemSlice.actions;
 
 export default itemSlice.reducer;
