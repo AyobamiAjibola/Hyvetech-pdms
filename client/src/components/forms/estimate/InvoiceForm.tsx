@@ -688,7 +688,8 @@ function InvoiceForm(props: IProps) {
                           </Grid>
                         );
                       })}
-                    <Grid item xs>
+                    <br />
+                    <Grid item xs={12} justifyContent='left'>
                       {document.documentElement.clientWidth <= 375
                         ? <Button
                             onClick={() =>
