@@ -201,7 +201,7 @@ function ItemPage() {
                     readOnly: true
                     }}
                   />
-                  <Typography
+                  {item?.type === 'part' && <Typography
                     onClick={() => setAddQty(true)}
                     color={'skyblue'}
                     sx={{
@@ -211,7 +211,7 @@ function ItemPage() {
                     }}>
                     <FaPlus style={{ marginRight: 8 }} />
                     Add Quantity
-                  </Typography>
+                  </Typography>}
                 </>
               </Box>
             </Box>

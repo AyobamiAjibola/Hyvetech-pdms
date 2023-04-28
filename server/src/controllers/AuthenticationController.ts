@@ -156,7 +156,7 @@ export default class AuthenticationController {
 
       if (!user.active)
         return Promise.reject(
-          CustomAPIError.response('Account is disabled. Please contact admininstrator', HttpStatus.UNAUTHORIZED.code),
+          CustomAPIError.response('Account is disabled. Please contact administrator', HttpStatus.UNAUTHORIZED.code),
         );
 
       const role = await dataSources.roleDAOService.findById(user.roleId, { include: [Permission] });
