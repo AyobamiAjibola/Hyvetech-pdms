@@ -9,6 +9,7 @@ const UPDATE_ITEMS = 'items:UPDATE_ITEMS';
 const DELETE_ITEM = 'items:DELETE_ITEM';
 const GET_ITEMS = 'items:GET_ITEMS';
 const ADD_STOCK = 'items:ADD_STOCK';
+const UPDATE_ITEM_STATUS = 'item:UPDATE_ITEM_STATUS';
 const API_ROOT = settings.api.rest;
 
 export const createItemAction = asyncThunkWrapper<ApiResponseSuccess<IItem>, any>(
@@ -44,4 +45,13 @@ export const addStockAction = asyncThunkWrapper<ApiResponseSuccess<IItem>, any>(
       const response = await axiosClient.patch(`${API_ROOT}/items/stock/${args.id}`, args);
       return response.data;
     },
+);
+
+export const updateItemStatusAction = asyncThunkWrapper<ApiResponseSuccess<IItem>, { itemId: number }>(
+  UPDATE_ITEM_STATUS,
+  async data => {
+    const response = await axiosClient.put(`${API_ROOT}/items/${data.itemId}/toggle-status`, data);
+
+    return response.data;
+  },
 );

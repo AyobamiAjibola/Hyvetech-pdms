@@ -3,7 +3,8 @@ import {
     updateItemHandler,
     deleteItemHandler,
     addStockHandler,
-    getItemsHandler
+    getItemsHandler,
+    updateStatusHandler
 } from '../../routes/itemRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -39,6 +40,12 @@ const itemEndpoints: RouteEndpoints = [
         method: 'patch',
         path: `${itemPath}/stock/:itemId`,
         handler: addStockHandler,
+    },
+    {
+        name: 'update item status',
+        method: 'put',
+        path: `${itemPath}/:itemId/toggle-status`,
+        handler: updateStatusHandler,
     }
 ]
 

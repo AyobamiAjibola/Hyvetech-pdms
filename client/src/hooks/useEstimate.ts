@@ -67,7 +67,7 @@ export default function useEstimate() {
       setPartnerId(+params.id);
     }
 
-    if (auth.partnerId) {
+    if (auth?.partnerId) {
       setPartnerId(auth.partnerId);
     }
   }, [params]);

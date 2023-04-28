@@ -27,3 +27,8 @@ export const addStockHandler = authenticateRouteWrapper(async (req, res) => {
     const response = await itemStockController.addStock(req);
     res.status(response.code).json(response);
 });
+
+export const updateStatusHandler = authenticateRouteWrapper(async (req, res) => {
+    const response = await itemStockController.updateItemStatus(req);
+    res.status(response.code).json(response);
+});

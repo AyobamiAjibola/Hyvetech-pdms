@@ -137,6 +137,20 @@ export default class ItemStockController {
     return Promise.resolve(response);
   }
 
+  @TryCatch
+  // @HasPermission([MANAGE_TECHNICIAN, UPDATE_USER, CREATE_USER])
+  public async updateItemStatus(req: Request) {
+    const item = await this.doUpdateItemStatus(req);
+
+    const response: HttpResponse<ItemStock> = {
+      code: HttpStatus.OK.code,
+      message: HttpStatus.OK.value,
+      result: item,
+    };
+
+    return response;
+  }
+
   private async doAddStock(req: Request) {
     const itemId = req.params.itemId as string;
 
@@ -241,6 +255,7 @@ export default class ItemStockController {
         sellingPrice: value.sellingPrice,
         quantity: value.quantity,
         partNumber: value.partNumber,
+        active: true,
         slug: Generic.generateSlug(value.partNumber)
     }
 
@@ -248,5 +263,18 @@ export default class ItemStockController {
     await partner.$add('itemStocks', [itemStock]);
 
     return { itemStock, partner }
+  }
+
+  private async doUpdateItemStatus(req: Request) {
+    const itemId = req.params.itemId as string;
+
+    const item = await dataSources.itemStockDAOService.findById(+itemId);
+
+    if (!item) return Promise.reject(CustomAPIError.response('Item not found', HttpStatus.BAD_REQUEST.code));
+
+    const itemStatus: Partial<ItemStock> = {
+      active: !item.active
+  }
+    return item.update(itemStatus);
   }
 }

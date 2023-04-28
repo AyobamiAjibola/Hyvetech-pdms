@@ -165,18 +165,11 @@ function EstimateForm(props: IProps) {
   const params = useParams();
   const admin = useAdmin();
   const { items } = useItemStock();
-  const partsOnly = items.filter(partsItem => {return partsItem.type === 'part'});
-  const serviceOnly = items.filter(serviceItem => {return serviceItem.type === 'service'});
+  const partsOnly = items.filter(partsItem => {return partsItem.type === 'part' && partsItem.active === true});
+  const serviceOnly = items.filter(serviceItem => {return serviceItem.type === 'service' && serviceItem.active === true});
 
   const partnerId = useMemo(() => {
     return +(params.id as unknown as string) || admin.user?.partner?.id;
-    // if (admin.isTechAdmin && admin.user) {
-    //   return admin.user.partner.id;
-    // }
-
-    // if (params.id) {
-    //   return +(params.id as unknown as string);
-    // }
   }, [admin.user, params.id]);
 
   useEffect(() => {
@@ -363,8 +356,7 @@ function EstimateForm(props: IProps) {
     (e: any, index: number) => {
       const partName = e.target.value;
 
-      setFieldValue(`labours.${index}.title`, partName?.name || '');
-      setFieldTouched(`labours.${index}.title`, false);
+      setFieldValue(`labours.${index}.title`, capitalize.words(partName?.name) || '');
       const tempItem = itemReducer.items;
       const newDetail = tempItem.find((item: any) => item.name === partName?.name)
       setFieldValue(`labours.${index}.cost`, newDetail?.sellingPrice || 0);
@@ -585,14 +577,14 @@ function EstimateForm(props: IProps) {
       return option;
     }
     if (option && option.name) {
-      return `${capitalize.words(option.name)} | ${option.slug} (Stock: ${option.quantity ? option.quantity : 0})`
+      return `${capitalize.words(option.name)} | ${option.slug} $^%&*(Stock: ${option.quantity ? option.quantity : 0})`
     }
     return '';
   };
 
   const renderOption = (props: any, option: any) => {
     const label = getOptionLabel(option);
-    const labelParts = label.split('(');
+    const labelParts = label.split('$^%&*');
     return (
       <li {...props} style={{ display: 'block' }}>
         <span style={{ fontSize: "16px", textAlign: 'left', fontWeight: 400, display: 'block' }}>
@@ -601,7 +593,7 @@ function EstimateForm(props: IProps) {
         {labelParts[1] && (
           <>
             <span style={{ fontSize: "12px", textAlign: 'right', marginBottom: '1px', display: 'block' }}>
-              {'('}
+              {/* {'(Stock'} */}
               {labelParts[1]}
             </span>
             <Divider orientation="horizontal" />
@@ -615,8 +607,8 @@ function EstimateForm(props: IProps) {
     if (typeof option === 'string') {
       return option;
     }
-    if (option && option.title) {
-      return option.title;
+    if (option && option.name) {
+      return capitalize.words(option.name);
     }
     return '';
   };
@@ -635,12 +627,12 @@ function EstimateForm(props: IProps) {
     }
   };
 
-  const filterOptionsLabour = (labourOnly: any, state: any) => {
+  const filterOptionsLabour = (serviceOnly: any, state: any) => {
     if (state.inputValue === "") {
       return [];
     } else {
-      return labourOnly.filter((option: any) =>
-        option.title.toLowerCase().includes(state.inputValue?.toLowerCase())
+      return serviceOnly.filter((option: any) =>
+        option.name.toLowerCase().includes(state.inputValue?.toLowerCase())
       );
     }
   };
@@ -955,7 +947,7 @@ function EstimateForm(props: IProps) {
                                             InputProps={{
                                               ...params.InputProps,
                                               endAdornment: (
-                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '85%' }}>
+                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
                                                   {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
                                                 </InputAdornment>
                                               ),
@@ -1163,7 +1155,7 @@ function EstimateForm(props: IProps) {
                                           InputProps={{
                                             ...params.InputProps,
                                             endAdornment: (
-                                              <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                                              <InputAdornment position="end" sx={{ position: 'absolute', left: '95%' }}>
                                                 {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
                                               </InputAdornment>
                                             ),

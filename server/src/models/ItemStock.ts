@@ -148,6 +148,9 @@ export default class ItemStock extends Model<InferAttributes<ItemStock>, InferCr
     @Column(DataType.STRING)
     declare unit: string;
 
+    @Column({ type: DataType.BOOLEAN, defaultValue: false })
+    declare active: boolean | null;
+
     @Column(DataType.INTEGER)
     declare quantity: number;
 
