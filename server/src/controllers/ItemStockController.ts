@@ -41,29 +41,26 @@ export default class ItemStockController {
     const itemId = req.params.itemId as string;
 
     const item = await dataSources.itemStockDAOService.findById(+itemId);
-
-    // const estimates = await dataSources.estimateDAOService.findAll({
-    //   //@ts-ignore
-    //   where: {partnerId: req.user.partner.id}
-    // });
-
-    // let partNumbers: any = [];
-    // for( const estimate of estimates ) {
-    //   //@ts-ignore
-    //   estimate.parts.forEach(element => {
-    //     const object = JSON.parse(element)
-    //     if(object.partNumber) {
-    //       partNumbers.push(object.partNumber)
-    //     }
-    //   });
-    // }
-
-    // const isPartNum = partNumbers.find((item: any) => item === item.slug)
-    // if(isPartNum) {
-    //   return Promise.reject(CustomAPIError.response(`Item can not be deleted.`, HttpStatus.NOT_FOUND.code));
-    // }
-
     if (!item) return Promise.reject(CustomAPIError.response(`Item not found`, HttpStatus.NOT_FOUND.code));
+
+    const estimates = await dataSources.estimateDAOService.findAll({
+      //@ts-ignore
+      where: {partnerId: req.user.partner.id}
+    });
+
+    let partNumbers: any = [];
+    for( const estimate of estimates ) {
+      //@ts-ignore
+      estimate.parts.forEach(element => {
+        const object = JSON.parse(element)
+        if(object.partNumber) {
+          partNumbers.push(object.partNumber)
+        }
+      });
+    }
+
+    const isPartNum = partNumbers.find((value: any) => value === item?.slug)
+    if(isPartNum) return Promise.reject(CustomAPIError.response(`Item can not be deleted.`, HttpStatus.NOT_FOUND.code));
 
     await ItemStock.destroy({ where: { id: +itemId }, force: true });
 
@@ -180,11 +177,15 @@ export default class ItemStockController {
       );
 
     const fetchItem = await dataSources.itemStockDAOService.findById(value.id);
+    const fetchAllItem = await dataSources.itemStockDAOService.findAll({
+      //@ts-ignore
+      where: {partnerId: req.user.partner.id}
+    })
 
     const slug = Generic.generateSlug(value.partNumber);
-    // const itemSlug = await dataSources.itemStockDAOService.findByAny({where: {slug}});
     if (fetchItem?.slug !== slug) {
-      if(slug) {
+      const findSlug = fetchAllItem.find(item => item.slug === slug);
+      if(findSlug) {
         return Promise.reject(
           CustomAPIError.response(`The Part/Service already exist`, HttpStatus.NOT_FOUND.code),
         );
@@ -198,7 +199,8 @@ export default class ItemStockController {
         unit: value.unit,
         buyingPrice: value.buyingPrice,
         sellingPrice: value.sellingPrice,
-        partNumber: value.partNumber
+        partNumber: value.partNumber,
+        slug: slug
     }
 
     await item.update(itemStockValues)

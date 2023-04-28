@@ -58,7 +58,7 @@ export default function useItemStock() {
       setPartnerId(+params.id);
     }
 
-    if (auth.partnerId) {
+    if (auth?.partnerId) {
       setPartnerId(auth.partnerId);
     }
   }, [params]);

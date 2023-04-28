@@ -384,6 +384,22 @@ function InvoiceForm(props: IProps) {
     }
   }, [invoiceReducer.saveInvoiceStatus, invoiceReducer.sendInvoiceSuccess]);
 
+    // validate available stock
+    useEffect(() => {
+      const valueItems = values.parts;
+
+      valueItems.forEach(({ quantity: { quantity }, partNumber }) => {
+        if(partNumber) {
+          //@ts-ignore
+          const foundItem = items.find((item) => item.slug === partNumber);
+
+          if (foundItem?.quantity && +foundItem.quantity < +quantity) {
+            setError({ message: 'Low on stock, please add stock' });
+          }
+        }
+      });
+    }, [values.parts])
+
   const _handleChangePart = useCallback(
     (e: any, index: number) => {
       const partName = e.target.value;
@@ -423,16 +439,28 @@ function InvoiceForm(props: IProps) {
       return option;
     }
     if (option && option.name) {
-      return `${capitalize.words(option.name)} | ${option.slug} --------- Stock: ${option.quantity}`
+      return `${capitalize.words(option.name)} | ${option.slug} (Stock: ${option.quantity ? option.quantity : 0})`
     }
     return '';
   };
 
   const renderOption = (props: any, option: any) => {
     const label = getOptionLabel(option);
+    const labelParts = label.split('(');
     return (
-      <li {...props}>
-        <span style={{ fontSize: "15px", textAlign: 'left' }}>{label}</span>
+      <li {...props} style={{ display: 'block' }}>
+        <span style={{ fontSize: "16px", textAlign: 'left', fontWeight: 400, display: 'block' }}>
+          {labelParts[0]}
+        </span>
+        {labelParts[1] && (
+          <>
+            <span style={{ fontSize: "12px", textAlign: 'right', marginBottom: '1px', display: 'block' }}>
+              {'('}
+              {labelParts[1]}
+            </span>
+            <Divider orientation="horizontal" />
+          </>
+        )}
       </li>
     );
   };
@@ -576,7 +604,7 @@ function InvoiceForm(props: IProps) {
                                         openOnFocus
                                         getOptionLabel={getOptionLabel}
                                         renderOption={renderOption}
-                                        noOptionsText="Enter Part Name to Initialize Search"
+                                        noOptionsText=""
                                         isOptionEqualToValue={isOptionEqualToValue}
                                         // @ts-ignore
                                         onChange={(_, newValue) => {
@@ -779,6 +807,7 @@ function InvoiceForm(props: IProps) {
                                         options={serviceOnly}
                                         filterOptions={filterOptionsLabour}
                                         openOnFocus
+                                        noOptionsText=""
                                         getOptionLabel={getOptionLabelLabour}
                                         isOptionEqualToValue={isOptionEqualToValue}
                                         // @ts-ignore

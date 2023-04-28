@@ -580,38 +580,12 @@ function EstimateForm(props: IProps) {
     [discount, discountType],
   );
 
-  // const getOptionLabel = (option: any) => {
-  //   if (typeof option === 'string') {
-  //     return option;
-  //   }
-  //   if (option && option.name) {
-  //     return `${capitalize.words(option.name)} | ${option.slug} (Stock: ${option.quantity})`
-  //   }
-  //   return '';
-  // };
-
-  // const renderOption = (props: any, option: any) => {
-  //   const label = getOptionLabel(option);
-  //   const labelParts = label.split(' ');
-  //   return (
-  //     <li {...props}>
-  //       {/* <span style={{ fontSize: "16px", textAlign: 'left', fontWeight: 400 }}>{label}</span> */}
-  //         {labelParts.map((part, index) => (
-  //           <span key={index} style={{ fontSize: "16px", textAlign: 'left', fontWeight: 400 }}>
-  //             {part}
-  //             {index !== labelParts.length - 1 && ' '}
-  //           </span>
-  //         ))}
-  //     </li>
-  //   );
-  // };
-
   const getOptionLabel = (option: any) => {
     if (typeof option === 'string') {
       return option;
     }
     if (option && option.name) {
-      return `${capitalize.words(option.name)} | ${option.slug} (Stock: ${option.quantity})`
+      return `${capitalize.words(option.name)} | ${option.slug} (Stock: ${option.quantity ? option.quantity : 0})`
     }
     return '';
   };
@@ -626,7 +600,7 @@ function EstimateForm(props: IProps) {
         </span>
         {labelParts[1] && (
           <>
-            <span style={{ fontSize: "12px", textAlign: 'left', marginBottom: '1px', display: 'block' }}>
+            <span style={{ fontSize: "12px", textAlign: 'right', marginBottom: '1px', display: 'block' }}>
               {'('}
               {labelParts[1]}
             </span>
@@ -666,7 +640,7 @@ function EstimateForm(props: IProps) {
       return [];
     } else {
       return labourOnly.filter((option: any) =>
-        option.title.toLowerCase().includes(state.inputValue.toLowerCase())
+        option.title.toLowerCase().includes(state.inputValue?.toLowerCase())
       );
     }
   };
@@ -963,7 +937,8 @@ function EstimateForm(props: IProps) {
                                         openOnFocus
                                         getOptionLabel={getOptionLabel}
                                         renderOption={renderOption}
-                                        noOptionsText="Enter Part Name to Initialize Search"
+                                        // loading={itemReducer.getItemsStatus === 'loading'}
+                                        noOptionsText="..."
                                         isOptionEqualToValue={isOptionEqualToValue}
                                         // @ts-ignore
                                         onChange={(_, newValue) => {
@@ -1170,6 +1145,7 @@ function EstimateForm(props: IProps) {
                                       options={serviceOnly}
                                       filterOptions={filterOptionsLabour}
                                       openOnFocus
+                                      noOptionsText="..."
                                       getOptionLabel={getOptionLabelLabour}
                                       isOptionEqualToValue={isOptionEqualToValue}
                                       // @ts-ignore
