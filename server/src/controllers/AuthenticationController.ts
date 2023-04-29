@@ -136,11 +136,13 @@ export default class AuthenticationController {
     try {
       //validate request body
       const { error, value } = Joi.object($loginSchema).validate(req.body);
+      console.log(value, 'checks value')
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       //find user by username
       const user = await dataSources.userDAOService.findByUsername(value.username, { include: [Partner] });
+      console.log(user, "checks user")
 
       if (!user)
         return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
