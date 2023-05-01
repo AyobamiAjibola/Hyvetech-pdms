@@ -13,6 +13,7 @@ import AppModal from '../../components/modal/AppModal';
 import { MESSAGES } from '../../config/constants';
 import AppAlert from '../../components/alerts/AppAlert';
 import { CustomHookMessage } from '@app-types';
+import PDFLib from 'pdf-lib';
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -142,25 +143,52 @@ function EstimatePage() {
     return tax
   };
 
+  async function addMessageToPDF(fileUrl: any, message: any) {
+
+    const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
+    const blob = response.data;
+
+    const pdfDoc = await PDFLib.PDFDocument.load(blob);
+
+    const page = pdfDoc.getPages()[0];
+
+    const textWidth = page.getWidth() / 2;
+    const textHeight = page.getHeight() / 2;
+    const fontSize = 20;
+    page.drawText(message, {
+      x: textWidth,
+      y: textHeight,
+      size: fontSize,
+      color: PDFLib.rgb(0, 0, 0),
+      opacity: 1,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    const modifiedBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+    const file = new File([modifiedBlob], 'estimate.pdf', { type: 'application/pdf' });
+
+    return file;
+  }
+
   const handleShareClick = async () => {
     const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${estimate?.code}.pdf`;
+    const message = `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}`
 
     try {
-      // Download the PDF file using Axios and convert the response to a Blob
-      const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
-      const blob = response.data;
 
-      // Create a File object from the Blob
-      const file = new File([blob], 'estimate.pdf', { type: 'application/pdf' });
+      // const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
+      // const blob = response.data;
 
-      // Create the shareData object
+      // const file = new File([blob], 'estimate.pdf', { type: 'application/pdf' });
+      const modifiedFile = await addMessageToPDF(fileUrl, message);
+
       const shareData = {
         title: 'Estimate',
-        text: `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}`,
-        files: [file]
+        text: 'Check out',
+        files: [modifiedFile]
       };
 
-      // Share the file using the Web Share API
       await navigator.share(shareData);
 
       console.log('File shared successfully');
