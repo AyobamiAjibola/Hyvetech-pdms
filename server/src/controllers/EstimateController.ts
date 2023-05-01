@@ -662,6 +662,7 @@ export default class EstimateController {
     } catch (e) {
       console.log(e);
     }
+
     // await QueueManager.publish({
     //   queue: QUEUE_EVENTS.name,
     //   data: {
