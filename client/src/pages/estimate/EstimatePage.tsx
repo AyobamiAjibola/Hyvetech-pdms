@@ -144,7 +144,7 @@ function EstimatePage() {
   };
 
   const handleShareClick = async () => {
-    const fileUrl  = `${settings.api.baseURL}/uploads/pdf/EST-530015.pdf`;
+    const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${estimate?.code}.pdf`;
 
     try {
       // Download the PDF file using Axios and convert the response to a Blob
@@ -152,12 +152,12 @@ function EstimatePage() {
       const blob = response.data;
 
       // Create a File object from the Blob
-      const file = new File([blob], 'my-pdf-file.pdf', { type: 'application/pdf' });
+      const file = new File([blob], 'Estimate', { type: 'application/pdf' });
 
       // Create the shareData object
       const shareData = {
-        title: 'My PDF file',
-        text: 'Check out this PDF file!',
+        title: 'Estimate',
+        text: `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}`,
         files: [file]
       };
 
