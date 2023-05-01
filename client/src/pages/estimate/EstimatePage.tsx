@@ -13,7 +13,6 @@ import AppModal from '../../components/modal/AppModal';
 import { MESSAGES } from '../../config/constants';
 import AppAlert from '../../components/alerts/AppAlert';
 import { CustomHookMessage } from '@app-types';
-import axios from 'axios';
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -148,11 +147,11 @@ function EstimatePage() {
 
     try {
       // Download the PDF file using Axios and convert the response to a Blob
-      const response = await axios.get(fileUrl, { responseType: 'blob' });
+      const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
       const blob = response.data;
 
       // Create a File object from the Blob
-      const file = new File([blob], 'Estimate', { type: 'application/pdf' });
+      const file = new File([blob], 'estimate.pdf', { type: 'application/pdf' });
 
       // Create the shareData object
       const shareData = {
