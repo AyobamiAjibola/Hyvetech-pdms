@@ -455,7 +455,6 @@ function InvoiceForm(props: IProps) {
         {labelParts[1] && (
           <>
             <span style={{ fontSize: "12px", textAlign: 'right', marginBottom: '1px', display: 'block' }}>
-              {/* {'(Stock:'} */}
               {labelParts[1]}
             </span>
             <Divider orientation="horizontal" />
