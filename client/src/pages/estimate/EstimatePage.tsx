@@ -13,6 +13,7 @@ import AppModal from '../../components/modal/AppModal';
 import { MESSAGES } from '../../config/constants';
 import AppAlert from '../../components/alerts/AppAlert';
 import { CustomHookMessage } from '@app-types';
+import axios from 'axios';
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -142,6 +143,33 @@ function EstimatePage() {
     return tax
   };
 
+  const handleShareClick = async () => {
+    const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${estimate?.code}.pdf`;
+
+    try {
+      // Download the PDF file using Axios and convert the response to a Blob
+      const response = await axios.get(fileUrl, { responseType: 'blob' });
+      const blob = response.data;
+
+      // Create a File object from the Blob
+      const file = new File([blob], 'Estimate', { type: 'application/pdf' });
+
+      // Create the shareData object
+      const shareData = {
+        title: 'Estimate',
+        text: `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}`,
+        files: [file]
+      };
+
+      // Share the file using the Web Share API
+      await navigator.share(shareData);
+
+      console.log('File shared successfully');
+    } catch (error) {
+      console.error('Error sharing file:', error);
+    }
+  };
+
   if (!estimate)
     return (
       <Grid container justifyContent="center" alignItems="center">
@@ -179,6 +207,10 @@ function EstimatePage() {
 
             <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
               {downloading ? 'Downloading...' : 'Download Pdf'}
+            </Button>
+
+            <Button variant="outlined" color="success" size="small" onClick={() => handleShareClick()}>
+              Share estimate
             </Button>
           </Box>
         </Box>

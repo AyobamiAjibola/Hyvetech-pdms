@@ -105,7 +105,7 @@ export default function CreateCustomerModal(props: Props) {
 
 
 
-        const newDistrict = _temp.districts.map(district => ({
+        const newDistrict = _temp?.districts?.map(district => ({
           label: district.name,
           value: district.name,
         }));
@@ -415,7 +415,7 @@ export default function CreateCustomerModal(props: Props) {
                                 label={"District"}
                                 fullWidth
                                 >
-                                    {district.map((item, index) => {
+                                    {district?.map((item, index) => {
                                         return (
                                         <MenuItem
                                             onClick={()=>{

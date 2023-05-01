@@ -127,6 +127,7 @@ export default class RoleController {
       ],
     });
   }
+
   private async createRoleAndPermission(req: Request) {
     const partner = req.user.partner;
     const { error, value } = Joi.object<RoleSchemaType>($saveRoleSchema).validate(req.body);
