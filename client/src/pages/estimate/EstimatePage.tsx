@@ -145,7 +145,7 @@ function EstimatePage() {
 
   const handleShareClick = async () => {
     const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${estimate?.code}.pdf`;
-    const message = `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}`
+    const message = `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}\n\n` + fileUrl
 
     try {
 
@@ -156,7 +156,7 @@ function EstimatePage() {
 
       const shareData = {
         title: 'Estimate',
-        text: `${message} ${fileUrl}`
+        text: `${message}`
         // url: fileUrl
         // files: [file]
       };
