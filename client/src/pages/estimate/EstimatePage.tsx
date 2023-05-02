@@ -149,15 +149,16 @@ function EstimatePage() {
 
     try {
 
-      const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
-      const blob = response.data;
+      // const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
+      // const blob = response.data;
 
-      const file = new File([blob], `${message} - estimate.pdf`, { type: 'application/pdf' });
+      // const file = new File([blob], `${message} - estimate.pdf`, { type: 'application/pdf' });
 
       const shareData = {
         title: 'Estimate',
-        // text: 'Check out',
-        files: [file]
+        text: `${message} ${fileUrl}`
+        // url: fileUrl
+        // files: [file]
       };
 
       await navigator.share(shareData);
