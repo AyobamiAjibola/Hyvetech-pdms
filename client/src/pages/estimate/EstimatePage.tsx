@@ -13,6 +13,7 @@ import AppModal from '../../components/modal/AppModal';
 import { MESSAGES } from '../../config/constants';
 import AppAlert from '../../components/alerts/AppAlert';
 import { CustomHookMessage } from '@app-types';
+// import PDFLib from 'pdf-lib';
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -144,23 +145,21 @@ function EstimatePage() {
 
   const handleShareClick = async () => {
     const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${estimate?.code}.pdf`;
+    const message = `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}`
 
     try {
-      // Download the PDF file using Axios and convert the response to a Blob
+
       const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
       const blob = response.data;
 
-      // Create a File object from the Blob
-      const file = new File([blob], 'estimate.pdf', { type: 'application/pdf' });
+      const file = new File([blob], `${message} - estimate.pdf`, { type: 'application/pdf' });
 
-      // Create the shareData object
       const shareData = {
         title: 'Estimate',
-        text: `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}`,
+        // text: 'Check out',
         files: [file]
       };
 
-      // Share the file using the Web Share API
       await navigator.share(shareData);
 
       console.log('File shared successfully');
