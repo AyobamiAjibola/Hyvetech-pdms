@@ -1,5 +1,5 @@
 // noinspection JSUnfilteredForInLoop
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import Joi from 'joi';
 import Estimate, {
   $createEstimateSchema,
@@ -48,6 +48,7 @@ import {
   UPDATE_ESTIMATE,
   MANAGE_ALL,
 } from '../config/settings';
+import fs from 'fs';
 
 export default class EstimateController {
   @TryCatch
@@ -59,6 +60,7 @@ export default class EstimateController {
       // console.log('before 1')
       await estimate.update({
         status: ESTIMATE_STATUS.sent,
+        sentStatus: ESTIMATE_STATUS.sent
       });
       // console.log('before 2')
 
@@ -248,6 +250,7 @@ export default class EstimateController {
 
     await estimate.update({
       status: ESTIMATE_STATUS.sent,
+      sentStatus: ESTIMATE_STATUS.sent
     });
 
     // send mail
@@ -595,7 +598,7 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
-      code: Generic.generateCode(est, 'EST', partner.id),
+      code: Generic.generateCode(est, 'EST', partner.id) + `_${Generic.randomize({ count: 4, alphanumeric: true })}`,
       expiresIn: ESTIMATE_EXPIRY_DAYS,
       discount: value.discount,
       discountType: value.discountType,
@@ -810,7 +813,7 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
-      code: Generic.generateCode(esti, 'EST', partner.id),
+      code: Generic.generateCode(esti, 'EST', partner.id)+`_${Generic.randomize({ count: 4, alphanumeric: true })}`,
       // code: Generic.randomize({ count: 6, number: true }),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
       discount: value.discount,
@@ -905,6 +908,32 @@ export default class EstimateController {
     await estimate.update(estimateValues);
 
     return { estimate };
+  }
+
+  public async filePath(req: Request, res: Response) {
+    const estimateId = req.params.estimateId as string;
+    // const filePath = path.join(__dirname, 'uploads', 'pdf', `${estimateId}`)
+
+    const checkingPath = res.sendFile(__dirname + '/uploads/pdf' + estimateId + '.pdf');
+    // const stream = fs.createReadStream(filePath);
+
+    // stream.on('error', (error: any) => {
+    //   console.error(error);
+    //   res.status(404).send('File not found');
+    // });
+
+    // res.setHeader('Content-Type', 'application/pdf');
+    // stream.pipe(res);
+
+    console.log(checkingPath, 'checkingPaths')
+
+
+    const response: HttpResponse<Estimate> = {
+      code: HttpStatus.OK.code,
+      message: 'Successful.'
+    };
+
+    return Promise.resolve(response);
   }
 
 }
