@@ -458,7 +458,7 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
             <div class="top-section">
                 <div class="header-section">
                     <span class="estimate-name">Invoice</span>
-                    <span class="estimate-num">#${invoice.code}</span>
+                    <span class="estimate-num">#${invoice.code.split('_')[0]}</span>
                     <span class="estimate-date">Date: ${new Date(invoice.updatedAt).toDateString()}</span>
                 </div>
     
