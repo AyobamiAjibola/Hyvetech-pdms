@@ -1210,7 +1210,9 @@ export default class InvoiceController {
     const count = estimate?.count && estimate?.count - 1
     let status: any;
     if(estimate?.count && estimate?.count === 1) {
+      if(estimate?.sentStatus === ESTIMATE_STATUS.sent) {
         status = ESTIMATE_STATUS.sent
+      } else { status = ESTIMATE_STATUS.draft }
     }
 
     await estimate?.update({ status: status, count: count });

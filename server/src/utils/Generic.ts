@@ -14,6 +14,7 @@ import Appointment from '../models/Appointment';
 import dataStore from '../config/dataStore';
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
+import crypto from 'crypto'
 
 const startDate = moment({ hours: 0, minutes: 0, seconds: 0 }).toDate();
 const endDate = moment({ hours: 23, minutes: 59, seconds: 59 }).toDate();
@@ -131,6 +132,19 @@ export default class Generic {
 
     return randomString;
   }
+
+  // THIS HAS LESS CHANCE OF DUPLICATE VALUE
+  // public static generateRandomStringCrypto(limit: number) {
+  //   const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz@#!$%^&+=';
+  //   const letterCount = letters.length;
+  //   const randomBytes = crypto.randomBytes(limit);
+  //   let randomString = '';
+  //   for (let i = 0; i < limit; i++) {
+  //     const randomNum = randomBytes[i] % letterCount;
+  //     randomString += letters[randomNum];
+  //   }
+  //   return randomString;
+  // }
 
   /**
    * @name randomize

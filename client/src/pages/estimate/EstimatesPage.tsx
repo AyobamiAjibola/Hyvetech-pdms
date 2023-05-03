@@ -72,7 +72,7 @@ function EstimatesPage() {
         align: 'center',
         sortable: true,
         type: 'string',
-        width: 100,
+        width: 150,
       },
       {
         field: 'name',
@@ -203,12 +203,15 @@ function EstimatesPage() {
       },
       {
         field: 'code',
-        headerName: 'Estimate',
+        headerName: 'Estimate #',
         headerAlign: 'center',
         align: 'center',
         sortable: true,
         type: 'string',
+        width: 150,
         renderCell: params => {
+          const code = params.row.code;
+          const result = code.split("_")[0]
           return (
             <span
               style={{ color: 'skyblue', cursor: 'pointer' }}
@@ -216,7 +219,7 @@ function EstimatesPage() {
                 void dispatch(getEstimatesAction());
                 navigate(`/estimates/${params.row.id}`, { state: { estimate: params.row } });
               }}>
-              {params.row.code}
+              {result}
             </span>
           );
         },

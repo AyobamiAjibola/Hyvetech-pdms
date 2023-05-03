@@ -341,6 +341,9 @@ export default class Estimate extends Model<InferAttributes<Estimate>, InferCrea
   @Column(DataType.STRING)
   declare status: string;
 
+  @Column(DataType.STRING)
+  declare sentStatus: string;
+
   @Column(DataType.ARRAY(DataType.JSONB))
   declare parts: string[];
 

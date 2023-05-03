@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IBillingInformation, IEstimate } from '@app-models';
 import { useLocation } from 'react-router-dom';
-import { Alert, Avatar, Box, Button, DialogActions, DialogContentText, Divider, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, DialogActions, DialogContentText, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -13,7 +13,6 @@ import AppModal from '../../components/modal/AppModal';
 import { MESSAGES } from '../../config/constants';
 import AppAlert from '../../components/alerts/AppAlert';
 import { CustomHookMessage } from '@app-types';
-// import PDFLib from 'pdf-lib';
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -29,6 +28,7 @@ function EstimatePage() {
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
   const [count, setCount] = useState<boolean>(false);
   const [error, setError] = useState<CustomHookMessage>();
+  const [selectedValue, setSelectedValue] = useState<string>('');
   const location = useLocation();
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
@@ -143,15 +143,18 @@ function EstimatePage() {
     return tax
   };
 
+  //share pdf logic//
   const handleShareClick = async () => {
+
+    // const fileUrl  = `${settings.api.baseURL}/estimate/${estimate?.code}`
     const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${estimate?.code}.pdf`;
-    const message = `${estimate?.partner.name} has sent you an estimate. Amount Due: NGN${estimate?.grandTotal}\n\n` + fileUrl
+    const message = `${estimate?.partner.name} has sent you an estimate.\n Amount Due: NGN${estimate?.grandTotal && formatNumberToIntl(estimate?.grandTotal)}\n\n` + fileUrl
 
     try {
 
+      //THIS LOGIC SHARES THE PDF INSTEAD OF THE PDF LINK
       // const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
       // const blob = response.data;
-
       // const file = new File([blob], `${message} - estimate.pdf`, { type: 'application/pdf' });
 
       const shareData = {
@@ -166,6 +169,20 @@ function EstimatePage() {
       console.log('File shared successfully');
     } catch (error) {
       console.error('Error sharing file:', error);
+    }
+  };
+
+  const handleChange = (event: any) => {
+    const value = event.target.value as string;
+    setSelectedValue(value);
+    if (value === "Share estimate") {
+      handleShareClick();
+    }
+    if(value === "Generate Invoice") {
+      checkInvoiceCount()
+    }
+    if(value === "Download Pdf") {
+      generateDownload()
     }
   };
 
@@ -192,25 +209,53 @@ function EstimatePage() {
         </Grid>
 
         <Typography mb={3} textAlign="center" display="block" variant="subtitle1">
-          #{estimate.code}
+          #{estimate.code.split("_")[0]}
         </Typography>
 
-        <Box component='div' sx={{ display: 'flex', justifyContent: {sm: 'space-between', xs: 'center'}, alignItems: 'center' }}>
+        <Box component='div' sx={{ display: 'flex', justifyContent: {sm: 'space-between', xs: 'space-between'}, alignItems: 'center' }}>
           <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <span style={{ color: 'green' }}>{`Invoiced (${estimate.count || 0})`}</span>
           </Box>
-          <Box>
-            <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => checkInvoiceCount()}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: {sm: 'row', xs: 'column'},
+              gap: {sm: 0, xs: 1}
+            }}
+          >
+            <FormControl sx={{ m: 1, width: {sm: 300, xs: 170} }}>
+              <InputLabel id="demo-simple-select-helper-label">Select an Option</InputLabel>
+              <Select
+                labelId="demo-simple-select-helper-label"
+                id="demo-simple-select-helper"
+                value={selectedValue}
+                label="Select an Option"
+                onChange={handleChange}
+              >
+                <MenuItem value="">
+                  ...
+                </MenuItem>
+                <MenuItem value={'Generate Invoice'}>{generating ? 'Generating...' : 'Generate Invoice'}</MenuItem>
+                <MenuItem value={'Download Pdf'}>{downloading ? 'Downloading...' : 'Download Pdf'}</MenuItem>
+                <MenuItem value={'Share estimate'}>Share estimate</MenuItem>
+              </Select>
+            </FormControl>
+            {/* <Button sx={{ marginRight: 2 }} variant="outlined" color="success" size="small" onClick={() => checkInvoiceCount()}>
               {generating ? 'Generating...' : 'Generate Invoice'}
             </Button>
 
-            <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}>
+            <Button variant="outlined" color="success" size="small" onClick={() => generateDownload()}
+              sx={{ marginRight: 2 }}
+            >
               {downloading ? 'Downloading...' : 'Download Pdf'}
             </Button>
 
-            <Button variant="outlined" color="success" size="small" onClick={() => handleShareClick()}>
-              Share estimate
-            </Button>
+            <Button
+              disabled={estimate.sentStatus !== 'Sent'}
+              variant="outlined" color="success" size="small" onClick={() => handleShareClick()}
+            >
+              {'Share estimate'}
+            </Button> */}
           </Box>
         </Box>
 
