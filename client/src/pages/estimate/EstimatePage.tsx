@@ -194,7 +194,7 @@ function EstimatePage() {
 
       const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
       const blob = response.data;
-      const file = new File([blob], `${message} - estimate.pdf`, { type: 'application/pdf' });
+      const file = new File([blob], `${message} - ${estimate?.code.split("_")[0]}_estimate.pdf`, { type: 'application/pdf' });
 
       const shareData = {
         title: 'Estimate',
@@ -210,7 +210,6 @@ function EstimatePage() {
       console.error('Error sharing file:', error);
     }
   };
-
   //share pdf logic --- end
 
   const handleChange = (event: any) => {

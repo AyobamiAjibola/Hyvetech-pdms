@@ -282,7 +282,7 @@ function InvoicePage() {
       setTimeout(() => {
         _setDownloading(false);
         setSelectedValue('');
-      }, 3000);
+      }, 1000);
     };
     const handleShareLink = async () => {
 
@@ -336,7 +336,7 @@ function InvoicePage() {
       try {
         const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
         const blob = response.data;
-        const file = new File([blob], `${message} - invoice.pdf`, { type: 'application/pdf' });
+        const file = new File([blob], `${message} - ${invoice?.code}_invoice.pdf`, { type: 'application/pdf' });
 
         const shareData = {
           title: 'Invoice',
