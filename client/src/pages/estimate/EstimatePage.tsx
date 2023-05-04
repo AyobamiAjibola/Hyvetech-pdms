@@ -292,7 +292,7 @@ function EstimatePage() {
                 >Share unique link</MenuItem>
                 <MenuItem
                   value={'Share PDF'}
-                  // disabled={estimate.sentStatus !== 'Sent' || document.documentElement.clientWidth > 912}
+                  disabled={estimate.sentStatus !== 'Sent' || document.documentElement.clientWidth > 912}
                 >
                   Share PDF
                 </MenuItem>
