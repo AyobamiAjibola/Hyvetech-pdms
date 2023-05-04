@@ -78,7 +78,7 @@ export default function PaymentRecieve() {
 
     const techColumns = useMemo(() => {
         return [
-          
+
           {
             field: 'updatedAt',
             headerName: 'Date',
@@ -196,7 +196,7 @@ export default function PaymentRecieve() {
 
                     navigate(`/invoices/${invoice.id}`, { state: __state });
                   }}>
-                  {params?.row?.invoice?.code || ""}
+                  {params?.row?.invoice?.code.split("_")[0] || ""}
                 </span>
               );
             },
@@ -257,9 +257,9 @@ export default function PaymentRecieve() {
         <React.Fragment>
             <Grid container justifyContent="space-between" alignItems="center">
                 <Grid item xs={10}>
-                <Typography variant="h4" gutterBottom sx={{fontWeight: 600}}>
-                    Payments Received
-                </Typography>
+                  <Typography variant="h4" gutterBottom sx={{fontWeight: 600}}>
+                      Payments Received
+                  </Typography>
                 </Grid>
             </Grid>
             <Grid container>
@@ -303,7 +303,6 @@ export default function PaymentRecieve() {
                 <DialogActions>
                   <Button onClick={() => setShowWarning(false)}>Disagree</Button>
                   <Button onClick={()=>{
-                    // 
                     dispatch(deleteSingleTransactionAction(activeRecord));
                     setShowWarning(false);
                   }}>Agree</Button>
@@ -319,7 +318,6 @@ export default function PaymentRecieve() {
               fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
               Content={
                 <div ref={ref} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  
                   <div style={{ flex: 1, display: 'flex' }}>
                     <div style={{ flex: 0.4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                       <img
@@ -369,7 +367,7 @@ export default function PaymentRecieve() {
                   <br />
                   <Divider orientation="horizontal" />
                   <br />
-                  
+
                   <div>
                     <Typography style={{ fontWeight: 'normal', textAlign: 'center', fontWeight: '600' }}>
                       PAYMENT RECEIPT
@@ -378,7 +376,7 @@ export default function PaymentRecieve() {
 
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
                       <div style={{ flex: 1, display: 'flex', flex: 0.68, marginRight: 20, flexDirection: 'column' }}>
-                        
+
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <Typography sx={{ fontSize: {sm: 13, xs: 12} }}>Payment Date</Typography>
                           <Typography sx={{ fontSize: {sm: 13, xs: 12}, fontWeight: 600 }}>{new Date((receiptData?.updatedAt || "")).toDateString()}</Typography>
@@ -425,7 +423,7 @@ export default function PaymentRecieve() {
                     <table style={{ width: '100%' }}>
                       <thead style={{ backgroundColor: 'grey', borderColor: 'grey' }}>
                         <tr style={{ borderColor: 'grey' }}>
-                          
+
                           <th style={{ borderColor: 'grey' }}>
                             <Typography style={{ fontSize: 13 }}>Invoice #</Typography>
                           </th>
@@ -445,7 +443,7 @@ export default function PaymentRecieve() {
                       </thead>
                       <tbody>
                         <tr>
-                          
+
                           <td>
                             <Typography sx={{ fontSize: {sm: 13, xs: 12}, textAlign: 'center'}}>INV-{receiptData?.invoice?.code || ""}</Typography>
                           </td>
@@ -475,7 +473,7 @@ export default function PaymentRecieve() {
                     {({toPdf}) => (
                         <Button onClick={toPdf}>DOWNLOAD</Button>
                     )}
-                </ReactToPdf>
+                  </ReactToPdf>
                   {/* <Button onClick={() => {
                     // 
                   }}>DOWNLOAD</Button> */}

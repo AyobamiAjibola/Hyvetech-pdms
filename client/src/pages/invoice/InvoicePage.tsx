@@ -60,6 +60,7 @@ function InvoicePage() {
 
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
+  const [_downloading, _setDownloading] = useState<any>(false);
   const [showMessage, setshowMessage] = useState<boolean>(false);
 
   const params = useParams() as unknown as { id: number };
@@ -165,7 +166,6 @@ function InvoicePage() {
     try {
       const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
       console.log(response.data);
-      // window.open(`${settings.api.baseURL}/uploads/pdf/${response.data.name}`)
     } catch (e) {
       console.log(e);
     }
@@ -262,10 +262,33 @@ function InvoicePage() {
   };
 
   //share pdf logic --- start
+    const _generateDownload = async () => {
+      const rName = invoice?.code + '.pdf';
+      // @ts-ignore
+      const payload = {
+        type: 'INVOICE',
+        id: invoice?.id || -1,
+        rName,
+      };
+      _setDownloading(true);
+
+      try {
+        const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+
+      setTimeout(() => {
+        _setDownloading(false);
+        setSelectedValue('');
+      }, 3000);
+    };
     const handleShareLink = async () => {
+
+      _generateDownload()
+
       const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
-      const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
-      console.log(response.data)
       const message = `${invoice?.estimate?.partner.name} has sent you an invoice.\nAmount Paid: NGN${invoice?.depositAmount && formatNumberToIntl(invoice?.depositAmount)}\n\n` + fileUrl
 
       try {
@@ -281,14 +304,14 @@ function InvoicePage() {
         console.log('File shared successfully');
       } catch (error: any) {
         console.error('Error sharing file:', error);
-        setErrorMessage(error.response?.statusText === 'Not Found' ? `Please download invoice code: ${invoice?.code} before sharing` : '');
       }
     };
 
     const handleShareLinkNoMessage = async () => {
+
+      _generateDownload()
+
       const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
-      const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
-      console.log(response.data)
 
       try {
         const shareData = {
@@ -302,12 +325,11 @@ function InvoicePage() {
         console.log('File shared successfully');
       } catch (error: any) {
         console.error('Error sharing file:', error);
-        setErrorMessage(error.response?.statusText === 'Not Found' ? `Please download invoice code: ${invoice?.code} before sharing` : '');
       }
     };
 
     const handleSharePdf = async () => {
-
+      _generateDownload()
       const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
       const message = `${invoice?.estimate?.partner.name} has sent you an invoice.`
 
@@ -328,7 +350,6 @@ function InvoicePage() {
         console.log('File shared successfully');
       } catch (error: any) {
         console.error('Error sharing file:', error);
-        setErrorMessage(error.response?.statusText === 'Not Found' ? `Please download invoice code: ${invoice?.code} before sharing` : '');
       }
     };
 
@@ -339,9 +360,6 @@ function InvoicePage() {
     setSelectedValue(value);
     if (value === "Share unique link") {
       document.documentElement.clientWidth <= 912 ? handleShareLink() : handleShareLinkNoMessage();
-      setTimeout(() => {
-        setSelectedValue('')
-      }, 3000)
     }
     if(value === "Record Payment") {
       setShowRecordPayment(true)
@@ -354,9 +372,6 @@ function InvoicePage() {
     }
     if (value === "Share PDF") {
       handleSharePdf()
-      setTimeout(() => {
-        setSelectedValue('')
-      }, 3000)
     }
   };
 
@@ -409,12 +424,14 @@ function InvoicePage() {
               >Record Expenses</MenuItem>
               <MenuItem value={'Download Pdf'}>{downloading ? 'Downloading...' : 'Download Pdf'}</MenuItem>
               <MenuItem value={'Share unique link'}
-              >Share unique link</MenuItem>
+              >
+                {_downloading ? 'Downloading...' : 'Share unique link'}
+              </MenuItem>
               <MenuItem
                 value={'Share PDF'}
                 disabled={document.documentElement.clientWidth > 912}
               >
-                Share PDF
+                {_downloading ? 'Downloading...' : 'Share PDF'}
               </MenuItem>
             </Select>
           </FormControl>
