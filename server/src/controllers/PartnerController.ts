@@ -35,7 +35,7 @@ import garage_partner_welcome_email from '../resources/templates/email/garage_pa
 import ride_share_partner_welcome_email from '../resources/templates/email/ride_share_partner_welcome_email';
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
-import { generateEstimateHtml, generateInvoiceHtml, generatePdf } from '../utils/pdf';
+import { generateEstimateHtml, generateInvoiceHtml, generatePdf, generateReceiptHtml } from '../utils/pdf';
 import { HasPermission, TryCatch } from '../decorators';
 import Preference, { $savePreferenceSchema, PreferenceSchemaType } from '../models/Pereference';
 
@@ -1114,6 +1114,7 @@ export default class PartnerController {
     // ..
     try {
       const { type, id } = req.body;
+      const rName = req.body.rName;
 
       let html: string | null = '';
       let partner = null;
@@ -1128,13 +1129,17 @@ export default class PartnerController {
           html = await generateInvoiceHtml(id, partner.id);
           break;
 
+        case 'RECEIPT':
+          partner = req.user.partner;
+          html = await generateReceiptHtml(id, partner.id, rName);
+          break;
+
         default:
           break;
       }
 
-      const rName = req.body.rName;
+      // const rName = req.body.rName;
       await generatePdf(html, rName);
-      console.log(rName);
 
       return Promise.resolve({
         code: 200,
