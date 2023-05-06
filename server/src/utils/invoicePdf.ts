@@ -1,4 +1,3 @@
-import Estimate from '../models/Estimate';
 import path from 'path';
 import 'dotenv/config';
 import fs from 'fs';
@@ -470,8 +469,8 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
                 <div class="header-section">
                     <span class="addres-head">${partner.name}</span>
                     <span class="addres-location">${partner?.contact?.address || ''} ${partner?.contact?.city || ''} ${
-    partner?.contact?.district || ''
-  }<br /> ${partner.contact.state}</span>
+                    partner?.contact?.district || ''
+                    }<br /> ${partner.contact.state}</span>
                     <span class="addres-phone">${partner.phone}</span>
                 </div>
     

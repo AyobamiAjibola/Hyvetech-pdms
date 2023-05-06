@@ -425,13 +425,13 @@ function InvoicePage() {
               <MenuItem value={'Download Pdf'}>{downloading ? 'Downloading...' : 'Download Pdf'}</MenuItem>
               <MenuItem value={'Share unique link'}
               >
-                {_downloading ? 'Downloading...' : 'Share unique link'}
+                {_downloading ? 'Sharing...' : 'Share unique link'}
               </MenuItem>
               <MenuItem
                 value={'Share PDF'}
                 disabled={document.documentElement.clientWidth > 912}
               >
-                {_downloading ? 'Downloading...' : 'Share PDF'}
+                {_downloading ? 'Sharing...' : 'Share PDF'}
               </MenuItem>
             </Select>
           </FormControl>

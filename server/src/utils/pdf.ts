@@ -15,7 +15,7 @@ import Invoice from '../models/Invoice';
 import { invoicePdfTemplate } from './invoicePdf';
 import DraftInvoice from '../models/DraftInvoice';
 import Transaction from '../models/Transaction';
-import { exit } from 'process';
+import { receiptPdfTemplate } from './receiptPdf';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pdf = require('pdf-creator-node');
@@ -97,6 +97,40 @@ export const generateInvoiceHtml = async (id: any, partnerId: any) => {
   // exit(0);
 
   return invoicePdfTemplate(invoice, preference?.termsAndCondition || '');
+};
+
+export const generateReceiptHtml = async (id: any, partnerId: any, rName: any) => {
+  const receipt: any | null = await dataSources.transactionDAOService.findById(id, {
+    include: [
+      {
+        model: Customer,
+        include: [Contact],
+      },
+      {
+        model: Invoice,
+        include: [
+          {
+            model: Estimate,
+            where: { partnerId: partnerId },
+            include: [
+              { model: Customer, include: [BillingInformation], paranoid: false },
+              Vehicle,
+              {
+                model: Partner,
+                include: [Contact],
+              },
+            ],
+          },
+          Transaction,
+          DraftInvoice,
+        ],
+      },
+    ],
+  });
+
+  if (!receipt) return null;
+
+  return receiptPdfTemplate(receipt, rName);
 };
 
 export const generatePdf = async (html: string | null, rName?: string) => {

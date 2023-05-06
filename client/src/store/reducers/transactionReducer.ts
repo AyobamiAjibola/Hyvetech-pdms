@@ -115,10 +115,10 @@ const transactionSlice = createSlice({
       })
       .addCase(getpaymentRecievedAction.fulfilled, (state, action) => {
         state.getPaymentRecievedStatus = 'completed';
-        
+
         // @ts-ignore
         const payload = action.payload.records;
-        
+
         state.paymentRecieve = payload || [];
       })
       .addCase(getpaymentRecievedAction.rejected, (state, action) => {
