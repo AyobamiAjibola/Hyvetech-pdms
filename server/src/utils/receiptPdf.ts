@@ -67,7 +67,7 @@ export const receiptPdfTemplate = (receipt: any, rName: any) => {
             .top-section {
                 display: flex;
                 justify-content: space-between;
-                padding-top: 60px;
+                padding-top: 30px;
                 /* background-color: red; */
             }
             .header-section {
@@ -161,7 +161,9 @@ export const receiptPdfTemplate = (receipt: any, rName: any) => {
               </div>
 
               <div class="header-section">
-                <span class="partner-name">${receipt?.invoice?.estimate?.partner?.name}</span>
+                <div style="padding-top: 40px">
+                  <span class="partner-name">${receipt?.invoice?.estimate?.partner?.name}</span>
+                </div>
                 <div class="address-wrap">
                   <span class="partner-address">${receipt?.invoice?.estimate?.partner?.contact?.address}</span>
                   <span class="partner-phone" style="margin-bottom: 5px; margin-top: 20px">${receipt?.invoice?.estimate?.partner?.phone}</span>
@@ -227,7 +229,7 @@ export const receiptPdfTemplate = (receipt: any, rName: any) => {
           </div>
 
           <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px">
-            <p style="font-size: 8; color: #676F73">Thanks for you patronage</p>
+            <p style="font-size: 8; color: #676F73">Thanks for your patronage</p>
           </div>
           </body>
     </html>

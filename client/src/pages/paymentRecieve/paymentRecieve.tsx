@@ -277,6 +277,7 @@ export default function PaymentRecieve() {
         setTimeout(() => {
           _setDownloading(false);
           window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
+          setShowReceipt(false);
         }, 3000);
       };
 
@@ -298,9 +299,11 @@ export default function PaymentRecieve() {
         console.log(e);
       }
 
-      setTimeout(() => {
+      // setTimeout(() => {
         setDownloading(false);
-      }, 1000);
+        setShowReceipt(false);
+        dispatch(getpaymentRecievedAction());
+      // }, 1000);
     };
     const handleShareLink = async () => {
 
