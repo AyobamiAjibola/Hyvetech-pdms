@@ -965,7 +965,6 @@ export default class PartnerController {
     const path = req.path;
 
     path.search('owners-filter-data');
-
     const driverInfo: IDriverFilterProps[] = [];
 
     const response: HttpResponse<IDriverFilterProps> = {
@@ -985,7 +984,15 @@ export default class PartnerController {
         case path.match('owners-filter-data')?.input:
           drivers = await dataSources.customerDAOService.findAll({
             where: {
+              [Op.not]: { firstName: 'Anonymous' }
+            },
+          });
+          break;
+        case path.match('partner-filter-data')?.input:
+          drivers = await dataSources.customerDAOService.findAll({
+            where: {
               [Op.not]: { firstName: 'Anonymous' },
+              partnerId: partnerId
             },
           });
           break;
@@ -1006,8 +1013,6 @@ export default class PartnerController {
         const email = driver.email;
 
         const vehicles = await drivers[i].$get('vehicles');
-
-        console.log(vehicles.length, ' vehicles');
 
         driverInfo[i] = {
           id: driver.id,
