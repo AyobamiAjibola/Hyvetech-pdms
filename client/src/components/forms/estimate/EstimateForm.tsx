@@ -717,8 +717,8 @@ function EstimateForm(props: IProps) {
                                   sx={{
                                     zIndex: 1,
                                     cursor: 'pointer',
-                                    backgroundColor: '#797979', color: 'white',
-                                    '&:hover': {color: '#797979', backgroundColor: 'white', boxShadow: 2}
+                                    backgroundColor: '#181818', color: 'white',
+                                    '&:hover': {color: '#181818', backgroundColor: 'white', boxShadow: 2}
                                   }}
                                 >
                                   <Search fontSize='medium'/>
