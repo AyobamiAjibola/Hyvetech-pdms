@@ -12,6 +12,7 @@ import {
   getDriversFilterDataAction,
   getOwnersFilterDataAction,
   getPartnerAction,
+  getPartnerFilterDataAction,
   getPartnersAction,
   getPaymentPlansAction,
   getPlansAction,
@@ -63,6 +64,10 @@ interface IPartnerState {
   getOwnersFilterDataSuccess: string;
   getOwnersFilterDataError?: string;
 
+  getPartnerFilterDataStatus: IThunkAPIStatus;
+  getPartnerFilterDataSuccess: string;
+  getPartnerFilterDataError?: string;
+
   getPaymentPlansStatus: IThunkAPIStatus;
   getPaymentPlansSuccess: string;
   getPaymentPlansError?: string;
@@ -99,6 +104,7 @@ interface IPartnerState {
   paymentPlans: IPaymentPlan[];
   driversFilterData: IDriversFilterData[];
   ownersFilterData: IDriversFilterData[];
+  partnerFilterData: IDriversFilterData[];
 
   preference: IPreference | null;
 }
@@ -152,6 +158,10 @@ const initialState: IPartnerState = {
   getOwnersFilterDataStatus: 'idle',
   getOwnersFilterDataSuccess: '',
 
+  getPartnerFilterDataError: '',
+  getPartnerFilterDataStatus: 'idle',
+  getPartnerFilterDataSuccess: '',
+
   getPaymentPlansError: '',
   getPaymentPlansStatus: 'idle',
   getPaymentPlansSuccess: '',
@@ -180,6 +190,7 @@ const initialState: IPartnerState = {
   paymentPlans: [],
   driversFilterData: [],
   ownersFilterData: [],
+  partnerFilterData: [],
 
   preference: null,
 };
@@ -257,6 +268,12 @@ const partnerSlice = createSlice({
       state.getOwnersFilterDataStatus = 'idle';
       state.getOwnersFilterDataSuccess = '';
       state.getOwnersFilterDataError = '';
+    },
+
+    clearGetPartnerFilterDataStatus(state: IPartnerState) {
+      state.getPartnerFilterDataStatus = 'idle';
+      state.getPartnerFilterDataSuccess = '';
+      state.getPartnerFilterDataError = '';
     },
 
     clearDeletePlanStatus(state: IPartnerState) {
@@ -477,6 +494,22 @@ const partnerSlice = createSlice({
       });
 
     builder
+      .addCase(getPartnerFilterDataAction.pending, state => {
+        state.getPartnerFilterDataStatus = 'loading';
+      })
+      .addCase(getPartnerFilterDataAction.fulfilled, (state, action) => {
+        state.getPartnerFilterDataStatus = 'completed';
+        state.partnerFilterData = action.payload.results as IDriversFilterData[];
+      })
+      .addCase(getPartnerFilterDataAction.rejected, (state, action) => {
+        state.getPartnerFilterDataStatus = 'failed';
+
+        if (action.payload) {
+          state.getPartnerFilterDataError = action.payload.message;
+        } else state.getPartnerFilterDataError = action.error.message;
+      });
+
+    builder
       .addCase(getPreferencesActions.pending, state => {
         state.getPreferenceStatus = 'loading';
       })
@@ -572,6 +605,7 @@ export const {
   clearDeletePartnerStatus,
   clearTogglePartnerStatus,
   clearGetOwnersFilterDataStatus,
+  clearGetPartnerFilterDataStatus,
   clearGetPreferenceStatus,
   clearUpdatePreferenceStatus,
 } = partnerSlice.actions;
