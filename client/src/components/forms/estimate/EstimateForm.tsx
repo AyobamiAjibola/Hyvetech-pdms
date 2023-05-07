@@ -717,8 +717,8 @@ function EstimateForm(props: IProps) {
                                   sx={{
                                     zIndex: 1,
                                     cursor: 'pointer',
-                                    backgroundColor: 'green', color: 'white',
-                                    '&:hover': {color: 'green', backgroundColor: 'white', boxShadow: 2}
+                                    backgroundColor: '#797979', color: 'white',
+                                    '&:hover': {color: '#797979', backgroundColor: 'white', boxShadow: 2}
                                   }}
                                 >
                                   <Search fontSize='medium'/>
@@ -735,14 +735,14 @@ function EstimateForm(props: IProps) {
                 />
               </Grid>
 
-              <Grid ml={2} sx={{display: 'flex', alignItems: {xs: 'left', md: 'none'}}}>
+              <Grid ml={2} sx={{display: 'flex', alignItems: {xs: 'left', md: 'none', cursor: 'pointer'}}}>
                 <Box onClick={toggleFetch}>
                   {fetch
                     ? <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <ToggleOn color="success" fontSize='large'/>&nbsp;<span style={{fontSize: '16px', fontWeight: 500}}>Customer</span>
+                        <ToggleOn color="success" fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic', color: '#797979'}}>AutoHyve Users</span>
                       </Box>
-                    : <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <ToggleOff color="warning" fontSize='large'/>&nbsp;<span style={{fontSize: '16px', fontWeight: 500}}>Global customer</span>
+                    : <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#797979'}}>
+                        <ToggleOff color='inherit' fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic'}}>Customers</span>
                       </Box>
                   }
                 </Box>
@@ -753,7 +753,7 @@ function EstimateForm(props: IProps) {
           </Grid>
           <Grid container justifyContent="center" alignItems="center"
             sx={{
-              mt: {md: 4, xs: 2},
+              mt: {xs: 2},
               width: {xs: '100%', md: '50%'}
             }}
           >
