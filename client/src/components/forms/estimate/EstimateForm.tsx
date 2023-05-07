@@ -738,8 +738,8 @@ function EstimateForm(props: IProps) {
               <Grid ml={2} sx={{display: 'flex', alignItems: {xs: 'left', md: 'none', cursor: 'pointer'}}}>
                 <Box onClick={toggleFetch}>
                   {fetch
-                    ? <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <ToggleOn color="success" fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic', color: '#797979'}}>AutoHyve Users</span>
+                    ? <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#FBA91A'}}>
+                        <ToggleOn color="inherit" fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic', color: '#797979'}}>AutoHyve Users</span>
                       </Box>
                     : <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#797979'}}>
                         <ToggleOff color='inherit' fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic'}}>Customers</span>
