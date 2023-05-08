@@ -22,7 +22,8 @@ import { GridActionsCellItem } from '@mui/x-data-grid';
 import { Cancel } from '@mui/icons-material';
 import AppModal from '../../components/modal/AppModal';
 import settings from '../../config/settings';
-import ReactToPdf from 'react-to-pdf'
+// import ReactToPdf from 'react-to-pdf'
+import axiosClient from '../../config/axiosClient';
 
 
 export default function PaymentRecieve() {
@@ -36,13 +37,15 @@ export default function PaymentRecieve() {
     const [showReceipt, setShowReceipt] = useState(false)
     const [receiptData, setReceiptData] = useState(null)
     const [activeRecord, setactiveRecord] = useState(null)
+    const [receiptId, setReceiptId] = useState<number>()
+    const [_downloading, _setDownloading] = useState<any>(false)
+    const [downloading, setDownloading] = useState<any>(false);
     // const invoice = useInvoice();
-
     const ref = React.createRef();
-    const options = {
-      unit: 'in',
-      format: [6,6]
-  };
+  //   const options = {
+  //     unit: 'in',
+  //     format: [6,6]
+  // };
 
     const partnerName = (user?.partner?.name || " ")
 
@@ -65,20 +68,19 @@ export default function PaymentRecieve() {
     useEffect(()=>{
       if( transactionReducer.deletePaymentRecievedStatus == "completed" ){
         // @ts-ignore
-      dispatch(getpaymentRecievedAction());
+        dispatch(getpaymentRecievedAction());
       }
-      
+
     }, [transactionReducer.deletePaymentRecievedStatus])
 
     useEffect(()=>{
       // @ts-ignore
       dispatch(getpaymentRecievedAction());
-      console.log()
     }, [dispatch])
 
     const techColumns = useMemo(() => {
         return [
-          
+
           {
             field: 'updatedAt',
             headerName: 'Date',
@@ -107,6 +109,7 @@ export default function PaymentRecieve() {
                   onClick={() => {
                     // 
                     setShowReceipt(true);
+                    setReceiptId(params.row.id)
                     setReceiptData(params.row)
                   }}>
                   {/* {params.row.reference} */}
@@ -196,7 +199,7 @@ export default function PaymentRecieve() {
 
                     navigate(`/invoices/${invoice.id}`, { state: __state });
                   }}>
-                  {params?.row?.invoice?.code || ""}
+                  {params?.row?.invoice?.code.split("_")[0] || ""}
                 </span>
               );
             },
@@ -253,13 +256,137 @@ export default function PaymentRecieve() {
         ];
       }, [dispatch, transactionReducer, isTechAdmin, navigate]);
 
+      const _generateDownload = async () => {
+        const rName = `${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id}`)}` + '.pdf';
+
+        // @ts-ignore
+        const payload = {
+          type: 'RECEIPT',
+          id: receiptId || -1,
+          rName,
+        };
+        _setDownloading(true);
+
+        try {
+          const response = await axiosClient.post(`${settings.api.rest}/request-pdf`, payload);
+          console.log(response.data);
+        } catch (e) {
+          console.log(e);
+        }
+
+        setTimeout(() => {
+          _setDownloading(false);
+          window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
+          setShowReceipt(false);
+        }, 3000);
+      };
+
+      //share pdf logic --- start
+    const generateDownload = async () => {
+      const rName = `${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id}`)}` + '.pdf';
+      // @ts-ignore
+      const payload = {
+        type: 'RECEIPT',
+        id: receiptId || -1,
+        rName,
+      };
+      setDownloading(true);
+
+      try {
+        const response = await axiosClient.post(`${settings.api.rest}/request-pdf`, payload);
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+
+      // setTimeout(() => {
+        setDownloading(false);
+        setShowReceipt(false);
+        dispatch(getpaymentRecievedAction());
+      // }, 1000);
+    };
+    const handleShareLink = async () => {
+
+      generateDownload()
+
+      const fileName = `${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id}`)}`
+      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${fileName}.pdf`;
+      const message = `${receiptData?.invoice?.estimate?.partner.name} has sent you a receipt.\nAmount Paid: NGN${formatNumberToIntl(receiptData?.amount)}\n\n` + fileUrl
+
+      try {
+
+        const shareData = {
+          title: 'Receipt',
+          text: `${message}`
+          // url: fileUrl
+        };
+
+        await navigator.share(shareData);
+
+        console.log('File shared successfully');
+      } catch (error: any) {
+        console.error('Error sharing file:', error);
+      }
+    };
+
+    const handleShareLinkNoMessage = async () => {
+
+      generateDownload()
+
+      const fileName = `${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id}`)}`
+      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${fileName}.pdf`;
+
+      try {
+        const shareData = {
+          title: 'Receipt',
+          // text: `${message}`
+          url: fileUrl
+        };
+
+        await navigator.share(shareData);
+
+        console.log('File shared successfully');
+      } catch (error: any) {
+        console.error('Error sharing file:', error);
+      }
+    };
+
+    const handleSharePdf = async () => {
+      generateDownload()
+
+      const fileName = `${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id}`)}`
+      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${fileName}.pdf`;
+      const message = `${receiptData?.invoice?.estimate?.partner.name} has sent you a receipt.`
+
+      try {
+        const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
+        const blob = response.data;
+        const file = new File([blob], `${message} - ${fileName}_receipt.pdf`, { type: 'application/pdf' });
+
+        const shareData = {
+          title: 'Receipt',
+          text: `${message}`,
+          // url: fileUrl
+          files: [file]
+        };
+
+        await navigator.share(shareData);
+
+        console.log('File shared successfully');
+      } catch (error: any) {
+        console.error('Error sharing file:', error);
+      }
+    };
+
+  //share pdf logic --- end
+
     return (
         <React.Fragment>
             <Grid container justifyContent="space-between" alignItems="center">
                 <Grid item xs={10}>
-                <Typography variant="h4" gutterBottom sx={{fontWeight: 600}}>
-                    Payments Received
-                </Typography>
+                  <Typography variant="h4" gutterBottom sx={{fontWeight: 600}}>
+                      Payments Received
+                  </Typography>
                 </Grid>
             </Grid>
             <Grid container>
@@ -303,7 +430,6 @@ export default function PaymentRecieve() {
                 <DialogActions>
                   <Button onClick={() => setShowWarning(false)}>Disagree</Button>
                   <Button onClick={()=>{
-                    // 
                     dispatch(deleteSingleTransactionAction(activeRecord));
                     setShowWarning(false);
                   }}>Agree</Button>
@@ -319,7 +445,6 @@ export default function PaymentRecieve() {
               fullScreen={document.documentElement.clientWidth <= 375 ? true : false}
               Content={
                 <div ref={ref} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  
                   <div style={{ flex: 1, display: 'flex' }}>
                     <div style={{ flex: 0.4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                       <img
@@ -369,7 +494,7 @@ export default function PaymentRecieve() {
                   <br />
                   <Divider orientation="horizontal" />
                   <br />
-                  
+
                   <div>
                     <Typography style={{ fontWeight: 'normal', textAlign: 'center', fontWeight: '600' }}>
                       PAYMENT RECEIPT
@@ -378,7 +503,7 @@ export default function PaymentRecieve() {
 
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
                       <div style={{ flex: 1, display: 'flex', flex: 0.68, marginRight: 20, flexDirection: 'column' }}>
-                        
+
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <Typography sx={{ fontSize: {sm: 13, xs: 12} }}>Payment Date</Typography>
                           <Typography sx={{ fontSize: {sm: 13, xs: 12}, fontWeight: 600 }}>{new Date((receiptData?.updatedAt || "")).toDateString()}</Typography>
@@ -425,7 +550,7 @@ export default function PaymentRecieve() {
                     <table style={{ width: '100%' }}>
                       <thead style={{ backgroundColor: 'grey', borderColor: 'grey' }}>
                         <tr style={{ borderColor: 'grey' }}>
-                          
+
                           <th style={{ borderColor: 'grey' }}>
                             <Typography style={{ fontSize: 13 }}>Invoice #</Typography>
                           </th>
@@ -445,9 +570,9 @@ export default function PaymentRecieve() {
                       </thead>
                       <tbody>
                         <tr>
-                          
+
                           <td>
-                            <Typography sx={{ fontSize: {sm: 13, xs: 12}, textAlign: 'center'}}>INV-{receiptData?.invoice?.code || ""}</Typography>
+                            <Typography sx={{ fontSize: {sm: 13, xs: 12}, textAlign: 'center'}}>{receiptData?.invoice?.code.split("_")[0] || ""}</Typography>
                           </td>
 
                           <td>
@@ -471,14 +596,28 @@ export default function PaymentRecieve() {
               }
               ActionComponent={
                 <DialogActions>
-                  <ReactToPdf targetRef={ref} filename={`${hashString(`${partnerName[0]}C${receiptData?.id || ""}`)}.pdf`} options={options} x={.5} y={.5} scale={0.8}>
+                  {/* <ReactToPdf targetRef={ref} filename={`${hashString(`${partnerName[0]}C${receiptData?.id || ""}`)}.pdf`} options={options} x={.5} y={.5} scale={0.8}>
                     {({toPdf}) => (
                         <Button onClick={toPdf}>DOWNLOAD</Button>
                     )}
-                </ReactToPdf>
-                  {/* <Button onClick={() => {
-                    // 
-                  }}>DOWNLOAD</Button> */}
+                  </ReactToPdf> */}
+                  <Button
+                    onClick={() => _generateDownload()}
+                  >
+                    {_downloading ? 'Downloading...' : 'DOWNLOAD pdf'}
+                  </Button>
+
+                  <Button
+                    onClick={() => {document.documentElement.clientWidth <= 912 ? handleShareLink() : handleShareLinkNoMessage()}}
+                  >
+                    {downloading ? 'Sharing...' : 'Share unique link'}
+                  </Button>
+
+                  {!downloading && <Button
+                    onClick={() => handleSharePdf()}
+                  >
+                    Share pdf
+                  </Button>}
                 </DialogActions>
               }
               onClose={() => setShowReceipt(false)}

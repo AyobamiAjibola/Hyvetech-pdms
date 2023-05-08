@@ -211,7 +211,7 @@ export default class InvoiceController {
 
     const invoiceValues: Partial<Attributes<Invoice>> = {
       // code: Generic.randomize({ number: true, count: 6 }),
-      code: Generic.generateCode(fetch_invoice, 'INV', partner.id),
+      code: Generic.generateCode(fetch_invoice, 'INV', partner.id) + `_${Generic.randomize({ count: 4, alphanumeric: true })}`,
       depositAmount: estimate.depositAmount,
       paidAmount: estimate.depositAmount,
       tax: estimate.tax,
@@ -320,7 +320,7 @@ export default class InvoiceController {
       }
 
       const invoiceValues: Partial<Attributes<Invoice>> = {
-        code: Generic.generateCode(fetch_invoice, 'INV', partner.id),
+        code: Generic.generateCode(fetch_invoice, 'INV', partner.id) + `_${Generic.randomize({ count: 4, alphanumeric: true })}`,
         depositAmount: 0,
         paidAmount: 0,
         tax: estimate.tax,
@@ -1210,7 +1210,9 @@ export default class InvoiceController {
     const count = estimate?.count && estimate?.count - 1
     let status: any;
     if(estimate?.count && estimate?.count === 1) {
+      if(estimate?.sentStatus === ESTIMATE_STATUS.sent) {
         status = ESTIMATE_STATUS.sent
+      } else { status = ESTIMATE_STATUS.draft }
     }
 
     await estimate?.update({ status: status, count: count });

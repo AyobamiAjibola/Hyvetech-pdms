@@ -73,11 +73,9 @@ const authenticationSlice = createSlice({
 
         if (action.payload.result) {
           state.authToken = action.payload.result;
-
           const { permissions } = jwt.decode(state.authToken) as CustomJwtPayload;
 
           state.permissions = permissions;
-
           sessionStorage.setItem(LOCAL_STORAGE.permissions, JSON.stringify(permissions));
 
           sessionStorage.setItem(settings.auth.admin, state.authToken);

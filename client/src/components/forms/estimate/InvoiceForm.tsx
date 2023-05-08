@@ -413,7 +413,7 @@ function InvoiceForm(props: IProps) {
       //@ts-ignore
       setFieldValue(`parts.${index}.partNumber`, newDetail?.slug || '');
       //@ts-ignore
-      setFieldValue(`parts.${index}.name`, `${capitalize.words(partName?.name)} [${newDetail?.slug}]` || '');
+      setFieldValue(`parts.${index}.name`, `${partName?.name && capitalize.words(partName?.name)} [${newDetail?.slug}]` || '');
 
     },
     [ setFieldValue, itemReducer.items],
@@ -423,7 +423,7 @@ function InvoiceForm(props: IProps) {
     (e: any, index: number) => {
       const partName = e.target.value;
 
-      setFieldValue(`labours.${index}.title`, capitalize.words(partName?.name) || '');
+      setFieldValue(`labours.${index}.title`, `${partName?.name && capitalize.words(partName?.name)}` || '');
       // setFieldTouched(`labours.${index}.title`, false);
       const tempItem = itemReducer.items;
       const newDetail = tempItem.find((item: any) => item.name === partName?.name)
@@ -455,7 +455,6 @@ function InvoiceForm(props: IProps) {
         {labelParts[1] && (
           <>
             <span style={{ fontSize: "12px", textAlign: 'right', marginBottom: '1px', display: 'block' }}>
-              {/* {'(Stock:'} */}
               {labelParts[1]}
             </span>
             <Divider orientation="horizontal" />
@@ -621,7 +620,7 @@ function InvoiceForm(props: IProps) {
                                             InputProps={{
                                               ...params.InputProps,
                                               endAdornment: (
-                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                                                <InputAdornment position="end" sx={{ position: 'absolute', left: {lg: '90%', xs: '80%'} }}>
                                                   {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
                                                 </InputAdornment>
                                               ),
@@ -826,7 +825,7 @@ function InvoiceForm(props: IProps) {
                                             InputProps={{
                                               ...params.InputProps,
                                               endAdornment: (
-                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '95%' }}>
+                                                <InputAdornment position="end" sx={{ position: 'absolute', left: {lg: '95%', md: '85%', xs: '78%'} }}>
                                                   {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
                                                 </InputAdornment>
                                               ),

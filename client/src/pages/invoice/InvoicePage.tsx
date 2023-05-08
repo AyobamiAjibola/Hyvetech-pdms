@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IBillingInformation, IEstimate, IInvoice } from '@app-models';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, Avatar, Box, Button, Divider, Grid, Input, Select, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Divider, FormControl, Grid, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -33,6 +33,7 @@ function InvoicePage() {
   const [labours, setLabours] = useState<ILabour[]>([]);
   const [_driver, setDriver] = useState<any>(null);
   const [billingInformation, setBillingInformation] = useState<IBillingInformation>();
+  const [selectedValue, setSelectedValue] = useState<string>('');
   // const location = useLocation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ function InvoicePage() {
 
   // @ts-ignore
   const [downloading, setDownloading] = useState<any>(false);
+  const [_downloading, _setDownloading] = useState<any>(false);
   const [showMessage, setshowMessage] = useState<boolean>(false);
 
   const params = useParams() as unknown as { id: number };
@@ -164,7 +166,6 @@ function InvoicePage() {
     try {
       const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
       console.log(response.data);
-      // window.open(`${settings.api.baseURL}/uploads/pdf/${response.data.name}`)
     } catch (e) {
       console.log(e);
     }
@@ -172,7 +173,7 @@ function InvoicePage() {
     setTimeout(() => {
       setDownloading(false);
       window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
-      console.log(rName, "checking rName after posting")
+      setSelectedValue('')
     }, 3000);
   };
 
@@ -211,6 +212,7 @@ function InvoicePage() {
       console.log(e);
     }
     setRecording(false);
+    setSelectedValue('')
   };
 
   const calculateDiscount = ({
@@ -259,6 +261,120 @@ function InvoicePage() {
     return 0;
   };
 
+  //share pdf logic --- start
+    const _generateDownload = async () => {
+      const rName = invoice?.code + '.pdf';
+      // @ts-ignore
+      const payload = {
+        type: 'INVOICE',
+        id: invoice?.id || -1,
+        rName,
+      };
+      _setDownloading(true);
+
+      try {
+        const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+
+      setTimeout(() => {
+        _setDownloading(false);
+        setSelectedValue('');
+      }, 1000);
+    };
+    const handleShareLink = async () => {
+
+      _generateDownload()
+
+      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
+      const message = `${invoice?.estimate?.partner.name} has sent you an invoice.\nAmount Paid: NGN${invoice?.depositAmount && formatNumberToIntl(invoice?.depositAmount)}\n\n` + fileUrl
+
+      try {
+
+        const shareData = {
+          title: 'Invoice',
+          text: `${message}`
+          // url: fileUrl
+        };
+
+        await navigator.share(shareData);
+
+        console.log('File shared successfully');
+      } catch (error: any) {
+        console.error('Error sharing file:', error);
+      }
+    };
+
+    const handleShareLinkNoMessage = async () => {
+
+      _generateDownload()
+
+      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
+
+      try {
+        const shareData = {
+          title: 'Invoice',
+          // text: `${message}`
+          url: fileUrl
+        };
+
+        await navigator.share(shareData);
+
+        console.log('File shared successfully');
+      } catch (error: any) {
+        console.error('Error sharing file:', error);
+      }
+    };
+
+    const handleSharePdf = async () => {
+      _generateDownload()
+      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
+      const message = `${invoice?.estimate?.partner.name} has sent you an invoice.`
+
+      try {
+        const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
+        const blob = response.data;
+        const file = new File([blob], `${message} - ${invoice?.code}_invoice.pdf`, { type: 'application/pdf' });
+
+        const shareData = {
+          title: 'Invoice',
+          text: `${message}`,
+          // url: fileUrl
+          files: [file]
+        };
+
+        await navigator.share(shareData);
+
+        console.log('File shared successfully');
+      } catch (error: any) {
+        console.error('Error sharing file:', error);
+      }
+    };
+
+  //share pdf logic --- end
+
+  const handleChange = (event: any) => {
+    const value = event.target.value as string;
+    setSelectedValue(value);
+    if (value === "Share unique link") {
+      document.documentElement.clientWidth <= 912 ? handleShareLink() : handleShareLinkNoMessage();
+    }
+    if(value === "Record Payment") {
+      setShowRecordPayment(true)
+    }
+    if(value === "Record Expenses") {
+      generateExpense()
+    }
+    if(value === "Download Pdf") {
+      generateDownload()
+    }
+    if (value === "Share PDF") {
+      handleSharePdf()
+    }
+  };
+
   if (!estimate || !invoice)
     return (
       <Grid container justifyContent="center" alignItems="center">
@@ -282,11 +398,45 @@ function InvoicePage() {
         </Grid>
 
         <Typography mb={3} textAlign="center" display="block" variant="subtitle1">
-          #{invoice.code}
+          #{invoice.code.split('_')[0]}
         </Typography>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {invoice.grandTotal !== invoice.paidAmount && (
+
+          <FormControl sx={{ m: 1, width: {sm: 300, xs: 170} }}>
+            <InputLabel id="demo-simple-select-helper-label">Select an action</InputLabel>
+            <Select
+              labelId="demo-simple-select-helper-label"
+              id="demo-simple-select-helper"
+              value={selectedValue}
+              label="Select an action"
+              onChange={handleChange}
+            >
+              <MenuItem value="">
+                ...
+              </MenuItem>
+              <MenuItem
+                value={'Record Payment'}
+                disabled={invoice.grandTotal === invoice.paidAmount}
+              >Record Payment</MenuItem>
+              <MenuItem
+                value={'Record Expenses'}
+              >Record Expenses</MenuItem>
+              <MenuItem value={'Download Pdf'}>{downloading ? 'Downloading...' : 'Download Pdf'}</MenuItem>
+              <MenuItem value={'Share unique link'}
+              >
+                {_downloading ? 'Sharing...' : 'Share unique link'}
+              </MenuItem>
+              <MenuItem
+                value={'Share PDF'}
+                disabled={document.documentElement.clientWidth > 912}
+              >
+                {_downloading ? 'Sharing...' : 'Share PDF'}
+              </MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* {invoice.grandTotal !== invoice.paidAmount && (
             <Button
               style={{ marginRight: 20 }}
               variant="outlined"
@@ -308,7 +458,7 @@ function InvoicePage() {
             color="success" size="small" onClick={() => generateDownload()}
           >
             {downloading ? 'Downloading...' : 'Download Pdf'}
-          </Button>
+          </Button> */}
         </div>
 
         <Grid container my={3}
@@ -729,7 +879,7 @@ function InvoicePage() {
 
         <AppModal
           show={showRecordPayment}
-          onClose={() => setShowRecordPayment(false)}
+          onClose={() => {setShowRecordPayment(false), setSelectedValue('')}}
           title="Record Payment"
           size="md"
           ActionComponent={<Button onClick={() => handlePaymentRecord()} >{recording ? 'Recording' : 'Record'}</Button>}

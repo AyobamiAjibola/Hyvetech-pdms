@@ -420,7 +420,7 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
             <div class="top-section">
                 <div class="header-section">
                     <span class="estimate-name">Estimate</span>
-                    <span class="estimate-num">#${estimate.code}</span>
+                    <span class="estimate-num">#${estimate.code.split("_")[0]}</span>
                     <span class="estimate-date">Date: ${new Date(estimate.updatedAt).toDateString()}</span>
                 </div>
     

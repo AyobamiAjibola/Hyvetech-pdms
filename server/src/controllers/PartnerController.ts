@@ -35,7 +35,7 @@ import garage_partner_welcome_email from '../resources/templates/email/garage_pa
 import ride_share_partner_welcome_email from '../resources/templates/email/ride_share_partner_welcome_email';
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import HttpResponse = appCommonTypes.HttpResponse;
-import { generateEstimateHtml, generateInvoiceHtml, generatePdf } from '../utils/pdf';
+import { generateEstimateHtml, generateInvoiceHtml, generatePdf, generateReceiptHtml } from '../utils/pdf';
 import { HasPermission, TryCatch } from '../decorators';
 import Preference, { $savePreferenceSchema, PreferenceSchemaType } from '../models/Pereference';
 
@@ -965,7 +965,6 @@ export default class PartnerController {
     const path = req.path;
 
     path.search('owners-filter-data');
-
     const driverInfo: IDriverFilterProps[] = [];
 
     const response: HttpResponse<IDriverFilterProps> = {
@@ -985,7 +984,15 @@ export default class PartnerController {
         case path.match('owners-filter-data')?.input:
           drivers = await dataSources.customerDAOService.findAll({
             where: {
+              [Op.not]: { firstName: 'Anonymous' }
+            },
+          });
+          break;
+        case path.match('partner-filter-data')?.input:
+          drivers = await dataSources.customerDAOService.findAll({
+            where: {
               [Op.not]: { firstName: 'Anonymous' },
+              partnerId: partnerId
             },
           });
           break;
@@ -1006,8 +1013,6 @@ export default class PartnerController {
         const email = driver.email;
 
         const vehicles = await drivers[i].$get('vehicles');
-
-        console.log(vehicles.length, ' vehicles');
 
         driverInfo[i] = {
           id: driver.id,
@@ -1114,6 +1119,7 @@ export default class PartnerController {
     // ..
     try {
       const { type, id } = req.body;
+      const rName = req.body.rName;
 
       let html: string | null = '';
       let partner = null;
@@ -1128,13 +1134,17 @@ export default class PartnerController {
           html = await generateInvoiceHtml(id, partner.id);
           break;
 
+        case 'RECEIPT':
+          partner = req.user.partner;
+          html = await generateReceiptHtml(id, partner.id, rName);
+          break;
+
         default:
           break;
       }
 
-      const rName = req.body.rName;
+      // const rName = req.body.rName;
       await generatePdf(html, rName);
-      console.log(rName);
 
       return Promise.resolve({
         code: 200,

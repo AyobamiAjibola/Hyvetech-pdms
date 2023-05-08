@@ -342,7 +342,7 @@ function InvoicesPage() {
 
                 navigate(`/invoices/${invoice.id}`, { state: { invoice, estimate } });
               }}>
-              {params.row.code}
+              {params.row.code.split('_')[0]}
             </span>
           );
         },

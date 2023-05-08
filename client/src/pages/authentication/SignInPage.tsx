@@ -21,6 +21,7 @@ function SignInPage() {
   const login = useLogin();
 
   const handleSignIn = (values: ISignInModel, formikHelpers: FormikHelpers<ISignInModel>) => {
+    console.log(values, "checks logging values")
     dispatch(signInAction(values));
     formikHelpers.resetForm();
   };
@@ -39,7 +40,11 @@ function SignInPage() {
           To continue to your AutoHyve Workshop Profile
         </Typography>
       </Box>
-      <Formik initialValues={signInModel.initialValues} validationSchema={signInModel.schema} onSubmit={handleSignIn}>
+      <Formik
+        initialValues={signInModel.initialValues}
+        validationSchema={signInModel.schema}
+        onSubmit={handleSignIn}
+      >
         <SignInForm />
       </Formik>
       <AppAlert

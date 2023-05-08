@@ -22,6 +22,7 @@ const GET_PLANS = 'partner:GET_PLANS';
 const GET_PAYMENT_PLANS = 'partner:GET_PAYMENT_PLANS';
 const GET_PREFERENCES = 'partner:GET_PREFERENCES';
 const UPDATE_PREFENCES = 'partner:UPDATE_PREFENCES';
+const GET_PARTNER_FILTER_DATA = 'partner:GET_PARTNER_FILTER_DATA';
 const API_ROOT = settings.api.rest;
 
 export const createPartnerAction = asyncThunkWrapper<any, ICreatePartnerModel>(
@@ -156,6 +157,14 @@ export const getOwnersFilterDataAction = asyncThunkWrapper<any, number>(
   GET_OWNERS_FILTER_DATA,
   async (partnerId: number) => {
     const response = await axiosClient.get(`${API_ROOT}/partners/${partnerId}/owners-filter-data`);
+    return response.data;
+  },
+);
+
+export const getPartnerFilterDataAction = asyncThunkWrapper<any, number>(
+  GET_PARTNER_FILTER_DATA,
+  async (partnerId: number) => {
+    const response = await axiosClient.get(`${API_ROOT}/partners/${partnerId}/partner-filter-data`);
     return response.data;
   },
 );

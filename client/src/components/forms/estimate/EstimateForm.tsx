@@ -12,6 +12,7 @@ import React, {
 import { FieldArray, Form, useFormikContext } from 'formik';
 import {
   Autocomplete,
+  Box,
   Button,
   Checkbox,
   CircularProgress,
@@ -26,7 +27,7 @@ import {
   Typography,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Remove, Save, Send, SendAndArchive } from '@mui/icons-material';
+import { Remove, Save, Search, Send, SendAndArchive, ToggleOff, ToggleOn } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -49,7 +50,7 @@ import { ESTIMATE_STATUS, STATES } from '../../../config/constants';
 import useAdmin from '../../../hooks/useAdmin';
 import { getCustomerAction } from '../../../store/actions/customerActions';
 import { useParams } from 'react-router-dom';
-import { getOwnersFilterDataAction, getPartnerAction } from '../../../store/actions/partnerActions';
+import { getOwnersFilterDataAction, getPartnerAction, getPartnerFilterDataAction } from '../../../store/actions/partnerActions';
 import { FaPlus } from 'react-icons/fa';
 import CreateCustomerModal from '../../modal/CreateCustomer';
 import useItemStock from '../../../hooks/useItemStock';
@@ -121,6 +122,7 @@ function EstimateForm(props: IProps) {
   const [options, setOptions] = useState<IDriversFilterData[]>([]);
   const [showDrop, setShowDrop] = useState<boolean>(false);
   const [vinOptions, setvinOptions] = useState<any>([]);
+  const [fetch, setFetch] = useState<boolean>(false);
 
   // const [showDropParts, setShowDropParts] = useState<boolean>(false);
   // const [inputValuePart, setInputValuePart] = React.useState('');
@@ -175,6 +177,7 @@ function EstimateForm(props: IProps) {
   useEffect(() => {
     if (partnerId) {
       dispatch(getOwnersFilterDataAction(+partnerId));
+      dispatch(getPartnerFilterDataAction(+partnerId));
       dispatch(getPartnerAction(partnerId));
     }
   }, [dispatch, partnerId]);
@@ -201,11 +204,11 @@ function EstimateForm(props: IProps) {
   }, [vatTotal]);
 
   useEffect(() => {
-    if (partnerReducer.getOwnersFilterDataStatus === 'completed') {
+    if (partnerReducer.getOwnersFilterDataStatus === 'completed' || partnerReducer.getPartnerFilterDataStatus === 'completed') {
       // setOptions(partnerReducer.ownersFilterData);
-      setRawOption(partnerReducer.ownersFilterData);
+      setRawOption(!fetch ? partnerReducer.partnerFilterData : partnerReducer.ownersFilterData);
     }
-  }, [partnerReducer.ownersFilterData, partnerReducer.getOwnersFilterDataStatus]);
+  }, [partnerReducer.ownersFilterData, partnerReducer.getOwnersFilterDataStatus, fetch]);
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -344,7 +347,7 @@ function EstimateForm(props: IProps) {
       //@ts-ignore
       setFieldValue(`parts.${index}.partNumber`, newDetail?.slug || '');
       //@ts-ignore
-      setFieldValue(`parts.${index}.name`, `${capitalize.words(partName?.name)} [${newDetail?.slug}]` || '');
+      setFieldValue(`parts.${index}.name`, `${partName?.name && capitalize.words(partName?.name)} [${newDetail?.slug}]` || '');
       setFieldTouched(`parts.${index}.name`, false);
 
       setFieldTouched(`parts.${index}.quantity.quantity`, false);
@@ -356,7 +359,7 @@ function EstimateForm(props: IProps) {
     (e: any, index: number) => {
       const partName = e.target.value;
 
-      setFieldValue(`labours.${index}.title`, capitalize.words(partName?.name) || '');
+      setFieldValue(`labours.${index}.title`, `${partName?.name && capitalize.words(partName?.name)}` || '');
       const tempItem = itemReducer.items;
       const newDetail = tempItem.find((item: any) => item.name === partName?.name)
       setFieldValue(`labours.${index}.cost`, newDetail?.sellingPrice || 0);
@@ -637,6 +640,19 @@ function EstimateForm(props: IProps) {
     }
   };
 
+  function handleSearch() {
+    if ((inputValue || '').length == 0) {
+      setShowDrop(false);
+    } else {
+      setNoOptionsText('No result Found');
+      setShowDrop(true);
+    }
+  }
+
+  const toggleFetch = () => {
+    setFetch(!fetch);
+  };
+
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
@@ -647,93 +663,114 @@ function EstimateForm(props: IProps) {
             </Typography>
             <Divider orientation="horizontal" />
           </Grid>
+          <Grid sx={{ width: '100%' }} justifyContent="center" alignItems="center" mt={8}>
 
-          {
-            <Grid style={{ width: '100%' }}>
-              <div style={{ marginTop: 10, paddingTop: 15, paddingBottom: 15, width: '100%' }}></div>
-
-              <Grid container justifyContent="center" alignItems="center">
-                <Grid item xs={8} md={6}>
-                  <Autocomplete
-                    filterOptions={filterOptions}
-                    inputValue={inputValue}
-                    value={value}
-                    openOnFocus={false}
-                    loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
-                    getOptionLabel={option => option.fullName}
-                    isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
-                    onChange={(_: any, newValue: IDriversFilterData | null) => {
-                      setValue(newValue);
-                      handleGetDriverInfo(newValue?.id);
-                    }}
-                    onInputChange={(_, newInputValue, reason) => {
-                      setInputValue(newInputValue);
-                      if (reason === 'clear') {
-                        reload();
-                      }
-                    }}
-                    noOptionsText={noOptionsText}
-                    renderInput={props => (
-                      <TextField
-                        {...props}
-                        label="Search customer by First name, last name, car plate number."
-                        onChange={e => {
-                          // setInputStack(e.target.value)
-                          filterData(e.target.value);
-                        }}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault()
-                            if ((inputValue || '').length == 0) {
-                              setShowDrop(false);
-                            } else {
-                              setNoOptionsText('No result Found');
-                              setShowDrop(true);
-                            }
-                          } else {
-                            setShowDrop(false);
-                          }
-                        }}
-                        onBlur={() => {
+            <Grid container justifyContent="center" alignItems="center">
+              <Grid item xs={12} md={6}>
+                <Autocomplete
+                  filterOptions={filterOptions}
+                  inputValue={inputValue}
+                  value={value}
+                  openOnFocus={false}
+                  loading={partnerReducer.getDriversFilterDataStatus === 'loading'}
+                  getOptionLabel={option => option.fullName}
+                  isOptionEqualToValue={(option, value) => option.fullName === value.fullName}
+                  onChange={(_: any, newValue: IDriversFilterData | null) => {
+                    setValue(newValue);
+                    handleGetDriverInfo(newValue?.id);
+                  }}
+                  onInputChange={(_, newInputValue, reason) => {
+                    setInputValue(newInputValue);
+                    if (reason === 'clear') {
+                      reload();
+                    }
+                  }}
+                  noOptionsText={noOptionsText}
+                  renderInput={props => (
+                    <TextField
+                      {...props}
+                      label="Search customer by First name, last name, car plate number."
+                      onChange={e => {
+                        // setInputStack(e.target.value)
+                        filterData(e.target.value);
+                      }}
+                      onClick={() => {
+                        handleSearch()
+                      }}
+                      onKeyDown={(e: any) => {
+                        if (e.key === 'Enter' || e.key === 'Search' || e.key === 'Submit') {
+                          handleSearch()
+                        } else {
                           setShowDrop(false);
-                        }}
-                        InputProps={{
-                          ...props.InputProps,
-                          endAdornment: (
-                            <React.Fragment>
-                              {partnerReducer.getDriversFilterDataStatus === 'loading' ? (
-                                <CircularProgress color="inherit" size={20} />
-                              ) : null}
-                              {props.InputProps.endAdornment}
-                            </React.Fragment>
-                          ),
-                        }}
-                      />
-                    )}
-                    options={showDrop ? options : []}
-                  />
-                </Grid>
-
-                <Grid item>
-                  <Typography
-                    onClick={() => setCreateModal(true)}
-                    color={'skyblue'}
-                    style={{
-                      marginLeft: 20,
-                      display: 'flex',
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                    }}>
-                    <FaPlus style={{ marginRight: 8 }} />
-                    New Customer
-                  </Typography>
-                </Grid>
+                        }
+                      }}
+                      onBlur={() => {
+                        setShowDrop(false);
+                      }}
+                      InputProps={{
+                        ...props.InputProps,
+                        endAdornment: (
+                          <React.Fragment>
+                            {partnerReducer.getDriversFilterDataStatus === 'loading'
+                              ? ( <CircularProgress color="inherit" size={20} /> )
+                              : <Button
+                                  sx={{
+                                    zIndex: 1,
+                                    cursor: 'pointer',
+                                    backgroundColor: '#181818', color: 'white',
+                                    '&:hover': {color: '#181818', backgroundColor: 'white', boxShadow: 2}
+                                  }}
+                                >
+                                  <Search fontSize='medium'/>
+                                </Button>
+                            }
+                            {props.InputProps.endAdornment}
+                          </React.Fragment>
+                        ),
+                      }}
+                    />
+                  )}
+                  options={showDrop ? options : []}
+                  forcePopupIcon={false}
+                />
               </Grid>
 
-              {/* <Divider orientation="horizontal" /> */}
+              <Grid ml={2} sx={{display: 'flex', alignItems: {xs: 'left', md: 'none', cursor: 'pointer'}}}>
+                <Box onClick={toggleFetch}>
+                  {fetch
+                    ? <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#FBA91A'}}>
+                        <ToggleOn color="inherit" fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic', color: '#797979'}}>AutoHyve Users</span>
+                      </Box>
+                    : <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#797979'}}>
+                        <ToggleOff color='inherit' fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic'}}>Customers</span>
+                      </Box>
+                  }
+                </Box>
+              </Grid>
             </Grid>
-          }
 
+            {/* <Divider orientation="horizontal" /> */}
+          </Grid>
+          <Grid container justifyContent="center" alignItems="center"
+            sx={{
+              mt: {xs: 2},
+              width: {xs: '100%', md: '50%'}
+            }}
+          >
+            <Typography
+              onClick={() => setCreateModal(true)}
+              color={'skyblue'}
+              style={{
+                marginLeft: 20,
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+                textAlign: 'center'
+              }}>
+              <FaPlus style={{ marginRight: 8 }} />
+              New Customer
+            </Typography>
+          </Grid>
           {/*
           <Grid item xs={4}>
             <TextInputField
@@ -947,7 +984,7 @@ function EstimateForm(props: IProps) {
                                             InputProps={{
                                               ...params.InputProps,
                                               endAdornment: (
-                                                <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                                                <InputAdornment position="end" sx={{ position: 'absolute', left: {lg: '90%', xs: '80%'} }}>
                                                   {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
                                                 </InputAdornment>
                                               ),
@@ -1155,7 +1192,7 @@ function EstimateForm(props: IProps) {
                                           InputProps={{
                                             ...params.InputProps,
                                             endAdornment: (
-                                              <InputAdornment position="end" sx={{ position: 'absolute', left: '95%' }}>
+                                              <InputAdornment position="end" sx={{ position: 'absolute', left: {lg: '95%', md: '85%', xs: '78%'} }}>
                                                 {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
                                               </InputAdornment>
                                             ),

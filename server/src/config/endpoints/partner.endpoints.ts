@@ -97,6 +97,12 @@ const partnerEndpoints: RouteEndpoints = [
   {
     name: 'partners',
     method: 'get',
+    path: '/partners/:partnerId/partner-filter-data',
+    handler: driversFilterDataHandler,
+  },
+  {
+    name: 'partners',
+    method: 'get',
     path: '/partners/:partnerId/jobs',
     handler: partnerJobsHandler,
   },
