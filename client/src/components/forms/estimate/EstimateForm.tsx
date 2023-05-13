@@ -698,7 +698,7 @@ function EstimateForm(props: IProps) {
                         handleSearch()
                       }}
                       onKeyDown={(e: any) => {
-                        if (e.key === 'Enter' || e.key === 'Search' || e.key === 'Submit') {
+                        if (e.key === 'Enter') {
                           handleSearch()
                         } else {
                           setShowDrop(false);
@@ -711,7 +711,7 @@ function EstimateForm(props: IProps) {
                         ...props.InputProps,
                         endAdornment: (
                           <React.Fragment>
-                            {partnerReducer.getDriversFilterDataStatus === 'loading'
+                            {partnerReducer.getOwnersFilterDataStatus === 'loading' || partnerReducer.getPartnerFilterDataStatus === 'loading'
                               ? ( <CircularProgress color="inherit" size={20} /> )
                               : <Button
                                   sx={{
@@ -966,7 +966,6 @@ function EstimateForm(props: IProps) {
                                         openOnFocus
                                         getOptionLabel={getOptionLabel}
                                         renderOption={renderOption}
-                                        // loading={itemReducer.getItemsStatus === 'loading'}
                                         noOptionsText="..."
                                         isOptionEqualToValue={isOptionEqualToValue}
                                         // @ts-ignore
@@ -1466,11 +1465,11 @@ function EstimateForm(props: IProps) {
                 color="secondary"
                 endIcon={<Save />}
                 onClick={() => {
-                  console.log('called> ', discountType, discount);
                   props.setDiscountType && props.setDiscountType(discountType);
                   props.setDiscount && props.setDiscount(discount);
                   props.setSave(true);
-                }}>
+                }}
+              >
                 {'Save'}
               </LoadingButton>
               <LoadingButton

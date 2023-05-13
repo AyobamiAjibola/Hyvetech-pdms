@@ -14,7 +14,6 @@ import Appointment from '../models/Appointment';
 import dataStore from '../config/dataStore';
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
-import crypto from 'crypto'
 
 const startDate = moment({ hours: 0, minutes: 0, seconds: 0 }).toDate();
 const endDate = moment({ hours: 23, minutes: 59, seconds: 59 }).toDate();
@@ -415,6 +414,160 @@ export default class Generic {
         tempSlots[index].available = true;
 
         await dataStore.set(date, JSON.stringify(tempSlots));
+      }
+    }
+  }
+
+  public static nextServiceDate(lastDate: string, serviceIntervalUnit: string, serviceInterval: string ){
+      const serviceDate = new Date(lastDate);
+
+      let result: any;
+      if (serviceIntervalUnit === 'month') {
+        serviceDate.setMonth(serviceDate.getMonth() + parseInt(serviceInterval));
+      } else if (serviceIntervalUnit === 'day') {
+        serviceDate.setDate(serviceDate.getDate() + parseInt(serviceInterval));
+      } else if (serviceIntervalUnit === 'week') {
+        serviceDate.setDate(serviceDate.getDate() + (parseInt(serviceInterval) * 7));
+      } else if (serviceIntervalUnit === 'year') {
+        serviceDate.setFullYear(serviceDate.getFullYear() + parseInt(serviceInterval));
+      } else {
+        return console.log('Wrong date')
+      }
+
+      // Adjust for leap year if necessary
+      const originalYear = serviceDate.getFullYear();
+      const isLeapYear = (year: any) => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+      const isServiceDateLeapYear = isLeapYear(originalYear);
+
+      if (isServiceDateLeapYear) {
+        if (!isLeapYear(serviceDate.getFullYear())) {
+          // Adjust for day when moving from a leap year to a non-leap year
+          serviceDate.setDate(serviceDate.getDate() - 1);
+        }
+      } else {
+        if (isLeapYear(serviceDate.getFullYear())) {
+          // Adjust for day when moving from a non-leap year to a leap year
+          serviceDate.setDate(serviceDate.getDate() + 1);
+        }
+      }
+      // serviceDate.setDate(serviceDate.getDate() + 1);
+      result = serviceDate.toISOString().slice(0, 10);
+      return result;
+  }
+
+  // public static reminderStatus(startDate: string, endDate: string, serviceIntervalUnit: string, serviceInterval: string, recurring?: boolean ) {
+  //   const currentDate = new Date();
+  //   const start = new Date(startDate);
+  //   const end = new Date(endDate);
+
+  //   if (currentDate < start || currentDate > end) {
+  //     return 'Overdue by [1] day';
+  //   }
+
+  //   const futureDateLimit = new Date();
+  //   const interval = parseInt(serviceInterval);
+
+  //   if (serviceIntervalUnit === 'month') {
+  //     futureDateLimit.setMonth(futureDateLimit.getMonth() + interval);
+  //   } else if (serviceIntervalUnit === 'week') {
+  //     futureDateLimit.setDate(futureDateLimit.getDate() + (7 * interval));
+  //   } else if (serviceIntervalUnit === 'day') {
+  //     futureDateLimit.setDate(futureDateLimit.getDate() + interval);
+  //   }
+
+  //   if (currentDate <= futureDateLimit) {
+  //     const milliseconds = futureDateLimit.getTime() - currentDate.getTime();
+
+  //     if (milliseconds > 2678400000) {
+  //       const diffMonths = Math.floor(milliseconds / (30 * 24 * 60 * 60 * 1000));
+  //       return `Due in [${diffMonths}] month(s)`;
+  //     } else if (milliseconds > 604800000) {
+  //       const diffWeeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
+  //       return `Due in [${diffWeeks}] week(s)`;
+  //     } else {
+  //       const diffDays = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
+  //       if(diffDays > 1){
+  //         return `Due in [${diffDays}] day(s)`;
+  //       } else if(diffDays === 1){
+  //         return `Due today`
+  //       }
+  //     }
+  //   } else {
+  //     return 'Overdue by [1] day';
+  //   }
+  // }
+
+  public static reminderStatus(startDate: string, endDate: string, serviceIntervalUnit: string, serviceInterval: any ) {
+    const currentDate = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const currYear = currentDate.getFullYear();
+    const currMonth = currentDate.getMonth();
+    const currDay = currentDate.getDate()
+
+    const startYear = start.getFullYear();
+    const startMonth = start.getMonth();
+    const startDay = start.getDate()
+
+    const endYear = end.getFullYear();
+    const endMonth = end.getMonth();
+    const endDay = end.getDate()
+
+    if(currYear < startYear && currMonth < startMonth && currDay < startDay) {
+      return 'Date is not within range';
+    }
+    if(currYear > endYear && currMonth > endMonth && currDay > endDay) {
+      return 'Date is not within range';
+    }
+
+    const futureDateLimit = new Date() === new Date(start) ? new Date() : new Date(start);
+    const interval = parseInt(serviceInterval);
+
+    if (serviceIntervalUnit === 'month') {
+      futureDateLimit.setMonth(futureDateLimit.getMonth() + interval);
+    } else if (serviceIntervalUnit === 'week') {
+      futureDateLimit.setDate(futureDateLimit.getDate() + (7 * interval));
+    } else if (serviceIntervalUnit === 'day') {
+      futureDateLimit.setDate(futureDateLimit.getDate() + interval);
+    }
+
+    if (currentDate <= futureDateLimit) {
+      const milliseconds = futureDateLimit.getTime() - currentDate.getTime();
+      console.log(milliseconds, 'checks seconds')
+      if (milliseconds > 2678400000) {
+        const diffMonths = Math.floor(milliseconds / (30 * 24 * 60 * 60 * 1000));
+        return `Due in [${diffMonths}] month(s)`;
+      } else if (milliseconds > 604800000) {
+        const diffWeeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
+        return `Due in [${diffWeeks}] week(s)`;
+      } else {
+        const diffDays = Math.round(milliseconds / (24 * 60 * 60 * 1000));
+        console.log(milliseconds / (24 * 60 * 60 * 1000), 'actual day')
+        console.log(diffDays, 'checking number of days left')
+        if(diffDays >= 1){
+          return `Due in [${diffDays}] day(s)`;
+        } else if(diffDays < 1){
+          return `Due today`
+        }
+      }
+    } else {
+      const currentDateYear = currentDate.getFullYear();
+      const currentDateMonth = currentDate.getMonth();
+      const currentDateDay = currentDate.getDate();
+
+      const futureDateLimitYear = futureDateLimit.getFullYear();
+      const futureDateLimitMonth = futureDateLimit.getMonth();
+      const futureDateLimitDay = futureDateLimit.getDate();
+
+      if (
+        currentDateYear === futureDateLimitYear &&
+        currentDateMonth === futureDateLimitMonth &&
+        currentDateDay === futureDateLimitDay
+      ) {
+        return `Due today`;
+      } else {
+        return 'Overdue by [1] day';
       }
     }
   }

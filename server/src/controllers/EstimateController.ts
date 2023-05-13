@@ -48,7 +48,6 @@ import {
   UPDATE_ESTIMATE,
   MANAGE_ALL,
 } from '../config/settings';
-import fs from 'fs';
 
 export default class EstimateController {
   @TryCatch
@@ -908,32 +907,6 @@ export default class EstimateController {
     await estimate.update(estimateValues);
 
     return { estimate };
-  }
-
-  public async filePath(req: Request, res: Response) {
-    const estimateId = req.params.estimateId as string;
-    // const filePath = path.join(__dirname, 'uploads', 'pdf', `${estimateId}`)
-
-    const checkingPath = res.sendFile(__dirname + '/uploads/pdf' + estimateId + '.pdf');
-    // const stream = fs.createReadStream(filePath);
-
-    // stream.on('error', (error: any) => {
-    //   console.error(error);
-    //   res.status(404).send('File not found');
-    // });
-
-    // res.setHeader('Content-Type', 'application/pdf');
-    // stream.pipe(res);
-
-    console.log(checkingPath, 'checkingPaths')
-
-
-    const response: HttpResponse<Estimate> = {
-      code: HttpStatus.OK.code,
-      message: 'Successful.'
-    };
-
-    return Promise.resolve(response);
   }
 
 }

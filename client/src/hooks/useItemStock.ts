@@ -198,8 +198,6 @@ export default function useItemStock() {
   const handleAddStock = (values: IItemValues) => {
     const data = {
       id: values.id,
-      // unit: values.unit,
-      // buyingPrice: values.buyingPrice,
       quantity: values.quantity
     };
 

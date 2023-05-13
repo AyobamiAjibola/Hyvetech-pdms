@@ -17,6 +17,7 @@ import invoiceEndpoints from './invoice.endpoints';
 import expenseEndpoints from './expense.endpoint';
 import roleEndpoints from './role.endpoint';
 import itemEndpoints from './item.endpoints';
+import serviceReminderEndpoints from './serviceReminder.endpoint';
 
 const endpoints = authEndpoints
   .concat(appointmentEndpoints)
@@ -36,6 +37,7 @@ const endpoints = authEndpoints
   .concat(invoiceEndpoints)
   .concat(expenseEndpoints)
   .concat(roleEndpoints)
-  .concat(itemEndpoints);
+  .concat(itemEndpoints)
+  .concat(serviceReminderEndpoints);
 
 export default endpoints;

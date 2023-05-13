@@ -27,6 +27,7 @@ import Estimate from './Estimate';
 import BillingInformation from './BillingInformation';
 import CustomerWorkShop from './CustomerWorkShop';
 import Partner from './Partner';
+import ServiceReminder from './ServiceReminder';
 
 export const $customerSchema = {
   firstName: Joi.string().required().label('First Name'),
@@ -155,6 +156,9 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
 
   @HasMany(() => Contact, { onDelete: 'SET NULL' })
   declare contacts: NonAttribute<Contact[]>;
+
+  @HasMany(() => ServiceReminder, { onDelete: 'SET NULL' })
+  declare reminders: NonAttribute<ServiceReminder[]>;
 
   @HasMany(() => PaymentDetail, { onDelete: 'SET NULL' })
   declare paymentDetails: NonAttribute<PaymentDetail[]>;

@@ -209,16 +209,10 @@ export default function useEstimate() {
       partsTotal: partTotal.toFixed(2),
       laboursTotal: labourTotal.toFixed(2),
       grandTotal: grandTotal.toFixed(2),
-      // partsTotal: Math.round(partTotal),
-      // laboursTotal: Math.round(labourTotal),
-      // grandTotal: Math.round(grandTotal),
       discount,
       discountType,
       note: values.note
     };
-
-    console.log(Object.keys(data), 'realsentdata');
-    // return
 
     dispatch(createEstimateAction(data));
   };
@@ -302,15 +296,10 @@ export default function useEstimate() {
       partsTotal: partTotal.toFixed(2),
       laboursTotal: labourTotal.toFixed(2),
       grandTotal: grandTotal.toFixed(2),
-      // partsTotal: Math.round(partTotal),
-      // laboursTotal: Math.round(labourTotal),
-      // grandTotal: Math.round(grandTotal),
       discount,
       discountType,
       note: values.note
     };
-
-    console.log(1, data);
 
     void dispatch(updateEstimateAction(data));
   };
@@ -386,9 +375,8 @@ export default function useEstimate() {
         const driver = estimate.rideShareDriver;
         const customer = estimate.customer;
         const vehicle = estimate.vehicle;
-        // console.log(estimate, "estimateestimate")
+
         dispatch(getCustomerAction(customer?.id));
-        // handleGetDriverInfo(customer?.id);
 
         const parts = estimate.parts as unknown as IPart[];
         const labours = estimate.labours as unknown as ILabour[];

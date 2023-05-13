@@ -32,8 +32,3 @@ export const getEstimatesHandler = authenticateRouteWrapper(async (req, res) => 
   const response = await estimateController.estimates(req);
   res.status(response.code).json(response);
 });
-
-export const getFilePath = authenticateRouteWrapper(async (req, res) => {
-  const response = await estimateController.filePath(req, res);
-  res.status(response.code).json(response);
-});

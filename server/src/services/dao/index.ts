@@ -84,6 +84,10 @@ import PreferenceRepository from '../../repositories/preferenceRepository';
 import PreferenceDAOService from './PreferenceDAOService';
 import ItemStockDAOService from './ItemStockDAOService';
 import ItemStockRepository from '../../repositories/ItemStockRepository';
+import ServiceReminderDAOService from './ServiceReminderDAOService';
+import ServiceReminderRepository from '../../repositories/ServiceReminder';
+import ReminderTypeRepository from '../../repositories/ReminderType';
+import ReminderTypeDAOService from './ReminderTypeDAOService';
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -168,13 +172,17 @@ const expenseTypeRepository = new ExpenseTypeRepository();
 const expenseCategoryRepository = new ExpenseCategoryRepository();
 const expenseRespository = new ExpenseRepository();
 const itemStockRepository = new ItemStockRepository();
+const serviceReminderRepository = new ServiceReminderRepository();
+const reminderTypeRepository = new ReminderTypeRepository();
 
 const beneficiaryDAOService = new BeneficiaryDAOService(beneficiaryRepository);
 const expenseTypeDAOService = new ExpenseTypeDAOService(expenseTypeRepository);
 const expenseCategoryDAOService = new ExpenseCategoryDAOService(expenseCategoryRepository);
 const expenseDAOService = new ExpenseDAOService(expenseRespository);
 const preferenceDAOService = new PreferenceDAOService(preferenceRepository);
-const itemStockDAOService = new ItemStockDAOService(itemStockRepository)
+const itemStockDAOService = new ItemStockDAOService(itemStockRepository);
+const serviceReminderDAOService = new ServiceReminderDAOService(serviceReminderRepository);
+const reminderTypeDAOService = new ReminderTypeDAOService(reminderTypeRepository);
 
 export default {
   customerDAOService,
@@ -218,5 +226,7 @@ export default {
   expenseTypeDAOService,
   expenseDAOService,
   preferenceDAOService,
-  itemStockDAOService
+  itemStockDAOService,
+  serviceReminderDAOService,
+  reminderTypeDAOService
 };

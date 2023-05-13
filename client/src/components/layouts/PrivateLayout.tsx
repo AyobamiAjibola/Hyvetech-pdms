@@ -49,6 +49,8 @@ import Workshops from '../../pages/workshops/Workshops';
 import WorkshopPage from '../../pages/workshops/WorkshopPage';
 import ItemsPage from '../../pages/item/ItemsPage';
 import ItemPage from '../../pages/item/ItemPage';
+import RemindersPage from '../../pages/serviceReminder/RemindersPage';
+import ReminderPage from '../../pages/serviceReminder/ReminderPage';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -157,6 +159,8 @@ function PrivateLayout() {
             <Route path="/workshop/:id" element={<WorkshopPage />} />
             <Route path="/items" element={<ItemsPage />} />
             <Route path="/items/:id" element={<ItemPage />} />
+            <Route path="/reminders" element={<RemindersPage />} />
+            <Route path="/reminder/:id" element={<ReminderPage />} />
 
             <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />

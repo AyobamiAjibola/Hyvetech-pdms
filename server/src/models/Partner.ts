@@ -31,6 +31,8 @@ import ExpenseType from './ExpenseType';
 import Role from './Role';
 import Preference from './Pereference';
 import ItemStock from './ItemStock';
+import ReminderType from './ReminderType';
+import ServiceReminder from './ServiceReminder';
 
 @Table({
   timestamps: true,
@@ -117,8 +119,14 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
   @HasMany(() => Expense)
   declare expenses: NonAttribute<Array<Expense>>;
 
+  @HasMany(() => ServiceReminder)
+  declare reminders: NonAttribute<Array<ServiceReminder>>;
+
   @HasMany(() => ExpenseType)
   declare expenseTypes: NonAttribute<Array<ExpenseType>>;
+
+  @HasMany(() => ReminderType)
+  declare reminderTypes: NonAttribute<Array<ReminderType>>;
 
   @HasOne(() => Preference)
   declare preference: NonAttribute<Preference>;
