@@ -195,7 +195,6 @@ export function formatDate (value: any) {
 export function nextServiceDate(lastDate: string, serviceIntervalUnit: string, serviceInterval: any ) {
   const serviceDate = new Date(lastDate);
 
-  let result: any;
   if (serviceIntervalUnit === 'month') {
     serviceDate.setMonth(serviceDate.getMonth() + parseInt(serviceInterval));
   } else if (serviceIntervalUnit === 'day') {
@@ -225,7 +224,7 @@ export function nextServiceDate(lastDate: string, serviceIntervalUnit: string, s
     }
   }
   // serviceDate.setDate(serviceDate.getDate() + 1);
-  result = serviceDate.toISOString().slice(0, 10);
+  const result: any = serviceDate.toISOString().slice(0, 10);
   return result;
 }
 

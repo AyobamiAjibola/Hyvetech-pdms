@@ -228,8 +228,8 @@ export default class ServiceReminderController {
           CustomAPIError.response(`Reminder Type does not exist`, HttpStatus.NOT_FOUND.code),
       );
 
-      const nextDate = Generic.nextServiceDate(value.lastServiceDate, value.serviceIntervalUnit, value.serviceInterval);
-      const reminder = Generic.reminderStatus(value.lastServiceDate, nextDate, value.serviceIntervalUnit, value.serviceInterval);
+      // const nextDate = Generic.nextServiceDate(value.lastServiceDate, value.serviceIntervalUnit, value.serviceInterval);
+      // const reminder = Generic.reminderStatus(value.lastServiceDate, nextDate, value.serviceIntervalUnit, value.serviceInterval);
 
       const data: Partial<ServiceReminder> = {
           reminderType: value.reminderType,
@@ -320,19 +320,35 @@ export default class ServiceReminderController {
     }
 
     private async doCreateReminderType(req: Request) {
-      const partner = req.user.partner;
+      const partnerId = req.user.partner.id;
       const { error, value } = Joi.object<reminderTypeSchemaType>($saveReminderTypeSchema).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
+      if (!value)
+        return Promise.reject(
+          CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
+      );
+
+      const partner = await dao.partnerDAOService.findById(partnerId);
+
+      if (!partner)
+        return Promise.reject(
+          CustomAPIError.response(`Partner with Id: ${value.id} does not exist`, HttpStatus.NOT_FOUND.code),
+      );
+
       const reminderType = await dao.reminderTypeDAOService.findByAny({
-        where: { name: value.name, partnerId: partner.id }
+        where: { name: value.name, partnerId: partnerId }
       });
 
       if (reminderType)
         return Promise.reject(CustomAPIError.response('Reminder type already exists.', HttpStatus.BAD_REQUEST.code));
 
-      const type = await dao.reminderTypeDAOService.create({ ...value, partnerId: partner.id });
+      const typeValue: Partial<ReminderType> = {
+        name: value.name,
+        partnerId: value.id
+      }
+      const type = await dao.reminderTypeDAOService.create(typeValue as CreationAttributes<ReminderType>);
 
       await partner.$add('reminderTypes', [type]);
       return type;
