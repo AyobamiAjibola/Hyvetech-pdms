@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import useAppSelector from './useAppSelector';
 import useAppDispatch from './useAppDispatch';
 import { CustomHookMessage } from '@app-types';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import settings from '../config/settings';
 import { CustomJwtPayload } from '@app-interfaces';
 import reminderModel, { IReminderTypeValues, IReminderValues } from '../components/forms/models/reminderModel';
@@ -12,7 +12,6 @@ import { IReminderType, IServiceReminder } from '@app-models';
 import { clearCreateReminderStatus, clearCreateReminderTypeStatus, clearUpdateReminderStatus, clearUpdateReminderTypeStatus } from '../store/reducers/serviceReminderReducer';
 import { createReminderAction, createReminderTypeAction, deleteReminderAction, getReminderAction, getReminderTypesAction, updateReminderAction, updateReminderTypeAction } from '../store/actions/serviceReminderActions';
 import { getCustomerAction } from '../store/actions/customerActions';
-import { reload } from '../utils/generic';
 
 export default function useReminder() {
     const [initialValues, setInitialValues] = useState<IReminderValues>(reminderModel.initialValues);
@@ -30,8 +29,6 @@ export default function useReminder() {
     const [reminderTypeInitialValues, setReminderTypeInitialValues] = useState<IReminderTypeValues>(reminderModel.initialValuesReminderType);
     const [reminderTypes, setReminderTypes] = useState<IReminderType[]>([]);
     const [reminderTypeId, setReminderTypeId] = useState<number>();
-
-    const navigate = useNavigate()
 
     const reminderReducer = useAppSelector(state => state.serviceReminderReducer);
     const dispatch = useAppDispatch();
@@ -67,8 +64,7 @@ export default function useReminder() {
         if (reminderReducer.createReminderTypeStatus === 'completed') {
             setSuccess({ message: reminderReducer.createReminderTypeSuccess });
             handleReset();
-            navigate('/reminders');
-            dispatch(getReminderAction())
+            dispatch(getReminderTypesAction())
         }
     }, [reminderReducer.createReminderTypeStatus, reminderReducer.createReminderTypeSuccess, handleReset]);
 
@@ -134,7 +130,7 @@ export default function useReminder() {
         if (reminderReducer.createReminderStatus === 'completed') {
             setSuccess({ message: reminderReducer.createReminderSuccess });
             handleReset();
-            reload()
+            setShowCreate(false)
             dispatch(getReminderAction())
         }
     }, [reminderReducer.createReminderStatus, reminderReducer.createReminderSuccess, handleReset]);
@@ -150,7 +146,7 @@ export default function useReminder() {
         if (reminderReducer.updateReminderStatus === 'completed') {
             setSuccess({ message: reminderReducer.updateReminderSuccess });
             handleReset();
-            reload()
+            setShowCreate(false)
             dispatch(getReminderAction());
         }
     }, [dispatch, reminderReducer.updateReminderStatus, reminderReducer.updateReminderSuccess, handleReset]);

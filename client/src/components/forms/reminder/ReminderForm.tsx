@@ -17,7 +17,7 @@ import {
 import { Form, Formik, useFormikContext } from "formik";
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { nextServiceDate, reload, reminderStatus } from "../../../utils/generic";
-import { ArrowBackIosNew, Edit, Save, Search, ToggleOff, ToggleOn } from "@mui/icons-material";
+import { Edit, Save, Search, ToggleOff, ToggleOn } from "@mui/icons-material";
 import { IDriversFilterData, IVINDecoderSchema } from '@app-interfaces';
 import useAppSelector from "../../../hooks/useAppSelector";
 import { getCustomerAction } from "../../../store/actions/customerActions";
@@ -286,25 +286,28 @@ function ReminderForm(props: IProps) {
 
     useEffect(() => {
       if(reminderReducer.createReminderTypeStatus === 'completed') {
-        setSuccessAlert({message: reminderReducer.createReminderTypeSuccess})
+        setSuccessAlert({message: reminderReducer.createReminderTypeSuccess});
+        setReminderType(false)
       }
-    }, [reminderReducer.createReminderTypeStatus])
+    }, [reminderReducer.createReminderTypeStatus]);
 
     useEffect(() => {
         if(reminderReducer.createReminderTypeStatus === 'failed') {
           setError({message: reminderReducer.createReminderTypeError})
         }
-      }, [reminderReducer.createReminderTypeStatus])
+      }, [reminderReducer.createReminderTypeStatus]);
+
+    useEffect(() => {
+      if(reminderReducer.createReminderStatus === 'completed' || reminderReducer.updateReminderStatus) {
+        resetForm()
+      }
+    }, [reminderReducer.createReminderStatus]);
 
     return (
       <React.Fragment>
         <Form autoComplete="off" autoCorrect="off">
           <Grid container spacing={{ xs: 2, md: 3 }} columns={{xs: 4, sm: 8, md: 12}} sx={{p: 1}}>
             <Grid item xs={12}>
-                <ArrowBackIosNew
-                  onClick={() => window.history.back()}
-                  style={{ position: 'absolute', cursor: 'pointer' }}
-                />
                <Typography gutterBottom component="h6" ml={4}>
                   Service Reminder
                </Typography>
@@ -540,7 +543,7 @@ function ReminderForm(props: IProps) {
                     )}
                   </Select>
                 </FormControl>
-                <Typography
+                <Typography mb={-3}
                   onClick={() => setReminderType(true)}
                   color={'skyblue'}
                   sx={{

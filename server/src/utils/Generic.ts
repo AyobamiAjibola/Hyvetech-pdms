@@ -543,8 +543,7 @@ export default class Generic {
         return `Due in [${diffWeeks}] week(s)`;
       } else {
         const diffDays = Math.round(milliseconds / (24 * 60 * 60 * 1000));
-        console.log(milliseconds / (24 * 60 * 60 * 1000), 'actual day')
-        console.log(diffDays, 'checking number of days left')
+
         if(diffDays >= 1){
           return `Due in [${diffDays}] day(s)`;
         } else if(diffDays < 1){

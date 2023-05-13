@@ -1,4 +1,3 @@
-import { ArrowBackIosNew } from '@mui/icons-material';
 import { Box, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -7,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import reminderModel from '../../components/forms/models/reminderModel';
 import moment from 'moment';
 import capitalize from 'capitalize';
+import { ArrowBackIosNew } from '@mui/icons-material';
 // import { CustomHookMessage } from '@app-types';
 
 interface ILocationState {
@@ -32,8 +32,8 @@ function ReminderPage () {
     console.log(reminder, 'reminder')
     const handleShare = async () => {
         const message = `Hello [${reminder?.customer?.title ? capitalize.words(reminder?.customer?.title) : ''} ${reminder?.customer?.firstName && capitalize.words(reminder?.customer?.firstName)} ${reminder?.customer?.lastName && capitalize.words(reminder?.customer?.lastName)}],
-        [${reminder && capitalize.words(reminder?.reminderType)}] for your.
-        [${reminder && capitalize.words(reminder?.vehicle?.modelYear)} ${reminder && capitalize.words(reminder?.vehicle?.model)} ${reminder && capitalize.words(reminder?.vehicle?.make)}] is due on [${moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}].
+        [${reminder && capitalize.words(reminder?.reminderType)}] for your. [${reminder && capitalize.words(reminder?.vehicle?.modelYear)} ${reminder && capitalize.words(reminder?.vehicle?.model)} ${reminder && capitalize.words(reminder?.vehicle?.make)}]
+        is due on [${moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}].
         Should I send you an estimate and schedule you in?`
         try {
 
@@ -64,7 +64,7 @@ function ReminderPage () {
           }, 3000)
         }
         if(value === "Delete Reminder") {
-            handleDelete()
+          handleDelete()
         }
     };
 
@@ -82,13 +82,13 @@ function ReminderPage () {
                 alignItems: 'left', flexDirection: 'column'
                 }}
             >
-                <ArrowBackIosNew
+              <ArrowBackIosNew
                 onClick={() => window.history.back()}
                 style={{ position: 'absolute', cursor: 'pointer' }}
-                />
-                <Typography variant="h5" ml={6}>
-                  Reminder Summary
-                </Typography>
+              />
+              <Typography variant="h5" ml={6}>
+                Reminder Summary
+              </Typography>
             </Grid>
             <Grid item xs={6}/>
           </Grid>
@@ -135,13 +135,13 @@ function ReminderPage () {
             <Grid
               sx={{
                 display: 'flex',
-                flexDirection: "column"
-               }} item xs={12} mb={3}
+                flexDirection: "row", gap: 4,
+               }} item xs={12}
             >
-              <Grid item md={6} xs={12} mb={4}
+              <Grid item md={4} xs={12} mb={4}
                 justifyContent='left' alignItems='left' flexDirection='column'
               >
-                <Typography gutterBottom sx={{fontSize: {xs: '14px', sm: '16px'}, fontWeight: 600}}>
+                <Typography gutterBottom sx={{fontSize: {xs: '18px', sm: '20px'}, fontWeight: 600}}>
                   Customer Detail
                 </Typography>
                 <Stack>
@@ -157,9 +157,9 @@ function ReminderPage () {
                 </Stack>
               </Grid>
 
-              <Grid item md={6} xs={12}>
-                <Typography gutterBottom sx={{fontSize: {xs: '14px', sm: '16px'}, fontWeight: 600}}>
-                    Vehicle
+              <Grid item md={4} xs={12}>
+                <Typography gutterBottom sx={{fontSize: {xs: '18px', sm: '20px'}, fontWeight: 600}}>
+                  Vehicle
                 </Typography>
                 <Stack>
                     <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
@@ -173,6 +173,8 @@ function ReminderPage () {
                     </Typography>
                 </Stack>
               </Grid>
+
+              <Grid md={4}/>
             </Grid>
 
             <Grid item xs={12}>
@@ -187,16 +189,19 @@ function ReminderPage () {
                 mt={4}
             >
                 <Grid item xs={4}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        name={fields.reminderType.name}
-                        label={fields.reminderType.label}
-                        value={reminder?.reminderType}
-                        InputProps={{
-                          readOnly: true
-                        }}
-                    />
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    name={fields.reminderType.name}
+                    label={fields.reminderType.label}
+                    value={reminder?.reminderType}
+                    InputProps={{
+                      readOnly: true
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={4}>
                   <TextField
@@ -206,7 +211,10 @@ function ReminderPage () {
                     label={fields.lastServiceDate.label}
                     value={moment(reminder?.lastServiceDate).format('ddd - Do - MMM - YYYY')}
                     InputProps={{
-                        readOnly: true
+                      readOnly: true
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
                     }}
                   />
                 </Grid>
@@ -219,6 +227,9 @@ function ReminderPage () {
                     value={reminder?.serviceInterval}
                     InputProps={{
                         readOnly: true
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
                     }}
                     />
                 </Grid>
@@ -242,6 +253,9 @@ function ReminderPage () {
                     InputProps={{
                       readOnly: true
                     }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                 />
                 </Grid>
                 <Grid item xs={4}>
@@ -254,6 +268,9 @@ function ReminderPage () {
                     InputProps={{
                         readOnly: true
                     }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={4}>
@@ -264,7 +281,10 @@ function ReminderPage () {
                     label={fields.reminderStatus.label}
                     value={reminder?.reminderStatus}
                     InputProps={{
-                        readOnly: true
+                      readOnly: true
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
                     }}
                   />
                 </Grid>
@@ -288,6 +308,9 @@ function ReminderPage () {
                   InputProps={{
                     readOnly: true
                   }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -300,7 +323,10 @@ function ReminderPage () {
                 InputProps={{
                   readOnly: true
                 }}
-                />
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
               </Grid>
               <Grid item xs={4}>
                 <TextField
@@ -311,6 +337,9 @@ function ReminderPage () {
                 value={reminder?.note}
                 InputProps={{
                   readOnly: true
+                }}
+                InputLabelProps={{
+                  shrink: true,
                 }}
                 />
               </Grid>
