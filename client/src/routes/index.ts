@@ -17,7 +17,8 @@ import {
   TaxiAlert,
   TimeToLeave,
   HomeRepairService,
-  PostAdd
+  PostAdd,
+  DateRange
 } from '@mui/icons-material';
 import React from 'react';
 
@@ -49,6 +50,12 @@ export const sideNavs: ISideNav[] = [
     name: 'Items & Inventory',
     path: '/items',
     Icon: PostAdd,
+  },
+  {
+    tag: 'techs',
+    name: 'Service Reminders',
+    path: '/reminders',
+    Icon: DateRange,
   },
   // {
   //   tag: 'super',

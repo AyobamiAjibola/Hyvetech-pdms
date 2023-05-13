@@ -12,6 +12,7 @@ declare module '@app-interfaces' {
     IPermission,
     IRideShareDriver,
     IRideShareDriverSubscription,
+    IServiceReminder,
     ITechnician,
     IVehicle,
   } from '@app-models';
@@ -220,6 +221,15 @@ declare module '@app-interfaces' {
   interface ItemPageContextProps {
     items: IItem[];
     setItems: React.Dispatch<React.SetStateAction<IItem[]>>;
+    showCreate: boolean;
+    setShowCreate: React.Dispatch<React.SetStateAction<boolean>>;
+    showEdit: boolean;
+    setShowEdit: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+
+  interface ReminderPageContextProps {
+    reminders: IServiceReminder[];
+    setReminders: React.Dispatch<React.SetStateAction<IServiceReminder[]>>;
     showCreate: boolean;
     setShowCreate: React.Dispatch<React.SetStateAction<boolean>>;
     showEdit: boolean;

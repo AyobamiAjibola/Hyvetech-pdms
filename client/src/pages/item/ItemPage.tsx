@@ -121,7 +121,7 @@ function ItemPage() {
                     shrink: true,
                     }}
                     InputProps={{
-                    readOnly: true
+                      readOnly: true
                     }}
                   />
                 </Box>

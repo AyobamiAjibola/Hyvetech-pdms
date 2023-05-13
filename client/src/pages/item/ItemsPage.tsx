@@ -5,7 +5,6 @@ import { Button, Chip, DialogActions, DialogContentText, Grid, Typography } from
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
-// import moment from 'moment';
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { Cancel, Edit, ToggleOff, ToggleOn } from '@mui/icons-material';
 import { Formik } from 'formik';
@@ -29,7 +28,6 @@ function ItemsPage() {
   const itemReducer = useAppSelector(state => state.itemStockReducer);
   const dispatch = useAppDispatch();
   const [_item, _setItem] = useState<any>([]);
-  // const [editMode, setEditMode] = useState(false);
   const [success, setSuccess] = useState<CustomHookMessage>();
   const [error, setError] = useState<CustomHookMessage>()
   const navigate = useNavigate()

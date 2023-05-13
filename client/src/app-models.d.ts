@@ -676,6 +676,31 @@ declare module '@app-models' {
     sentStatus?: string;
   }
 
+  interface IServiceReminder {
+    id: number;
+    reminderType: string;
+    email: string;
+    vin: string;
+    lastServiceDate: any;
+    serviceInterval: number;
+    serviceIntervalUnit: string;
+    note: string;
+    recurring: string;
+    status: boolean;
+    customer: ICustomer;
+    vehicle: IVehicle;
+    customerId?: any;
+    partnerId?: any;
+    nextServiceDate: string;
+    reminderStatus: string;
+    serviceStatus: string;
+  }
+
+  interface IReminderType {
+    id: number;
+    name: string;
+  }
+
   interface IPayStackBank {
     id: number;
     name: string;

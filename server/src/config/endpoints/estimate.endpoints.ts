@@ -2,7 +2,6 @@ import {
   createEstimateHandler,
   deleteEstimateHandler,
   getEstimatesHandler,
-  getFilePath,
   saveEstimateHandler,
   sendDraftEstimateHandler,
   updateEstimateHandler,
@@ -47,13 +46,7 @@ const estimateEndpoints: RouteEndpoints = [
     method: 'delete',
     path: `${estimatesPath}/:estimateId`,
     handler: deleteEstimateHandler,
-  },
-  {
-    name: 'get path',
-    method: 'get',
-    path: `/estimate/:estimateId`,
-    handler: getFilePath,
-  },
+  }
 ];
 
 export default estimateEndpoints;

@@ -23,10 +23,12 @@ import Estimate from '../components/partner/garage/Estimate';
 import ProfileNew from '../components/customer/Profile';
 import UserRoleManagement from '../components/partner/garage/UserRoleManagement';
 import Preferences from '../components/partner/garage/Preferences';
+import CustomerServiceReminder from '../pages/customer/CustomerServiceReminder';
 
 export const customerDetailTabsTechOnly: ITab[] = [
   { name: 'Profile', Element: ProfileNew },
   { name: 'Vehicles', Element: CustomerVehicles },
+  {name: 'Service Reminder', Element: CustomerServiceReminder}
 ];
 
 export const customerDetailTabs: ITab[] = [

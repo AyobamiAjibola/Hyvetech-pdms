@@ -236,8 +236,7 @@ export default class ExpenseController {
 
   private async doUpdateExpenseDetails(req: Request) {
     const { error, value } = Joi.object<Expense>($updateSummaryExpenseSchema).validate(req.body);
-    // const value = req.body;
-    console.log(value);
+
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
     const category = await dao.expenseCategoryDAOService.findById(value.expenseCategoryId);
