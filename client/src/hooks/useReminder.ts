@@ -12,6 +12,7 @@ import { IReminderType, IServiceReminder } from '@app-models';
 import { clearCreateReminderStatus, clearCreateReminderTypeStatus, clearUpdateReminderStatus, clearUpdateReminderTypeStatus } from '../store/reducers/serviceReminderReducer';
 import { createReminderAction, createReminderTypeAction, deleteReminderAction, getReminderAction, getReminderTypesAction, updateReminderAction, updateReminderTypeAction } from '../store/actions/serviceReminderActions';
 import { getCustomerAction } from '../store/actions/customerActions';
+import { reload } from '../utils/generic';
 
 export default function useReminder() {
     const [initialValues, setInitialValues] = useState<IReminderValues>(reminderModel.initialValues);
@@ -133,7 +134,7 @@ export default function useReminder() {
         if (reminderReducer.createReminderStatus === 'completed') {
             setSuccess({ message: reminderReducer.createReminderSuccess });
             handleReset();
-            navigate('/reminders');
+            reload()
             dispatch(getReminderAction())
         }
     }, [reminderReducer.createReminderStatus, reminderReducer.createReminderSuccess, handleReset]);
@@ -149,7 +150,7 @@ export default function useReminder() {
         if (reminderReducer.updateReminderStatus === 'completed') {
             setSuccess({ message: reminderReducer.updateReminderSuccess });
             handleReset();
-            navigate('/reminders');
+            reload()
             dispatch(getReminderAction());
         }
     }, [dispatch, reminderReducer.updateReminderStatus, reminderReducer.updateReminderSuccess, handleReset]);
