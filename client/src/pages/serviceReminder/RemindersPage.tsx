@@ -4,7 +4,7 @@ import useReminder from "../../hooks/useReminder";
 import ReminderPageContext from '../../context/ReminderPageContext';
 import useAppSelector from '../../hooks/useAppSelector';
 import useAppDispatch from '../../hooks/useAppDispatch';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CustomHookMessage } from '@app-types';
 import { getReminderAction, toggleReminderStatusAction } from '../../store/actions/serviceReminderActions';
 import moment from 'moment';
@@ -12,7 +12,7 @@ import { Button, Chip, DialogActions, DialogContentText, Grid, Typography } from
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { IServiceReminder } from '@app-models';
 import { Cancel, Edit, ToggleOff, ToggleOn } from '@mui/icons-material';
-import { clearCreateReminderStatus, clearGetRemindersStatus, clearToggleReminderStatus, clearUpdateReminderStatus } from '../../store/reducers/serviceReminderReducer';
+import { clearCreateReminderStatus, clearDeleteReminderStatus, clearGetRemindersStatus, clearToggleReminderStatus, clearUpdateReminderStatus } from '../../store/reducers/serviceReminderReducer';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import AppAlert from '../../components/alerts/AppAlert';
 import AppModal from '../../components/modal/AppModal';
@@ -29,7 +29,8 @@ function RemindersPage() {
     const dispatch = useAppDispatch();
     const [_reminder, _setReminder] = useState<any>([]);
     const [success, setSuccess] = useState<CustomHookMessage>();
-    const [error, setError] = useState<CustomHookMessage>()
+    const [error, setError] = useState<CustomHookMessage>();
+    const [removeSessionStorage, setRemoveSessionStorage] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const reminder = useReminder();
@@ -84,7 +85,7 @@ function RemindersPage() {
             width: 200,
             renderCell: (params: any) => {
                 return (
-                    <span>{params.row.vehicle.model}</span>
+                    <span>{params.row.vehicle.modelYear} {params.row.vehicle.make} {params.row.vehicle.model}</span>
                 )
             }
           },
@@ -109,7 +110,19 @@ function RemindersPage() {
             headerAlign: 'center',
             align: 'center',
             type: 'string',
-            width: 150
+            width: 150,
+            renderCell: (params: any) => {
+              return (
+                <>
+                  {params.row.reminderStatus.split(" ")[0] === 'Overdue' || params.row.reminderStatus === 'Due today'
+                    ? <span style={{color: 'red'}}>{params.row.reminderStatus}</span>
+                    : params.row.reminderStatus === 'Not Available'
+                      ? <span>{params.row.reminderStatus}</span>
+                      : <span style={{color: 'green'}}>{params.row.reminderStatus}</span>
+                  }
+                </>
+              )
+            }
           },
           {
             field: 'active',
@@ -174,6 +187,7 @@ function RemindersPage() {
           dispatch(clearUpdateReminderStatus());
           dispatch(clearGetRemindersStatus());
           dispatch(clearToggleReminderStatus());
+          dispatch(clearDeleteReminderStatus());
         };
       }, [dispatch]);
 
@@ -188,7 +202,46 @@ function RemindersPage() {
         if(reminderReducer.toggleReminderStatus === 'failed') {
           setError({message: reminderReducer.toggleReminderError})
         }
-      }, [reminderReducer.toggleReminderStatus])
+      }, [reminderReducer.toggleReminderStatus]);
+
+      useEffect(() => {
+        if (reminderReducer.deleteReminderStatus === 'completed') {
+          setSuccess({ message: reminderReducer.deleteReminderSuccess });
+        }
+    }, [dispatch, reminderReducer.deleteReminderStatus, reminderReducer.deleteReminderSuccess]);
+
+    const data: any = {
+      open_modal: undefined,
+      // id: undefined
+    }
+
+    useEffect(() => {
+      if(removeSessionStorage){
+        Object.keys(data).forEach(key => {
+          sessionStorage.removeItem(key);
+        });
+      }
+    }, [removeSessionStorage])
+
+    useEffect(() => {
+      if(sessionStorage.getItem('open_modal') === 'true'){
+        reminder.setShowCreate(true)
+      }
+    },[]);
+
+    // remove open modal and id from session storage on page reload
+    useEffect(() => {
+      const handleBeforeUnload = () => {
+        sessionStorage.removeItem('open_modal');
+        sessionStorage.removeItem('id');
+      };
+
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }, []);
 
     return (
         <ReminderPageContext.Provider
@@ -215,11 +268,6 @@ function RemindersPage() {
                 >
                     New Reminder
                 </Button>
-                <Link to="/expense/create">
-                  <Button variant="outlined" color="success" size="small">
-                    Generate Estimate
-                  </Button>
-                </Link>
             </Grid>
           </Grid>
           <Grid container>
@@ -273,7 +321,7 @@ function RemindersPage() {
                     />
                   </Formik>
                 }
-                onClose={() => {reminder.setShowCreate(false)}}
+                onClose={() => {reminder.setShowCreate(false), setRemoveSessionStorage(true)}}
             />
           )}
           {reminder.showEdit && (
@@ -300,7 +348,7 @@ function RemindersPage() {
                     />
                   </Formik>
               }
-              onClose={() => {reminder.setShowEdit(false)}}
+              onClose={() => {reminder.setShowEdit(false), setRemoveSessionStorage(true)}}
             />
           )}
           <AppModal

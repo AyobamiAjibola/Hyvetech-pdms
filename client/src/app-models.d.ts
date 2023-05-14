@@ -472,6 +472,7 @@ declare module '@app-models' {
     updatedAt: Date;
     creditRating?: string;
     partnerId?: number;
+    reminders: IServiceReminder[]
   }
 
   interface ISchedule {

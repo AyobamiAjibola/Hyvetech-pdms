@@ -355,6 +355,11 @@ function InvoicePage() {
 
   //share pdf logic --- end
 
+  const data: any = {
+    open_modal: 'true',
+    // id: reminder?.id
+  }
+  console.log(invoice, 'checking invoice')
   const handleChange = (event: any) => {
     const value = event.target.value as string;
     setSelectedValue(value);
@@ -372,6 +377,13 @@ function InvoicePage() {
     }
     if (value === "Share PDF") {
       handleSharePdf()
+    }
+    if(value === 'Reminder') {
+      navigate('/reminders');
+        Object.entries(data).forEach(([key, value]) => {
+          //@ts-ignore
+          sessionStorage.setItem(key, value);
+      });
     }
   };
 
@@ -433,32 +445,9 @@ function InvoicePage() {
               >
                 {_downloading ? 'Sharing...' : 'Share PDF'}
               </MenuItem>
+              <MenuItem value={'Reminder'}>{'Add Service Reminder'}</MenuItem>
             </Select>
           </FormControl>
-
-          {/* {invoice.grandTotal !== invoice.paidAmount && (
-            <Button
-              style={{ marginRight: 20 }}
-              variant="outlined"
-              color="success"
-              size="small"
-              onClick={() => setShowRecordPayment(true)}>
-              {'Record Payment'}
-            </Button>
-          )}
-          <Button
-            variant="outlined"
-            color="success"
-            size="small" sx={{ mr: 2 }} onClick={() => generateExpense()}
-          >
-            Record Expense
-          </Button>
-          <Button
-            variant="outlined"
-            color="success" size="small" onClick={() => generateDownload()}
-          >
-            {downloading ? 'Downloading...' : 'Download Pdf'}
-          </Button> */}
         </div>
 
         <Grid container my={3}

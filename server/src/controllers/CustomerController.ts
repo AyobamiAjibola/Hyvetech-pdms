@@ -72,7 +72,6 @@ export default class CustomerController {
       });
     } else {
       // user created by workshop
-      console.log('called in here> ', req.user.partner.id);
       customers = await dataSources.customerDAOService.findAll({
         attributes: { exclude: ['password', 'rawPassword', 'loginToken'] },
         where: {
