@@ -20,7 +20,7 @@ function VehicleInformationFields(props: IProps) {
 
   return (
     <React.Fragment>
-      <Grid item mb={2}
+      <Grid item mb={2} mt={2}
         sx={{
             gap: 2, display: 'flex',
             flexDirection: {md: 'row', xs: 'column'}, justifyContent: 'center',
@@ -70,7 +70,7 @@ function VehicleInformationFields(props: IProps) {
               value={props.values.modelYear}
               name={fields.modelYear.name}
             />
-          </Grid> 
+          </Grid>
         </Grid>
         <Grid item sm={4} xs={12} container>
           <Grid item xs={12}>

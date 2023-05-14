@@ -253,25 +253,25 @@ function ReminderForm(props: IProps) {
     useEffect(() => {
       if(values.serviceIntervalUnit && values.serviceInterval){
         const next = nextServiceDate(values.lastServiceDate, values.serviceIntervalUnit, values.serviceInterval)
-        console.log(next, 'next next')
+
         _setNextServiceDate(next)
         setFieldValue('nextServiceDate', next)
       }
     }, [values.serviceIntervalUnit])
 
     useEffect(() => {
-      if(_nextServiceDate){
+      if(_nextServiceDate && values.lastServiceDate && values.serviceIntervalUnit){
         const status: any = reminderStatus(values.lastServiceDate, _nextServiceDate, values.serviceIntervalUnit, values.serviceInterval)
         _setReminderStatus(status)
         setFieldValue('reminderStatus', status)
       }
-    }, [_nextServiceDate, values.lastServiceDate])
+    }, [_nextServiceDate, values.lastServiceDate, values.serviceIntervalUnit])
 
     useEffect(() => {
       if(values.serviceStatus === 'done'){
         setFieldValue('lastServiceDate', new Date())
       }
-    }, [values.serviceStatus])
+    }, [values.serviceStatus]);
 
     useEffect(() => {
       setFieldValue('lastServiceDate', new Date(values.lastServiceDate));
