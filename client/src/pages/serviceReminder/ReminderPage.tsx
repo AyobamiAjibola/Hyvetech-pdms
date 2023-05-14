@@ -104,6 +104,9 @@ function ReminderPage () {
         }
         if(value === "Delete Reminder") {
           confirm_delete()
+          setTimeout(() => {
+            setSelectedValue('')
+          }, 3000)
         }
 
         if(value === "Generate Estimate") {

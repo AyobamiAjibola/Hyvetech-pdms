@@ -258,6 +258,8 @@ export function reminderStatus(startDate: string, endDate: any, serviceIntervalU
   const futureDateLimit = new Date() === new Date(start) ? new Date() : new Date(start);
   const interval = serviceInterval;
 
+  console.log(futureDateLimit, 'future')
+
   if (serviceIntervalUnit === 'month') {
     futureDateLimit.setMonth(futureDateLimit.getMonth() + interval);
   } else if (serviceIntervalUnit === 'week') {

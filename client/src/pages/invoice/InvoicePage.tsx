@@ -357,7 +357,7 @@ function InvoicePage() {
 
   const data: any = {
     open_modal: 'true',
-    // id: reminder?.id
+    id: invoice?.id
   }
   console.log(invoice, 'checking invoice')
   const handleChange = (event: any) => {

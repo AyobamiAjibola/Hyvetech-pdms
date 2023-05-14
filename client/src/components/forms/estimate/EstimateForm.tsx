@@ -465,11 +465,11 @@ function EstimateForm(props: IProps) {
         setFieldValue(fields.address.name, _customer.contacts[0]?.address || ' .');
         setFieldValue(fields.addressType.name, 'Home');
 
-        setFieldValue('vin', __customer && __customer.vehicle.vin);
-        setFieldValue('make', __customer && __customer.vehicle.make);
-        setFieldValue('model', __customer && __customer.vehicle.model);
-        setFieldValue('modelYear', __customer && __customer.vehicle.modelYear);
-        setFieldValue('plateNumber', __customer && __customer.vehicle.plateNumber);
+        // setFieldValue('vin', __customer !== undefind && __customer.vehicle.vin);
+        // setFieldValue('make', __customer && __customer.vehicle.make);
+        // setFieldValue('model', __customer && __customer.vehicle.model);
+        // setFieldValue('modelYear', __customer && __customer.vehicle.modelYear);
+        // setFieldValue('plateNumber', __customer && __customer.vehicle.plateNumber);
 
         setactiveId(_customer.id);
         const vinList = __customer
@@ -491,6 +491,15 @@ function EstimateForm(props: IProps) {
           address: _customer.contacts[0]?.address || 'Abuja (FCT)',
         });
       }
+
+      if(__customer != undefined){
+        setFieldValue('vin', __customer.vehicle.vin);
+        setFieldValue('make', __customer.vehicle.make);
+        setFieldValue('model', __customer.vehicle.model);
+        setFieldValue('modelYear', __customer.vehicle.modelYear);
+        setFieldValue('plateNumber', __customer.vehicle.plateNumber);
+      }
+
     }
 
   }, [value, customerReducer.getCustomerStatus, reminderReducer.getRemindersStatus]);
@@ -500,7 +509,6 @@ function EstimateForm(props: IProps) {
   }, []);
 
   useEffect(() => {
-
     if(reminderReducer.getRemindersStatus === 'completed') {
       const condition = (obj: any) => obj.vehicle.vin === values.vin && obj.partnerId === admin.user?.partner?.id;
       setVehicleReminder(reminderReducer.reminders.filter(condition));
@@ -972,12 +980,13 @@ function EstimateForm(props: IProps) {
               <Divider orientation="horizontal" />
 
               <Tooltip title="Vehicle Service Reminder" placement="top"
-                sx={{mb: 2}}
+                sx={{mb: 8}}
               >
                 <IconButton
                   sx={{color: '#181818'}}
                   onClick={() => setOpenReminderModal(true)}
-                  disabled={vehicleReducer.getVehicleVINStatus !== 'completed'}
+                  // disabled={vehicleReducer.getVehicleVINStatus !== 'completed'}
+                  disabled={!values.vin}
                 >
                   <CalendarMonth />
                 </IconButton>
