@@ -1,6 +1,5 @@
 import {
     Autocomplete,
-    Box,
     Button,
     CircularProgress,
     Divider,
@@ -17,7 +16,7 @@ import {
 import { Form, Formik, useFormikContext } from "formik";
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { nextServiceDate, reload, reminderStatus } from "../../../utils/generic";
-import { Edit, Save, Search, ToggleOff, ToggleOn } from "@mui/icons-material";
+import { Edit, Save, Search } from "@mui/icons-material";
 import { IDriversFilterData, IVINDecoderSchema } from '@app-interfaces';
 import useAppSelector from "../../../hooks/useAppSelector";
 import { getCustomerAction } from "../../../store/actions/customerActions";
@@ -25,7 +24,7 @@ import reminderModel, {IReminderValues} from "../models/reminderModel";
 import useAppDispatch from "../../../hooks/useAppDispatch";
 import { getVehicleVINAction } from "../../../store/actions/vehicleActions";
 import { clearGetVehicleVINStatus } from "../../../store/reducers/vehicleReducer";
-import { getOwnersFilterDataAction, getPartnerAction, getPartnerFilterDataAction } from "../../../store/actions/partnerActions";
+import { getPartnerAction, getPartnerFilterDataAction } from "../../../store/actions/partnerActions";
 import { useNavigate, useParams } from "react-router-dom";
 import useAdmin from "../../../hooks/useAdmin";
 import { CustomHookMessage } from "@app-types";
@@ -69,7 +68,6 @@ function ReminderForm(props: IProps) {
     const [options, setOptions] = useState<IDriversFilterData[]>([]);
     const [showDrop, setShowDrop] = useState<boolean>(false);
     const [vinOptions, setVinOptions] = useState<any>([]);
-    const [fetch, setFetch] = useState<boolean>(false);
     const [rawOption, setRawOption] = useState<any>([]);
     const [noOptionsText, setNoOptionsText] = useState<any>('Click Enter to Initialize Search');
     const [timer, setTimer] = useState<NodeJS.Timer>();
@@ -79,7 +77,7 @@ function ReminderForm(props: IProps) {
     const [reminderType, setReminderType] = useState<boolean>(false);
     const [_reminderType, _setReminderType] = useState<string>('');
     const [successAlert, setSuccessAlert] = useState<CustomHookMessage>();
-
+    
     const vehicleReducer = useAppSelector(state => state.vehicleReducer);
     const reminderReducer = useAppSelector(state => state.serviceReminderReducer);
 
@@ -121,7 +119,6 @@ function ReminderForm(props: IProps) {
 
       useEffect(() => {
         if (partnerId) {
-          dispatch(getOwnersFilterDataAction(+partnerId));
           dispatch(getPartnerFilterDataAction(+partnerId));
           dispatch(getPartnerAction(partnerId));
         }
@@ -172,10 +169,6 @@ function ReminderForm(props: IProps) {
         }
     }
 
-    const toggleFetch = () => {
-        setFetch(!fetch);
-    };
-
     useEffect(() => {
         // @ts-ignore
         if (customerReducer.getCustomerStatus === 'completed') {
@@ -209,10 +202,10 @@ function ReminderForm(props: IProps) {
     }, [resetForm, showCreate, showEdit]);
 
     useEffect(() => {
-        if (partnerReducer.getOwnersFilterDataStatus === 'completed' || partnerReducer.getPartnerFilterDataStatus === 'completed') {
-          setRawOption(!fetch ? partnerReducer.partnerFilterData : partnerReducer.ownersFilterData);
+        if (partnerReducer.getPartnerFilterDataStatus === 'completed') {
+          setRawOption(partnerReducer.partnerFilterData);
         }
-    }, [partnerReducer.ownersFilterData, partnerReducer.getOwnersFilterDataStatus, fetch]);
+    }, [partnerReducer.getPartnerFilterDataStatus]);
 
       useEffect(() => {
         if (vehicleReducer.getVehicleVINStatus === 'completed') {
@@ -309,7 +302,7 @@ function ReminderForm(props: IProps) {
           <Grid container spacing={{ xs: 2, md: 3 }} columns={{xs: 4, sm: 8, md: 12}} sx={{p: 1}}>
             <Grid item xs={12}>
                <Typography gutterBottom component="h6" ml={4}>
-                  Service Reminder
+                  New Service Reminder
                </Typography>
                <Divider orientation="horizontal" />
             </Grid>
@@ -362,7 +355,7 @@ function ReminderForm(props: IProps) {
                             ...props.InputProps,
                             endAdornment: (
                             <React.Fragment>
-                                {partnerReducer.getOwnersFilterDataStatus === 'loading' || partnerReducer.getPartnerFilterDataStatus === 'loading'
+                                {partnerReducer.getPartnerFilterDataStatus === 'loading'
                                 ? ( <CircularProgress color="inherit" size={20} /> )
                                 : <Button
                                     sx={{
@@ -386,18 +379,7 @@ function ReminderForm(props: IProps) {
                   />
                 </Grid>
 
-                <Grid ml={2} sx={{display: 'flex', alignItems: {xs: 'left', md: 'none', cursor: 'pointer'}}}>
-                    <Box onClick={toggleFetch}>
-                        {fetch
-                            ? <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#FBA91A'}}>
-                                <ToggleOn color="inherit" fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic', color: '#797979'}}>AutoHyve Users</span>
-                            </Box>
-                            : <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#797979'}}>
-                                <ToggleOff color='inherit' fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic'}}>Customers</span>
-                            </Box>
-                        }
-                    </Box>
-                </Grid>
+                {/* <Grid /> */}
               </Grid>
             </Grid>
 
@@ -438,41 +420,41 @@ function ReminderForm(props: IProps) {
             </Typography>
 
             <Grid item xs={12} mt={4}
-                sx={{
-                    gap: 2, display: 'flex',
-                    flexDirection: 'row', justifyContent: 'center',
-                    alignItems: 'center'
-                }}
+              sx={{
+                gap: 2, display: 'flex',
+                flexDirection: {md: 'row', xs: 'column'}
+              }}
             >
-              <Grid item xs={3}>
+              <Grid item md={3} xs={6}>
                 <Autocomplete
-                    options={vinOptions || []}
-                    // @ts-ignore
-                    onChange={(_, newValue) => {
-                        handleChangeVIN({ target: { value: newValue } })
-                    }}
-                    value={values.vin}
-                    // disabled={props.disabled}
-                    renderInput={params =>
-                        <TextField
-                        {...params}
-                        label={fields.vin.label}
-                        name={fields.vin.name}
-                        onChange={(e) => {
-                            handleChangeVIN(e)
-                        }}
-                        InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                            <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
-                                {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
-                            </InputAdornment>
-                            )
-                        }}
-                        />}
+                  options={vinOptions || []}
+                  // @ts-ignore
+                  onChange={(_, newValue) => {
+                      handleChangeVIN({ target: { value: newValue } })
+                  }}
+                  value={values.vin}
+                  fullWidth
+                  // disabled={props.disabled}
+                  renderInput={params =>
+                    <TextField
+                      {...params}
+                      label={fields.vin.label}
+                      name={fields.vin.name}
+                      onChange={(e) => {
+                          handleChangeVIN(e)
+                      }}
+                      InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                          <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                              {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
+                          </InputAdornment>
+                          )
+                      }}
+                    />}
                 />
               </Grid>
-              <Grid item xs={3}>
+              <Grid item md={3} xs={6}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -484,7 +466,7 @@ function ReminderForm(props: IProps) {
                   }}
                 />
               </Grid>
-              <Grid item xs={3}>
+              <Grid item md={3} xs={6}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -496,7 +478,7 @@ function ReminderForm(props: IProps) {
                   }}
                 />
               </Grid>
-              <Grid item xs={3}>
+              <Grid item md={3} xs={6}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -517,12 +499,11 @@ function ReminderForm(props: IProps) {
             <Grid item xs={12}
               sx={{
                   gap: 2, display: 'flex',
-                  flexDirection: 'row', justifyContent: 'center',
-                  alignItems: 'center'
+                  flexDirection: {md: 'row', xs: 'column'}
               }}
               mt={4}
             >
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
                 <FormControl fullWidth>
                   <InputLabel>{fields.reminderType.label}</InputLabel>
                   <Select
@@ -543,11 +524,11 @@ function ReminderForm(props: IProps) {
                     )}
                   </Select>
                 </FormControl>
-                <Typography mb={-3}
+                <Typography
                   onClick={() => setReminderType(true)}
                   color={'skyblue'}
                   sx={{
-                      display: 'flex',
+                      display: 'flex', mb: {md: -3, xs: 1},
                       alignItems: 'center',
                       cursor: 'pointer', fontSize: 14, mt: 1
                   }}>
@@ -555,7 +536,45 @@ function ReminderForm(props: IProps) {
                   Reminder Type
                 </Typography>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  variant="outlined"
+                  name={fields.serviceInterval.name}
+                  label={fields.serviceInterval.label}
+                  disabled={values.recurring === 'no'}
+                  value={values.recurring === 'no' ? 0 : values.serviceInterval}
+                  onChange={ handleChange }
+                />
+              </Grid>
+              <Grid item md={4} xs={12}>
+                <SelectField
+                  data={[
+                  { label: 'Day(s)', value: 'day' },
+                  { label: 'Week(s)', value: 'week' },
+                  { label: 'Month(s)', value: 'month' },
+                  { label: 'Year(s)', value: 'year' }
+                  ]}
+                  fullWidth
+                  name={fields.serviceIntervalUnit.name}
+                  label={fields.serviceIntervalUnit.label}
+                  disabled={values.recurring === 'no'}
+                  value={values.recurring === 'no' ? '' : values.serviceIntervalUnit}
+                  type='string'
+                  onChange={handleChange}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid item xs={12}
+              sx={{
+                  gap: 2, display: 'flex',
+                  flexDirection: {md: 'row', xs: 'column'}
+              }}
+              mt={4}
+            >
+              <Grid item md={4} xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     disableFuture
@@ -577,46 +596,7 @@ function ReminderForm(props: IProps) {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  variant="outlined"
-                  name={fields.serviceInterval.name}
-                  label={fields.serviceInterval.label}
-                  disabled={values.recurring === 'no'}
-                  value={values.recurring === 'no' ? 0 : values.serviceInterval}
-                  onChange={ handleChange }
-                />
-              </Grid>
-            </Grid>
-
-            <Grid item xs={12}
-              sx={{
-                  gap: 2, display: 'flex',
-                  flexDirection: 'row', justifyContent: 'center',
-                  alignItems: 'center'
-              }}
-              mt={4}
-            >
-              <Grid item xs={4}>
-                <SelectField
-                  data={[
-                  { label: 'Day(s)', value: 'day' },
-                  { label: 'Week(s)', value: 'week' },
-                  { label: 'Month(s)', value: 'month' },
-                  { label: 'Year(s)', value: 'year' }
-                  ]}
-                  fullWidth
-                  name={fields.serviceIntervalUnit.name}
-                  label={fields.serviceIntervalUnit.label}
-                  disabled={values.recurring === 'no'}
-                  value={values.recurring === 'no' ? '' : values.serviceIntervalUnit}
-                  type='string'
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -627,7 +607,7 @@ function ReminderForm(props: IProps) {
                           : _nextServiceDate && moment(_nextServiceDate).format('ddd - Do - MMM - YYYY')}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -645,7 +625,7 @@ function ReminderForm(props: IProps) {
               }}
               mt={4}
             >
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
                 <SelectField
                   data={[
                   { label: 'Done', value: 'done' },
@@ -663,7 +643,7 @@ function ReminderForm(props: IProps) {
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
                 <SelectField
                   data={[
                     { label: 'YES', value: 'yes' },
@@ -677,7 +657,7 @@ function ReminderForm(props: IProps) {
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item md={4} xs={12}>
                 <TextField
                   fullWidth
                   multiline

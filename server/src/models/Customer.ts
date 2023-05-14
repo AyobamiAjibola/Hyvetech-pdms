@@ -142,9 +142,6 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
   @Column(DataType.STRING)
   declare creditRating: string;
 
-  // @BelongsTo(() => Partner)
-  // declare partner: Partner;
-
   @HasOne(() => BillingInformation)
   declare billingInformation: NonAttribute<BillingInformation>;
 

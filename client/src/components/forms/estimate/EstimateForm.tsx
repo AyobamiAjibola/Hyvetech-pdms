@@ -21,13 +21,13 @@ import {
   FormControlLabel,
   Grid,
   InputAdornment,
-  // InputAdornment,
   Radio,
   RadioGroup,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { Remove, Save, Search, Send, SendAndArchive, ToggleOff, ToggleOn } from '@mui/icons-material';
+import { CalendarMonth, Remove, Save, Search, Send, SendAndArchive, ToggleOff, ToggleOn } from '@mui/icons-material';
 import estimateModel, { IEstimateValues, IPart } from '../models/estimateModel';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -55,6 +55,9 @@ import { FaPlus } from 'react-icons/fa';
 import CreateCustomerModal from '../../modal/CreateCustomer';
 import useItemStock from '../../../hooks/useItemStock';
 import capitalize from 'capitalize';
+import { getReminderAction } from '../../../store/actions/serviceReminderActions';
+import AppModal from '../../modal/AppModal';
+import RemindersModal from '../../modal/RemindersModal';
 
 interface IProps {
   isSubmitting?: boolean;
@@ -123,9 +126,7 @@ function EstimateForm(props: IProps) {
   const [showDrop, setShowDrop] = useState<boolean>(false);
   const [vinOptions, setvinOptions] = useState<any>([]);
   const [fetch, setFetch] = useState<boolean>(false);
-
-  // const [showDropParts, setShowDropParts] = useState<boolean>(false);
-  // const [inputValuePart, setInputValuePart] = React.useState('');
+  const [removeSessionStorage, setRemoveSessionStorage] = useState<boolean>(false);
 
   // @ts-ignore
   const [states, setStates] = useState<ISelectData[]>([]);
@@ -134,6 +135,9 @@ function EstimateForm(props: IProps) {
   const partnerReducer = useAppSelector(state => state.partnerReducer);
   const customerReducer = useAppSelector(state => state.customerReducer);
   const itemReducer = useAppSelector(state => state.itemStockReducer);
+  const reminderReducer = useAppSelector(state => state.serviceReminderReducer);
+  const [vehicleReminder, setVehicleReminder] = useState<any>(reminderReducer.reminders);
+  const [openReminderModal, setOpenReminderModal] = useState<boolean>(false)
 
   const dispatch = useAppDispatch();
 
@@ -309,7 +313,9 @@ function EstimateForm(props: IProps) {
 
         setFieldValue(newDetail.label, newDetail.value);
         setFieldTouched(newDetail.label, false);
+
       });
+
     }
   }, [vehicleReducer.getVehicleVINStatus, vehicleReducer.vehicleVINDetails, setFieldValue, setFieldTouched]);
 
@@ -436,17 +442,18 @@ function EstimateForm(props: IProps) {
   const handleGetDriverInfo = (id?: number) => {
     if (id) {
       dispatch(getCustomerAction(id));
-      // dispatch(getNewCustomerAction(id))
     }
   };
 
   useEffect(() => {
-    // if (value?.id !== (null || undefined)) {
-    // @ts-ignore
-    // if (true) {
-    // console.log(value)
-    if (customerReducer.getCustomerStatus === 'completed') {
-      const _customer: any = customerReducer.customer;
+    if (customerReducer.getCustomerStatus === 'completed' || reminderReducer.getRemindersStatus === 'completed') {
+      const _reminderId = sessionStorage.getItem('id');
+      const reminderId = _reminderId && parseInt(_reminderId) || -1
+      const __customer: any = reminderReducer.reminders.find(reminder => {
+        if(reminder.id === reminderId) return reminder
+      });
+
+      const _customer: any = __customer ? __customer?.customer : customerReducer.customer;
 
       if (_customer != undefined) {
         // upto-populate info
@@ -457,8 +464,18 @@ function EstimateForm(props: IProps) {
         setFieldValue(fields.state.name, _customer.contacts[0]?.state || 'Abuja (FCT)');
         setFieldValue(fields.address.name, _customer.contacts[0]?.address || ' .');
         setFieldValue(fields.addressType.name, 'Home');
+
+        setFieldValue('vin', __customer && __customer.vehicle.vin);
+        setFieldValue('make', __customer && __customer.vehicle.make);
+        setFieldValue('model', __customer && __customer.vehicle.model);
+        setFieldValue('modelYear', __customer && __customer.vehicle.modelYear);
+        setFieldValue('plateNumber', __customer && __customer.vehicle.plateNumber);
+
         setactiveId(_customer.id);
-        const vinList = _customer.vehicles.map((_data: any) => _data?.vin || '');
+        const vinList = __customer
+                        ? [__customer.vehicle.vin.toString()]
+                        : _customer.vehicles.map((_data: any) => _data?.vin || '');
+
         setvinOptions(vinList);
 
         setUserInfo({
@@ -475,8 +492,21 @@ function EstimateForm(props: IProps) {
         });
       }
     }
-    // }
-  }, [value, customerReducer.getCustomerStatus]);
+
+  }, [value, customerReducer.getCustomerStatus, reminderReducer.getRemindersStatus]);
+
+  useEffect(() => {
+    dispatch(getReminderAction())
+  }, []);
+
+  useEffect(() => {
+
+    if(reminderReducer.getRemindersStatus === 'completed') {
+      const condition = (obj: any) => obj.vehicle.vin === values.vin && obj.partnerId === admin.user?.partner?.id;
+      setVehicleReminder(reminderReducer.reminders.filter(condition));
+    }
+
+  },[reminderReducer.getRemindersStatus, values.vin]);
 
   //listen for tax changes and adjust
   useEffect(() => {
@@ -653,6 +683,19 @@ function EstimateForm(props: IProps) {
     setFetch(!fetch);
   };
 
+  const data: any = {
+    open_modal: undefined,
+    id: undefined
+  }
+
+  useEffect(() => {
+    if(removeSessionStorage){
+      Object.keys(data).forEach(key => {
+        sessionStorage.removeItem(key);
+      });
+    }
+  }, [removeSessionStorage])
+
   return (
     <React.Fragment>
       <Form autoComplete="off" autoCorrect="off">
@@ -751,186 +794,203 @@ function EstimateForm(props: IProps) {
 
             {/* <Divider orientation="horizontal" /> */}
           </Grid>
-          <Grid container justifyContent="center" alignItems="center"
-            sx={{
-              mt: {xs: 2},
-              width: {xs: '100%', md: '50%'}
-            }}
-          >
-            <Typography
-              onClick={() => setCreateModal(true)}
-              color={'skyblue'}
-              style={{
-                marginLeft: 20,
-                display: 'flex',
-                alignItems: 'center',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}>
-              <FaPlus style={{ marginRight: 8 }} />
-              New Customer
-            </Typography>
-          </Grid>
-          {/*
-          <Grid item xs={4}>
-            <TextInputField
-              onChange={handleChange}
-              label={fields.email.label}
-              // @ts-ignore
-              value={values.email}
-              name={fields.email.name}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            {
-              (customerReducer.getCustomerStatus === "completed") ?
-                <TextInputField
-                  onChange={handleChange}
-                  label={fields.state.label}
-                  // @ts-ignore
-                  value={values.state}
-                  name={fields.state.name}
-                />
-                :
-                <SelectField
-                  onChange={e => {
-                    console.log(e)
-                  }}
-                  value={values.state}
-                  name={fields.state.name}
-                  label={fields.state.label}
-                  data={states}
-                  fullWidth
-                />
-
-            }
-
-
-          </Grid>
-
-          <Grid item xs={3}>
-            <TextInputField
-              onChange={handleChange}
-              label={fields.firstName.label}
-              value={values.firstName}
-              name={fields.firstName.name}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <TextInputField
-              onChange={handleChange}
-              label={fields.lastName.label}
-              value={values.lastName}
-              name={fields.lastName.name}
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextInputField
-              type="tel"
-              onChange={(e) => {
-                console.log(e, "logger")
-                const _val = filterPhoneNumber(e.target.value);
-
-                if (_val.error) {
-                  setError({ message: _val?.message || "" })
-                }
-
-                handleChange({
-                  target: {
-                    name: e.target.name,
-                    value: _val.phone,
-                  }
-                })
-
+          <Grid flexDirection="column" sx={{width: '100%'}}>
+            <Grid container justifyContent="center"
+              alignItems="center"
+              sx={{
+                mt: {xs: 2},
+                width: {xs: '100%', md: '50%'}
               }}
-              label={fields.phone.label}
-              value={values.phone}
-              name={fields.phone.name}
-              placeholder='Phone e.g 080...'
-            />
-          </Grid>
-          <Grid item container xs spacing={0.2}>
-            <Grid item xs={3}>
-              <SelectField
-                data={[
-                  { label: 'Home', value: 'Home' },
-                  { label: 'Office', value: 'Office' },
-                ]}
-                onChange={handleChange}
-                value={values.addressType}
-                name={fields.addressType.name}
-                label={fields.addressType.label}
-                fullWidth
-              />
+            >
+              <Typography
+                onClick={() => setCreateModal(true)}
+                color={'skyblue'}
+                style={{
+                  marginLeft: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  textAlign: 'center'
+                }}>
+                <FaPlus style={{ marginRight: 8 }} />
+                New Customer
+              </Typography>
             </Grid>
-            <Grid item xs={9}>
+            {/*
+            <Grid item xs={4}>
               <TextInputField
                 onChange={handleChange}
-                value={values.address}
-                name={fields.address.name}
-                label={fields.address.label}
+                label={fields.email.label}
+                // @ts-ignore
+                value={values.email}
+                name={fields.email.name}
               />
             </Grid>
-          </Grid> */}
+            <Grid item xs={3}>
+              {
+                (customerReducer.getCustomerStatus === "completed") ?
+                  <TextInputField
+                    onChange={handleChange}
+                    label={fields.state.label}
+                    // @ts-ignore
+                    value={values.state}
+                    name={fields.state.name}
+                  />
+                  :
+                  <SelectField
+                    onChange={e => {
+                      console.log(e)
+                    }}
+                    value={values.state}
+                    name={fields.state.name}
+                    label={fields.state.label}
+                    data={states}
+                    fullWidth
+                  />
 
-          {userInfo.firstName.length != 0 && (
-            <Grid style={{ padding: 20 }} xs={12} container>
-              <Grid item xs={11}>
-                <Grid item xs={12} container>
-                  <Typography>
-                    {values?.firstName || 'First Name & '} {values?.lastName || 'Last Name'}
+              }
+
+
+            </Grid>
+
+            <Grid item xs={3}>
+              <TextInputField
+                onChange={handleChange}
+                label={fields.firstName.label}
+                value={values.firstName}
+                name={fields.firstName.name}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextInputField
+                onChange={handleChange}
+                label={fields.lastName.label}
+                value={values.lastName}
+                name={fields.lastName.name}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextInputField
+                type="tel"
+                onChange={(e) => {
+                  console.log(e, "logger")
+                  const _val = filterPhoneNumber(e.target.value);
+
+                  if (_val.error) {
+                    setError({ message: _val?.message || "" })
+                  }
+
+                  handleChange({
+                    target: {
+                      name: e.target.name,
+                      value: _val.phone,
+                    }
+                  })
+
+                }}
+                label={fields.phone.label}
+                value={values.phone}
+                name={fields.phone.name}
+                placeholder='Phone e.g 080...'
+              />
+            </Grid>
+            <Grid item container xs spacing={0.2}>
+              <Grid item xs={3}>
+                <SelectField
+                  data={[
+                    { label: 'Home', value: 'Home' },
+                    { label: 'Office', value: 'Office' },
+                  ]}
+                  onChange={handleChange}
+                  value={values.addressType}
+                  name={fields.addressType.name}
+                  label={fields.addressType.label}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={9}>
+                <TextInputField
+                  onChange={handleChange}
+                  value={values.address}
+                  name={fields.address.name}
+                  label={fields.address.label}
+                />
+              </Grid>
+            </Grid> */}
+
+            {userInfo.firstName.length != 0 && (
+              <Grid style={{ padding: 20 }} xs={12} container>
+                <Grid item xs={11}>
+                  <Grid item xs={12} container>
+                    <Typography>
+                      {values?.firstName || 'First Name & '} {values?.lastName || 'Last Name'}
+                    </Typography>{' '}
+                    <br />
+                  </Grid>
+
+                  {(userInfo?.companyName || '').length != 0 && (
+                    <Grid xs={12} container>
+                      <Typography>{userInfo?.companyName || 'First Name & '}</Typography> <br />
+                    </Grid>
+                  )}
+
+                  <Grid item xs={12} container>
+                    <Typography>{values?.email || 'Email'}</Typography> <br />
+                  </Grid>
+
+                  <Grid item xs={12} container>
+                    <Typography>{values?.phone || 'Phone'}</Typography> <br />
+                  </Grid>
+
+                  <Grid item xs={12} container>
+                    <Typography>{values?.address || 'Address'}</Typography> <br />
+                  </Grid>
+
+                  <Grid item xs={12} container>
+                    <Typography>{values?.state || 'State'}</Typography> <br />
+                  </Grid>
+                </Grid>
+
+                <Grid>
+                  <Typography
+                    onClick={() => {
+                      setEditModal(true);
+                    }}>
+                    {activeId != 0 && (
+                      <span style={{ color: 'skyblue', textDecoration: 'none', cursor: 'pointer' }}>Edit</span>
+                    )}
                   </Typography>{' '}
                   <br />
                 </Grid>
-
-                {(userInfo?.companyName || '').length != 0 && (
-                  <Grid xs={12} container>
-                    <Typography>{userInfo?.companyName || 'First Name & '}</Typography> <br />
-                  </Grid>
-                )}
-
-                <Grid item xs={12} container>
-                  <Typography>{values?.email || 'Email'}</Typography> <br />
-                </Grid>
-
-                <Grid item xs={12} container>
-                  <Typography>{values?.phone || 'Phone'}</Typography> <br />
-                </Grid>
-
-                <Grid item xs={12} container>
-                  <Typography>{values?.address || 'Address'}</Typography> <br />
-                </Grid>
-
-                <Grid item xs={12} container>
-                  <Typography>{values?.state || 'State'}</Typography> <br />
-                </Grid>
               </Grid>
+            )}
 
-              <Grid>
-                <Typography
-                  onClick={() => {
-                    setEditModal(true);
-                  }}>
-                  {activeId != 0 && (
-                    <span style={{ color: 'skyblue', textDecoration: 'none', cursor: 'pointer' }}>Edit</span>
-                  )}
-                </Typography>{' '}
-                <br />
-              </Grid>
+            <Grid flexDirection="column">
+              <Typography gutterBottom variant="subtitle1" component="h1">
+                Vehicle Information
+              </Typography>
+              <Divider orientation="horizontal" />
+
+              <Tooltip title="Vehicle Service Reminder" placement="top"
+                sx={{mb: 2}}
+              >
+                <IconButton
+                  sx={{color: '#181818'}}
+                  onClick={() => setOpenReminderModal(true)}
+                  disabled={vehicleReducer.getVehicleVINStatus !== 'completed'}
+                >
+                  <CalendarMonth />
+                </IconButton>
+              </Tooltip>
+
+              <VehicleInformationFields
+                vinOptions={vinOptions}
+                values={values}
+                handleChange={handleChange}
+                handleChangeVIN={_handleChangeVIN}
+              />
             </Grid>
-          )}
-
-          <Typography>
-            {'\n'}
-            <br />
-          </Typography>
-
-          <VehicleInformationFields
-            vinOptions={vinOptions}
-            values={values}
-            handleChange={handleChange}
-            handleChangeVIN={_handleChangeVIN}
-          />
+          </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom variant="subtitle1" component="h1">
               {fields.parts.label}
@@ -1467,7 +1527,7 @@ function EstimateForm(props: IProps) {
                 onClick={() => {
                   props.setDiscountType && props.setDiscountType(discountType);
                   props.setDiscount && props.setDiscount(discount);
-                  props.setSave(true);
+                  props.setSave(true); setRemoveSessionStorage(true)
                 }}
               >
                 {'Save'}
@@ -1481,7 +1541,7 @@ function EstimateForm(props: IProps) {
                 onClick={() => {
                   props.setDiscountType && props.setDiscountType(discountType);
                   props.setDiscount && props.setDiscount(discount);
-                  props.setSave(false);
+                  props.setSave(false); setRemoveSessionStorage(true)
                 }}
                 variant="contained"
                 color="success"
@@ -1498,6 +1558,22 @@ function EstimateForm(props: IProps) {
         message={error?.message}
         onClose={() => setError(undefined)}
       />
+
+      {openReminderModal && (
+        <AppModal
+          fullWidth
+          fullScreen={true}
+          show={openReminderModal}
+          Content={
+            <>
+              <RemindersModal
+                vehicleReminder={vehicleReminder}
+              />
+            </>
+          }
+          onClose={() => {setOpenReminderModal(false)}}
+        />
+      )}
 
       {/* @ts-ignore */}
       <CreateCustomerModal

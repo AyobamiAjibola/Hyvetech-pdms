@@ -18,6 +18,7 @@ import User from '../models/User';
 import { CREATED_REMINDER, UPDATED_REMINDER } from '../config/constants';
 import Generic from '../utils/Generic';
 import BillingInformation from '../models/BillingInformation';
+import Partner from '../models/Partner';
 
 
 export default class ServiceReminderController {
@@ -89,7 +90,7 @@ export default class ServiceReminderController {
       reminders = await partner.$get('reminders', {
         include: [
           Vehicle,
-          { model: Customer, include: [BillingInformation], paranoid: false }
+          { model: Customer, include: [Contact], paranoid: false }
         ]
       });
 

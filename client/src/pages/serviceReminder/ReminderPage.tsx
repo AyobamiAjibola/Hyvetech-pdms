@@ -1,13 +1,20 @@
-import { Box, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Button, DialogActions, DialogContentText, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
 import { IServiceReminder } from '@app-models';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import reminderModel from '../../components/forms/models/reminderModel';
 import moment from 'moment';
 import capitalize from 'capitalize';
 import { ArrowBackIosNew } from '@mui/icons-material';
-// import { CustomHookMessage } from '@app-types';
+import { deleteReminderAction, getReminderAction } from '../../store/actions/serviceReminderActions';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import { MESSAGES } from '../../config/constants';
+import AppModal from '../../components/modal/AppModal';
+import AppLoader from '../../components/loader/AppLoader';
+import useAppSelector from '../../hooks/useAppSelector';
+import { clearDeleteReminderStatus } from '../../store/reducers/serviceReminderReducer';
+import { CustomHookMessage } from '@app-types';
+import AppAlert from '../../components/alerts/AppAlert';
 
 interface ILocationState {
   reminder?: IServiceReminder;
@@ -16,9 +23,14 @@ interface ILocationState {
 const { fields } = reminderModel;
 
 function ReminderPage () {
+  const reminderReducer = useAppSelector(state => state.serviceReminderReducer);
     const [selectedValue, setSelectedValue] = useState<string>('');
     const [reminder, setReminder] = useState<IServiceReminder>();
-    // const [error, setError] = useState<CustomHookMessage>();
+    const [_delete, _setDelete] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
+    const [success, setSuccess] = useState<CustomHookMessage>();
+    const [error, setError] = useState<CustomHookMessage>();
+    const navigate = useNavigate()
 
     const location = useLocation();
 
@@ -29,11 +41,14 @@ function ReminderPage () {
       }
     }, [location]);
 
-    console.log(reminder, 'reminder')
+    const handleReset = useCallback(() => {
+      dispatch(clearDeleteReminderStatus())
+  }, [dispatch]);
+
     const handleShare = async () => {
-        const message = `Hello [${reminder?.customer?.title ? capitalize.words(reminder?.customer?.title) : ''} ${reminder?.customer?.firstName && capitalize.words(reminder?.customer?.firstName)} ${reminder?.customer?.lastName && capitalize.words(reminder?.customer?.lastName)}],
-        [${reminder && capitalize.words(reminder?.reminderType)}] for your. [${reminder && capitalize.words(reminder?.vehicle?.modelYear)} ${reminder && capitalize.words(reminder?.vehicle?.model)} ${reminder && capitalize.words(reminder?.vehicle?.make)}]
-        is due on [${moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}].
+        const message = `Hello ${reminder?.customer?.title ? capitalize.words(reminder?.customer?.title) : ''} ${reminder?.customer?.firstName && capitalize.words(reminder?.customer?.firstName)} ${reminder?.customer?.lastName && capitalize.words(reminder?.customer?.lastName)},\n
+        ${reminder && capitalize.words(reminder?.reminderType)} for your. [${reminder && capitalize.words(reminder?.vehicle?.modelYear)} ${reminder && capitalize.words(reminder?.vehicle?.model)}
+        ${reminder && capitalize.words(reminder?.vehicle?.make)} is due on [${moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}].\n
         Should I send you an estimate and schedule you in?`
         try {
 
@@ -51,7 +66,31 @@ function ReminderPage () {
     };
 
     const handleDelete = () => {
-    //   _reminder.onDelete(reminder?.id)
+      const reminderId = reminder?.id !== undefined ? reminder?.id : -1
+      dispatch(deleteReminderAction(reminderId));
+    }
+
+    const confirm_delete = () => {
+      _setDelete(true)
+    }
+
+    useEffect(() => {
+      if (reminderReducer.deleteReminderStatus === 'failed') {
+        setError({ message: reminderReducer.deleteReminderError });
+        handleReset();
+      }
+  }, [reminderReducer.deleteReminderError, reminderReducer.deleteReminderStatus, handleReset]);
+
+  useEffect(() => {
+      if (reminderReducer.deleteReminderStatus === 'completed') {
+        navigate('/reminders', {replace: true})
+        dispatch(getReminderAction());
+      }
+  }, [dispatch, reminderReducer.deleteReminderStatus, reminderReducer.deleteReminderSuccess, handleReset]);
+
+    const data: any = {
+      open_modal: 'true',
+      id: reminder?.id
     }
 
     const handleChange = (event: any) => {
@@ -64,7 +103,15 @@ function ReminderPage () {
           }, 3000)
         }
         if(value === "Delete Reminder") {
-          handleDelete()
+          confirm_delete()
+        }
+
+        if(value === "Generate Estimate") {
+          navigate('/estimates');
+          Object.entries(data).forEach(([key, value]) => {
+            //@ts-ignore
+            sessionStorage.setItem(key, value);
+          });
         }
     };
 
@@ -72,11 +119,11 @@ function ReminderPage () {
       <React.Fragment>
         <Grid item xs={12} container
           sx={{
-            display: 'flex', flexDirection: 'column', p: 6
+            display: 'flex', flexDirection: 'column', p: {md: 6, xs: 0}
           }}
         >
           <Grid container item xs={12}>
-            <Grid item xs={6}
+            <Grid item md={6} xs={12}
                 sx={{
                 display: 'flex', justifyContent: 'center',
                 alignItems: 'left', flexDirection: 'column'
@@ -86,7 +133,7 @@ function ReminderPage () {
                 onClick={() => window.history.back()}
                 style={{ position: 'absolute', cursor: 'pointer' }}
               />
-              <Typography variant="h5" ml={6}>
+              <Typography variant="h6" ml={6}>
                 Reminder Summary
               </Typography>
             </Grid>
@@ -97,229 +144,97 @@ function ReminderPage () {
             <Divider orientation="horizontal" />
           </Grid>
 
-          <Grid>
-            <Box component='div' sx={{ display: 'flex', justifyContent: {sm: 'space-between', xs: 'space-between'}, alignItems: 'center' }}>
-              <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}} />
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: {sm: 'row', xs: 'column'},
-                    gap: {sm: 0, xs: 1}
-                  }}
+          <Grid item
+            sx={{
+              display: 'flex',
+              justifyContent: 'right',
+              alignItems: 'right',
+              mb: 2, mt: 2
+            }}
+          >
+            <FormControl sx={{ m: 1, width: {sm: 300, xs: 170} }}>
+              <InputLabel id="demo-simple-select-helper-label">Select an action</InputLabel>
+                <Select
+                  labelId="demo-simple-select-helper-label"
+                  id="demo-simple-select-helper"
+                  value={selectedValue}
+                  label="Select an action"
+                  onChange={handleChange}
                 >
-                  <FormControl sx={{ m: 1, width: {sm: 300, xs: 170} }}>
-                    <InputLabel id="demo-simple-select-helper-label">Select an action</InputLabel>
-                      <Select
-                        labelId="demo-simple-select-helper-label"
-                        id="demo-simple-select-helper"
-                        value={selectedValue}
-                        label="Select an action"
-                        onChange={handleChange}
-                      >
-                        <MenuItem value="">
-                        ...
-                        </MenuItem>
-                        <MenuItem value={'Generate Invoice'}>
-                          <Link to="/estimates" style={{textDecoration: 'none'}}>
-                            Estimate
-                          </Link>
-                        </MenuItem>
-                        <MenuItem value={'Share Reminder'}>Share Reminder</MenuItem>
-                        <MenuItem value={'Delete Reminder'}>Delete Reminder</MenuItem>
-                      </Select>
-                    </FormControl>
-                </Box>
-            </Box>
+                  <MenuItem value="">
+                  ...
+                  </MenuItem>
+                  <MenuItem value={'Generate Estimate'}>Generate Estimate</MenuItem>
+                  <MenuItem value={'Share Reminder'}>Share Reminder</MenuItem>
+                  <MenuItem value={'Delete Reminder'}>Delete Reminder</MenuItem>
+                </Select>
+            </FormControl>
           </Grid>
 
-            <Grid
-              sx={{
-                display: 'flex',
-                flexDirection: "row", gap: 4,
-               }} item xs={12}
+          <Grid
+            sx={{
+              display: 'flex',
+              flexDirection: {md: "row", xs: 'column'},
+              gap: {md: 4, xs: 0},
+              }} item xs={12}
+          >
+            <Grid item md={4} xs={12} mb={2}
+              justifyContent='left' alignItems='left' flexDirection='column'
             >
-              <Grid item md={4} xs={12} mb={4}
-                justifyContent='left' alignItems='left' flexDirection='column'
-              >
-                <Typography gutterBottom sx={{fontSize: {xs: '18px', sm: '20px'}, fontWeight: 600}}>
-                  Customer Detail
+              <Typography gutterBottom sx={{fontSize: {xs: '18px', sm: '20px'}, fontWeight: 600}}>
+                Customer Detail
+              </Typography>
+              <Stack>
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                  {reminder?.customer?.lastName} {reminder?.customer?.firstName}
                 </Typography>
-                <Stack>
-                  <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
-                    {reminder?.customer?.lastName} {reminder?.customer?.firstName}
-                  </Typography>
-                  <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
-                    {reminder?.customer.email}
-                  </Typography>
-                  <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
-                    {reminder?.customer.phone}
-                  </Typography>
-                </Stack>
-              </Grid>
-
-              <Grid item md={4} xs={12}>
-                <Typography gutterBottom sx={{fontSize: {xs: '18px', sm: '20px'}, fontWeight: 600}}>
-                  Vehicle
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                  {reminder?.customer?.email}
                 </Typography>
-                <Stack>
-                    <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
-                        {reminder?.vehicle?.make} {reminder?.customer?.firstName}
-                    </Typography>
-                    <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
-                        {reminder?.vehicle.model}
-                    </Typography>
-                    <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
-                        {reminder?.vehicle.modelYear}
-                    </Typography>
-                </Stack>
-              </Grid>
-
-              <Grid md={4}/>
+                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                  {reminder?.customer?.phone}
+                </Typography>
+              </Stack>
             </Grid>
 
-            <Grid item xs={12}>
-                <Divider orientation="horizontal" />
+            <Grid item md={4} xs={12}>
+              <Typography gutterBottom sx={{fontSize: {xs: '18px', sm: '20px'}, fontWeight: 600}}>
+                Vehicle
+              </Typography>
+              <Stack>
+                  <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                      {reminder?.vehicle?.make} {reminder?.customer?.firstName}
+                  </Typography>
+                  <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                      {reminder?.vehicle?.model}
+                  </Typography>
+                  <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+                      {reminder?.vehicle?.modelYear}
+                  </Typography>
+              </Stack>
             </Grid>
 
-            <Grid item xs={12}
-                sx={{
-                    gap: 4, display: 'flex',
-                    flexDirection: 'row'
-                }}
-                mt={4}
-            >
-                <Grid item xs={4}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    name={fields.reminderType.name}
-                    label={fields.reminderType.label}
-                    value={reminder?.reminderType}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    name={fields.lastServiceDate.name}
-                    label={fields.lastServiceDate.label}
-                    value={moment(reminder?.lastServiceDate).format('ddd - Do - MMM - YYYY')}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                    <TextField
-                    fullWidth
-                    variant="outlined"
-                    name={fields.serviceInterval.name}
-                    label={fields.serviceInterval.label}
-                    value={reminder?.serviceInterval}
-                    InputProps={{
-                        readOnly: true
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    />
-                </Grid>
-              </Grid>
+            <Grid item md={4}/>
+          </Grid>
 
-              <Grid item xs={12}
-                sx={{
-                    gap: 4, display: 'flex',
-                    flexDirection: 'row', justifyContent: 'center',
-                    alignItems: 'center'
-                }}
-                mt={4}
-              >
-                <Grid item xs={4}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    name={fields.serviceIntervalUnit.name}
-                    label={fields.serviceIntervalUnit.label}
-                    value={reminder?.serviceIntervalUnit}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                />
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    name={fields.nextServiceDate.name}
-                    label={fields.nextServiceDate.label}
-                    value={moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}
-                    InputProps={{
-                        readOnly: true
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    name={fields.reminderStatus.name}
-                    label={fields.reminderStatus.label}
-                    value={reminder?.reminderStatus}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-            </Grid>
+          <Grid item xs={12}>
+            <Divider orientation="horizontal" />
+          </Grid>
 
-            <Grid item xs={12}
-                sx={{
-                    gap: 4, display: 'flex',
-                    flexDirection: 'row', justifyContent: 'center',
-                    alignItems: 'center'
-                }}
-                mt={4}
-            >
-              <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  name={fields.serviceStatus.name}
-                  label={fields.serviceStatus.label}
-                  value={reminder?.serviceStatus}
-                  InputProps={{
-                    readOnly: true
-                  }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
+          <Grid item xs={12}
+            sx={{
+                gap: 4, display: 'flex',
+                flexDirection: {md: 'row', xs: 'column'}
+            }}
+            mt={4}
+          >
+            <Grid item md={4} xs={12}>
+              <TextField
                 fullWidth
                 variant="outlined"
-                name={fields.recurring.name}
-                label={fields.recurring.label}
-                value={reminder?.recurring}
+                name={fields.reminderType.name}
+                label={fields.reminderType.label}
+                value={reminder?.reminderType}
                 InputProps={{
                   readOnly: true
                 }}
@@ -327,25 +242,175 @@ function ReminderPage () {
                   shrink: true,
                 }}
               />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <TextField
                 fullWidth
                 variant="outlined"
-                name={fields.note.name}
-                label={fields.note.label}
-                value={reminder?.note}
+                name={fields.lastServiceDate.name}
+                label={fields.lastServiceDate.label}
+                value={moment(reminder?.lastServiceDate).format('ddd - Do - MMM - YYYY')}
                 InputProps={{
                   readOnly: true
                 }}
                 InputLabelProps={{
                   shrink: true,
                 }}
-                />
-              </Grid>
+              />
             </Grid>
+            <Grid item md={4} xs={12}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                name={fields.serviceInterval.name}
+                label={fields.serviceInterval.label}
+                value={reminder?.serviceInterval}
+                InputProps={{
+                    readOnly: true
+                }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+          </Grid>
+
+          <Grid item xs={12}
+            sx={{
+              gap: 4, display: 'flex',
+              flexDirection: {md: 'row', xs: 'column'}
+            }}
+            mt={4}
+          >
+            <Grid item md={4} xs={12}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                name={fields.serviceIntervalUnit.name}
+                label={fields.serviceIntervalUnit.label}
+                value={reminder?.serviceIntervalUnit}
+                InputProps={{
+                  readOnly: true
+                }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                name={fields.nextServiceDate.name}
+                label={fields.nextServiceDate.label}
+                value={moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}
+                InputProps={{
+                    readOnly: true
+                }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                name={fields.reminderStatus.name}
+                label={fields.reminderStatus.label}
+                value={reminder?.reminderStatus}
+                InputProps={{
+                  readOnly: true
+                }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+          </Grid>
+
+          <Grid item xs={12}
+            sx={{
+              gap: 4, display: 'flex',
+              flexDirection: {md: 'row', xs: 'column'}
+            }}
+            mt={4}
+          >
+            <Grid item md={4} xs={12}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                name={fields.serviceStatus.name}
+                label={fields.serviceStatus.label}
+                value={reminder?.serviceStatus}
+                InputProps={{
+                  readOnly: true
+                }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <TextField
+              fullWidth
+              variant="outlined"
+              name={fields.recurring.name}
+              label={fields.recurring.label}
+              value={reminder?.recurring}
+              InputProps={{
+                readOnly: true
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <TextField
+              fullWidth
+              variant="outlined"
+              name={fields.note.name}
+              label={fields.note.label}
+              value={reminder?.note}
+              InputProps={{
+                readOnly: true
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              />
+            </Grid>
+          </Grid>
 
         </Grid>
+        <AppModal
+          fullWidth
+          show={_delete}
+          Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+          ActionComponent={
+            <DialogActions>
+              <Button onClick={() => _setDelete(false)}>Disagree</Button>
+              <Button onClick={handleDelete}>Agree</Button>
+            </DialogActions>
+          }
+          onClose={() => _setDelete(false)}
+        />
+        <AppLoader
+          show={reminderReducer.deleteReminderStatus === 'loading'}
+        />
+        <AppAlert
+          alertType="success"
+          show={undefined !== success}
+          message={success?.message}
+          onClose={() => setSuccess(undefined)}
+        />
+        <AppAlert
+          alertType="error"
+          show={undefined !== error}
+          message={error?.message}
+          onClose={() => setError(undefined)}
+        />
       </React.Fragment>
     )
 }

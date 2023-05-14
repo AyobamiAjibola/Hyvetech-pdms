@@ -34,17 +34,13 @@ function EstimatesPage() {
   const dispatch = useAppDispatch();
   const [_estimate, _seEstimate] = useState<any>([]);
   const [closeEstimateModal, setCloseEstimateModal] = useState<boolean>(false);
+  const [removeSessionStorage, setRemoveSessionStorage] = useState<boolean>(false);
 
   const estimate = useEstimate();
   const { isTechAdmin, isSuperAdmin } = useAdmin();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // sort estimate and return sorted
-    // console.log(estimate.estimates)
-
-    // @ts-ignore
-    // eslint-disable-next-line
     const _temp01 = estimate.estimates;
 
     _seEstimate(_temp01);
@@ -349,6 +345,39 @@ function EstimatesPage() {
     };
   }, [dispatch]);
 
+  const data: any = {
+    open_modal: undefined,
+    id: undefined
+  }
+
+  useEffect(() => {
+    if(removeSessionStorage){
+      Object.keys(data).forEach(key => {
+        sessionStorage.removeItem(key);
+      });
+    }
+  }, [removeSessionStorage])
+
+  useEffect(() => {
+    if(sessionStorage.getItem('open_modal') === 'true'){
+      estimate.setShowCreate(true)
+    }
+  },[]);
+
+    // remove open modal and id from session storage on page reload
+    useEffect(() => {
+      const handleBeforeUnload = () => {
+        sessionStorage.removeItem('open_modal');
+        sessionStorage.removeItem('id');
+      };
+
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }, []);
+
   return (
     <EstimatePageContext.Provider
       value={{
@@ -501,7 +530,8 @@ function EstimatesPage() {
               onClick={() => {
                 setCloseEstimateModal(false),
                 estimate.setShowCreate(false),
-                estimate.setShowEdit(false), reload()
+                estimate.setShowEdit(false),
+                reload(), setRemoveSessionStorage(true)
               }}
             >
               Yes
