@@ -19,9 +19,9 @@ import AppModal from '../../components/modal/AppModal';
 import AppLoader from '../../components/loader/AppLoader';
 import { MESSAGES } from '../../config/constants';
 import { Formik } from 'formik';
-// import { reload } from '../../utils/generic';
 import reminderModel from '../../components/forms/models/reminderModel';
 import ReminderForm from '../../components/forms/reminder/ReminderForm';
+import { reload } from '../../utils/generic';
 
 
 function RemindersPage() {
@@ -43,13 +43,22 @@ function RemindersPage() {
     const techColumns = useMemo(() => {
         return [
           {
+            field: 'serialNumber',
+            headerName: 'S/NO',
+            headerAlign: 'center',
+            align: 'center',
+            type: 'string',
+            width: 50,
+            renderCell: (index) => index.api.getRowIndex(index.row.id) + 1,
+          },
+          {
             field: 'reminderType',
             headerName: 'Type',
             headerAlign: 'center',
             align: 'center',
             sortable: true,
             type: 'string',
-            width: 150,
+            width: 250,
             renderCell: (params: any) => {
               return (
                 <span
@@ -69,7 +78,7 @@ function RemindersPage() {
             headerAlign: 'center',
             align: 'center',
             type: 'string',
-            width: 200,
+            width: 150,
             renderCell: (params: any) => {
                 return (
                     <span>{params.row.customer.firstName} {params.row.customer.lastName}</span>
@@ -82,7 +91,7 @@ function RemindersPage() {
             headerAlign: 'center',
             align: 'center',
             type: 'string',
-            width: 200,
+            width: 250,
             renderCell: (params: any) => {
                 return (
                     <span>{params.row.vehicle.modelYear} {params.row.vehicle.make} {params.row.vehicle.model}</span>
@@ -102,7 +111,7 @@ function RemindersPage() {
                 )
             },
             sortable: true,
-            width: 200
+            width: 150
           },
           {
             field: 'reminderStatus',
@@ -110,7 +119,7 @@ function RemindersPage() {
             headerAlign: 'center',
             align: 'center',
             type: 'string',
-            width: 150,
+            width: 200,
             renderCell: (params: any) => {
               return (
                 <>
@@ -212,7 +221,7 @@ function RemindersPage() {
 
     const data: any = {
       open_modal: undefined,
-      // id: undefined
+      id: undefined
     }
 
     useEffect(() => {
@@ -300,35 +309,35 @@ function RemindersPage() {
           />
           {reminder.showCreate && (
             <AppModal
-                fullWidth
-                size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
-                fullScreen={true}
-                show={reminder.showCreate}
-                Content={
-                  <Formik
-                    initialValues={reminder.initialValues}
-                    validationSchema={reminderModel.schema}
-                    validateOnChange
-                    onSubmit={(values) => {
-                        if(reminder.save) reminder.handleCreateReminder(values);
-                    }}>
-                    <ReminderForm
-                        showCreate={reminder.showCreate}
-                        isSubmitting={
-                          reminderReducer.createReminderStatus === 'loading'
-                        }
-                        setSave={reminder.setSave}
-                    />
-                  </Formik>
-                }
-                onClose={() => {reminder.setShowCreate(false), setRemoveSessionStorage(true)}}
+              fullWidth
+              size={document.documentElement.clientWidth > 375 ? "lg" : undefined}
+              fullScreen={document.documentElement.clientWidth > 375 ? false : true}
+              show={reminder.showCreate}
+              Content={
+                <Formik
+                  initialValues={reminder.initialValues}
+                  validationSchema={reminderModel.schema}
+                  validateOnChange
+                  onSubmit={(values) => {
+                      if(reminder.save) reminder.handleCreateReminder(values);
+                  }}>
+                  <ReminderForm
+                      showCreate={reminder.showCreate}
+                      isSubmitting={
+                        reminderReducer.createReminderStatus === 'loading'
+                      }
+                      setSave={reminder.setSave}
+                  />
+                </Formik>
+              }
+              onClose={() => {reminder.setShowCreate(false), setRemoveSessionStorage(true), reload()}}
             />
           )}
           {reminder.showEdit && (
             <AppModal
               fullWidth
-              size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
-              fullScreen={true}
+              size={document.documentElement.clientWidth > 375 ? "lg" : undefined}
+              fullScreen={document.documentElement.clientWidth > 375 ? false : true}
               show={reminder.showEdit}
               Content={
                   <Formik
@@ -348,13 +357,13 @@ function RemindersPage() {
                     />
                   </Formik>
               }
-              onClose={() => {reminder.setShowEdit(false), setRemoveSessionStorage(true)}}
+              onClose={() => {reminder.setShowEdit(false), setRemoveSessionStorage(true), reload()}}
             />
           )}
           <AppModal
             fullWidth
             show={reminder.showDelete}
-            Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+            Content={<DialogContentText>{MESSAGES.delete_reminder}</DialogContentText>}
             ActionComponent={
               <DialogActions>
                 <Button onClick={() => reminder.setShowDelete(false)}>Disagree</Button>

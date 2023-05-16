@@ -465,12 +465,6 @@ function EstimateForm(props: IProps) {
         setFieldValue(fields.address.name, _customer.contacts[0]?.address || ' .');
         setFieldValue(fields.addressType.name, 'Home');
 
-        // setFieldValue('vin', __customer !== undefind && __customer.vehicle.vin);
-        // setFieldValue('make', __customer && __customer.vehicle.make);
-        // setFieldValue('model', __customer && __customer.vehicle.model);
-        // setFieldValue('modelYear', __customer && __customer.vehicle.modelYear);
-        // setFieldValue('plateNumber', __customer && __customer.vehicle.plateNumber);
-
         setactiveId(_customer.id);
         const vinList = __customer
                         ? [__customer.vehicle.vin.toString()]

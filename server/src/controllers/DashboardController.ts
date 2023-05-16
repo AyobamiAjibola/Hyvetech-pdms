@@ -13,6 +13,9 @@ import { MANAGE_ALL, MANAGE_TECHNICIAN, VIEW_ANALYTICS } from '../config/setting
 import User from '../models/User';
 import Vehicle from '../models/Vehicle';
 import Partner from '../models/Partner';
+import ServiceReminder from '../models/ServiceReminder';
+import dao from '../services/dao';
+import { Op } from 'sequelize';
 
 export default class DashboardController {
   @HasPermission([MANAGE_ALL, VIEW_ANALYTICS, MANAGE_TECHNICIAN])
@@ -28,12 +31,14 @@ export default class DashboardController {
       const expenses = await this.getExpensesRaw(user);
       const customers = await this.getCustomersRaw(user);
       const transactions = await this.getTransactionsRaw(user);
+      const reminders = await this.getReminderRaw(user);
 
       // get filtered for month
       const estimatesByMonth = await this.filterByMonth(estimates, month);
       const invoicesByMonth = await this.filterByMonth(invoices, month);
       const expensesByMonth = await this.filterByMonth(expenses, month);
       const customersByMonth = await this.filterByMonth(customers, month);
+      const remindersByMonth = await this.filterByMonth(reminders, month);
       // const transactionsByMonth = await this.filterByMonth(transactions, month);
 
       const mRevenue = this.getRevenue(invoicesByMonth);
@@ -44,6 +49,7 @@ export default class DashboardController {
       const mEstimate = estimatesByMonth.length;
       const mInvoice = invoicesByMonth.length;
       const mCustomer = customersByMonth.length;
+      const mReminder = remindersByMonth.length;
 
       // get series data
       const months = [
@@ -133,6 +139,7 @@ export default class DashboardController {
           mEstimate,
           mInvoice,
           mCustomer,
+          mReminder,
           series: [
             {
               name: 'Sales',
@@ -312,6 +319,20 @@ export default class DashboardController {
         partnerId: id,
       },
       include: [Invoice],
+    });
+  }
+
+  public static async getReminderRaw({ partner: { id } }: any) {
+
+    return await ServiceReminder.findAll({
+      where: {
+        // @ts-ignore
+        partnerId: id,
+        [Op.or]: [
+          { reminderStatus: 'Due today' },
+          { reminderStatus: { [Op.startsWith]: 'Overdue' } }
+        ]
+      },
     });
   }
 

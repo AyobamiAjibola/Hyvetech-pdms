@@ -23,7 +23,7 @@ function AppModal(props: IProps) {
         open={props.show}
         TransitionComponent={TransitionUp}
         keepMounted
-        onClose={props.onClose}
+        // onClose={props.onClose}
         aria-describedby="app-modal"
         maxWidth={props.size}
         fullWidth={props.fullWidth}
