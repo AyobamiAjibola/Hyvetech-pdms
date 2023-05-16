@@ -1,6 +1,6 @@
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
-import { createReminderTypeHandler, createServiceReminderHandler, deleteReminderHandler, getReminderTypesHandler, getRemindersHandler, updateReminderHandler, updateReminderTypeHandler, updateStatusHandler } from '../../routes/serviceReminderRoute';
+import { createReminderTypeHandler, createServiceReminderHandler, deleteReminderHandler, fetchServiceReminderHandler, getReminderTypesHandler, getRemindersHandler, resetServiceHandler, updateReminderHandler, updateReminderTypeHandler, updateStatusHandler } from '../../routes/serviceReminderRoute';
 
 const serviceReminderPath = '/reminder';
 const serviceReminderEndpoints: RouteEndpoints = [
@@ -29,6 +29,12 @@ const serviceReminderEndpoints: RouteEndpoints = [
         handler: getRemindersHandler,
     },
     {
+        name: 'service reminders',
+        method: 'get',
+        path: `${serviceReminderPath}s/archived`,
+        handler: fetchServiceReminderHandler,
+    },
+    {
         name: 'reminder types',
         method: 'get',
         path: `${serviceReminderPath}/types`,
@@ -39,6 +45,12 @@ const serviceReminderEndpoints: RouteEndpoints = [
         method: 'patch',
         path: `${serviceReminderPath}/:reminderId`,
         handler: updateReminderHandler,
+    },
+    {
+        name: 'reset reminder',
+        method: 'patch',
+        path: `${serviceReminderPath}/reset/:reminderId`,
+        handler: resetServiceHandler,
     },
     {
         name: 'delete reminder',

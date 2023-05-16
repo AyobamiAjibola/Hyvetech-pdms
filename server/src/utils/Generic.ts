@@ -455,47 +455,6 @@ export default class Generic {
       return result;
   }
 
-  // public static reminderStatus(startDate: string, endDate: string, serviceIntervalUnit: string, serviceInterval: string, recurring?: boolean ) {
-  //   const currentDate = new Date();
-  //   const start = new Date(startDate);
-  //   const end = new Date(endDate);
-
-  //   if (currentDate < start || currentDate > end) {
-  //     return 'Overdue by [1] day';
-  //   }
-
-  //   const futureDateLimit = new Date();
-  //   const interval = parseInt(serviceInterval);
-
-  //   if (serviceIntervalUnit === 'month') {
-  //     futureDateLimit.setMonth(futureDateLimit.getMonth() + interval);
-  //   } else if (serviceIntervalUnit === 'week') {
-  //     futureDateLimit.setDate(futureDateLimit.getDate() + (7 * interval));
-  //   } else if (serviceIntervalUnit === 'day') {
-  //     futureDateLimit.setDate(futureDateLimit.getDate() + interval);
-  //   }
-
-  //   if (currentDate <= futureDateLimit) {
-  //     const milliseconds = futureDateLimit.getTime() - currentDate.getTime();
-
-  //     if (milliseconds > 2678400000) {
-  //       const diffMonths = Math.floor(milliseconds / (30 * 24 * 60 * 60 * 1000));
-  //       return `Due in [${diffMonths}] month(s)`;
-  //     } else if (milliseconds > 604800000) {
-  //       const diffWeeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
-  //       return `Due in [${diffWeeks}] week(s)`;
-  //     } else {
-  //       const diffDays = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
-  //       if(diffDays > 1){
-  //         return `Due in [${diffDays}] day(s)`;
-  //       } else if(diffDays === 1){
-  //         return `Due today`
-  //       }
-  //     }
-  //   } else {
-  //     return 'Overdue by [1] day';
-  //   }
-  // }
 
   public static reminderStatus(startDate: string, endDate: string, serviceIntervalUnit: string, serviceInterval: any ) {
     const currentDate = new Date();
@@ -566,7 +525,17 @@ export default class Generic {
       ) {
         return `Due today`;
       } else {
-        return 'Overdue by [1] day';
+        const milliseconds = currentDate.getTime() - futureDateLimit.getTime();
+        if (milliseconds > 2678400000) {
+          const diffMonths = Math.floor(milliseconds / (30 * 24 * 60 * 60 * 1000));
+          return `Overdue by [${diffMonths}] month(s)`;
+        } else if (milliseconds > 604800000) {
+          const diffWeeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
+          return `Overdue by [${diffWeeks}] week(s)`;
+        } else {
+          const diffDays = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
+          return `Overdue by [${diffDays}] day(s)`;
+        }
       }
     }
   }
