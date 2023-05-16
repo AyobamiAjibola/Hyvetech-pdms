@@ -95,7 +95,7 @@ export default class ServiceReminderController {
       reminders.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
       for (let i = 0; i < reminders.length; i++) {
-        let checking = reminders[i].recurring === 'yes'
+        let reminderStatus = reminders[i].recurring === 'yes'
                         ? Generic.reminderStatus(
                             reminders[i].lastServiceDate,
                             reminders[i].nextServiceDate,
@@ -104,15 +104,24 @@ export default class ServiceReminderController {
                           )
                         : 'Not Available';
 
+        let nextServiceDate = reminders[i].recurring === 'yes'
+                                ? Generic.nextServiceDate(
+                                    reminders[i].lastServiceDate,
+                                    reminders[i].serviceIntervalUnit,
+                                    reminders[i].serviceInterval
+                                  )
+                                : new Date()
+
         let intervalUnit = reminders[i].recurring === 'yes' ? reminders[i].serviceIntervalUnit : '';
         let interval = reminders[i].recurring === 'yes' ? reminders[i].serviceInterval : '';
 
         const updatedReminder: Partial<ServiceReminder> = {
-          reminderStatus: checking,
+          reminderStatus: reminderStatus,
           serviceIntervalUnit: intervalUnit,
           serviceInterval: interval,
+          nextServiceDate: nextServiceDate,
           serviceStatus: reminders[i].recurring === 'yes'
-                          ? checking?.split(" ")[0] === 'Overdue'
+                          ? reminderStatus?.split(" ")[0] === 'Overdue'
                             ? 'not_done' : 'active'
                           : 'not_done'
         };

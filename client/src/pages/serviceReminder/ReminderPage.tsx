@@ -48,8 +48,8 @@ function ReminderPage () {
 
     const handleShare = async () => {
       const message = `Hello ${reminder?.customer?.title ? capitalize.words(reminder?.customer?.title) : ''} ${reminder?.customer?.firstName && capitalize.words(reminder?.customer?.firstName)} ${reminder?.customer?.lastName && capitalize.words(reminder?.customer?.lastName)},\n
-${reminder && capitalize.words(reminder?.reminderType)} for your. [${reminder && capitalize.words(reminder?.vehicle?.modelYear)} ${reminder && capitalize.words(reminder?.vehicle?.model)}
-${reminder && capitalize.words(reminder?.vehicle?.make)} is due on [${moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}].\n
+${reminder && capitalize.words(reminder?.reminderType)} for your. ${reminder && capitalize.words(reminder?.vehicle?.modelYear)} ${reminder && capitalize.words(reminder?.vehicle?.model)} ${reminder && capitalize.words(reminder?.vehicle?.make)}
+is due on ${moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}.\n
 Should I send you an estimate and schedule you in?`
         try {
 
