@@ -1565,7 +1565,8 @@ function EstimateForm(props: IProps) {
       {openReminderModal && (
         <AppModal
           fullWidth
-          fullScreen={true}
+          size={document.documentElement.clientWidth > 375 ? "lg" : undefined}
+          fullScreen={document.documentElement.clientWidth > 375 ? false : true}
           show={openReminderModal}
           Content={
             <>

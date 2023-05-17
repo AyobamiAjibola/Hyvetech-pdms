@@ -194,6 +194,7 @@ Should I send you an estimate and schedule you in?`
                   <MenuItem value={'Generate Estimate'}>Generate Estimate</MenuItem>
                   <MenuItem value={'Share Reminder'}>Share Reminder</MenuItem>
                   <MenuItem value={'Delete Reminder'}>Delete Reminder</MenuItem>
+                  <Divider orientation='horizontal'/>
                   <ListSubheader>Service Status</ListSubheader>
                   <MenuItem value={'Service Status'}>Done</MenuItem>
                 </Select>

@@ -313,9 +313,9 @@ function ReminderForm(props: IProps) {
     useEffect(() => {
       if(reminderReducer.createReminderStatus === 'completed' ||
         reminderReducer.updateReminderStatus === 'completed') {
-        resetForm()
+        reload()
       }
-    }, [reminderReducer.createReminderStatus]);
+    }, [reminderReducer.createReminderStatus, reminderReducer.updateReminderStatus]);
 
     const data: any = {
       open_modal: undefined,
@@ -633,39 +633,76 @@ function ReminderForm(props: IProps) {
                   Reminder Type
                 </Typography>
               </Grid>}
-              {values.recurring === 'no' && <Grid item md={6} xs={12}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    disableFuture
-                    minDate={new Date('2023/01/01')}
-                    openTo="year"
-                    views={['year', 'month', 'day']}
-                    value={new Date(values.lastServiceDate)}
-                    onChange={(date) => setFieldValue('lastServiceDate', date) }
-                    renderInput={(params: any) =>
-                      <TextField
-                        {...params}
-                        fullWidth
-                        label={fields.lastServiceDate.label}
-                        name={fields.lastServiceDate.name}
-                        variant="outlined"
-                        onChange={ handleChange }
-                      />
-                    }
+              {values.recurring === 'no' && <Grid item md={6} xs={12}
+                sx={{
+                  display: 'flex', flexDirection: {md: 'row', xs: 'column'},
+                  gap: 2
+                }}
+              >
+                <Grid item md={6} xs={12}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      disableFuture
+                      minDate={new Date('2023/01/01')}
+                      openTo="year"
+                      views={['year', 'month', 'day']}
+                      value={new Date(values.lastServiceDate)}
+                      onChange={(date) => setFieldValue('lastServiceDate', date) }
+                      renderInput={(params: any) =>
+                        <TextField
+                          {...params}
+                          fullWidth
+                          label={fields.lastServiceDate.label}
+                          name={fields.lastServiceDate.name}
+                          variant="outlined"
+                          onChange={ handleChange }
+                        />
+                      }
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    variant="outlined"
+                    name={fields.serviceInterval.name}
+                    label={fields.serviceInterval.label}
+                    value={values.serviceInterval}
+                    onChange={ handleChange }
                   />
-                </LocalizationProvider>
+                </Grid>
               </Grid>}
-              {values.recurring === 'no' && <Grid item md={6} xs={12}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  name={fields.note.name}
-                  label={fields.note.label}
-                  value={values.note}
-                  onChange={handleChange}
-                />
+              {values.recurring === 'no' && <Grid item md={6} xs={12}
+                sx={{
+                  display: 'flex', flexDirection: {md: 'row', xs: 'column'},
+                  gap: 2
+                }}
+              >
+                <Grid item md={6} xs={12}>
+                  <SelectField
+                    data={[
+                    { label: 'Day(s)', value: 'day' },
+                    { label: 'Week(s)', value: 'week' },
+                    { label: 'Month(s)', value: 'month' }
+                    ]}
+                    fullWidth
+                    name={fields.serviceIntervalUnit.name}
+                    label={fields.serviceIntervalUnit.label}
+                    value={values.serviceIntervalUnit}
+                    type='string'
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    name={fields.nextServiceDate.name}
+                    label={fields.nextServiceDate.label}
+                    value={_nextServiceDate && moment(_nextServiceDate).format('ddd - Do - MMM - YYYY')}
+                  />
+                </Grid>
               </Grid>}
               {values.recurring === 'yes' && <Grid item md={4} xs={12}>
                 <TextField
@@ -751,7 +788,7 @@ function ReminderForm(props: IProps) {
               }}
               mt={4}
             >
-              {values.recurring === 'yes' && <Grid item md={8} xs={12}>
+              <Grid item md={8} xs={12}>
                 <TextField
                   fullWidth
                   multiline
@@ -762,7 +799,7 @@ function ReminderForm(props: IProps) {
                   value={values.note}
                   onChange={handleChange}
                 />
-              </Grid>}
+              </Grid>
               <Grid item md={4} xs={12} />
             </Grid>
 

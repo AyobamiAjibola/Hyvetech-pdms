@@ -104,21 +104,19 @@ export default class ServiceReminderController {
                           )
                         : 'Not Available';
 
-        let nextServiceDate = reminders[i].recurring === 'yes'
-                                ? Generic.nextServiceDate(
-                                    reminders[i].lastServiceDate,
-                                    reminders[i].serviceIntervalUnit,
-                                    reminders[i].serviceInterval
-                                  )
-                                : new Date()
+        let nextServiceDate = Generic.nextServiceDate(
+                                reminders[i].lastServiceDate,
+                                reminders[i].serviceIntervalUnit,
+                                reminders[i].serviceInterval
+                              )
 
-        let intervalUnit = reminders[i].recurring === 'yes' ? reminders[i].serviceIntervalUnit : '';
-        let interval = reminders[i].recurring === 'yes' ? reminders[i].serviceInterval : '';
+        // let intervalUnit = reminders[i].recurring === 'yes' ? reminders[i].serviceIntervalUnit : '';
+        // let interval = reminders[i].recurring === 'yes' ? reminders[i].serviceInterval : '';
 
         const updatedReminder: Partial<ServiceReminder> = {
           reminderStatus: reminderStatus,
-          serviceIntervalUnit: intervalUnit,
-          serviceInterval: interval,
+          // serviceIntervalUnit: intervalUnit,
+          // serviceInterval: interval,
           nextServiceDate: nextServiceDate,
           serviceStatus: reminders[i].recurring === 'yes'
                           ? reminderStatus?.split(" ")[0] === 'Overdue'
