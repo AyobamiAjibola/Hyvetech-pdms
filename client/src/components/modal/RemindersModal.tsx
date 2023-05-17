@@ -111,7 +111,9 @@ function RemindersModal(props: IProps) {
                 <>
                   {params.row.reminderStatus.split(" ")[0] === 'Overdue' || params.row.reminderStatus === 'Due today'
                     ? <span style={{color: 'red'}}>{params.row.reminderStatus}</span>
-                    : <span style={{color: 'green'}}>{params.row.reminderStatus}</span>
+                    : params.row.reminderStatus === 'Not Available'
+                      ? <span>{params.row.reminderStatus}</span>
+                      : <span style={{color: 'green'}}>{params.row.reminderStatus}</span>
                   }
                 </>
               )
