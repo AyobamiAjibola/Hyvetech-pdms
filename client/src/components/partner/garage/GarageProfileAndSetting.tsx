@@ -146,7 +146,7 @@ function GarageProfileAndSetting() {
             initialValues={settingsValues}
             validationSchema={schema[2]}
             enableReinitialize>
-            <GarageSettingsForm isSubmitting={partnerReducer.createPartnerKycStatus === 'loading'} />
+            <GarageSettingsForm isSubmitting={partnerReducer.createPartnerSettingsStatus === 'loading'} />
           </Formik>
         </Box>
       </Stack>

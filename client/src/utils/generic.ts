@@ -311,4 +311,26 @@ export function reminderStatus(startDate: string, endDate: any, serviceIntervalU
       }
     }
   }
+};
+
+export function marked(serviceDate: any, currentDate: any) {
+  const service_date = new Date(serviceDate);
+  const currentDateObj = new Date(currentDate);
+  const milliseconds = currentDateObj.getTime() - service_date.getTime();
+
+  const diffDays = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
+  const diffWeeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
+  const diffMonths = Math.floor(milliseconds / (30 * 24 * 60 * 60 * 1000));
+
+  if (diffDays === 0) {
+    return `today`;
+  } else if (diffDays === 1) {
+    return `yesterday`;
+  } else if (diffMonths > 1) {
+    return `[${diffMonths}] month(s) ago`;
+  } else if (diffWeeks > 1) {
+    return `[${diffWeeks}] week(s) ago`;
+  } else {
+    return `[${diffDays}] day(s) ago`;
+  }
 }

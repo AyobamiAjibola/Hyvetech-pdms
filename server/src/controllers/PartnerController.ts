@@ -39,6 +39,9 @@ import { generateEstimateHtml, generateInvoiceHtml, generatePdf, generateReceipt
 import { HasPermission, TryCatch } from '../decorators';
 import Preference, { $savePreferenceSchema, PreferenceSchemaType } from '../models/Pereference';
 
+import { promisify } from 'util';
+// import { IncomingForm, File } from 'formidable';
+
 interface IPaymentPlanModelDescription {
   value: string;
 }
@@ -104,6 +107,7 @@ export interface IDriverFilterProps {
 }
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
+const parseForm = promisify(form.parse.bind(form));
 
 export default class PartnerController {
   private declare passwordEncoder: BcryptPasswordEncoder;
@@ -214,8 +218,6 @@ export default class PartnerController {
               where: { slug: settings.roles[4] },
             });
           }
-
-          console.log('called oo');
 
           //Ride-Share Partner
           if (value.category === CATEGORIES[4].name) {
@@ -434,6 +436,7 @@ export default class PartnerController {
         const basePath = `${UPLOAD_BASE_PATH}/partners`;
 
         try {
+
           const { error, value } = Joi.object({
             accountName: Joi.string().allow('').label('Account Name'),
             accountNumber: Joi.string().allow('').label('Account Number'),
@@ -459,6 +462,7 @@ export default class PartnerController {
             );
 
           value.brands = JSON.parse(value.brands);
+
           value.workingHours = JSON.parse(value.workingHours);
 
           for (const valueKey in value) {
@@ -479,12 +483,11 @@ export default class PartnerController {
             await partner.save();
           }
 
-          const partnerJson = partner.toJSON();
-
+          // const partnerJson = partner.toJSON();
           const response: HttpResponse<InferAttributes<Partner>> = {
             code: HttpStatus.OK.code,
             message: `Updated Settings Successfully`,
-            result: partnerJson,
+            result: partner
           };
 
           resolve(response);
