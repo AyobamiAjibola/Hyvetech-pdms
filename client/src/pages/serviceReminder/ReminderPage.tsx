@@ -1,4 +1,4 @@
-import { Button, DialogActions, DialogContentText, Divider, FormControl, Grid, InputLabel, ListSubheader, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, DialogActions, DialogContentText, Divider, FormControl, Grid, InputLabel, ListSubheader, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { IServiceReminder } from '@app-models';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import useAppSelector from '../../hooks/useAppSelector';
 import { clearDeleteReminderStatus } from '../../store/reducers/serviceReminderReducer';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../components/alerts/AppAlert';
+import { marked } from '../../utils/generic';
 
 interface ILocationState {
   reminder?: IServiceReminder;
@@ -31,6 +32,7 @@ function ReminderPage () {
     const [success, setSuccess] = useState<CustomHookMessage>();
     const [error, setError] = useState<CustomHookMessage>();
     const [resetServiceDate, setResetServiceDate] = useState<boolean>(false);
+    const [markedStatus, setMarkedStatus] = useState<string>('');
     const navigate = useNavigate()
 
     const location = useLocation();
@@ -140,7 +142,13 @@ Should I send you an estimate and schedule you in?`
         navigate('/reminders')
         dispatch(getReminderAction());
       }
-    }, [reminderReducer.updateReminderStatus])
+    }, [reminderReducer.updateReminderStatus]);
+
+    useEffect(() => {
+      const today = new Date();
+      const marked_status = marked(reminder?.lastServiceDate, today);
+      setMarkedStatus(marked_status);
+    }, [reminder?.lastServiceDate])
 
     return (
       <React.Fragment>
@@ -197,6 +205,22 @@ Should I send you an estimate and schedule you in?`
                   <Divider orientation='horizontal'/>
                   <ListSubheader>Service Status</ListSubheader>
                   <MenuItem value={'Service Status'}>Done</MenuItem>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      width: '100%',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <MenuItem></MenuItem>
+                    <Paper elevation={3}
+                      sx={{
+                        fontSize: '12px', height: '20px', pl: 1, pr: 1, mr: 1
+                      }}
+                    >
+                      Marked done {markedStatus}
+                    </Paper>
+                  </Box>
                 </Select>
             </FormControl>
           </Grid>

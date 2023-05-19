@@ -51,7 +51,6 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
   }
 
   // @ts-ignore
-  console.log(invoice.dataValues.labours, invoice.labours);
 
   // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
 
@@ -64,16 +63,36 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
     console.log(e);
   }
 
-  const calculateTaxTotal = (invoice: any | undefined) => {
+//   const calculateTaxTotal = (invoice: any | undefined) => {
+//     if (!invoice) return 0;
+//     let tax = 0;
+//     if(invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
+//         tax = parseFloat(`${invoice?.draftInvoice?.tax}`.split(',').join('')) + parseFloat(`${invoice?.draftInvoice?.taxPart}`.split(',').join(''));
+//     } else {
+//         tax = parseFloat(`${invoice?.tax}`.split(',').join('')) + parseFloat(`${invoice?.taxPart}`.split(',').join(''));
+//     }
+//     if(invoice.edited === null && !invoice.updateStatus === null){
+//         tax = parseFloat(`${invoice?.estimate?.tax}`.split(',').join('')) + parseFloat(`${invoice?.estimate?.taxPart}`.split(',').join(''));
+//     }
+//     return tax
+//   };
+
+const calculateTaxTotal = (invoice: any | undefined) => {
     if (!invoice) return 0;
+
     let tax = 0;
-    if(invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
-        tax = parseFloat(`${invoice?.draftInvoice?.tax}`.split(',').join('')) + parseFloat(`${invoice?.draftInvoice?.taxPart}`.split(',').join(''));
+
+    if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
+      tax = parseFloat(invoice.draftInvoice.tax.replace(',', '')) + parseFloat(invoice.draftInvoice.taxPart.replace(',', ''));
+    } else if (invoice.edited === null && invoice.updateStatus === null) {
+      tax = parseFloat(invoice.estimate.tax.replace(',', '')) + parseFloat(invoice.estimate.taxPart.replace(',', ''));
     } else {
-        tax = parseFloat(`${invoice?.tax}`.split(',').join('')) + parseFloat(`${invoice?.taxPart}`.split(',').join(''));
+      tax = parseFloat(invoice.tax.replace(',', '')) + parseFloat(invoice.taxPart.replace(',', ''));
     }
-    return tax
+
+    return tax;
   };
+
 
   // console.log(mainUrl, "mainUrl");
   // @ts-ignore
@@ -579,10 +598,11 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
                             <span class="item-warranty-item"></span>
                             <span class="item-cost-item-sub">Subtotal:</span>
                             <span class="item-amount-item-amount">₦ ${
-                                invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
-                                    ? formatNumberToIntl(
-                                        invoice?.draftInvoice?.partsTotal + invoice?.draftInvoice?.laboursTotal)
-                                    : formatNumberToIntl(invoice?.partsTotal + invoice?.laboursTotal)
+                                invoice.edited === null && invoice.updateStatus === null
+                                    ? formatNumberToIntl(invoice?.estimate?.partsTotal + invoice?.estimate?.laboursTotal)
+                                    : invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                                        ? formatNumberToIntl(invoice?.draftInvoice?.partsTotal + invoice?.draftInvoice?.laboursTotal)
+                                        : formatNumberToIntl(invoice?.partsTotal + invoice?.laboursTotal)
                             }</span>
                         </div>
                         <div class="item-header-item-total">

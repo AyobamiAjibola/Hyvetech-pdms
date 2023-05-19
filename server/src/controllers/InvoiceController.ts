@@ -903,14 +903,34 @@ export default class InvoiceController {
       where: {partnerId: req.user.partner.id}
     })
 
+    //ITEM SUB AND ADDITION LOGIC
+    //------START------//
+    for (const item of value.parts) {
+      const { partNumber, quantity: { quantity } } = item as any;
+      const index = items.findIndex((value: any) => value.slug === partNumber);
+
+      if (index !== -1) {
+        const parsedParts = draftInvoice ? draftInvoice?.parts : estimate?.parts;
+        for (const part of parsedParts) {
+          const object = JSON.parse(part);
+          if (object.partNumber === partNumber) {
+            const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
+            await items[index].update({ quantity: items[index].quantity + itemQty });
+          }
+        }
+      }
+    };
+    //------END------//
+
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.draft,
       edited: true,
       paidAmount: invoice.depositAmount,
     });
 
+
     if (draftInvoice) {
-      await this.doSave(draftInvoice, value, items);
+      await this.doSave(draftInvoice, value);
     } else {
       const data: Partial<Attributes<DraftInvoice>> = {
         ...value,
@@ -921,6 +941,22 @@ export default class InvoiceController {
         expiresIn: estimate.expiresIn,
         edited: invoice.edited,
       };
+
+      for (const item of value.parts) {
+        const { partNumber, quantity: { quantity } } = item as any;
+        const index = items.findIndex((value: any) => value.slug === partNumber);
+
+        if (index !== -1) {
+          const parsedParts = invoice?.parts || [];
+          for (const part of parsedParts) {
+            const object = JSON.parse(part);
+            if (object.partNumber === partNumber) {
+              const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
+              await items[index].update({ quantity: items[index].quantity + itemQty });
+            }
+          }
+        }
+      }
 
       for (const valueKey in value) {
         const key = valueKey as keyof InvoiceSchemaType;
@@ -959,18 +995,6 @@ export default class InvoiceController {
           }
 
           data[key] = value[key];
-        }
-      }
-
-      for (const item of value.parts) {
-        const {partNumber, quantity: {quantity}} = item as any
-        const findItem = items.find((value: any) => value.slug === partNumber);
-
-        for (const part of estimate?.parts || []) {
-          const object = JSON.parse(part);
-
-          const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
-          await findItem?.update({ quantity: findItem.quantity + itemQty });
         }
       }
 
@@ -1019,17 +1043,26 @@ export default class InvoiceController {
       where: {partnerId: req.user.partner.id}
     })
 
+    let draftInvoice = await invoice.$get('draftInvoice');
+
+    //ITEM SUB AND ADDITION LOGIC
+    //------START------//
     for (const item of value.parts) {
-      const {partNumber, quantity: {quantity}} = item as any
-      const findItem = items.find((value: any) => value.slug === partNumber);
+      const { partNumber, quantity: { quantity } } = item as any;
+      const index = items.findIndex((value: any) => value.slug === partNumber);
 
-      for (const part of estimate?.parts || []) {
-        const object = JSON.parse(part);
-
-        const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
-        await findItem?.update({ quantity: findItem.quantity + itemQty });
+      if (index !== -1) {
+        const parsedParts = draftInvoice ? draftInvoice?.parts : estimate?.parts;
+        for (const part of parsedParts) {
+          const object = JSON.parse(part);
+          if (object.partNumber === partNumber) {
+            const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
+            await items[index].update({ quantity: items[index].quantity + itemQty });
+          }
+        }
       }
-    }
+    };
+    //------END------//
 
     await invoice.update({
       parts: value.parts.map((value: string) => JSON.stringify(value)),
@@ -1051,7 +1084,7 @@ export default class InvoiceController {
       discountType: value.discountType,
     });
 
-    const draftInvoice = await invoice.$get('draftInvoice');
+    // const draftInvoice = await invoice.$get('draftInvoice');
 
     if (draftInvoice) {
       // @ts-ignore
@@ -1070,18 +1103,7 @@ export default class InvoiceController {
     } as HttpResponse<Invoice>);
   }
 
-  private static async doSave(invoice: DraftInvoice | Invoice, value: InvoiceSchemaType, items: any) {
-    for (const item of value.parts) {
-      const {partNumber, quantity: {quantity}} = item as any
-      const findItem = items.find((value: any) => value.slug === partNumber);
-
-      for (const part of invoice?.parts || []) {
-        const object = JSON.parse(part);
-
-        const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
-        await findItem?.update({ quantity: findItem.quantity + itemQty });
-      }
-    }
+  private static async doSave(invoice: DraftInvoice | Invoice, value: InvoiceSchemaType) {
 
     for (const valueKey in value) {
       const key = valueKey as keyof InvoiceSchemaType;

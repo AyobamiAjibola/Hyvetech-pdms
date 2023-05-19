@@ -530,19 +530,17 @@ function EstimateForm(props: IProps) {
 
   // validate available stock
   useEffect(() => {
-    const valueItems = values.parts;
-
-    valueItems.forEach(({ quantity: { quantity }, partNumber }) => {
-      if(partNumber) {
+    for (const { quantity: { quantity }, partNumber } of values.parts) {
+      console.log(quantity, 'checks quantity of values.part');
+      if (partNumber) {
         //@ts-ignore
-        const foundItem = items.find((item) => item.slug === partNumber);
-
-        if (foundItem?.quantity && +foundItem.quantity < +quantity) {
+        const item = items.find((item) => item.slug === partNumber);
+        if (item?.quantity && +item.quantity < +quantity) {
           setError({ message: 'Low on stock, please add stock' });
         }
       }
-    });
-  }, [values.parts])
+    }
+  }, [values.parts]);
 
   useEffect(() => {
     const newStates = STATES.map(state => ({

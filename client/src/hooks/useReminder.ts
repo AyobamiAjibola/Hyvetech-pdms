@@ -143,7 +143,7 @@ export default function useReminder() {
     useEffect(() => {
         if (reminderReducer.updateReminderStatus === 'completed') {
             setSuccess({ message: reminderReducer.updateReminderSuccess });
-            handleReset();;
+            handleReset();
         }
     }, [dispatch, reminderReducer.updateReminderStatus, reminderReducer.updateReminderSuccess, handleReset]);
 
