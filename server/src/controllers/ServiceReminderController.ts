@@ -110,13 +110,8 @@ export default class ServiceReminderController {
                                 reminders[i].serviceInterval
                               )
 
-        // let intervalUnit = reminders[i].recurring === 'yes' ? reminders[i].serviceIntervalUnit : '';
-        // let interval = reminders[i].recurring === 'yes' ? reminders[i].serviceInterval : '';
-
         const updatedReminder: Partial<ServiceReminder> = {
           reminderStatus: reminderStatus,
-          // serviceIntervalUnit: intervalUnit,
-          // serviceInterval: interval,
           nextServiceDate: nextServiceDate,
           serviceStatus: reminders[i].recurring === 'yes'
                           ? reminderStatus?.split(" ")[0] === 'Overdue'
@@ -293,22 +288,20 @@ export default class ServiceReminderController {
         CustomAPIError.response(`Reminder Type does not exist`, HttpStatus.NOT_FOUND.code),
     );
 
-    // const nextDate = Generic.nextServiceDate(value.lastServiceDate, value.serviceIntervalUnit, value.serviceInterval);
-    // const reminder = Generic.reminderStatus(value.lastServiceDate, nextDate, value.serviceIntervalUnit, value.serviceInterval);
-
     const data: Partial<ServiceReminder> = {
         reminderType: value.reminderType,
         lastServiceDate: value.lastServiceDate,
-        nextServiceDate: value.nextServiceDate || new Date, // value.recurring === 'yes' ? Generic.nextServiceDate(value.lastServiceDate, value.serviceIntervalUnit, value.serviceInterval) : new Date(),
+        nextServiceDate: value.nextServiceDate || new Date,
         serviceInterval: value.serviceInterval,
         serviceIntervalUnit: value.serviceIntervalUnit,
+        lastServiceMileage: value.lastServiceMileage,
+        lastServiceMileageUnit: value.lastServiceMileageUnit,
+        nextServiceMileage: value.nextServiceMileage,
+        nextServiceMileageUnit: value.nextServiceMileageUnit,
         note: value.note,
         recurring: value.recurring,
-        reminderStatus: value.reminderStatus || 'Not Available', // value.recurring === 'yes' ? Generic.reminderStatus(value.lastServiceDate, nextDate, value.serviceIntervalUnit, value.serviceInterval) : 'Not Available',
-        serviceStatus: value.serviceStatus // value.recurring === 'yes'
-                        // ? reminder?.split(" ")[0] === 'Overdue'
-                        //   ? 'Not Done' : 'Done'
-                        // : 'Finished'
+        reminderStatus: value.reminderStatus || 'Not Available',
+        serviceStatus: value.serviceStatus
       };
 
       const serviceReminder = await dao.serviceReminderDAOService.create(data as CreationAttributes<ServiceReminder>);
@@ -345,6 +338,10 @@ export default class ServiceReminderController {
       nextServiceDate: value.recurring === 'yes' ? Generic.nextServiceDate(value.lastServiceDate, value.serviceIntervalUnit, value.serviceInterval) : new Date(),
       serviceInterval: value.serviceInterval,
       serviceIntervalUnit: value.serviceIntervalUnit,
+      lastServiceMileage: value.lastServiceMileage,
+      lastServiceMileageUnit: value.lastServiceMileageUnit,
+      nextServiceMileage: value.nextServiceMileage,
+      nextServiceMileageUnit: value.nextServiceMileageUnit,
       note: value.note,
       recurring: value.recurring,
       reminderStatus: value.recurring === 'yes' ? Generic.reminderStatus(value.lastServiceDate, value.nextServiceDate, value.serviceIntervalUnit, value.serviceInterval) : 'Not Available',

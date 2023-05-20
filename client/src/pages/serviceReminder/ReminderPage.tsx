@@ -1,4 +1,19 @@
-import { Box, Button, DialogActions, DialogContentText, Divider, FormControl, Grid, InputLabel, ListSubheader, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  DialogActions,
+  DialogContentText,
+  Divider,
+  FormControl,
+  Grid,
+  InputLabel,
+  ListSubheader,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { IServiceReminder } from '@app-models';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -16,6 +31,15 @@ import { clearDeleteReminderStatus } from '../../store/reducers/serviceReminderR
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../components/alerts/AppAlert';
 import { marked } from '../../utils/generic';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  select: {
+    '&:hover': {
+      background: '#F1F0F1'
+    },
+  },
+});
 
 interface ILocationState {
   reminder?: IServiceReminder;
@@ -24,6 +48,7 @@ interface ILocationState {
 const { fields } = reminderModel;
 
 function ReminderPage () {
+  const classes = useStyles();
   const reminderReducer = useAppSelector(state => state.serviceReminderReducer);
     const [selectedValue, setSelectedValue] = useState<string>('');
     const [reminder, setReminder] = useState<IServiceReminder>();
@@ -199,12 +224,12 @@ Should I send you an estimate and schedule you in?`
                   <MenuItem value="">
                   ...
                   </MenuItem>
-                  <MenuItem value={'Generate Estimate'}>Generate Estimate</MenuItem>
-                  <MenuItem value={'Share Reminder'}>Share Reminder</MenuItem>
-                  <MenuItem value={'Delete Reminder'}>Delete Reminder</MenuItem>
+                  <MenuItem value={'Generate Estimate'} className={classes.select}>Generate Estimate</MenuItem>
+                  <MenuItem value={'Share Reminder'} className={classes.select}>Share Reminder</MenuItem>
+                  <MenuItem value={'Delete Reminder'} className={classes.select}>Delete Reminder</MenuItem>
                   <Divider orientation='horizontal'/>
                   <ListSubheader>Service Status</ListSubheader>
-                  <MenuItem value={'Service Status'}>Done</MenuItem>
+                  <MenuItem value={'Service Status'} className={classes.select}>Mark as done</MenuItem>
                   <Box
                     sx={{
                       display: 'flex',
@@ -213,13 +238,14 @@ Should I send you an estimate and schedule you in?`
                     }}
                   >
                     <MenuItem></MenuItem>
-                    <Paper elevation={3}
+                    <Typography
                       sx={{
-                        fontSize: '12px', height: '20px', pl: 1, pr: 1, mr: 1
+                        fontSize: '12px', pl: 1, pr: 1, mr: 1,
+                        fontStyle: 'italic'
                       }}
                     >
                       Marked done {markedStatus}
-                    </Paper>
+                    </Typography>
                   </Box>
                 </Select>
             </FormControl>
@@ -301,9 +327,9 @@ Should I send you an estimate and schedule you in?`
               <TextField
                 fullWidth
                 variant="outlined"
-                name={fields.lastServiceDate.name}
-                label={fields.lastServiceDate.label}
-                value={moment(reminder?.lastServiceDate).format('ddd - Do - MMM - YYYY')}
+                name={fields.serviceIntervalUnit.name}
+                label={fields.serviceIntervalUnit.label}
+                value={reminder?.serviceIntervalUnit}
                 InputProps={{
                   readOnly: true
                 }}
@@ -340,9 +366,9 @@ Should I send you an estimate and schedule you in?`
               <TextField
                 fullWidth
                 variant="outlined"
-                name={fields.serviceIntervalUnit.name}
-                label={fields.serviceIntervalUnit.label}
-                value={reminder?.serviceIntervalUnit}
+                name={fields.lastServiceDate.name}
+                label={fields.lastServiceDate.label}
+                value={moment(reminder?.lastServiceDate).format('ddd - Do - MMM - YYYY')}
                 InputProps={{
                   readOnly: true
                 }}
@@ -381,6 +407,94 @@ Should I send you an estimate and schedule you in?`
                 }}
               />
             </Grid>
+          </Grid>
+
+          <Grid item xs={12}
+            sx={{
+              gap: 4, display: 'flex',
+              flexDirection: {md: 'row', xs: 'column'}
+            }}
+            mt={4}
+          >
+            <Grid item md={4} xs={12}
+              sx={{
+                gap: 1, display: 'flex',
+                flexDirection: 'row'
+              }}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  variant="outlined"
+                  name={fields.lastServiceMileage.name}
+                  label={fields.lastServiceMileage.label}
+                  value={reminder?.lastServiceMileage}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="string"
+                  variant="outlined"
+                  name={fields.lastServiceMileageUnit.name}
+                  label={fields.lastServiceMileageUnit.label}
+                  value={reminder?.lastServiceMileageUnit}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Grid item md={4} xs={12}
+              sx={{
+                gap: 1, display: 'flex',
+                flexDirection: 'row'
+              }}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  variant="outlined"
+                  name={fields.nextServiceMileage.name}
+                  label={fields.nextServiceMileage.label}
+                  value={reminder?.nextServiceMileage}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="string"
+                  variant="outlined"
+                  name={fields.nextServiceMileageUnit.name}
+                  label={fields.nextServiceMileageUnit.label}
+                  value={reminder?.nextServiceMileageUnit}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Grid item md={4} xs={12} />
           </Grid>
 
           <Grid item xs={12}
