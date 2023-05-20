@@ -19,6 +19,10 @@ export interface IReminderValues {
     nextServiceDate?: any
     reminderStatus: string | null;
     serviceStatus: string | null
+    lastServiceMileage: number;
+    lastServiceMileageUnit: string;
+    nextServiceMileage: number;
+    nextServiceMileageUnit: string;
 }
 
 export interface IReminderTypeValues {
@@ -163,6 +167,38 @@ const fields = {
             required: 'Service Status is required',
         },
     },
+    lastServiceMileage: {
+        name: 'lastServiceMileage',
+        label: 'Last Service Mileage',
+        error: {
+            invalid: 'Last Service Mileage is invalid',
+            required: 'Last Service Mileage is required',
+        },
+    },
+    lastServiceMileageUnit: {
+        name: 'lastServiceMileageUnit',
+        label: 'Last Service Mileage Unit',
+        error: {
+            invalid: 'Last Service Mileage Unit is invalid',
+            required: 'Last Service Mileage Unit is required',
+        },
+    },
+    nextServiceMileage: {
+        name: 'nextServiceMileage',
+        label: 'Next Service Mileage',
+        error: {
+            invalid: 'Next Service Mileage is invalid',
+            required: 'Next Service Mileage is required',
+        },
+    },
+    nextServiceMileageUnit: {
+        name: 'nextServiceMileageUnit',
+        label: 'Next Service Mileage Unit',
+        error: {
+            invalid: 'Next Service Mileage Unit is invalid',
+            required: 'Next Service Mileage Unit is required',
+        },
+    },
 }
 
 const fieldReminderType = {
@@ -193,7 +229,11 @@ const initialValues: IReminderValues = {
     lastName: '',
     nextServiceDate: '',
     reminderStatus: '',
-    serviceStatus: 'done'
+    serviceStatus: 'done',
+    lastServiceMileage: 0,
+    lastServiceMileageUnit: '',
+    nextServiceMileage: 0,
+    nextServiceMileageUnit: ''
 }
 
 const initialValuesReminderType: IReminderTypeValues = {
@@ -208,7 +248,11 @@ const schema = Yup.object().shape({
     serviceInterval: Yup.number().nullable().label(fields.serviceInterval.label),
     serviceIntervalUnit: Yup.string().nullable().label(fields.serviceIntervalUnit.label),
     note: Yup.string().nullable().label(fields.note.label),
-    recurring: Yup.string().label(fields.recurring.label)
+    recurring: Yup.string().label(fields.recurring.label),
+    lastServiceMileage: Yup.number().label(fields.lastServiceMileage.label),
+    lastServiceMileageUnit: Yup.string().label(fields.lastServiceMileageUnit.label),
+    nextServiceMileage: Yup.number().label(fields.nextServiceMileage.label),
+    nextServiceMileageUnit: Yup.string().label(fields.nextServiceMileageUnit.label),
 });
 
 const schemaReminderType = Yup.object().shape({

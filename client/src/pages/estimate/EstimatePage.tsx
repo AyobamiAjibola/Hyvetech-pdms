@@ -13,6 +13,15 @@ import AppModal from '../../components/modal/AppModal';
 import { MESSAGES } from '../../config/constants';
 import AppAlert from '../../components/alerts/AppAlert';
 import { CustomHookMessage } from '@app-types';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  select: {
+    '&:hover': {
+      background: '#F1F0F1'
+    },
+  },
+});
 
 const API_ROOT = settings.api.rest;
 interface ILocationState {
@@ -20,6 +29,7 @@ interface ILocationState {
 }
 
 function EstimatePage() {
+  const classes = useStyles();
   const [estimate, setEstimate] = useState<IEstimate>();
   const [owner, setOwner] = useState<string>('');
   const [parts, setParts] = useState<IPart[]>([]);
@@ -284,12 +294,18 @@ function EstimatePage() {
                 <MenuItem value="">
                   ...
                 </MenuItem>
-                <MenuItem value={'Generate Invoice'}>{generating ? 'Generating...' : 'Generate Invoice'}</MenuItem>
-                <MenuItem value={'Download Pdf'}>{downloading ? 'Downloading...' : 'Download Pdf'}</MenuItem>
-                <MenuItem value={'Share unique link'}
+                <MenuItem value={'Generate Invoice'} className={classes.select}>
+                  {generating ? 'Generating...' : 'Generate Invoice'}
+                </MenuItem>
+                <MenuItem value={'Download Pdf'} className={classes.select}>
+                  {downloading ? 'Downloading...' : 'Download Pdf'}
+                </MenuItem>
+                <MenuItem value={'Share unique link'} className={classes.select}
                   disabled={estimate.sentStatus !== 'Sent'}
-                >Share unique link</MenuItem>
-                <MenuItem
+                >
+                  Share unique link
+                </MenuItem>
+                <MenuItem className={classes.select}
                   value={'Share PDF'}
                   disabled={estimate.sentStatus !== 'Sent' || document.documentElement.clientWidth > 912}
                 >

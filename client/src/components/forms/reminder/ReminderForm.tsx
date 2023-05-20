@@ -788,6 +788,80 @@ function ReminderForm(props: IProps) {
               }}
               mt={4}
             >
+              <Grid item md={4} xs={12}
+                sx={{
+                  gap: 1, display: 'flex',
+                  flexDirection: 'row'
+                }}
+              >
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    variant="outlined"
+                    name={fields.lastServiceMileage.name}
+                    label={fields.lastServiceMileage.label}
+                    value={values.lastServiceMileage}
+                    onChange={ handleChange }
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField
+                    data={[
+                      { label: 'miles', value: 'miles' },
+                      { label: 'km', value: 'km' }
+                    ]}
+                    fullWidth
+                    name={fields.lastServiceMileageUnit.name}
+                    label={fields.lastServiceMileageUnit.label}
+                    value={values.lastServiceMileageUnit}
+                    type='string'
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item md={4} xs={12}
+                sx={{
+                  gap: 1, display: 'flex',
+                  flexDirection: 'row'
+                }}
+              >
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    variant="outlined"
+                    name={fields.nextServiceMileage.name}
+                    label={fields.nextServiceMileage.label}
+                    value={values.nextServiceMileage}
+                    onChange={ handleChange }
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField
+                    data={[
+                      { label: 'miles', value: 'miles' },
+                      { label: 'km', value: 'km' }
+                    ]}
+                    fullWidth
+                    name={fields.nextServiceMileageUnit.name}
+                    label={fields.nextServiceMileageUnit.label}
+                    value={values.nextServiceMileageUnit}
+                    type='string'
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item md={4} xs={12} />
+            </Grid>
+
+            <Grid item xs={12}
+              sx={{
+                  gap: 2, display: 'flex',
+                  flexDirection: {md: 'row', xs: 'column'}
+              }}
+              mt={4}
+            >
               <Grid item md={8} xs={12}>
                 <TextField
                   fullWidth

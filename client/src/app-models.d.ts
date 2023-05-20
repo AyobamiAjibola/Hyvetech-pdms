@@ -695,6 +695,10 @@ declare module '@app-models' {
     nextServiceDate: string;
     reminderStatus: string;
     serviceStatus: string;
+    lastServiceMileage: number;
+    lastServiceMileageUnit: string;
+    nextServiceMileage: number;
+    nextServiceMileageUnit: string;
   }
 
   interface IReminderType {
