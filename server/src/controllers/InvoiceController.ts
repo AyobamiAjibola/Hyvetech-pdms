@@ -907,19 +907,30 @@ export default class InvoiceController {
     //------START------//
     for (const item of value.parts) {
       const { partNumber, quantity: { quantity } } = item as any;
-      const index = items.findIndex((value: any) => value.slug === partNumber);
 
-      if (index !== -1) {
-        const parsedParts = draftInvoice ? draftInvoice?.parts : estimate?.parts;
-        for (const part of parsedParts) {
-          const object = JSON.parse(part);
-          if (object.partNumber === partNumber) {
-            const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
-            await items[index].update({ quantity: items[index].quantity + itemQty });
+      const matchingItem = items.find((value: any) => value.slug === partNumber);
+
+      if (matchingItem) {
+        const parsedParts = draftInvoice ? draftInvoice.parts : estimate?.parts;
+        const parsedPart = parsedParts.find((part: any) => {
+          try {
+            const parsedData = JSON.parse(part);
+            return parsedData.partNumber === partNumber;
+          } catch (error) {
+            return false; // Ignore invalid JSON
           }
+        });
+
+        if (parsedPart) {
+          const object = JSON.parse(parsedPart);
+          const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
+          await matchingItem.update({ quantity: matchingItem.quantity + itemQty });
+        }else{
+          const itemQty = parseInt(quantity);
+          await matchingItem.update({ quantity: matchingItem.quantity - itemQty });
         }
       }
-    };
+    }
     //------END------//
 
     await invoice.update({
@@ -1049,19 +1060,30 @@ export default class InvoiceController {
     //------START------//
     for (const item of value.parts) {
       const { partNumber, quantity: { quantity } } = item as any;
-      const index = items.findIndex((value: any) => value.slug === partNumber);
 
-      if (index !== -1) {
-        const parsedParts = draftInvoice ? draftInvoice?.parts : estimate?.parts;
-        for (const part of parsedParts) {
-          const object = JSON.parse(part);
-          if (object.partNumber === partNumber) {
-            const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
-            await items[index].update({ quantity: items[index].quantity + itemQty });
+      const matchingItem = items.find((value: any) => value.slug === partNumber);
+
+      if (matchingItem) {
+        const parsedParts = draftInvoice ? draftInvoice.parts : estimate?.parts;
+        const parsedPart = parsedParts.find((part: any) => {
+          try {
+            const parsedData = JSON.parse(part);
+            return parsedData.partNumber === partNumber;
+          } catch (error) {
+            return false; // Ignore invalid JSON
           }
+        });
+
+        if (parsedPart) {
+          const object = JSON.parse(parsedPart);
+          const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
+          await matchingItem.update({ quantity: matchingItem.quantity + itemQty });
+        }else{
+          const itemQty = parseInt(quantity);
+          await matchingItem.update({ quantity: matchingItem.quantity - itemQty });
         }
       }
-    };
+    }
     //------END------//
 
     await invoice.update({

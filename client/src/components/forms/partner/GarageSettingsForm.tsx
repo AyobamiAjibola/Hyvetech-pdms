@@ -231,7 +231,7 @@ function GarageSettingsForm(props: IProps) {
                             return (
                               <React.Fragment key={`${value}`}>
                                 {value === 'days' ? (
-                                  <Grid item xs={12} sx={{ mb: 2 }}>
+                                  <Grid item md={6} xs={12} sx={{ mb: 2 }}>
                                     <Autocomplete
                                       multiple
                                       options={DAYS}
@@ -248,7 +248,7 @@ function GarageSettingsForm(props: IProps) {
                                     />
                                   </Grid>
                                 ) : (
-                                  <Grid item sm={3} xs={6} sx={{ mb: 2 }}>
+                                  <Grid item sm={3} md={3} xs={6} sx={{ mb: 2 }}>
                                     <TimePickerField
                                       fullWidth
                                       variant="outlined"
