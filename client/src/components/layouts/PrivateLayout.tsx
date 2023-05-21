@@ -71,8 +71,6 @@ function PrivateLayout() {
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <IconButton
-                // color="inherit"
-                // color="black"
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 edge="start"
