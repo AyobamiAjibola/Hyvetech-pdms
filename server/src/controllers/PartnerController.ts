@@ -373,20 +373,12 @@ export default class PartnerController {
     const partnerId = req.params.partnerId as string;
 
     try {
-      // const { error, value } = Joi.object({
-      //   cac: Joi.string().allow('').label('CAC'),
-      //   name: Joi.string().label('Company Full Name'),
-      //   nameOfDirector: Joi.string().allow('').label('Name of Director'),
-      //   nameOfManager: Joi.string().allow('').label('Name of Manager'),
-      //   vatNumber: Joi.string().allow('').label('VAT Number'),
-      //   workshopAddress: Joi.string().allow('').label('Workshop Address'),
-      // }).validate(req.body);
       const { error, value } = Joi.object<CreatePartnerType>($createPartnerKyc).validate(req.body);
 
       if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
       const partner = await dataSources.partnerDAOService.findById(+partnerId, {
-        include: [{ all: true }],
+        include: [Contact, Category, User],
       });
 
       if (!partner)
@@ -411,6 +403,7 @@ export default class PartnerController {
       }
 
       const result = PartnerController.formatPartner(partner);
+      console.log(result, 'result')
 
       const response: HttpResponse<Partner> = {
         code: HttpStatus.OK.code,
@@ -439,24 +432,12 @@ export default class PartnerController {
 
         try {
 
-          // const { error, value } = Joi.object({
-          //   accountName: Joi.string().allow('').label('Account Name'),
-          //   accountNumber: Joi.string().allow('').label('Account Number'),
-          //   bankName: Joi.string().allow('').label('Bank Name'),
-          //   googleMap: Joi.string().allow('').label('Google Map Link'),
-          //   logo: Joi.binary().allow().label('Company Logo'),
-          //   phone: Joi.string().allow('').label('Phone'),
-          //   totalStaff: Joi.string().allow('').label('Total Staff'),
-          //   totalTechnicians: Joi.string().allow('').label('Total Technicians'),
-          //   brands: Joi.string().allow('').label('Company Brands'),
-          //   workingHours: Joi.string().allow('').label('Working Hours'),
-          // }).validate(fields);
           const { error, value } = Joi.object<CreatePartnerType>($createPartnerSettings).validate(fields);
 
           if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
           const partner = await dataSources.partnerDAOService.findById(+partnerId, {
-            include: [{ all: true }],
+            include: [Contact, Category, User]
           });
 
           if (!partner)
