@@ -333,8 +333,50 @@ declare module '@app-models' {
     categories: ICategory[];
     technicians: [];
     contact: IContact;
+    isAccountProvisioned: boolean;
     createdAt: Date;
     updatedAt: Date;
+    accountProvisionStatus: 'NOT_REQUESTED' | 'PENDING' | 'APPROVED' | 'DECLINED';
+  }
+
+  interface AccountActivateRequest {
+    id?: number;
+    businessName: string;
+
+    cacUrl: string;
+    validIdFrontUrl: string;
+    validIdBackUrl: string;
+    isApproved: boolean;
+    partner: IPartner;
+    partnerId: number;
+  }
+
+  interface IPartnerAccount {
+    id: string;
+
+    accountRef: string;
+
+    accountNumber: string;
+
+    email: string;
+
+    accountProvider: string;
+
+    isActive: boolean;
+
+    firstName: string;
+
+    lastName: string;
+
+    middleName: string;
+
+    phoneNumber: string;
+
+    businessName: string;
+
+    partner: IPartner;
+
+    partnerId: number;
   }
 
   interface ICategory {
@@ -472,7 +514,7 @@ declare module '@app-models' {
     updatedAt: Date;
     creditRating?: string;
     partnerId?: number;
-    reminders: IServiceReminder[]
+    reminders: IServiceReminder[];
   }
 
   interface ISchedule {
@@ -618,6 +660,7 @@ declare module '@app-models' {
     accountNumber: string;
     accountName: string;
     bankName: string;
+    bankCode?: string;
   }
 
   interface IExpense {
@@ -767,5 +810,120 @@ declare module '@app-models' {
     discount: number;
     discountType: string;
     updateStatus: string;
+  }
+
+  interface AccountDTO {
+    email: string;
+    phoneNumber: string;
+    businessName?: string;
+    lastName: string;
+    firstName: string;
+    trackingReference?: string;
+    id?: string;
+  }
+
+  interface AccountResponseDTO {
+    accountNumber: string;
+  }
+
+  interface PaginationDTO {
+    pageSize: number;
+    pageNumber: number;
+  }
+
+  interface AccountBalanceDTO {
+    ledgerBalance: number;
+    availableBalance: number;
+    withdrawableBalance: number;
+    accountNumber?: string;
+    accountName?: string;
+    accountProvider?: string;
+  }
+
+  interface AccountTransactionLogDTO {
+    accountId: string;
+    page: PaginationDTO;
+  }
+
+  interface PostingEntry {
+    referenceNumber: string;
+    reversalReferenceNumber: string;
+    accountNumber: string;
+    linkedAccountNumber: string;
+    realDate: string;
+    amount: number;
+    openingBalance: number;
+    balanceAfter: number;
+    narration: string;
+    instrumentNumber: string;
+    postingRecordType: string;
+    postedBy: string;
+  }
+
+  interface AccountTransactionsResponseDTO {
+    postingsHistory: PostingEntry[];
+    totalRecordInStore: number;
+    totalDebit: number;
+    totalCredit: number;
+    statusCode: string;
+    message: string;
+  }
+
+  interface ConfirmRecipientDTO {
+    beneficiaryAccountNumber: string;
+    beneficiaryBankCode: string;
+    senderTrackingReference: string;
+    isRequestFromVirtualAccount: string;
+  }
+
+  interface AccountHolder {
+    beneficiaryAccountNumber: string;
+    beneficiaryName: string;
+    senderAccountNumber: string;
+    senderName: string;
+    beneficiaryCustomerID: number;
+    beneficiaryBankCode: string;
+    nameEnquiryID: string;
+    responseCode: string;
+    transferCharge: number;
+    sessionID: string;
+  }
+
+  interface UploadResult {
+    file: {
+      url: string;
+      name: string;
+    };
+    uploadStartTime: Date | null;
+    busboyFinishTime: Date | null;
+    s3UploadFinishTime: Date | null;
+  }
+
+  interface IBank {
+    bankName: string;
+    bankCode: string;
+  }
+
+  export interface AccountTransferDTO {
+    trackingReference?: string;
+    beneficiaryAccount: string;
+    amount: number;
+    narration: string;
+    beneficiaryBankCode: string;
+    beneficiaryName: string;
+    senderName?: string;
+    nameEnquiryId: string;
+    clientFeeCharge?: number;
+    saveAsBeneficiary?: boolean;
+    bankName?: string;
+  }
+
+  export interface AccountTransferResponseDTO {
+    requestReference: string;
+    transactionReference: string;
+    responseCode: string;
+    status: boolean;
+    message: string;
+    data: any;
   }
 }

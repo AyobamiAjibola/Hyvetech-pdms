@@ -88,6 +88,13 @@ import ServiceReminderDAOService from './ServiceReminderDAOService';
 import ServiceReminderRepository from '../../repositories/ServiceReminder';
 import ReminderTypeRepository from '../../repositories/ReminderType';
 import ReminderTypeDAOService from './ReminderTypeDAOService';
+import CBAService from '../CBAService';
+import KudaService from '../KudaService';
+import PartAccountRepository from '../../repositories/PartnerAccountRepository';
+import { PartnerAccountDAOService } from './PartnerAccountDAOService';
+import AccountActivationRequestDAOService from './AccountActivationRequestDAOService';
+import AccountActivationRequestRepository from '../../repositories/AccountActivationRequestRepository';
+import SendGridMailService from '../SendGrid';
 
 const customerRepository = new CustomerRepository();
 const contactRepository = new ContactRepository();
@@ -184,6 +191,17 @@ const itemStockDAOService = new ItemStockDAOService(itemStockRepository);
 const serviceReminderDAOService = new ServiceReminderDAOService(serviceReminderRepository);
 const reminderTypeDAOService = new ReminderTypeDAOService(reminderTypeRepository);
 
+const kudaService = new KudaService();
+const cbaService = new CBAService(kudaService);
+
+const mailService = new SendGridMailService();
+
+const parterAccountRepository = new PartAccountRepository();
+
+const partnerAccountDaoService = new PartnerAccountDAOService(parterAccountRepository, kudaService);
+
+const accountActivationDAOService = new AccountActivationRequestDAOService(new AccountActivationRequestRepository());
+
 export default {
   customerDAOService,
   vehicleDAOService,
@@ -228,5 +246,10 @@ export default {
   preferenceDAOService,
   itemStockDAOService,
   serviceReminderDAOService,
-  reminderTypeDAOService
+  reminderTypeDAOService,
+  cbaService,
+  partnerAccountDaoService,
+  kudaService,
+  accountActivationDAOService,
+  mailService,
 };

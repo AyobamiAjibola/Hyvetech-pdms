@@ -18,6 +18,8 @@ import expenseEndpoints from './expense.endpoint';
 import roleEndpoints from './role.endpoint';
 import itemEndpoints from './item.endpoints';
 import serviceReminderEndpoints from './serviceReminder.endpoint';
+import bankEndpoints from './bank.endpoint';
+import cbaEndpoint from './cba.endpoint';
 
 const endpoints = authEndpoints
   .concat(appointmentEndpoints)
@@ -38,6 +40,8 @@ const endpoints = authEndpoints
   .concat(expenseEndpoints)
   .concat(roleEndpoints)
   .concat(itemEndpoints)
-  .concat(serviceReminderEndpoints);
+  .concat(serviceReminderEndpoints)
+  .concat(bankEndpoints)
+  .concat(cbaEndpoint);
 
 export default endpoints;

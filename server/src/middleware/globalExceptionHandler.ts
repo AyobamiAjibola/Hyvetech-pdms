@@ -10,7 +10,7 @@ import HttpResponse = appCommonTypes.HttpResponse;
 const logger = AppLogger.init(globalExceptionHandler.name).logger;
 
 export default function globalExceptionHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-  console.log(err);
+  console.log('eeeror', err);
 
   if (res.headersSent) return next(err);
 
@@ -48,6 +48,10 @@ export default function globalExceptionHandler(err: Error, req: Request, res: Re
 
       return res.status(response.code).json(response);
     }
+
+    console.log('out of here');
+
+    return res.status(response.code).json(response);
   }
 
   process.on('uncaughtException', error => {
@@ -68,6 +72,8 @@ export default function globalExceptionHandler(err: Error, req: Request, res: Re
 
   logger.error(err.message);
   logger.error(err.stack);
+
+  response.message = err.message || `${err}`;
 
   return res.status(response.code).json(response);
 }

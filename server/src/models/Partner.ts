@@ -33,6 +33,7 @@ import Preference from './Pereference';
 import ItemStock from './ItemStock';
 import ReminderType from './ReminderType';
 import ServiceReminder from './ServiceReminder';
+import PartnerAccount from './PartnerAccount';
 
 @Table({
   timestamps: true,
@@ -131,6 +132,9 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
   @HasOne(() => Preference)
   declare preference: NonAttribute<Preference>;
 
+  @HasOne(() => PartnerAccount)
+  declare account: NonAttribute<PartnerAccount>;
+
   @HasMany(() => Beneficiary)
   declare beneficiaries: NonAttribute<Array<Beneficiary>>;
 
@@ -154,4 +158,10 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
 
   @HasMany(() => ItemStock)
   declare itemStocks: NonAttribute<Array<ItemStock>>;
+
+  @Column({ type: DataType.STRING, defaultValue: false })
+  declare isAccountProvisioned: CreationOptional<boolean>;
+
+  @Column({ type: DataType.STRING, defaultValue: 'NOT_REQUESTED' })
+  declare accountProvisionStatus: CreationOptional<string>;
 }
