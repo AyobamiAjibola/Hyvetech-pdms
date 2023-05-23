@@ -30,6 +30,8 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
 
   const autohyvePay = useAppSelector(state => state.autoHyveReducer);
 
+  const [selectedBeneficiary, setSelectedBeneficary] = useState('');
+
   const expense = useAppSelector(state => state.expenseReducer);
 
   const [alerMessage, setAlert] = useState<{ type: 'success' | 'error' | 'info' | 'warning'; message: string } | null>(
@@ -71,12 +73,28 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
   }, [dispatch]);
 
   const handleBeneficiarySelected = (id: string) => {
-    const beneficiary = expense.beneficiaries.find(item => item.id === +id);
+    setSelectedBeneficary(id);
+  };
+
+  useEffect(() => {
+    const beneficiary = expense.beneficiaries.find(item => item.id === +selectedBeneficiary);
 
     if (!beneficiary) return;
 
     setAccountNumber(beneficiary.accountNumber);
     setBank(beneficiary.bankCode as string);
+  }, [selectedBeneficiary]);
+
+  const resetForm = () => {
+    setAccountNumber('');
+    setNarration('');
+    setBank('');
+    setAmount('0');
+    setSelectedBeneficary('');
+    setUseBeneificary(false);
+    setSaveAsBeneficiary(false);
+    dispatch(clearTransferStatus());
+    dispatch(clearAccountHolderDetail());
   };
 
   useEffect(() => {
@@ -90,7 +108,7 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
   useEffect(() => {
     if (autohyvePay.requestAccountTransferStatus === 'completed') {
       setAlert({ type: 'success', message: 'Transaction successful' });
-
+      resetForm();
       onClose();
       dispatch(clearTransferStatus());
     } else if (autohyvePay.requestAccountTransferStatus === 'failed') {
@@ -135,7 +153,7 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="Select Beneficiary"
-                    value={bank}
+                    value={selectedBeneficiary}
                     onChange={e => handleBeneficiarySelected(e.target.value)}>
                     {expense.beneficiaries.map((item, i) => (
                       <MenuItem key={i} value={item.id}>
@@ -225,12 +243,8 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
           </React.Fragment>
         }
         onClose={() => {
-          setAccountNumber('');
-          setNarration('');
-          setBank('');
-          setAmount('0');
-          dispatch(clearTransferStatus());
-          dispatch(clearAccountHolderDetail());
+          resetForm();
+
           onClose();
         }}
       />
