@@ -9,6 +9,7 @@ import {
   UpdateOptions,
 } from 'sequelize';
 import { BulkCreateOptions } from 'sequelize/types/model';
+import { StepInstance } from 'twilio/lib/rest/studio/v1/flow/engagement/step';
 
 export declare namespace appModelTypes {
   interface IUser {
@@ -435,6 +436,49 @@ export declare namespace appModelTypes {
     address: string;
     createdAt: string;
     updatedAt: string;
+  }
+
+  interface AccountDTO {
+    email: string;
+    phoneNumber: string;
+    lastName: string;
+    firstName: string;
+    id?: string;
+  }
+
+  interface AccountResponseDTO {
+    accountNumber: string;
+  }
+
+  interface PaginationDTO {
+    pageSize: number;
+    pageNumber: number;
+  }
+
+  interface AccountBalanceDTO {
+    ledgerBalance: number;
+    availableBalance: number;
+    withdrawableBalance: number;
+  }
+
+  interface AccountTransactionLogDTO {
+    accountId: string;
+    page: PaginationDTO;
+  }
+
+  interface PostingEntry {
+    ReferenceNumber: string;
+    ReversalReferenceNumber: StepInstance;
+    AccountNumber: string;
+    LinkedAccountNumber: string;
+    RealDate: string;
+    Amount: number;
+    OpeningBalance: number;
+    BalanceAfter: number;
+    Narration: string;
+    InstrumentNumber: string;
+    PostingRecordType: string;
+    PostedBy: string;
   }
 
   type DomainClass<M> = new () => M;

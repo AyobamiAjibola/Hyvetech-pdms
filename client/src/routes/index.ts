@@ -18,9 +18,11 @@ import {
   TimeToLeave,
   HomeRepairService,
   PostAdd,
-  DateRange
+  DateRange,
 } from '@mui/icons-material';
 import React from 'react';
+
+import { HyvePayIconWrapper } from './CustomIcons';
 
 export interface ISideNav {
   tag: string;
@@ -42,8 +44,15 @@ export const sideNavs: ISideNav[] = [
     path: '/dashboard',
     Icon: Dashboard,
   },
+  {
+    tag: 'techs',
+    name: 'HyvePay',
+    path: '/hyvePay',
+    Icon: HyvePayIconWrapper,
+  },
 
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
+  { tag: 'super', name: 'KYC Requests', path: '/kyc/requests', Icon: Groups },
   { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },
   {
     tag: 'techs',

@@ -18,6 +18,7 @@ import transactionReducer from './transactionReducer';
 import expenseReducer from './expenseReducer';
 import itemStockReducer from './itemStockReducer';
 import serviceReminderReducer from './serviceReminderReducer';
+import autoHyveReducer from './autoHyveReducer';
 
 const rootReducer = combineReducers({
   appointmentReducer,
@@ -38,7 +39,8 @@ const rootReducer = combineReducers({
   transactionReducer,
   expenseReducer,
   itemStockReducer,
-  serviceReminderReducer
+  serviceReminderReducer,
+  autoHyveReducer,
 });
 
 export default rootReducer;

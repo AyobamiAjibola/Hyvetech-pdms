@@ -11,10 +11,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+
 import {
   createTheme,
   // CSSObject, styled, Theme,
-  ThemeProvider, useTheme
+  ThemeProvider,
+  useTheme,
 } from '@mui/material/styles';
 import React, { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -82,8 +84,7 @@ function SideNav() {
         }}
         variant="persistent"
         anchor="left"
-        open={openSideNav}
-      >
+        open={openSideNav}>
         <ThemeProvider
           theme={createTheme({
             palette: {

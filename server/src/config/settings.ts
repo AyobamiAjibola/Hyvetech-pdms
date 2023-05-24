@@ -100,6 +100,9 @@ export const READ_GUEST = 'read_guest';
 export const VIEW_ANALYTICS = 'view_analytics';
 
 const settings: AppSettings = {
+  sendGrid: {
+    apiKey: <string>process.env.SENDGRID_API_KEY,
+  },
   cookie: { name: process.env.COOKIE_AUTH as string, secret: process.env.COOKIE_AUTH as string },
   permissions: [
     MANAGE_ALL,
@@ -302,6 +305,22 @@ const settings: AppSettings = {
     },
     secure: <string>process.env.SMTP_CONFIG_SECURE === 'yes',
   },
+  amazon: {
+    s3: {
+      accessKey: <string>process.env.AMAZON_S3_ACCESS_KEY,
+      secretCredential: <string>process.env.AMAZON_S3_SECRET_CREDENTIAL,
+      bucketName: <string>process.env.AMAZON_S3_BUCKET_NAME,
+      region: <string>process.env.AMAZON_S3_REGION,
+    },
+  },
+  kuda: {
+    host: <string>process.env.KUDA_API_HOST,
+    apiKey: <string>process.env.KUDA_API_KEY,
+    email: <string>process.env.KUDA_ACCOUNT_EMAIL,
+    tokenUrl: <string>process.env.KUDA_TOKEN_URL,
+    transferChargeFee: <string>process.env.KUDA_TRANSFER_CHARGE_FEE,
+  },
+  transferFee: process.env.TRANSFER_FEE as unknown as number,
   redis: {
     development: {
       database: <string>process.env.REDIS_DEV_DB_NAME,

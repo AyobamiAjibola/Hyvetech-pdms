@@ -77,4 +77,6 @@ export default class Beneficiary extends Model<InferAttributes<Beneficiary>, Inf
   @ForeignKey(() => Partner)
   @Column(DataType.INTEGER)
   declare partnerId: number;
+  @Column(DataType.STRING)
+  declare bankCode: string;
 }

@@ -51,6 +51,8 @@ import ItemsPage from '../../pages/item/ItemsPage';
 import ItemPage from '../../pages/item/ItemPage';
 import RemindersPage from '../../pages/serviceReminder/RemindersPage';
 import ReminderPage from '../../pages/serviceReminder/ReminderPage';
+import HyvePay from '../../pages/HyvePay/HyvePay';
+import KycRequest from '../../pages/KycRequests/KycRequests';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -97,12 +99,14 @@ function PrivateLayout() {
                 {user?.partner?.name || ''}
               </Typography>
 
-              {!isSuperAdmin && <img
-                style={{ width: 30, height: 30, borderRadius: 6 }}
-                crossOrigin="anonymous"
-                src={`${settings.api.baseURL}/${user?.partner?.logo || ''}`}
-                alt=" "
-              />}
+              {!isSuperAdmin && (
+                <img
+                  style={{ width: 30, height: 30, borderRadius: 6 }}
+                  crossOrigin="anonymous"
+                  src={`${settings.api.baseURL}/${user?.partner?.logo || ''}`}
+                  alt=" "
+                />
+              )}
 
               <IconButton
                 // color="inherit"
@@ -124,10 +128,12 @@ function PrivateLayout() {
         </AppBar>
         <SideNav />
         <Main open={openSideNav}>
-        {/* <Box component="main" sx={{ flexGrow: 1, p: 3 }}> */}
+          {/* <Box component="main" sx={{ flexGrow: 1, p: 3 }}> */}
           <DrawerHeader />
           <Routes>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/hyvePay" element={<HyvePay />} />
+            <Route path="/kyc/requests" element={<KycRequest />} />
             <Route path="/appointments" element={<AppointmentsPage />} />
             <Route path="/appointments/:id" element={<AppointmentPage />} />
             <Route path="/customers" element={<CustomersPage />} />
@@ -164,7 +170,7 @@ function PrivateLayout() {
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />
             <Route path="/payment-recieved" element={<PaymentRecieve />} />
           </Routes>
-        {/* </Box> */}
+          {/* </Box> */}
         </Main>
       </Box>
       <AppLoader show={appointmentReducer.updateAppointmentStatus === 'loading'} />

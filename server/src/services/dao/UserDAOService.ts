@@ -40,6 +40,16 @@ export default class UserDAOService implements ICrudDAO<User> {
     return this.userRepository.findById(id, options);
   }
 
+  async findByAdminUserByPartnerId(id: number): Promise<User | undefined> {
+    const users = await this.userRepository.findAll({
+      where: {
+        partnerId: id,
+      },
+    });
+
+    return users.find(user => user.roleId === 5);
+  }
+
   deleteById(id: number, options?: DestroyOptions<InferAttributes<User>>): Promise<void> {
     return this.userRepository.deleteById(id, options);
   }

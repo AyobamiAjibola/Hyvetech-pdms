@@ -6,6 +6,8 @@ import MainLayout from './components/layouts/MainLayout';
 import useAppTheme from './hooks/useAppTheme';
 import useAppSelector from './hooks/useAppSelector';
 import AppLoader from './components/loader/AppLoader';
+import { LocalizationProvider } from '@mui/x-date-pickers-pro';
+import { AdapterDateFns } from '@mui/x-date-pickers-pro/AdapterDateFns';
 
 function App() {
   const authReducer = useAppSelector(state => state.authenticationReducer);
@@ -13,11 +15,13 @@ function App() {
   const { theme } = useAppTheme();
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <MainLayout />
-      <AppLoader show={authReducer.signOutStatus === 'loading'} />
-    </ThemeProvider>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <MainLayout />
+        <AppLoader show={authReducer.signOutStatus === 'loading'} />
+      </ThemeProvider>
+    </LocalizationProvider>
   );
 }
 

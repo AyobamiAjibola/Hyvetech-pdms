@@ -23,6 +23,6 @@
     "skipDefaultLibCheck": true,
     "alwaysStrict": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "app-model.d.ts"],
   "exclude": ["node_modules", "build"]
 }

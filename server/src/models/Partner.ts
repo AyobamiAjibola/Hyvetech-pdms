@@ -34,6 +34,7 @@ import Preference from './Pereference';
 import ItemStock from './ItemStock';
 import ReminderType from './ReminderType';
 import ServiceReminder from './ServiceReminder';
+import PartnerAccount from './PartnerAccount';
 import Joi from 'joi';
 
 export type CreatePartnerType = Attributes<Partner>;
@@ -44,7 +45,7 @@ export const $createPartnerKyc: Joi.SchemaMap<CreatePartnerType> = {
   nameOfManager: Joi.string().allow('').label('Name of Manager'),
   vatNumber: Joi.string().allow('').label('VAT Number'),
   workshopAddress: Joi.string().allow('').label('Workshop Address'),
-}
+};
 
 export const $createPartnerSettings: Joi.SchemaMap<CreatePartnerType> = {
   accountName: Joi.string().allow('').label('Account Name'),
@@ -57,7 +58,7 @@ export const $createPartnerSettings: Joi.SchemaMap<CreatePartnerType> = {
   totalTechnicians: Joi.string().allow('').label('Total Technicians'),
   brands: Joi.string().allow('').label('Company Brands'),
   workingHours: Joi.string().allow('').label('Working Hours'),
-}
+};
 
 @Table({
   timestamps: true,
@@ -159,6 +160,9 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
   @HasOne(() => Preference)
   declare preference: NonAttribute<Preference>;
 
+  @HasOne(() => PartnerAccount)
+  declare account: NonAttribute<PartnerAccount>;
+
   @HasMany(() => Beneficiary)
   declare beneficiaries: NonAttribute<Array<Beneficiary>>;
 
@@ -182,4 +186,10 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
 
   @HasMany(() => ItemStock)
   declare itemStocks: NonAttribute<Array<ItemStock>>;
+
+  @Column({ type: DataType.STRING, defaultValue: false })
+  declare isAccountProvisioned: CreationOptional<boolean>;
+
+  @Column({ type: DataType.STRING, defaultValue: 'NOT_REQUESTED' })
+  declare accountProvisionStatus: CreationOptional<string>;
 }

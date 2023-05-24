@@ -197,6 +197,9 @@ export declare namespace appCommonTypes {
   }
 
   interface AppSettings {
+    sendGrid: {
+      apiKey: string;
+    };
     postgres: Record<DatabaseEnv, DatabaseConfig>;
     redis: Record<DatabaseEnv, DatabaseConfig>;
     mongo: Record<DatabaseEnv, DatabaseConfig>;
@@ -206,6 +209,22 @@ export declare namespace appCommonTypes {
     roles: Roles[];
     permissions: Permissions[];
     tags: any[];
+    kuda: {
+      host: string;
+      apiKey: string;
+      email: string;
+      tokenUrl: string;
+      transferChargeFee: string;
+    };
+    amazon: {
+      s3: {
+        accessKey: string;
+        secretCredential: string;
+        bucketName: string;
+        region: string;
+      };
+    };
+    transferFee: number;
     email: {
       name?: string;
       host?: string;
