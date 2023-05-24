@@ -42,7 +42,7 @@ export function HasPermission(authorizedPermission: Array<appCommonTypes.Permiss
   return function (target: object, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
     descriptor.value = function (request: Request) {
-      console.log('re> ', request.permissions);
+      // console.log('re> ', request.permissions);
       let isAuthourized = false;
       if (authorizedPermission.length === 0) isAuthourized = true;
       else

@@ -126,11 +126,6 @@ function InvoiceForm(props: IProps) {
     }
   }, [values.invoice?.tax]);
 
-  // useEffect(() => {
-  //   setDiscount(values.invoice?.discount || 0);
-  //   setDiscountType(values.invoice?.discountType || 'exact');
-  // }, [values.invoice?.discount, values.invoice?.discountType]);
-
   useEffect(() => {
     if (
       values?.invoice?.taxPart !== undefined &&
@@ -160,36 +155,6 @@ function InvoiceForm(props: IProps) {
   useEffect(() => {
     setGrandTotal(subTotal + vatTotal - calculateDiscount(subTotal));
   }, [vatTotal]);
-
-  // useEffect(() => {
-  //   let gT = 0;
-  //   const totalSub = partTotal + labourTotal;
-  //   setSubTotal(totalSub);
-  //   setGrandTotal(totalSub);
-
-  //   if (!enableTaxLabor) {
-  //     gT = vatPart + subTotal - discount;
-  //     setVatTotal(vatPart);
-  //   }
-
-  //   if (!enableTaxPart) {
-  //     gT = vat + totalSub - discount;
-  //     setVatTotal(vat);
-  //   }
-
-  //   if (enableTaxPart && enableTaxLabor) {
-  //     gT = vat + vatPart + totalSub - discount;
-  //     setVatTotal(vatPart + vat);
-  //   } else if (!enableTaxPart && !enableTaxLabor) {
-  //     gT = totalSub - discount;
-
-  //     setVatTotal(0);
-  //   }
-
-  //   setTimeout(() => {
-  //     setGrandTotal(gT);
-  //   }, 1500);
-  // }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -242,7 +207,6 @@ function InvoiceForm(props: IProps) {
   }, [partTotal, setFieldValue, enableTaxPart]);
 
   useEffect(() => {
-    // const _grandTotal = vat + vatPart + partTotal + labourTotal;
 
     const _depositAmount = parseInt(values.depositAmount);
     const _dueBalance = grandTotal - _depositAmount;
@@ -343,18 +307,13 @@ function InvoiceForm(props: IProps) {
     if (setSave) setSave(false);
   }, [setSave]);
 
-  // listen for tax changes and adjust
   useEffect(() => {
-    // check for labor
     if (!enableTaxLabor) {
-      // setFieldValue(fields.tax.name, 0);
       setVat(0);
       values.tax = '0';
     }
 
-    // check for part
     if (!enableTaxPart) {
-      //setFieldValue(fields.taxPart.name, 0);
       setVatPart(0);
 
       values.taxPart = '0';
@@ -386,19 +345,17 @@ function InvoiceForm(props: IProps) {
 
     // validate available stock
     useEffect(() => {
-      const valueItems = values.parts;
-
-      valueItems.forEach(({ quantity: { quantity }, partNumber }) => {
-        if(partNumber) {
+      for (const { quantity: { quantity }, partNumber } of values.parts) {
+        console.log(quantity, 'checks quantity of values.part');
+        if (partNumber) {
           //@ts-ignore
-          const foundItem = items.find((item) => item.slug === partNumber);
-
-          if (foundItem?.quantity && +foundItem.quantity < +quantity) {
+          const item = items.find((item) => item.slug === partNumber);
+          if (item?.quantity && +item.quantity < +quantity) {
             setError({ message: 'Low on stock, please add stock' });
           }
         }
-      });
-    }, [values.parts])
+      }
+    }, [values.parts]);
 
   const _handleChangePart = useCallback(
     (e: any, index: number) => {
@@ -589,14 +546,6 @@ function InvoiceForm(props: IProps) {
                                 <React.Fragment key={`${value}`}>
                                   {value === 'name' && (
                                     <Grid item sm={4.5} xs={14}>
-                                      {/* <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        name={`parts.${index}.${value}`}
-                                        label={value}
-                                        value={part[value]}
-                                        onChange={handleChange}
-                                      /> */}
                                       <Autocomplete
                                         filterOptions={filterOptionsParts}
                                         options={partsOnly}
@@ -795,14 +744,6 @@ function InvoiceForm(props: IProps) {
                                 <React.Fragment key={`${value}`}>
                                   {value === 'title' && (
                                     <Grid item xs={8}>
-                                      {/* <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        name={`labours.${index}.${value}`}
-                                        label={value}
-                                        value={labour[value]}
-                                        onChange={handleChange}
-                                      /> */}
                                       <Autocomplete
                                         options={serviceOnly}
                                         filterOptions={filterOptionsLabour}

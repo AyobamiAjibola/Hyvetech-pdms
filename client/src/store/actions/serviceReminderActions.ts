@@ -13,6 +13,7 @@ const UPDATE_REMINDER = 'reminder:UPDATE_REMINDER';
 const GET_REMINDER = 'reminder:GET_REMINDER';
 const DELETE_REMINDER = 'reminder:DELETE_REMINDER';
 const UPDATE_REMINDER_STATUS = 'item:UPDATE_REMINDER_STATUS';
+const RESET_LAST_SERVICE_DATE = 'item:RESET_LAST_SERVICE_DATE';
 const API_ROOT = settings.api.rest;
 
 export const createReminderTypeAction = asyncThunkWrapper<ApiResponseSuccess<IReminderType>, any>(
@@ -45,6 +46,13 @@ export const updateReminderAction = asyncThunkWrapper<ApiResponseSuccess<IServic
     UPDATE_REMINDER,
     async args => {
         const response = await axiosClient.patch(`${API_ROOT}/reminder/${args.id}`, args);
+        return response.data;
+});
+
+export const resetLastDateAction = asyncThunkWrapper<ApiResponseSuccess<IServiceReminder>, any>(
+    RESET_LAST_SERVICE_DATE,
+    async args => {
+        const response = await axiosClient.patch(`${API_ROOT}/reminder/reset/${args.id}`, args);
         return response.data;
 });
 

@@ -6,7 +6,7 @@ import { Box, Divider,
     Stack, 
     Typography} from '@mui/material';
 // import AnalyticsCard from '../data/AnalyticsCard';
-import { cyan, lime, orange, teal } from '@mui/material/colors';
+import { cyan, green, lime, orange, teal } from '@mui/material/colors';
 // import AppPieChart from '../charts/AppPieChart';
 // import moment from 'moment';
 import AppStackedColumnChart from '../charts/AppStackedColumnChart';
@@ -116,6 +116,17 @@ function TechDashboard() {
                 <DataCard title='Estimates Sent' data={(techDashboardReducer?.mEstimate || 0)} bgColor={orange[300]} />
                 <DataCard title='Invoices Generated' data={(techDashboardReducer?.mInvoice || 0)} bgColor={orange[600]} />
                 <DataCard title='Total Receivable' data={'₦ '+formatNumberToIntl(techDashboardReducer?.mReceivable || 0)} bgColor={orange[900]} />
+            </Grid>
+
+            <Grid item
+              sx={{
+                display: 'flex',
+                flexDirection: {lg: 'row', xs: 'column'},
+                width: {lg: '100%', xs: '50%'},
+                gap: {lg: 8, md: 4, xs: 2}, ml: {lg: 10}
+              }}
+            >
+                <DataCard title='Service(s) Due' data={(techDashboardReducer?.mReminder || 0)} bgColor={green[300]} />
             </Grid>
           {/* </Grid> */}
 

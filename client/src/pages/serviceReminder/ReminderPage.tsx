@@ -1,4 +1,19 @@
-import { Button, DialogActions, DialogContentText, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  DialogActions,
+  DialogContentText,
+  Divider,
+  FormControl,
+  Grid,
+  InputLabel,
+  ListSubheader,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { IServiceReminder } from '@app-models';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -6,7 +21,7 @@ import reminderModel from '../../components/forms/models/reminderModel';
 import moment from 'moment';
 import capitalize from 'capitalize';
 import { ArrowBackIosNew } from '@mui/icons-material';
-import { deleteReminderAction, getReminderAction } from '../../store/actions/serviceReminderActions';
+import { deleteReminderAction, getReminderAction, resetLastDateAction } from '../../store/actions/serviceReminderActions';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import { MESSAGES } from '../../config/constants';
 import AppModal from '../../components/modal/AppModal';
@@ -15,6 +30,16 @@ import useAppSelector from '../../hooks/useAppSelector';
 import { clearDeleteReminderStatus } from '../../store/reducers/serviceReminderReducer';
 import { CustomHookMessage } from '@app-types';
 import AppAlert from '../../components/alerts/AppAlert';
+import { marked } from '../../utils/generic';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  select: {
+    '&:hover': {
+      background: '#F1F0F1'
+    },
+  },
+});
 
 interface ILocationState {
   reminder?: IServiceReminder;
@@ -23,6 +48,7 @@ interface ILocationState {
 const { fields } = reminderModel;
 
 function ReminderPage () {
+  const classes = useStyles();
   const reminderReducer = useAppSelector(state => state.serviceReminderReducer);
     const [selectedValue, setSelectedValue] = useState<string>('');
     const [reminder, setReminder] = useState<IServiceReminder>();
@@ -30,6 +56,8 @@ function ReminderPage () {
     const dispatch = useAppDispatch();
     const [success, setSuccess] = useState<CustomHookMessage>();
     const [error, setError] = useState<CustomHookMessage>();
+    const [resetServiceDate, setResetServiceDate] = useState<boolean>(false);
+    const [markedStatus, setMarkedStatus] = useState<string>('');
     const navigate = useNavigate()
 
     const location = useLocation();
@@ -46,10 +74,10 @@ function ReminderPage () {
   }, [dispatch]);
 
     const handleShare = async () => {
-        const message = `Hello ${reminder?.customer?.title ? capitalize.words(reminder?.customer?.title) : ''} ${reminder?.customer?.firstName && capitalize.words(reminder?.customer?.firstName)} ${reminder?.customer?.lastName && capitalize.words(reminder?.customer?.lastName)},\n
-        ${reminder && capitalize.words(reminder?.reminderType)} for your. [${reminder && capitalize.words(reminder?.vehicle?.modelYear)} ${reminder && capitalize.words(reminder?.vehicle?.model)}
-        ${reminder && capitalize.words(reminder?.vehicle?.make)} is due on [${moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}].\n
-        Should I send you an estimate and schedule you in?`
+      const message = `Hello ${reminder?.customer?.title ? capitalize.words(reminder?.customer?.title) : ''} ${reminder?.customer?.firstName && capitalize.words(reminder?.customer?.firstName)} ${reminder?.customer?.lastName && capitalize.words(reminder?.customer?.lastName)},\n
+${reminder && capitalize.words(reminder?.reminderType)} for your. ${reminder && capitalize.words(reminder?.vehicle?.modelYear)} ${reminder && capitalize.words(reminder?.vehicle?.model)} ${reminder && capitalize.words(reminder?.vehicle?.make)}
+is due on ${moment(reminder?.nextServiceDate).format('ddd - Do - MMM - YYYY')}.\n
+Should I send you an estimate and schedule you in?`
         try {
 
           const shareData = {
@@ -74,19 +102,27 @@ function ReminderPage () {
       _setDelete(true)
     }
 
+    const _resetServiceDate = () => {
+
+      const data ={
+        id: reminder?.id,
+      }
+      void dispatch(resetLastDateAction(data))
+    }
+
     useEffect(() => {
       if (reminderReducer.deleteReminderStatus === 'failed') {
         setError({ message: reminderReducer.deleteReminderError });
         handleReset();
       }
-  }, [reminderReducer.deleteReminderError, reminderReducer.deleteReminderStatus, handleReset]);
+    }, [reminderReducer.deleteReminderError, reminderReducer.deleteReminderStatus, handleReset]);
 
-  useEffect(() => {
+    useEffect(() => {
       if (reminderReducer.deleteReminderStatus === 'completed') {
         navigate('/reminders', {replace: true})
         dispatch(getReminderAction());
       }
-  }, [dispatch, reminderReducer.deleteReminderStatus, reminderReducer.deleteReminderSuccess, handleReset]);
+    }, [dispatch, reminderReducer.deleteReminderStatus, reminderReducer.deleteReminderSuccess, handleReset]);
 
     const data: any = {
       open_modal: 'true',
@@ -116,7 +152,28 @@ function ReminderPage () {
             sessionStorage.setItem(key, value);
           });
         }
+
+        if(value === "Service Status"){
+          setResetServiceDate(true)
+          setTimeout(() => {
+            setSelectedValue('')
+          }, 3000)
+        }
     };
+
+    useEffect(() => {
+      if(reminderReducer.updateReminderStatus === 'completed') {
+        setSuccess({ message: reminderReducer.updateReminderSuccess });
+        navigate('/reminders')
+        dispatch(getReminderAction());
+      }
+    }, [reminderReducer.updateReminderStatus]);
+
+    useEffect(() => {
+      const today = new Date();
+      const marked_status = marked(reminder?.lastServiceDate, today);
+      setMarkedStatus(marked_status);
+    }, [reminder?.lastServiceDate])
 
     return (
       <React.Fragment>
@@ -167,9 +224,29 @@ function ReminderPage () {
                   <MenuItem value="">
                   ...
                   </MenuItem>
-                  <MenuItem value={'Generate Estimate'}>Generate Estimate</MenuItem>
-                  <MenuItem value={'Share Reminder'}>Share Reminder</MenuItem>
-                  <MenuItem value={'Delete Reminder'}>Delete Reminder</MenuItem>
+                  <MenuItem value={'Generate Estimate'} className={classes.select}>Generate Estimate</MenuItem>
+                  <MenuItem value={'Share Reminder'} className={classes.select}>Share Reminder</MenuItem>
+                  <MenuItem value={'Delete Reminder'} className={classes.select}>Delete Reminder</MenuItem>
+                  <Divider orientation='horizontal'/>
+                  <ListSubheader>Service Status</ListSubheader>
+                  <MenuItem value={'Service Status'} className={classes.select}>Mark as done</MenuItem>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      width: '100%',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <MenuItem></MenuItem>
+                    <Typography
+                      sx={{
+                        fontSize: '12px', pl: 1, pr: 1, mr: 1,
+                        fontStyle: 'italic'
+                      }}
+                    >
+                      Marked done {markedStatus}
+                    </Typography>
+                  </Box>
                 </Select>
             </FormControl>
           </Grid>
@@ -250,9 +327,9 @@ function ReminderPage () {
               <TextField
                 fullWidth
                 variant="outlined"
-                name={fields.lastServiceDate.name}
-                label={fields.lastServiceDate.label}
-                value={moment(reminder?.lastServiceDate).format('ddd - Do - MMM - YYYY')}
+                name={fields.serviceIntervalUnit.name}
+                label={fields.serviceIntervalUnit.label}
+                value={reminder?.serviceIntervalUnit}
                 InputProps={{
                   readOnly: true
                 }}
@@ -289,9 +366,9 @@ function ReminderPage () {
               <TextField
                 fullWidth
                 variant="outlined"
-                name={fields.serviceIntervalUnit.name}
-                label={fields.serviceIntervalUnit.label}
-                value={reminder?.serviceIntervalUnit}
+                name={fields.lastServiceDate.name}
+                label={fields.lastServiceDate.label}
+                value={moment(reminder?.lastServiceDate).format('ddd - Do - MMM - YYYY')}
                 InputProps={{
                   readOnly: true
                 }}
@@ -339,6 +416,94 @@ function ReminderPage () {
             }}
             mt={4}
           >
+            <Grid item md={4} xs={12}
+              sx={{
+                gap: 1, display: 'flex',
+                flexDirection: 'row'
+              }}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  variant="outlined"
+                  name={fields.lastServiceMileage.name}
+                  label={fields.lastServiceMileage.label}
+                  value={reminder?.lastServiceMileage}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="string"
+                  variant="outlined"
+                  name={fields.lastServiceMileageUnit.name}
+                  label={fields.lastServiceMileageUnit.label}
+                  value={reminder?.lastServiceMileageUnit}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Grid item md={4} xs={12}
+              sx={{
+                gap: 1, display: 'flex',
+                flexDirection: 'row'
+              }}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  variant="outlined"
+                  name={fields.nextServiceMileage.name}
+                  label={fields.nextServiceMileage.label}
+                  value={reminder?.nextServiceMileage}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="string"
+                  variant="outlined"
+                  name={fields.nextServiceMileageUnit.name}
+                  label={fields.nextServiceMileageUnit.label}
+                  value={reminder?.nextServiceMileageUnit}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Grid item md={4} xs={12} />
+          </Grid>
+
+          <Grid item xs={12}
+            sx={{
+              gap: 4, display: 'flex',
+              flexDirection: {md: 'row', xs: 'column'}
+            }}
+            mt={4}
+          >
             <Grid item md={4} xs={12}>
               <TextField
                 fullWidth
@@ -372,6 +537,8 @@ function ReminderPage () {
             <Grid item md={4} xs={12}>
               <TextField
               fullWidth
+              multiline
+              rows={4}
               variant="outlined"
               name={fields.note.name}
               label={fields.note.label}
@@ -390,11 +557,29 @@ function ReminderPage () {
         <AppModal
           fullWidth
           show={_delete}
-          Content={<DialogContentText>{MESSAGES.cancelText}</DialogContentText>}
+          Content={<DialogContentText>{MESSAGES.delete_reminder}</DialogContentText>}
           ActionComponent={
             <DialogActions>
               <Button onClick={() => _setDelete(false)}>Disagree</Button>
               <Button onClick={handleDelete}>Agree</Button>
+            </DialogActions>
+          }
+          onClose={() => _setDelete(false)}
+        />
+        <AppModal
+          fullWidth
+          show={resetServiceDate}
+          Content={
+            <DialogContentText>
+              {reminder?.recurring === 'no'
+                ? MESSAGES.delete_reminder_reset
+                : MESSAGES.reset_reminder
+              }
+            </DialogContentText>}
+          ActionComponent={
+            <DialogActions>
+              <Button onClick={() => setResetServiceDate(false)}>Disagree</Button>
+              <Button onClick={_resetServiceDate}>Agree</Button>
             </DialogActions>
           }
           onClose={() => _setDelete(false)}

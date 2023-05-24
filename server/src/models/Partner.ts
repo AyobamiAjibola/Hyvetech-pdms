@@ -1,4 +1,5 @@
 import {
+  AllowNull,
   AutoIncrement,
   BelongsToMany,
   Column,
@@ -9,7 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { CreationOptional, InferAttributes } from 'sequelize/types';
+import { Attributes, CreationOptional, InferAttributes } from 'sequelize/types';
 import Contact from './Contact';
 import { InferCreationAttributes, NonAttribute } from 'sequelize';
 import User from './User';
@@ -34,6 +35,30 @@ import ItemStock from './ItemStock';
 import ReminderType from './ReminderType';
 import ServiceReminder from './ServiceReminder';
 import PartnerAccount from './PartnerAccount';
+import Joi from 'joi';
+
+export type CreatePartnerType = Attributes<Partner>;
+export const $createPartnerKyc: Joi.SchemaMap<CreatePartnerType> = {
+  cac: Joi.string().allow('').label('CAC'),
+  name: Joi.string().label('Company Full Name'),
+  nameOfDirector: Joi.string().allow('').label('Name of Director'),
+  nameOfManager: Joi.string().allow('').label('Name of Manager'),
+  vatNumber: Joi.string().allow('').label('VAT Number'),
+  workshopAddress: Joi.string().allow('').label('Workshop Address'),
+};
+
+export const $createPartnerSettings: Joi.SchemaMap<CreatePartnerType> = {
+  accountName: Joi.string().allow('').label('Account Name'),
+  accountNumber: Joi.string().allow('').label('Account Number'),
+  bankName: Joi.string().allow('').label('Bank Name'),
+  googleMap: Joi.string().allow('').label('Google Map Link'),
+  logo: Joi.binary().allow().label('Company Logo'),
+  phone: Joi.string().allow('').label('Phone'),
+  totalStaff: Joi.string().allow('').label('Total Staff'),
+  totalTechnicians: Joi.string().allow('').label('Total Technicians'),
+  brands: Joi.string().allow('').label('Company Brands'),
+  workingHours: Joi.string().allow('').label('Working Hours'),
+};
 
 @Table({
   timestamps: true,
@@ -92,6 +117,9 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
 
   @Column(DataType.STRING)
   declare vatNumber: string;
+
+  @Column(DataType.STRING)
+  declare workshopAddress: string;
 
   @Column(DataType.STRING)
   declare nameOfDirector: string;

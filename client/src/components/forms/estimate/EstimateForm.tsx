@@ -465,12 +465,6 @@ function EstimateForm(props: IProps) {
         setFieldValue(fields.address.name, _customer.contacts[0]?.address || ' .');
         setFieldValue(fields.addressType.name, 'Home');
 
-        // setFieldValue('vin', __customer !== undefind && __customer.vehicle.vin);
-        // setFieldValue('make', __customer && __customer.vehicle.make);
-        // setFieldValue('model', __customer && __customer.vehicle.model);
-        // setFieldValue('modelYear', __customer && __customer.vehicle.modelYear);
-        // setFieldValue('plateNumber', __customer && __customer.vehicle.plateNumber);
-
         setactiveId(_customer.id);
         const vinList = __customer
                         ? [__customer.vehicle.vin.toString()]
@@ -536,19 +530,17 @@ function EstimateForm(props: IProps) {
 
   // validate available stock
   useEffect(() => {
-    const valueItems = values.parts;
-
-    valueItems.forEach(({ quantity: { quantity }, partNumber }) => {
-      if(partNumber) {
+    for (const { quantity: { quantity }, partNumber } of values.parts) {
+      console.log(quantity, 'checks quantity of values.part');
+      if (partNumber) {
         //@ts-ignore
-        const foundItem = items.find((item) => item.slug === partNumber);
-
-        if (foundItem?.quantity && +foundItem.quantity < +quantity) {
+        const item = items.find((item) => item.slug === partNumber);
+        if (item?.quantity && +item.quantity < +quantity) {
           setError({ message: 'Low on stock, please add stock' });
         }
       }
-    });
-  }, [values.parts])
+    }
+  }, [values.parts]);
 
   useEffect(() => {
     const newStates = STATES.map(state => ({
@@ -1571,7 +1563,8 @@ function EstimateForm(props: IProps) {
       {openReminderModal && (
         <AppModal
           fullWidth
-          fullScreen={true}
+          size={document.documentElement.clientWidth > 375 ? "lg" : undefined}
+          fullScreen={document.documentElement.clientWidth > 375 ? false : true}
           show={openReminderModal}
           Content={
             <>

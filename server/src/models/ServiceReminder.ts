@@ -126,6 +126,38 @@ export const serviceReminderFields = {
       invalid: 'Recurring is invalid',
       required: 'Recurring is required',
     },
+  },
+  lastServiceMileage: {
+    name: 'Last Service Mileage',
+    label: 'Last Service Mileage',
+    error: {
+      invalid: 'Last Service Mileage is invalid',
+      required: 'Last Service Mileage is required',
+    },
+  },
+  lastServiceMileageUnit: {
+    name: 'Last Service Mileage Unit',
+    label: 'Last Service Mileage Unit',
+    error: {
+      invalid: 'Last Service Mileage Unit is invalid',
+      required: 'Last Service Mileage Unit is required',
+    },
+  },
+  nextServiceMileage: {
+    name: 'Next Service Mileage',
+    label: 'Next Service Mileage',
+    error: {
+      invalid: 'Next Service Mileage is invalid',
+      required: 'Next Service Mileage is required',
+    },
+  },
+  nextServiceMileageUnit: {
+    name: 'Next Service Mileage Unit',
+    label: 'Next Service Mileage Unit',
+    error: {
+      invalid: 'Next Service Mileage Unit is invalid',
+      required: 'Next Service Mileage Unit is required',
+    },
   }
 };
 
@@ -146,6 +178,10 @@ export const $createReminderSchema: Joi.SchemaMap<CreateServiceReminderType> = {
   nextServiceDate: Joi.any().required().label(serviceReminderFields.nextServiceDate.label),
   reminderStatus: Joi.any().required().label(serviceReminderFields.reminderStatus.label),
   serviceStatus: Joi.any().required().label(serviceReminderFields.serviceStatus.label),
+  lastServiceMileage: Joi.string().required().allow('').label(serviceReminderFields.lastServiceMileage.label),
+  lastServiceMileageUnit: Joi.string().required().allow('').label(serviceReminderFields.lastServiceMileageUnit.label),
+  nextServiceMileage: Joi.string().required().allow('').label(serviceReminderFields.nextServiceMileage.label),
+  nextServiceMileageUnit: Joi.string().required().allow('').label(serviceReminderFields.nextServiceMileageUnit.label),
 };
 
 export const $updateReminderSchema: Joi.SchemaMap<CreateServiceReminderType> = {
@@ -159,6 +195,10 @@ export const $updateReminderSchema: Joi.SchemaMap<CreateServiceReminderType> = {
   vin: Joi.string().label(serviceReminderFields.vin.label),
   recurring: Joi.string().label(serviceReminderFields.recurring.label),
   serviceStatus: Joi.any().label(serviceReminderFields.serviceStatus.label),
+  lastServiceMileage: Joi.string().allow('').label(serviceReminderFields.lastServiceMileage.label),
+  lastServiceMileageUnit: Joi.string().allow('').label(serviceReminderFields.lastServiceMileageUnit.label),
+  nextServiceMileage: Joi.string().allow('').label(serviceReminderFields.nextServiceMileage.label),
+  nextServiceMileageUnit: Joi.string().allow('').label(serviceReminderFields.nextServiceMileageUnit.label),
 };
 
 @Table({
@@ -204,6 +244,18 @@ export default class ServiceReminder extends Model<InferAttributes<ServiceRemind
 
   @Column(DataType.STRING)
   declare note: string;
+
+  @Column(DataType.STRING)
+  declare lastServiceMileage: string;
+
+  @Column(DataType.STRING)
+  declare lastServiceMileageUnit: string;
+
+  @Column(DataType.STRING)
+  declare nextServiceMileage: string;
+
+  @Column(DataType.STRING)
+  declare nextServiceMileageUnit: string;
 
   @BelongsTo(() => ReminderType, { onDelete: 'SET NULL' })
   declare reminder: NonAttribute<ReminderType>;

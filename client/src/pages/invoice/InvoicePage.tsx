@@ -17,15 +17,20 @@ import AppAlert from '../../components/alerts/AppAlert';
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
 import { setInvoiceCode } from '../../store/reducers/expenseReducer';
-// import useInvoice from '../../hooks/useInvoice';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  select: {
+    '&:hover': {
+      background: '#F1F0F1'
+    },
+  },
+});
 
 const API_ROOT = settings.api.rest;
-// interface ILocationState {
-//   estimate?: IEstimate;
-//   invoice?: IInvoice;
-// }
 
 function InvoicePage() {
+  const classes = useStyles();
   const [estimate, setEstimate] = useState<IEstimate>();
   const [invoice, setInvoice] = useState<IInvoice>();
   const [owner, setOwner] = useState<string>('');
@@ -427,25 +432,29 @@ function InvoicePage() {
               <MenuItem value="">
                 ...
               </MenuItem>
-              <MenuItem
+              <MenuItem className={classes.select}
                 value={'Record Payment'}
                 disabled={invoice.grandTotal === invoice.paidAmount}
               >Record Payment</MenuItem>
-              <MenuItem
+              <MenuItem className={classes.select}
                 value={'Record Expenses'}
               >Record Expenses</MenuItem>
-              <MenuItem value={'Download Pdf'}>{downloading ? 'Downloading...' : 'Download Pdf'}</MenuItem>
-              <MenuItem value={'Share unique link'}
+              <MenuItem value={'Download Pdf'} className={classes.select}>
+                {downloading ? 'Downloading...' : 'Download Pdf'}
+              </MenuItem>
+              <MenuItem value={'Share unique link'} className={classes.select}
               >
                 {_downloading ? 'Sharing...' : 'Share unique link'}
               </MenuItem>
-              <MenuItem
+              <MenuItem className={classes.select}
                 value={'Share PDF'}
                 disabled={document.documentElement.clientWidth > 912}
               >
                 {_downloading ? 'Sharing...' : 'Share PDF'}
               </MenuItem>
-              <MenuItem value={'Reminder'}>{'Add Service Reminder'}</MenuItem>
+              <MenuItem value={'Reminder'} className={classes.select}>
+                {'Add Service Reminder'}
+              </MenuItem>
             </Select>
           </FormControl>
         </div>

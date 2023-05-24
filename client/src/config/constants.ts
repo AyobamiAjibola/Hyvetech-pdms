@@ -33,7 +33,13 @@ export const MESSAGES = {
   entered will be lost`,
   deleteInvoice: `You are unable to delete this invoice because a payment and/or expenses 
   has been recorded on it.`,
-  invoiceCount: `This estimate has already been invoiced. Do you still want to proceed?`
+  invoiceCount: `This estimate has already been invoiced. Do you still want to proceed?`,
+  delete_reminder: `Are you sure you want to carry out this action? 
+  If you agree to do this, the reminder will be deleted permanently.`,
+  delete_reminder_reset: `Are you sure you want to carry out this action? 
+  If you agree to do this, the reminder will be deleted.`,
+  reset_reminder: `Are you sure you want to carry out this action? 
+  If you agree to do this, the reminder last service date will reset.`,
 };
 
 export const MOBILE_PLAN = 'Mobile';

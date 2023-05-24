@@ -2,7 +2,7 @@ import { IThunkAPIStatus } from '@app-types';
 import { createSlice } from '@reduxjs/toolkit';
 import { IServiceReminder } from '@app-models';
 import { IReminderType } from '@app-models';
-import { createReminderAction, createReminderTypeAction, deleteReminderAction, getReminderAction, getReminderTypesAction, toggleReminderStatusAction, updateReminderAction, updateReminderTypeAction } from '../actions/serviceReminderActions';
+import { createReminderAction, createReminderTypeAction, deleteReminderAction, getReminderAction, getReminderTypesAction, resetLastDateAction, toggleReminderStatusAction, updateReminderAction, updateReminderTypeAction } from '../actions/serviceReminderActions';
 
 interface IReminderState {
     createReminderTypeStatus: IThunkAPIStatus;
@@ -212,6 +212,22 @@ const reminderSlice = createSlice({
                 state.reminder = action.payload.result as IServiceReminder;
             })
             .addCase(updateReminderAction.rejected, (state, action) => {
+                state.updateReminderStatus = 'failed';
+
+                if (action.payload) {
+                  state.updateReminderError = action.payload.message;
+                } else state.updateReminderError = action.error.message;
+            });
+
+        builder
+            .addCase(resetLastDateAction.pending, state => {
+                state.updateReminderStatus = 'loading';
+            })
+            .addCase(resetLastDateAction.fulfilled, (state, action) => {
+                state.updateReminderStatus = 'completed';
+                state.updateReminderSuccess = action.payload.message;
+            })
+            .addCase(resetLastDateAction.rejected, (state, action) => {
                 state.updateReminderStatus = 'failed';
 
                 if (action.payload) {

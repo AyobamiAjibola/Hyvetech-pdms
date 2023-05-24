@@ -39,6 +39,7 @@ import moment from "moment";
 import { LoadingButton } from "@mui/lab";
 import { FaPlus } from "react-icons/fa";
 import AppModal from "../../modal/AppModal";
+import { getSingleInvoice } from "../../../store/actions/invoiceActions";
 
 const filterOptions = createFilterOptions({
     matchFrom: 'any',
@@ -77,9 +78,11 @@ function ReminderForm(props: IProps) {
     const [reminderType, setReminderType] = useState<boolean>(false);
     const [_reminderType, _setReminderType] = useState<string>('');
     const [successAlert, setSuccessAlert] = useState<CustomHookMessage>();
-    
+    const [removeSessionStorage, setRemoveSessionStorage] = useState<boolean>(false);
+
     const vehicleReducer = useAppSelector(state => state.vehicleReducer);
     const reminderReducer = useAppSelector(state => state.serviceReminderReducer);
+    const invoiceReducer = useAppSelector(state => state.invoiceReducer);
 
     const [userInfo, setUserInfo] = useState({
       accountType: 'individual',
@@ -171,8 +174,12 @@ function ReminderForm(props: IProps) {
 
     useEffect(() => {
         // @ts-ignore
-        if (customerReducer.getCustomerStatus === 'completed') {
-          const _customer: any = customerReducer.customer;
+        if (customerReducer.getCustomerStatus === 'completed' || invoiceReducer.sendInvoiceStatus === 'completed') {
+          const _customer: any = invoiceReducer.invoice?.estimate
+                                  ? invoiceReducer.invoice?.estimate.customer
+                                  : customerReducer.customer;
+
+          const inv_vehicle = invoiceReducer.invoice?.estimate.vehicle
 
           if (_customer != undefined) {
             // upto-populate info
@@ -180,7 +187,10 @@ function ReminderForm(props: IProps) {
             setFieldValue(fields.email.name, _customer.email);
             setFieldValue(fields.firstName.name, _customer.firstName);
             setFieldValue(fields.lastName.name, _customer.lastName);
-            const vinList = _customer.vehicles.map((_data: any) => _data?.vin || '');
+
+            const vinList = invoiceReducer.invoice
+                              ? [inv_vehicle?.vin.toString()]
+                              : _customer.vehicles.map((_data: any) => _data?.vin || '');
             setVinOptions(vinList);
 
             setUserInfo({
@@ -192,8 +202,15 @@ function ReminderForm(props: IProps) {
               phone: _customer.phone
             });
           }
+
+          if(invoiceReducer.invoice != undefined){
+            setFieldValue('vin', inv_vehicle?.vin);
+            setFieldValue('make', inv_vehicle?.make);
+            setFieldValue('model', inv_vehicle?.model);
+            setFieldValue('modelYear', inv_vehicle?.modelYear);
+          }
         }
-      }, [value, customerReducer.getCustomerStatus]);
+      }, [value, customerReducer.getCustomerStatus, invoiceReducer.sendInvoiceStatus]);
 
     useEffect(() => {
         if (!showCreate || !showEdit) {
@@ -244,10 +261,10 @@ function ReminderForm(props: IProps) {
     );
 
     useEffect(() => {
-        return () => {
-          clearTimeout(timer);
-          dispatch(clearGetVehicleVINStatus());
-        };
+      return () => {
+        clearTimeout(timer);
+        dispatch(clearGetVehicleVINStatus());
+      };
     }, [timer, dispatch]);
 
     useEffect(() => {
@@ -257,15 +274,15 @@ function ReminderForm(props: IProps) {
         _setNextServiceDate(next)
         setFieldValue('nextServiceDate', next)
       }
-    }, [values.serviceIntervalUnit])
+    }, [values.serviceIntervalUnit, values.serviceInterval])
 
     useEffect(() => {
       if(_nextServiceDate && values.lastServiceDate && values.serviceIntervalUnit){
-        const status: any = reminderStatus(values.lastServiceDate, _nextServiceDate, values.serviceIntervalUnit, values.serviceInterval)
-        _setReminderStatus(status)
-        setFieldValue('reminderStatus', status)
+        const status: any = reminderStatus(values.lastServiceDate, _nextServiceDate, values.serviceIntervalUnit, values.serviceInterval);
+        _setReminderStatus(status);
+        setFieldValue('reminderStatus', status);
       }
-    }, [_nextServiceDate, values.lastServiceDate, values.serviceIntervalUnit])
+    }, [_nextServiceDate, values.lastServiceDate, values.serviceIntervalUnit, values.lastServiceDate])
 
     useEffect(() => {
       if(values.serviceStatus === 'done'){
@@ -275,7 +292,10 @@ function ReminderForm(props: IProps) {
 
     useEffect(() => {
       setFieldValue('lastServiceDate', new Date(values.lastServiceDate));
-    },[])
+      values.recurring === ''
+        ? setFieldValue('recurring', 'yes')
+        : setFieldValue('recurring', values.recurring)
+    },[]);
 
     useEffect(() => {
       if(reminderReducer.createReminderTypeStatus === 'completed') {
@@ -291,10 +311,30 @@ function ReminderForm(props: IProps) {
       }, [reminderReducer.createReminderTypeStatus]);
 
     useEffect(() => {
-      if(reminderReducer.createReminderStatus === 'completed' || reminderReducer.updateReminderStatus) {
-        resetForm()
+      if(reminderReducer.createReminderStatus === 'completed' ||
+        reminderReducer.updateReminderStatus === 'completed') {
+        reload()
       }
-    }, [reminderReducer.createReminderStatus]);
+    }, [reminderReducer.createReminderStatus, reminderReducer.updateReminderStatus]);
+
+    const data: any = {
+      open_modal: undefined,
+      id: undefined
+    }
+
+    useEffect(() => {
+      if(removeSessionStorage){
+        Object.keys(data).forEach(key => {
+          sessionStorage.removeItem(key);
+        });
+      }
+    }, [removeSessionStorage]);
+
+    useEffect(() => {
+      const _invoiceId = sessionStorage.getItem('id');
+      const invoiceId = _invoiceId && parseInt(_invoiceId) || -1
+      dispatch(getSingleInvoice(invoiceId))
+    }, [dispatch, sessionStorage]);
 
     return (
       <React.Fragment>
@@ -446,7 +486,7 @@ function ReminderForm(props: IProps) {
                       InputProps={{
                           ...params.InputProps,
                           endAdornment: (
-                          <InputAdornment position="end" sx={{ position: 'absolute', left: '90%' }}>
+                          <InputAdornment position="end" sx={{ position: 'absolute', left: '70%' }}>
                               {vehicleReducer.getVehicleVINStatus === 'loading' && <CircularProgress size={25} />}
                           </InputAdornment>
                           )
@@ -498,12 +538,27 @@ function ReminderForm(props: IProps) {
 
             <Grid item xs={12}
               sx={{
-                  gap: 2, display: 'flex',
-                  flexDirection: {md: 'row', xs: 'column'}
+                  display: 'flex', gap: 2,
+                  flexDirection: 'row'
               }}
               mt={4}
             >
-              <Grid item md={4} xs={12}>
+              <Grid item xs={values.recurring === 'no' ? 6 : 4}>
+                <SelectField
+                  data={[
+                    { label: 'YES', value: 'yes' },
+                    { label: 'NO', value: 'no' }
+                  ]}
+                  fullWidth
+                  label={fields.recurring.label}
+                  name={fields.recurring.name}
+                  value={values.recurring}
+                  type='string'
+                  onChange={handleChange}
+                />
+              </Grid>
+              {/* {values.recurring === 'yes' && <Grid item xs={8}/>} */}
+              {values.recurring === 'no' && <Grid item xs={8} md={6}>
                 <FormControl fullWidth>
                   <InputLabel>{fields.reminderType.label}</InputLabel>
                   <Select
@@ -535,39 +590,149 @@ function ReminderForm(props: IProps) {
                   <FaPlus style={{ marginRight: 8 }} />
                   Reminder Type
                 </Typography>
-              </Grid>
-              <Grid item md={4} xs={12}>
+              </Grid>}
+            </Grid>
+
+            <Grid item xs={12}
+              sx={{
+                  gap: 2, display: 'flex',
+                  flexDirection: {md: 'row', xs: 'column'}
+              }}
+              mt={4}
+            >
+              {values.recurring === 'yes' && <Grid item md={4} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>{fields.reminderType.label}</InputLabel>
+                  <Select
+                    value={values.reminderType}
+                    onChange={(e) => setFieldValue('reminderType', e.target.value) }
+                    label={fields.reminderType.label}
+                  >
+                    {reminderReducer.getReminderTypesStatus === 'loading' ? (
+                      <MenuItem disabled>
+                        <CircularProgress size={25} />
+                      </MenuItem>
+                    ) : (
+                      type.map((option) => (
+                        <MenuItem key={option.id} value={option.name}>
+                          {capitalize.words(option.name)}
+                        </MenuItem>
+                      ))
+                    )}
+                  </Select>
+                </FormControl>
+                <Typography
+                  onClick={() => setReminderType(true)}
+                  color={'skyblue'}
+                  sx={{
+                      display: 'flex', mb: {md: -3, xs: 1},
+                      alignItems: 'center',
+                      cursor: 'pointer', fontSize: 14, mt: 1
+                  }}>
+                  <FaPlus style={{ marginRight: 8 }} />
+                  Reminder Type
+                </Typography>
+              </Grid>}
+              {values.recurring === 'no' && <Grid item md={6} xs={12}
+                sx={{
+                  display: 'flex', flexDirection: {md: 'row', xs: 'column'},
+                  gap: 2
+                }}
+              >
+                <Grid item md={6} xs={12}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      disableFuture
+                      minDate={new Date('2023/01/01')}
+                      openTo="year"
+                      views={['year', 'month', 'day']}
+                      value={new Date(values.lastServiceDate)}
+                      onChange={(date) => setFieldValue('lastServiceDate', date) }
+                      renderInput={(params: any) =>
+                        <TextField
+                          {...params}
+                          fullWidth
+                          label={fields.lastServiceDate.label}
+                          name={fields.lastServiceDate.name}
+                          variant="outlined"
+                          onChange={ handleChange }
+                        />
+                      }
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    variant="outlined"
+                    name={fields.serviceInterval.name}
+                    label={fields.serviceInterval.label}
+                    value={values.serviceInterval}
+                    onChange={ handleChange }
+                  />
+                </Grid>
+              </Grid>}
+              {values.recurring === 'no' && <Grid item md={6} xs={12}
+                sx={{
+                  display: 'flex', flexDirection: {md: 'row', xs: 'column'},
+                  gap: 2
+                }}
+              >
+                <Grid item md={6} xs={12}>
+                  <SelectField
+                    data={[
+                    { label: 'Day(s)', value: 'day' },
+                    { label: 'Week(s)', value: 'week' },
+                    { label: 'Month(s)', value: 'month' }
+                    ]}
+                    fullWidth
+                    name={fields.serviceIntervalUnit.name}
+                    label={fields.serviceIntervalUnit.label}
+                    value={values.serviceIntervalUnit}
+                    type='string'
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    name={fields.nextServiceDate.name}
+                    label={fields.nextServiceDate.label}
+                    value={_nextServiceDate && moment(_nextServiceDate).format('ddd - Do - MMM - YYYY')}
+                  />
+                </Grid>
+              </Grid>}
+              {values.recurring === 'yes' && <Grid item md={4} xs={12}>
                 <TextField
                   fullWidth
                   type="number"
                   variant="outlined"
                   name={fields.serviceInterval.name}
                   label={fields.serviceInterval.label}
-                  disabled={values.recurring === 'no'}
-                  value={values.recurring === 'no' ? 0 : values.serviceInterval}
+                  value={values.serviceInterval}
                   onChange={ handleChange }
                 />
-              </Grid>
-              <Grid item md={4} xs={12}>
+              </Grid>}
+              {values.recurring === 'yes' && <Grid item md={4} xs={12}>
                 <SelectField
                   data={[
                   { label: 'Day(s)', value: 'day' },
                   { label: 'Week(s)', value: 'week' },
-                  { label: 'Month(s)', value: 'month' },
-                  { label: 'Year(s)', value: 'year' }
+                  { label: 'Month(s)', value: 'month' }
                   ]}
                   fullWidth
                   name={fields.serviceIntervalUnit.name}
                   label={fields.serviceIntervalUnit.label}
-                  disabled={values.recurring === 'no'}
-                  value={values.recurring === 'no' ? '' : values.serviceIntervalUnit}
+                  value={values.serviceIntervalUnit}
                   type='string'
                   onChange={handleChange}
                 />
-              </Grid>
+              </Grid>}
             </Grid>
 
-            <Grid item xs={12}
+            {values.recurring === 'yes' && <Grid item xs={12}
               sx={{
                   gap: 2, display: 'flex',
                   flexDirection: {md: 'row', xs: 'column'}
@@ -602,9 +767,7 @@ function ReminderForm(props: IProps) {
                   variant="outlined"
                   name={fields.nextServiceDate.name}
                   label={fields.nextServiceDate.label}
-                  value={values.recurring === 'no'
-                          ? ''
-                          : _nextServiceDate && moment(_nextServiceDate).format('ddd - Do - MMM - YYYY')}
+                  value={_nextServiceDate && moment(_nextServiceDate).format('ddd - Do - MMM - YYYY')}
                 />
               </Grid>
               <Grid item md={4} xs={12}>
@@ -613,51 +776,93 @@ function ReminderForm(props: IProps) {
                   variant="outlined"
                   name={fields.reminderStatus.name}
                   label={fields.reminderStatus.label}
-                  value={values.recurring === 'no' ? '' : _reminderStatus}
+                  value={values.reminderStatus}
                 />
               </Grid>
+            </Grid>}
+
+            <Grid item xs={12}
+              sx={{
+                  gap: 2, display: 'flex',
+                  flexDirection: {md: 'row', xs: 'column'}
+              }}
+              mt={4}
+            >
+              <Grid item md={4} xs={12}
+                sx={{
+                  gap: 1, display: 'flex',
+                  flexDirection: 'row'
+                }}
+              >
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    variant="outlined"
+                    name={fields.lastServiceMileage.name}
+                    label={fields.lastServiceMileage.label}
+                    value={values.lastServiceMileage}
+                    onChange={ handleChange }
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField
+                    data={[
+                      { label: 'miles', value: 'miles' },
+                      { label: 'km', value: 'km' }
+                    ]}
+                    fullWidth
+                    name={fields.lastServiceMileageUnit.name}
+                    label={fields.lastServiceMileageUnit.label}
+                    value={values.lastServiceMileageUnit}
+                    type='string'
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item md={4} xs={12}
+                sx={{
+                  gap: 1, display: 'flex',
+                  flexDirection: 'row'
+                }}
+              >
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    variant="outlined"
+                    name={fields.nextServiceMileage.name}
+                    label={fields.nextServiceMileage.label}
+                    value={values.nextServiceMileage}
+                    onChange={ handleChange }
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <SelectField
+                    data={[
+                      { label: 'miles', value: 'miles' },
+                      { label: 'km', value: 'km' }
+                    ]}
+                    fullWidth
+                    name={fields.nextServiceMileageUnit.name}
+                    label={fields.nextServiceMileageUnit.label}
+                    value={values.nextServiceMileageUnit}
+                    type='string'
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item md={4} xs={12} />
             </Grid>
 
             <Grid item xs={12}
               sx={{
                   gap: 2, display: 'flex',
-                  flexDirection: 'row'
+                  flexDirection: {md: 'row', xs: 'column'}
               }}
               mt={4}
             >
-              <Grid item md={4} xs={12}>
-                <SelectField
-                  data={[
-                  { label: 'Done', value: 'done' },
-                  { label: 'Not Done', value: 'not_done' }
-                  ]}
-                  fullWidth
-                  name={fields.serviceStatus.name}
-                  label={fields.serviceStatus.label}
-                  value={values.serviceStatus}
-                  type='string'
-                  disabled={new Date(values.lastServiceDate).getFullYear() >= new Date().getFullYear()
-                              && new Date(values.lastServiceDate).getMonth() >= new Date().getMonth()
-                              && new Date(values.lastServiceDate).getDate() >= new Date().getDate()
-                            }
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item md={4} xs={12}>
-                <SelectField
-                  data={[
-                    { label: 'YES', value: 'yes' },
-                    { label: 'NO', value: 'no' }
-                  ]}
-                  fullWidth
-                  label={fields.recurring.label}
-                  name={fields.recurring.name}
-                  value={values.recurring || '...'}
-                  type='string'
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item md={4} xs={12}>
+              <Grid item md={8} xs={12}>
                 <TextField
                   fullWidth
                   multiline
@@ -669,6 +874,7 @@ function ReminderForm(props: IProps) {
                   onChange={handleChange}
                 />
               </Grid>
+              <Grid item md={4} xs={12} />
             </Grid>
 
             <Grid item xs={12}
@@ -688,6 +894,7 @@ function ReminderForm(props: IProps) {
                 endIcon={<Save />}
                 onClick={() => {
                   props.setSave(true);
+                  setRemoveSessionStorage(true);
                 }}
               >
                 {'Submit'}
@@ -701,6 +908,7 @@ function ReminderForm(props: IProps) {
                 endIcon={<Edit />}
                 onClick={() => {
                   props.setSave(false);
+                  setRemoveSessionStorage(true);
                 }}
               >
                 {'Save'}

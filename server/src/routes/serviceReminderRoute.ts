@@ -33,6 +33,16 @@ export const updateReminderHandler = authenticateRouteWrapper(async (req, res) =
     res.status(response.code).json(response);
 });
 
+export const resetServiceHandler = authenticateRouteWrapper(async (req, res) => {
+    const response = await serviceReminderController.resetServiceDate(req);
+    res.status(response?.code).json(response);
+});
+
+export const fetchServiceReminderHandler = authenticateRouteWrapper(async (req, res) => {
+    const response = await serviceReminderController.serviceReminders(req);
+    res.status(response.code).json(response);
+});
+
 export const deleteReminderHandler = authenticateRouteWrapper(async (req, res) => {
     const response = await serviceReminderController.deleteReminder(req);
     res.status(response.code).json(response);

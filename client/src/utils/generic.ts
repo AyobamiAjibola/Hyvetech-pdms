@@ -255,22 +255,19 @@ export function reminderStatus(startDate: string, endDate: any, serviceIntervalU
   //   return 'Date is not within range';
   // }
 
-  const futureDateLimit = new Date() === new Date(start) ? new Date() : new Date(start);
+  const futureDateLimit = new Date() === start ? new Date() : start;
   const interval = serviceInterval;
 
-  console.log(futureDateLimit, 'future')
-
   if (serviceIntervalUnit === 'month') {
-    futureDateLimit.setMonth(futureDateLimit.getMonth() + interval);
+    futureDateLimit.setMonth(futureDateLimit.getMonth() + parseInt(interval));
   } else if (serviceIntervalUnit === 'week') {
-    futureDateLimit.setDate(futureDateLimit.getDate() + (7 * interval));
+    futureDateLimit.setDate(futureDateLimit.getDate() + (7 * parseInt(interval)));
   } else if (serviceIntervalUnit === 'day') {
-    futureDateLimit.setDate(futureDateLimit.getDate() + interval);
+    futureDateLimit.setDate(futureDateLimit.getDate() + parseInt(interval));
   }
 
   if (currentDate <= futureDateLimit) {
     const milliseconds = futureDateLimit.getTime() - currentDate.getTime();
-    console.log(milliseconds, 'checks seconds')
     if (milliseconds > 2678400000) {
       const diffMonths = Math.floor(milliseconds / (30 * 24 * 60 * 60 * 1000));
       return `Due in [${diffMonths}] month(s)`;
@@ -279,8 +276,6 @@ export function reminderStatus(startDate: string, endDate: any, serviceIntervalU
       return `Due in [${diffWeeks}] week(s)`;
     } else {
       const diffDays = Math.round(milliseconds / (24 * 60 * 60 * 1000));
-      console.log(milliseconds / (24 * 60 * 60 * 1000), 'actual day')
-      console.log(diffDays, 'checking number of days left')
       if(diffDays >= 1){
         return `Due in [${diffDays}] day(s)`;
       } else if(diffDays < 1){
@@ -288,27 +283,6 @@ export function reminderStatus(startDate: string, endDate: any, serviceIntervalU
       }
     }
   } else {
-  //   const currentDateYear = currentDate.getFullYear();
-  //   const currentDateMonth = currentDate.getMonth();
-  //   const currentDateDay = currentDate.getDate();
-
-  //   const futureDateLimitYear = futureDateLimit.getFullYear();
-  //   const futureDateLimitMonth = futureDateLimit.getMonth();
-  //   const futureDateLimitDay = futureDateLimit.getDate()
-
-  //   console.log(currentDateYear, currentDateMonth, currentDateDay, 'curr');
-  //   console.log(futureDateLimitYear, futureDateLimitMonth, futureDateLimitDay, 'ft');
-
-  //   if(currentDateYear === futureDateLimitYear &&
-  //     currentDateMonth === futureDateLimitMonth &&
-  //     currentDateDay === futureDateLimitDay){
-  //       return `Due today`
-  //   } else if (currentDateYear > futureDateLimitYear &&
-  //       currentDateMonth > futureDateLimitMonth &&
-  //       currentDateDay > futureDateLimitDay){
-  //         return 'Overdue by [1] day';
-  //       }
-  // }
     const currentDateYear = currentDate.getFullYear();
     const currentDateMonth = currentDate.getMonth();
     const currentDateDay = currentDate.getDate();
@@ -324,7 +298,39 @@ export function reminderStatus(startDate: string, endDate: any, serviceIntervalU
     ) {
       return `Due today`;
     } else {
-      return 'Overdue by [1] day';
+      const milliseconds = currentDate.getTime() - futureDateLimit.getTime();
+      if (milliseconds > 2678400000) {
+        const diffMonths = Math.floor(milliseconds / (30 * 24 * 60 * 60 * 1000));
+        return `Overdue by [${diffMonths}] month(s)`;
+      } else if (milliseconds > 604800000) {
+        const diffWeeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
+        return `Overdue by [${diffWeeks}] week(s)`;
+      } else {
+        const diffDays = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
+        return `Overdue by [${diffDays}] day(s)`;
+      }
     }
+  }
+}
+
+export function marked(serviceDate: any, currentDate: any) {
+  const service_date = new Date(serviceDate);
+  const currentDateObj = new Date(currentDate);
+  const milliseconds = currentDateObj.getTime() - service_date.getTime();
+
+  const diffDays = Math.floor(milliseconds / (24 * 60 * 60 * 1000));
+  const diffWeeks = Math.floor(milliseconds / (7 * 24 * 60 * 60 * 1000));
+  const diffMonths = Math.floor(milliseconds / (30 * 24 * 60 * 60 * 1000));
+
+  if (diffDays === 0) {
+    return `today`;
+  } else if (diffDays === 1) {
+    return `yesterday`;
+  } else if (diffMonths > 1) {
+    return `${diffMonths} month(s) ago`;
+  } else if (diffWeeks > 1) {
+    return `${diffWeeks} week(s) ago`;
+  } else {
+    return `${diffDays} day(s) ago`;
   }
 }

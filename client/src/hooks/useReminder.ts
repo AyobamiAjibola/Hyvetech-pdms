@@ -130,8 +130,6 @@ export default function useReminder() {
         if (reminderReducer.createReminderStatus === 'completed') {
             setSuccess({ message: reminderReducer.createReminderSuccess });
             handleReset();
-            setShowCreate(false)
-            dispatch(getReminderAction())
         }
     }, [reminderReducer.createReminderStatus, reminderReducer.createReminderSuccess, handleReset]);
 
@@ -146,8 +144,6 @@ export default function useReminder() {
         if (reminderReducer.updateReminderStatus === 'completed') {
             setSuccess({ message: reminderReducer.updateReminderSuccess });
             handleReset();
-            setShowCreate(false)
-            dispatch(getReminderAction());
         }
     }, [dispatch, reminderReducer.updateReminderStatus, reminderReducer.updateReminderSuccess, handleReset]);
 
@@ -220,7 +216,11 @@ export default function useReminder() {
             recurring: values.recurring,
             nextServiceDate: values.nextServiceDate,
             reminderStatus: values.reminderStatus,
-            serviceStatus: serviceStatus
+            serviceStatus: serviceStatus,
+            lastServiceMileage: values.lastServiceMileage?.toString(),
+            lastServiceMileageUnit: values.lastServiceMileageUnit,
+            nextServiceMileage: values.nextServiceMileage?.toString(),
+            nextServiceMileageUnit: values.nextServiceMileageUnit
         };
 
         dispatch(createReminderAction(data));
@@ -237,7 +237,11 @@ export default function useReminder() {
             serviceIntervalUnit: values.serviceIntervalUnit,
             note: values.note,
             recurring: values.recurring,
-            serviceStatus: serviceStatus
+            serviceStatus: serviceStatus,
+            lastServiceMileage: values.lastServiceMileage?.toString(),
+            lastServiceMileageUnit: values.lastServiceMileageUnit,
+            nextServiceMileage: values.nextServiceMileage?.toString(),
+            nextServiceMileageUnit: values.nextServiceMileageUnit
         };
 
         void dispatch(updateReminderAction(data))
@@ -265,7 +269,12 @@ export default function useReminder() {
                     serviceInterval: reminder.serviceInterval,
                     serviceIntervalUnit: reminder.serviceIntervalUnit,
                     note: reminder.note,
-                    recurring: reminder.recurring
+                    recurring: reminder.recurring,
+                    reminderStatus: reminder.reminderStatus,
+                    lastServiceMileage: reminder.lastServiceMileage,
+                    lastServiceMileageUnit: reminder.lastServiceMileageUnit,
+                    nextServiceMileage: reminder.nextServiceMileage,
+                    nextServiceMileageUnit: reminder.nextServiceMileageUnit
                 }));
 
                 setReminderId(reminderId);
