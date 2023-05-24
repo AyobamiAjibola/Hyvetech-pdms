@@ -163,6 +163,12 @@ class CBAController {
 
     if (partnerAccount) return partnerAccount;
 
+    if (partner.email.trim() === '')
+      return Promise.reject(CustomAPIError.response('Please provide partner email', HttpStatus.BAD_REQUEST.code));
+
+    if (partner.phone.trim() === '')
+      return Promise.reject(CustomAPIError.response('Please provide partner phone', HttpStatus.BAD_REQUEST.code));
+
     const response = dataSources.partnerAccountDaoService.create({
       firstName: accountRequest.businessName,
       lastName: 'Ltd',
