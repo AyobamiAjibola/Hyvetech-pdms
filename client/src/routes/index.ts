@@ -22,6 +22,8 @@ import {
 } from '@mui/icons-material';
 import React from 'react';
 
+import { HyvePayIconWrapper } from './CustomIcons';
+
 export interface ISideNav {
   tag: string;
   name: string;
@@ -46,7 +48,7 @@ export const sideNavs: ISideNav[] = [
     tag: 'techs',
     name: 'HyvePay',
     path: '/hyvePay',
-    Icon: Dashboard,
+    Icon: HyvePayIconWrapper,
   },
 
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },

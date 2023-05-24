@@ -88,7 +88,6 @@ class KudaService implements BankService {
   }
   @TryCatch
   async createAccount(payload: appModelTypes.AccountDTO) {
-    this.logger.debug(payload);
     const response = await this.network.post('', {
       ServiceType: 'ADMIN_CREATE_VIRTUAL_ACCOUNT',
       RequestRef: ReferenceGenerator.generate(),

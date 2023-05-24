@@ -26,6 +26,7 @@ const KycRequestPage = () => {
   useEffect(() => {
     if (autohyvePay.activateAccountStatus === 'completed') {
       setAlert({ type: 'success', message: 'Operation successful' });
+      dispatch(getKycRequestAction());
     } else if (autohyvePay.activateAccountStatus === 'failed') {
       setAlert({ type: 'error', message: autohyvePay.activateAccountError || 'Unable to perform action' });
     }

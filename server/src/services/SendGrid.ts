@@ -13,6 +13,8 @@ class SendGridMailService implements MailService {
       html: payload.html,
     };
 
+    console.log('mail payload> ', msg);
+
     return sgMail.send(msg);
   }
 }

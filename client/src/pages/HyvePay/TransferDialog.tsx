@@ -91,8 +91,6 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
     setBank('');
     setAmount('0');
     setSelectedBeneficary('');
-    setUseBeneificary(false);
-    setSaveAsBeneficiary(false);
     dispatch(clearTransferStatus());
     dispatch(clearAccountHolderDetail());
   };

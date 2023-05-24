@@ -166,10 +166,10 @@ class CBAController {
     const response = dataSources.partnerAccountDaoService.create({
       firstName: accountRequest.businessName,
       lastName: 'Ltd',
-      phoneNumber: user.phone,
+      phoneNumber: partner.phone,
       email: user.email,
       businessName: accountRequest.businessName,
-      partnerId: req.user.partnerId,
+      partnerId: partner.id,
     });
 
     accountRequest.isApproved = true;
@@ -225,8 +225,8 @@ class CBAController {
     // eslint-disable-next-line promise/catch-or-return
     dataSources.mailService
       .sendHtmlMail({
-        to: 'support@myautohyve.com',
-        from: '',
+        to: 'admin@myautohyve.com',
+        from: 'support@myautohyve.com',
         subject: 'Account activation request',
         html: `
          <div> The following AutoHyve user is activating a HyvePay account and requires verification.</div>
@@ -248,8 +248,13 @@ class CBAController {
          </div>
         `,
       })
-      .catch(() => {
-        console.log('error');
+      .then(() => {
+        console.log('successfully send');
+
+        return 0;
+      })
+      .catch((err: any) => {
+        console.log('error', err);
       });
 
     return response;

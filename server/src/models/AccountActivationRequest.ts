@@ -20,7 +20,7 @@ export type AccountActivationRequestSchemaType = Attributes<AccountActivationReq
 
 export const $saveAccountActivationRequestSchema: Joi.SchemaMap<AccountActivationRequestSchemaType> = {
   businessName: Joi.string().required().label('businessName'),
-  cacUrl: Joi.string().optional().label('cacUrl'),
+  cacUrl: Joi.string().optional().allow(null, '').label('cacUrl'),
   validIdBackUrl: Joi.string().optional().label('validIdBackUrl'),
   validIdFrontUrl: Joi.string().optional().label('validIdFrontUrl'),
 };

@@ -984,7 +984,7 @@ export default class PartnerController {
         case path.match('owners-filter-data')?.input:
           drivers = await dataSources.customerDAOService.findAll({
             where: {
-              [Op.not]: { firstName: 'Anonymous' }
+              [Op.not]: { firstName: 'Anonymous' },
             },
           });
           break;
@@ -992,7 +992,7 @@ export default class PartnerController {
           drivers = await dataSources.customerDAOService.findAll({
             where: {
               [Op.not]: { firstName: 'Anonymous' },
-              partnerId: partnerId
+              partnerId: partnerId,
             },
           });
           break;
