@@ -167,7 +167,7 @@ class CBAController {
       firstName: accountRequest.businessName,
       lastName: 'Ltd',
       phoneNumber: partner.phone,
-      email: user.email,
+      email: partner.email,
       businessName: accountRequest.businessName,
       partnerId: partner.id,
     });
