@@ -89,8 +89,6 @@ class CBAController {
   public async getAccountTransactions(req: Request) {
     const account = await this.doGetAccountTransactions(req);
 
-    console.log('account> ', account.postingsHistory);
-
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
       message: 'Account transactions retrieved successfully',
@@ -341,8 +339,8 @@ class CBAController {
 
     return this.bankService.getAccountTransactionLog({
       page: {
-        pageSize: 0,
-        pageNumber: 100,
+        pageSize: 100,
+        pageNumber: 0,
       },
       accountId: partnerAcount.accountRef as string,
     });
