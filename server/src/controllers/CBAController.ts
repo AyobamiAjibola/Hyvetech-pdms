@@ -169,7 +169,7 @@ class CBAController {
     if (partner.phone.trim() === '')
       return Promise.reject(CustomAPIError.response('Please provide partner phone', HttpStatus.BAD_REQUEST.code));
 
-    const response = dataSources.partnerAccountDaoService.create({
+    const response = await dataSources.partnerAccountDaoService.create({
       firstName: accountRequest.businessName,
       lastName: 'Ltd',
       phoneNumber: partner.phone,
@@ -178,6 +178,9 @@ class CBAController {
       partnerId: partner.id,
     });
 
+    partner.accountName = `${response.firstName} ${response.lastName}`;
+    partner.accountNumber = response.accountNumber;
+    partner.bankName = response.accountProvider;
     accountRequest.isApproved = true;
 
     partner.accountProvisionStatus = 'APPROVED';
