@@ -1,10 +1,10 @@
-import { Box, Button, FormLabel, Grid, Input, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, FormLabel, Grid, Input, TextField, Typography } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import DataCard from '../../components/data/DataCard';
 import { cyan, green, lime, teal } from '@mui/material/colors';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { Edit } from '@mui/icons-material';
+import { GridColDef } from '@mui/x-data-grid';
+// import { Edit } from '@mui/icons-material';
 import moment from 'moment';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import AppModal from '../../components/modal/AppModal';
@@ -129,14 +129,14 @@ const HyvePayDashboard = () => {
   const techColumns = useMemo(() => {
     return [
       {
-        field: 'createdAt',
+        field: 'realDate',
         headerName: 'Date',
         headerAlign: 'center',
         align: 'center',
         width: 160,
         type: 'string',
         valueFormatter: ({ value }) => {
-          return value ? moment(value).format('DD/MM/YYYY') : '-';
+          return value ? moment(value).format('DD/MM/YYYY hh:mm') : '-';
         },
         sortable: true,
         sortingOrder: ['desc'],
@@ -148,6 +148,7 @@ const HyvePayDashboard = () => {
         headerAlign: 'center',
         align: 'center',
         type: 'string',
+        width: 300,
         sortable: true,
       },
       {
@@ -157,8 +158,9 @@ const HyvePayDashboard = () => {
         align: 'center',
         type: 'number',
         sortable: true,
+
         valueFormatter: ({ value }) => {
-          return value ? value / 100 : '0';
+          return '₦ ' + formatNumberToIntl(value ? value / 100 : 0);
         },
       },
       {
@@ -168,12 +170,9 @@ const HyvePayDashboard = () => {
         align: 'center',
         type: 'string',
         sortable: true,
-        width: 300,
+        width: 200,
         valueFormatter: ({ value }) => {
-          return value ? value / 100 : '0';
-        },
-        renderCell: params => {
-          return params.row.status;
+          return '₦ ' + formatNumberToIntl(value ? value / 100 : 0);
         },
       },
       {
@@ -182,13 +181,10 @@ const HyvePayDashboard = () => {
         headerAlign: 'center',
         align: 'center',
         type: 'string',
-        width: 300,
+        width: 200,
         sortable: true,
         valueFormatter: ({ value }) => {
-          return value ? value / 100 : '0';
-        },
-        renderCell: params => {
-          return params.row.status;
+          return '₦ ' + formatNumberToIntl(value ? value / 100 : 0);
         },
       },
       {
@@ -199,9 +195,6 @@ const HyvePayDashboard = () => {
         type: 'string',
         sortable: true,
         width: 200,
-        renderCell: params => {
-          return params.row.status;
-        },
       },
       {
         field: 'postingRecordType',
@@ -211,43 +204,47 @@ const HyvePayDashboard = () => {
         type: 'string',
         sortable: true,
         renderCell: params => {
-          return params.row.status;
+          return params.row.postingRecordType === 2 ? (
+            <Chip label={'Credit'} size="small" color="success" />
+          ) : (
+            <Chip label={'Debit'} size="small" color="error" />
+          );
         },
       },
 
-      {
-        field: 'actions',
-        type: 'actions',
-        headerAlign: 'center',
-        align: 'center',
-        getActions: (params: any) => {
-          const row = params.row as any;
-          console.log('row> ', row);
-          return [
-            // <GridActionsCellItem
-            //   key={0}
-            //   icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-            //   onClick={() => {
-            //     void dispatch(getEstimatesAction());
-            //     navigate(`/estimates/${row.id}`, { state: { estimate: row } });
-            //   }}
-            //   label="View"
-            //   showInMenu={false}
-            // />,
+      // {
+      //   field: 'actions',
+      //   type: 'actions',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   getActions: (params: any) => {
+      //     const row = params.row as any;
+      //     console.log('row> ', row);
+      //     return [
+      //       // <GridActionsCellItem
+      //       //   key={0}
+      //       //   icon={<Visibility sx={{ color: 'dodgerblue' }} />}
+      //       //   onClick={() => {
+      //       //     void dispatch(getEstimatesAction());
+      //       //     navigate(`/estimates/${row.id}`, { state: { estimate: row } });
+      //       //   }}
+      //       //   label="View"
+      //       //   showInMenu={false}
+      //       // />,
 
-            <GridActionsCellItem
-              //  sx={{ display: isTechAdmin ? 'block' : 'none' }}
-              key={1}
-              icon={<Edit sx={{ color: 'limegreen' }} />}
-              //  onClick={() => estimate.onEdit(row.id)}
-              //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
-              //  disabled={!isTechAdmin}
-              label="Edit"
-              showInMenu={false}
-            />,
-          ];
-        },
-      },
+      //       <GridActionsCellItem
+      //         //  sx={{ display: isTechAdmin ? 'block' : 'none' }}
+      //         key={1}
+      //         icon={<Edit sx={{ color: 'limegreen' }} />}
+      //         //  onClick={() => estimate.onEdit(row.id)}
+      //         //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
+      //         //  disabled={!isTechAdmin}
+      //         label="Edit"
+      //         showInMenu={false}
+      //       />,
+      //     ];
+      //   },
+      // },
     ] as GridColDef<any>[];
   }, []);
 
@@ -359,7 +356,7 @@ const HyvePayDashboard = () => {
           />
           <DataCard
             title="Total Credit"
-            data={'₦ ' + formatNumberToIntl(autohyvePay.transaction.totalCredit / 100)}
+            data={'₦ ' + formatNumberToIntl(autohyvePay.transaction.totalCredit)}
             bgColor={cyan[400]}
             toggleValue
           />
@@ -397,6 +394,7 @@ const HyvePayDashboard = () => {
               rows={autohyvePay.transaction.postingsHistory || []}
               columns={techColumns}
               showToolbar
+              getRowId={(row: any) => row.referenceNumber}
             />
           </Grid>
         </Grid>
