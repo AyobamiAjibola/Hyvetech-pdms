@@ -228,7 +228,6 @@ class CBAController {
     await partner.save();
 
     // send mail here
-
     // eslint-disable-next-line promise/catch-or-return
     dataSources.mailService
       .sendHtmlMail({
@@ -243,7 +242,7 @@ class CBAController {
           - ${req.user.firstName} ${req.user.lastName} \n
           - ${value.businessName} \n
           - ${req.user.phone} \n
-          - ${req.user.email} \n 
+          - ${req.user.email} \n
          </div>
           <br />
 
