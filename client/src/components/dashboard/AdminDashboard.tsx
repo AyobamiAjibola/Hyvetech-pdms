@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Divider, Grid, IconButton,
+import { Box, Collapse, Divider, Grid, IconButton,
     // InputLabel, MenuItem,
     Paper, TextField
 } from '@mui/material';
 // import AnalyticsCard from '../data/AnalyticsCard';
-import { amber, blueGrey, deepPurple, green, indigo, lime, orange, pink } from '@mui/material/colors';
+import { amber, blueGrey, cyan, deepPurple, green, indigo, lime, orange, pink, purple } from '@mui/material/colors';
 import AppPieChart from '../charts/AppPieChart';
 import moment from 'moment';
 import AppStackedColumnChart from '../charts/AppStackedColumnChart';
@@ -116,7 +116,7 @@ function AdminDashboard() {
       _setEndDate(endOfDay(new Date()))
     }
   }, [toggle]);
-  console.log(startOfMonth(new Date()), "getting month")
+
   return (
     <React.Fragment>
       <Box
@@ -188,7 +188,7 @@ function AdminDashboard() {
           >
             {!showCalendar &&
               <Box
-              sx={{width: '100%'}}
+                sx={{width: '100%'}}
               >
                 <TextField
                   id="outlined-read-only-input"
@@ -198,11 +198,11 @@ function AdminDashboard() {
                     readOnly: true,
                     endAdornment: <IconButton onClick={toggleCalendar}><CalendarMonth fontSize='large' /></IconButton>
                   }}
-                  sx={{width: '40%'}}
+                  sx={{width: '70%'}}
                 />
               </Box>
             }
-            { showCalendar &&
+            <Collapse in={showCalendar} timeout={{ enter: 800, exit: 0 }}>
               <Box
                 sx={{
                   display: 'flex', flexDirection: 'column',
@@ -218,7 +218,7 @@ function AdminDashboard() {
                 >
                   <IconButton onClick={() => setShowCalendar(false)}
                     sx={{
-                      color: 'red'
+                      color: '#FF6666'
                     }}
                   >
                     <Cancel fontSize='medium' />
@@ -236,7 +236,7 @@ function AdminDashboard() {
                   onChange={handleSelect}
                 />
               </Box>
-            }
+            </Collapse>
           </Box>
         }
       </Box>
@@ -325,6 +325,35 @@ function AdminDashboard() {
             </Grid>
             <Grid item xs={12} md={3}>
               <DataCard title="Vehicles" data={(dashboardReducer.superAnalytics?.mAllVehicle || 0)} bgColor={deepPurple[600]} />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} container direction="column"
+          sx={{
+            ml: {lg: 7, md: 6}
+          }}
+        >
+          <Grid item container xs spacing={4}>
+            <Grid item xs={12} md={3}
+              sx={{
+                ml: {md: 5}, mr: {md: 5}
+              }}
+            >
+              <DataCard title="Item(s)" data={(dashboardReducer.superAnalytics?.mAllReminder || 0)} bgColor={cyan[600]} />
+            </Grid>
+            <Grid item xs={12} md={3}
+              sx={{
+                ml: {md: -1}, mr: {md: 5}
+              }}
+            >
+              <DataCard title="Item(s)" data={(dashboardReducer.superAnalytics?.mAllItem || 0)} bgColor={purple[600]} />
+            </Grid>
+            <Grid item xs={12} md={3}
+              sx={{
+                ml: {md: 5}, mr: {md: 5}
+              }}
+            >
+              {/* <DataCard title="" data={0} bgColor={purple[100]} /> */}
             </Grid>
           </Grid>
         </Grid>
