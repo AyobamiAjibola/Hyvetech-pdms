@@ -428,7 +428,7 @@ const ExpenseCreate = () => {
               <Grid item md={6} sm={12} xs={12}>
                 {expenseReducer.invoiceCode === ''
                   ? <Autocomplete
-                      getOptionLabel={option => option.code}
+                      getOptionLabel={option => option.code.split('_')[0]}
                       disabled={category?.name === "Others" || category?.name === "Overhead"}
                       renderInput={props => (
                         <TextField

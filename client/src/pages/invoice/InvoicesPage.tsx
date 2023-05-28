@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IInvoice } from '@app-models';
-import { Box, Button, Chip, Collapse, DialogActions, DialogContentText, Grid, Paper, Typography } from '@mui/material';
+import { Button, Chip, DialogActions, DialogContentText, Grid, Typography } from '@mui/material';
 import AppDataGrid from '../../components/tables/AppDataGrid';
 import useAppSelector from '../../hooks/useAppSelector';
 import AppAlert from '../../components/alerts/AppAlert';
 import moment from 'moment';
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { Cancel, Edit, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import { Cancel, Edit } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import useInvoice from '../../hooks/useInvoice';
 import AppModal from '../../components/modal/AppModal';
@@ -24,24 +24,21 @@ import {
 import useAppDispatch from '../../hooks/useAppDispatch';
 import useRouterQuery from '../../hooks/useRouterQuery';
 import { INVOICE_STATUS, LOCAL_STORAGE, MESSAGES } from '../../config/constants';
-import { getpaymentRecievedAction, verifyRefundCustomerAction } from '../../store/actions/transactionActions';
+import { verifyRefundCustomerAction } from '../../store/actions/transactionActions';
 import useAdmin from '../../hooks/useAdmin';
 import { getInvoicesAction } from '../../store/actions/invoiceActions';
 import { clearDeleteInvoiceStatus, clearSaveInvoiceStatus, clearSendInvoiceStatus } from '../../store/reducers/invoiceReducer';
 import { formatNumberToIntl, reload } from '../../utils/generic';
 import { CustomHookMessage } from '@app-types';
-import { getExpensesAction } from '../../store/actions/expenseAction';
 
 function InvoicesPage() {
   const invoiceReducer = useAppSelector(state => state.invoiceReducer);
   const transactionReducer = useAppSelector(state => state.transactionReducer);
-  const expenseReducer = useAppSelector(state => state.expenseReducer);
   const dispatch = useAppDispatch();
   const [error, setError] = useState<CustomHookMessage>();
   const [success, setSuccess] = useState<CustomHookMessage>();
   const [invDel, setInvDel] = useState<boolean>(false);
   const [closeEstimateModal, setCloseEstimateModal] = useState<boolean>(false);
-  const [showReport, setShowReport] = useState<boolean>(false);
 
   const invoice = useInvoice();
   const navigate = useNavigate();
@@ -489,63 +486,6 @@ function InvoicesPage() {
     };
   }, [dispatch]);
 
-  const handleToggleShowReport = () => {
-    setShowReport(() => {
-      return !showReport;
-    })
-  };
-
-  useEffect(() => {
-    dispatch(getExpensesAction());
-    dispatch(getpaymentRecievedAction())
-  }, [dispatch]);
-
-  const totalExpensesAmount = useMemo(() => {
-    if (expenseReducer.getExpensesStatus === 'completed') {
-      let amount = 0;
-      expenseReducer.expenses.forEach((expense) => {
-        amount += expense.amount;
-      });
-      return amount;
-    }
-    return 0;
-  }, [expenseReducer.getExpensesStatus, expenseReducer.expenses]);
-
-  const totalTransactionAmount = useMemo(() => {
-    if (transactionReducer.getPaymentRecievedStatus === 'completed') {
-      let amount = 0;
-      transactionReducer.paymentRecieve.forEach((tranx) => {
-        amount += tranx.amount;
-      });
-      return amount;
-    }
-    return 0;
-  }, [transactionReducer.getPaymentRecievedStatus, transactionReducer.paymentRecieve]);
-
-  const totalInvoiceAmount = useMemo(() => {
-    if (invoiceReducer.getInvoicesStatus === 'completed') {
-      let amount = 0;
-      invoice.invoices.forEach((invoice) => {
-        amount += invoice.grandTotal;
-      });
-      return amount;
-    }
-    return 0;
-  }, [invoiceReducer.getInvoicesStatus, invoiceReducer.invoices]);
-
-  const totalReceivableAmount = useMemo(() => {
-    if (invoiceReducer.getInvoicesStatus === 'completed') {
-      let amount = 0;
-      invoice.invoices.forEach((invoice) => {
-        amount += invoice.dueAmount;
-      });
-      return amount;
-    }
-    return 0;
-  }, [invoiceReducer.getInvoicesStatus, invoiceReducer.invoices]);
-
-
-
   return (
     <React.Fragment>
       <Grid container justifyContent="space-between" alignItems="center">
@@ -555,105 +495,6 @@ function InvoicesPage() {
           </Typography>
         </Grid>
       </Grid>
-
-      {isTechAdmin && <Grid container
-        sx={{
-          display: 'flex', mb: 2,
-          justifyContent: 'right',
-          alignItems: 'center', flexDirection: 'column'
-        }}
-      >
-        <Box
-          onClick={() => handleToggleShowReport()}
-          sx={{
-            cursor: 'pointer', '&:hover': {color: 'grey'},
-            color: showReport ? '#747bff' : 'black',
-            width: '100%', display: 'flex',
-            justifyContent: 'right', alignItems: 'center'
-          }}
-        >
-          <Typography sx={{fontSize: 16, textShadow: 5}}>
-            {showReport ? 'Hide report' : 'Show report'}
-          </Typography>
-          {showReport ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-        </Box>
-        <Collapse in={showReport} timeout={{ enter: 800, exit: 500 }}
-          sx={{width: '100%', mt: 1}}
-        >
-          <Paper elevation={3}
-            sx={{
-              backgroundColor: 'white',
-              width: '100%', p: 4, height: 'auto',
-              display: 'flex', alignItems: 'center',
-              justifyContent: 'right', gap: 2, flexDirection: 'column'
-            }}
-          >
-            <Grid container>
-              <Grid item md={4} xs={12} flexDirection='row'>
-                <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                  No of Expenses recorded:&nbsp;
-                  <span style={{fontSize: 16, color: 'black'}}>
-                    {expenseReducer.expenses.length}
-                  </span>
-                </Typography>
-              </Grid>
-              <Grid item md={4} xs={12}>
-                <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                  No of Payments recorded:&nbsp;
-                  <span style={{fontSize: 16, color: 'black'}}>
-                    {transactionReducer.paymentRecieve.length}
-                  </span>
-                </Typography>
-              </Grid>
-              <Grid item md={4} xs={12}>
-                <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                  Total Amount of Expenses:&nbsp;
-                  <span style={{fontSize: 16, color: 'black'}}>
-                    &#x20A6;{formatNumberToIntl(totalExpensesAmount)}
-                  </span>
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item md={4} xs={12}>
-                <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                  Total Amount of Payment:&nbsp;
-                  <span style={{fontSize: 16, color: 'black'}}>
-                    &#x20A6;{formatNumberToIntl(totalTransactionAmount)}
-                  </span>
-                </Typography>
-              </Grid>
-              <Grid item md={4} xs={12}>
-                <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                  Book Profit:&nbsp;
-                  <span style={{fontSize: 16, color: 'black'}}>
-                    &#x20A6;{formatNumberToIntl(totalInvoiceAmount - totalExpensesAmount)}
-                  </span>
-                </Typography>
-              </Grid>
-              <Grid item md={4} xs={12}>
-                <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                  Actual Profit:&nbsp;
-                  <span style={{fontSize: 16, color: 'black'}}>
-                    &#x20A6;{formatNumberToIntl(totalTransactionAmount - totalExpensesAmount)}
-                  </span>
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item md={4} xs={12}>
-                <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                  Total Receivable:&nbsp;
-                  <span style={{fontSize: 16, color: 'black'}}>
-                    &#x20A6;{formatNumberToIntl(totalReceivableAmount)}
-                  </span>
-                </Typography>
-              </Grid>
-              <Grid md={8}/>
-            </Grid>
-          </Paper>
-        </Collapse>
-      </Grid>}
 
       <Grid container>
         <Grid item xs={12}>
