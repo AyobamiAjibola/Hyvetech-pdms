@@ -119,57 +119,57 @@ function InvoicesPage() {
   ]);
 
 
-  const grandTotal__ = (invoiceCode: string) => {
-    //@ts-ignore
-    const _invoice = invoice.invoices.find((invoice) => invoice.code === invoiceCode);
-    const _estimate = _invoice?.estimate;
+  // const grandTotal__ = (invoiceCode: string) => {
+  //   //@ts-ignore
+  //   const _invoice = invoice.invoices.find((invoice) => invoice.code === invoiceCode);
+  //   const _estimate = _invoice?.estimate;
 
-    if (_invoice && _estimate) {
-      if (_invoice.edited) {
-        return _invoice?.grandTotal;
-      } else {
-        return _estimate.partsTotal + _estimate.laboursTotal;
-      }
-    }
+  //   if (_invoice && _estimate) {
+  //     if (_invoice.edited) {
+  //       return _invoice?.grandTotal;
+  //     } else {
+  //       return _estimate.partsTotal + _estimate.laboursTotal;
+  //     }
+  //   }
 
-    return 0;
-  };
+  //   return 0;
+  // };
 
-  const calculateDiscount = ({
-    total,
-    discount,
-    discountType,
-  }: {
-    total: number;
-    discount: number | undefined;
-    discountType: string | undefined;
-  }) => {
-    if (!discount) return 0;
-    if (!discountType) return 0;
+  // const calculateDiscount = ({
+  //   total,
+  //   discount,
+  //   discountType,
+  // }: {
+  //   total: number;
+  //   discount: number | undefined;
+  //   discountType: string | undefined;
+  // }) => {
+  //   if (!discount) return 0;
+  //   if (!discountType) return 0;
 
-    if (discountType === 'exact') {
-      return discount;
-    }
+  //   if (discountType === 'exact') {
+  //     return discount;
+  //   }
 
-    return Math.ceil(total * (discount / 100));
-  };
+  //   return Math.ceil(total * (discount / 100));
+  // };
 
-  const calculateTaxTotal = (estimate: IInvoice | undefined) => {
-    if (!estimate) return 0;
+  // const calculateTaxTotal = (estimate: IInvoice | undefined) => {
+  //   if (!estimate) return 0;
 
-    if(estimate.updateStatus === INVOICE_STATUS.update.draft || estimate.updateStatus === INVOICE_STATUS.update.sent) {
-      if (estimate.taxPart && estimate.tax)
-      return (
-        parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''))
-      );
+  //   if(estimate.updateStatus === INVOICE_STATUS.update.draft || estimate.updateStatus === INVOICE_STATUS.update.sent) {
+  //     if (estimate.taxPart && estimate.tax)
+  //     return (
+  //       parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''))
+  //     );
 
-      if (estimate.tax && !estimate.taxPart) return parseFloat(`${estimate?.tax}`.split(',').join(''));
+  //     if (estimate.tax && !estimate.taxPart) return parseFloat(`${estimate?.tax}`.split(',').join(''));
 
-      if (!estimate.tax && estimate.taxPart) return parseFloat(`${estimate?.taxPart}`.split(',').join(''));
-    }
+  //     if (!estimate.tax && estimate.taxPart) return parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+  //   }
 
-    return 0;
-  };
+  //   return 0;
+  // };
 
 
   const superAdminColumns = useMemo(() => {
@@ -266,27 +266,27 @@ function InvoicesPage() {
         type: 'number',
         width: 150,
         sortable: true,
-        renderCell: (param) => {
-          const invoiceCode = param.row.code;
-          const grand = grandTotal__(invoiceCode);
-          const discountValue = () => {
-            return calculateDiscount({
-              total: grand,
-              discount: param.row.edited
-                          ? param.row?.discount
-                          : param.row.estimate?.discount,
-              discountType: param.row.edited
-                              ? param.row?.discountType
-                              : param.row.estimate?.discountType
-            })
-          };
+        // renderCell: (param) => {
+        //   const invoiceCode = param.row.code;
+        //   const grand = grandTotal__(invoiceCode);
+        //   const discountValue = () => {
+        //     return calculateDiscount({
+        //       total: grand,
+        //       discount: param.row.edited
+        //                   ? param.row?.discount
+        //                   : param.row.estimate?.discount,
+        //       discountType: param.row.edited
+        //                       ? param.row?.discountType
+        //                       : param.row.estimate?.discountType
+        //     })
+        //   };
 
-          return param.row.grandTotal
-            ? (Math.sign(grand) === -1
-              ? 0
-              : formatNumberToIntl(grand + calculateTaxTotal(param.row) - discountValue()))
-            : 0;
-        }
+        //   return param.row.grandTotal
+        //     ? (Math.sign(grand) === -1
+        //       ? 0
+        //       : formatNumberToIntl(grand + calculateTaxTotal(param.row) - discountValue()))
+        //     : 0;
+        // }
       },
       {
         field: 'depositAmount',
@@ -460,27 +460,30 @@ function InvoicesPage() {
         type: 'number',
         width: 120,
         sortable: true,
-        renderCell: (param) => {
-          const invoiceCode = param.row.code;
-          const grand = grandTotal__(invoiceCode);
-          const discountValue = () => {
-            return calculateDiscount({
-              total: grand,
-              discount: param.row.edited
-                          ? param.row.discount
-                          : param.row.estimate.discount,
-              discountType: param.row.edited
-                              ? param.row.discountType
-                              : param.row.estimate.discountType
-            })
-          };
-
-          return param.row.grandTotal
-            ? (Math.sign(grand) === -1
-              ? 0
-              : formatNumberToIntl(grand + calculateTaxTotal(param.row) - discountValue()))
-            : 0;
+        valueFormatter: ({ value }) => {
+          return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0
         }
+        // renderCell: (param) => {
+        //   const invoiceCode = param.row.code;
+        //   const grand = grandTotal__(invoiceCode);
+        //   const discountValue = () => {
+        //     return calculateDiscount({
+        //       total: grand,
+        //       discount: param.row.edited
+        //                   ? param.row.discount
+        //                   : param.row.estimate.discount,
+        //       discountType: param.row.edited
+        //                       ? param.row.discountType
+        //                       : param.row.estimate.discountType
+        //     })
+        //   };
+
+        //   return param.row.grandTotal
+        //     ? (Math.sign(grand) === -1
+        //       ? 0
+        //       : formatNumberToIntl(grand + calculateTaxTotal(param.row) - discountValue()))
+        //     : 0;
+        // }
       },
       {
         field: 'depositAmount',
