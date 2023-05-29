@@ -267,8 +267,8 @@ export default class ExpenseController {
     }
 
     await dao.expenseDAOService.update(expense, data as CreationAttributes<Expense>);
-    await category.$set('expense', [expense]);
-    await type.$set('expense', [expense]);
+    await category.$add('expense', [expense]);
+    await type.$add('expense', [expense]);
 
     return expense;
   }
@@ -279,6 +279,7 @@ export default class ExpenseController {
       where: { partnerId: partner.id },
       include: [Beneficiary, ExpenseCategory, ExpenseType],
     });
+
     for (let i = 1; i < expenses.length; i++) {
       for (let j = i; j > 0; j--) {
         const _t1: any = expenses[j];
