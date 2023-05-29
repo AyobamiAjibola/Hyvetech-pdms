@@ -142,6 +142,20 @@ function InvoicePage() {
 
   const [refundAmount, setRefundable] = useState(0);
   const [balance, setDueBalance] = useState(0);
+  useEffect(() => {
+
+    const _depositAmount = invoice?.depositAmount || 0;
+    const _dueBalance = grandTotal - _depositAmount;
+
+    setDueBalance(_dueBalance);
+
+    if (_depositAmount > grandTotal) {
+      setRefundable(_depositAmount - grandTotal);
+      setDueBalance(0);
+    } else {
+      setRefundable(0);
+    }
+  }, [grandTotal, invoice]);
 
   const generateDownload = async () => {
     // const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
@@ -251,38 +265,6 @@ function InvoicePage() {
 
     return 0;
   };
-
-  const discountValue = useMemo(() => {
-    return calculateDiscount({
-      total: grandTotal,
-      discount: invoice?.edited
-                  ? invoice?.updateStatus === INVOICE_STATUS.update.draft
-                    ? invoice?.draftInvoice.discount
-                    : invoice?.discount
-                  : estimate?.discount,
-      discountType: invoice?.edited
-                      ? invoice?.updateStatus === INVOICE_STATUS.update.draft
-                        ? invoice?.draftInvoice.discountType
-                        : invoice?.discountType
-                      : estimate?.discountType
-    })
-  }, [estimate, invoice]);
-
-  useEffect(() => {
-
-    const _depositAmount = invoice?.depositAmount || 0;
-    const _grandTotal = grandTotal + calculateTaxTotal(invoice) - discountValue;
-    const _dueBalance = _grandTotal - _depositAmount;
-
-    setDueBalance(_dueBalance);
-
-    if (_depositAmount > _grandTotal) {
-      setRefundable(_depositAmount - _grandTotal);
-      setDueBalance(0);
-    } else {
-      setRefundable(0);
-    }
-  }, [grandTotal, invoice]);
 
   //share pdf logic --- start
     const _generateDownload = async () => {
@@ -684,7 +666,7 @@ function InvoicePage() {
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Total Sales:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{formatNumberToIntl((grandTotal + calculateTaxTotal(invoice) - discountValue))}
+                      &#x20A6;{formatNumberToIntl(grandTotal)}
                     </span>
                   </Typography>
                 </Grid>
@@ -732,7 +714,11 @@ function InvoicePage() {
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Total Receivable:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{formatNumberToIntl((grandTotal + calculateTaxTotal(invoice) - discountValue) - totalTransactionAmount)}
+                      &#x20A6;{formatNumberToIntl(
+                                (grandTotal + calculateTaxTotal(invoice)
+                                // - discountValue
+                                )
+                                - totalTransactionAmount)}
                     </span>
                   </Typography>
                 </Grid>
@@ -744,7 +730,9 @@ function InvoicePage() {
                     Book Profit:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
                       &#x20A6;{formatNumberToIntl(
-                        (grandTotal + calculateTaxTotal(invoice) - discountValue)
+                        (grandTotal + calculateTaxTotal(invoice)
+                        // - discountValue
+                        )
                         - (totalExpensesAmount ? totalExpensesAmount : 0)
                       )}
                     </span>
@@ -1020,7 +1008,15 @@ function InvoicePage() {
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
             <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
               TOTAL:{' '}
-              {formatNumberToIntl(grandTotal + calculateTaxTotal(invoice) - discountValue)}
+              {formatNumberToIntl(grandTotal)}
+               {/* {formatNumberToIntl(
+                  calculateDiscount({
+                    total: grandTotal,
+                    discount: invoice.discount,
+                    discountType: invoice.discountType,
+                  }) -
+                  calculateTaxTotal(invoice),
+                )} */}
             </Typography>
           </Grid>
         </Grid>
