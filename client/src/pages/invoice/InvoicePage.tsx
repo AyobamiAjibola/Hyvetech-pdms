@@ -143,22 +143,6 @@ function InvoicePage() {
   const [refundAmount, setRefundable] = useState(0);
   const [balance, setDueBalance] = useState(0);
 
-  useEffect(() => {
-    // const _grandTotal = vat + vatPart + partTotal + labourTotal;
-
-    const _depositAmount = invoice?.depositAmount || 0;
-    const _dueBalance = grandTotal - _depositAmount;
-
-    setDueBalance(_dueBalance);
-
-    if (_depositAmount > grandTotal) {
-      setRefundable(_depositAmount - grandTotal);
-      setDueBalance(0);
-    } else {
-      setRefundable(0);
-    }
-  }, [grandTotal, invoice]);
-
   const generateDownload = async () => {
     // const rName = Math.ceil(Math.random() * 999 + 1100) + '.pdf';
     const rName = invoice?.code + '.pdf';
@@ -236,6 +220,7 @@ function InvoicePage() {
     if (discountType === 'exact') {
       return discount;
     }
+
     return Math.ceil(total * (discount / 100));
   };
 
@@ -266,6 +251,38 @@ function InvoicePage() {
 
     return 0;
   };
+
+  const discountValue = useMemo(() => {
+    return calculateDiscount({
+      total: grandTotal,
+      discount: invoice?.edited
+                  ? invoice?.updateStatus === INVOICE_STATUS.update.draft
+                    ? invoice?.draftInvoice.discount
+                    : invoice?.discount
+                  : estimate?.discount,
+      discountType: invoice?.edited
+                      ? invoice?.updateStatus === INVOICE_STATUS.update.draft
+                        ? invoice?.draftInvoice.discountType
+                        : invoice?.discountType
+                      : estimate?.discountType
+    })
+  }, [estimate, invoice]);
+
+  useEffect(() => {
+
+    const _depositAmount = invoice?.depositAmount || 0;
+    const _grandTotal = grandTotal + calculateTaxTotal(invoice) - discountValue;
+    const _dueBalance = _grandTotal - _depositAmount;
+
+    setDueBalance(_dueBalance);
+
+    if (_depositAmount > _grandTotal) {
+      setRefundable(_depositAmount - _grandTotal);
+      setDueBalance(0);
+    } else {
+      setRefundable(0);
+    }
+  }, [grandTotal, invoice]);
 
   //share pdf logic --- start
     const _generateDownload = async () => {
@@ -364,7 +381,7 @@ function InvoicePage() {
     open_modal: 'true',
     id: invoice?.id
   }
-  console.log(invoice, 'checking invoice')
+
   const handleChange = (event: any) => {
     const value = event.target.value as string;
     setSelectedValue(value);
@@ -403,13 +420,13 @@ function InvoicePage() {
   }, [dispatch]);
 
   const totalExpensesAmount = useMemo(() => {
-    if (expenseReducer.getExpensesStatus !== 'completed') {
+    if (expenseReducer.getExpensesStatus === 'completed') {
       const filteredExpenses = expenseReducer.expenses.filter(
-        (expense) => expense.invoiceCode === invoice?.code
+        (expense: any) => expense.invoiceCode === invoice?.code
       );
-
+      console.log(filteredExpenses, 'filtered')
       const amount = filteredExpenses.reduce(
-        (total, expense) => total + expense.amount,
+        (total: any, expense: any) => total + expense.amount,
         0
       );
       return amount;
@@ -421,6 +438,7 @@ function InvoicePage() {
       const filteredExpenses = expenseReducer.expenses.filter(
         (expense: any) => expense.invoiceCode === invoice?.code
       );
+
       return filteredExpenses ? filteredExpenses.length : 0;
     }
   }, [expenseReducer.getExpensesStatus, expenseReducer.expenses, invoice?.code]);
@@ -681,7 +699,7 @@ function InvoicePage() {
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Total Amount of Expenses:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{totalExpensesAmount ? formatNumberToIntl(totalExpensesAmount) : 0}
+                      &#x20A6;{totalExpensesAmount ? formatNumberToIntl(totalExpensesAmount) : 0.00}
                     </span>
                   </Typography>
                 </Grid>
@@ -699,7 +717,10 @@ function InvoicePage() {
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Book Profit:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{formatNumberToIntl(invoice.grandTotal - (totalExpensesAmount ? totalExpensesAmount : 0))}
+                      &#x20A6;{formatNumberToIntl(
+                        (grandTotal + calculateTaxTotal(invoice) - discountValue)
+                        - (totalExpensesAmount ? totalExpensesAmount : 0)
+                      )}
                     </span>
                   </Typography>
                 </Grid>
@@ -707,7 +728,7 @@ function InvoicePage() {
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Actual Profit:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{formatNumberToIntl(totalTransactionAmount - (totalExpensesAmount ? totalExpensesAmount : 0))}
+                      &#x20A6; {formatNumberToIntl(totalTransactionAmount - (totalExpensesAmount ? totalExpensesAmount : 0.00))}
                     </span>
                   </Typography>
                 </Grid>
@@ -982,15 +1003,7 @@ function InvoicePage() {
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
             <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
               TOTAL:{' '}
-              {formatNumberToIntl(
-                grandTotal,
-                // calculateDiscount({
-                //   total: grandTotal,
-                //   discount: invoice.discount,
-                //   discountType: invoice.discountType,
-                // }) +
-                // calculateTaxTotal(invoice),
-              )}
+              {formatNumberToIntl(grandTotal + calculateTaxTotal(invoice) - discountValue)}
             </Typography>
           </Grid>
         </Grid>

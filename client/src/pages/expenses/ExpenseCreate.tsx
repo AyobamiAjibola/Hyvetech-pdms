@@ -110,7 +110,7 @@ const ExpenseCreate = () => {
     if (findRef !== '') return setErrorAlert('This payment has already been recorded');
 
     const invoiceCode = invoiceStore.invoices.find((inv: IInvoice) => inv.code === expenseReducer.invoiceCode)
-      
+
     dispatch(
       createExpenseAction({
         category,
@@ -189,6 +189,8 @@ const ExpenseCreate = () => {
   const handleCreateExpenseCategory = () => {
     dispatch(createExpenseCategoryAction({ name }));
   };
+
+  console.log(store.createExpenseStatus, 'loading status')
 
   return (
     <React.Fragment>
@@ -476,8 +478,7 @@ const ExpenseCreate = () => {
 
             <LoadingButton
               type="submit"
-              loading={store.createEstimateStatus === 'loading'}
-              disabled={store.createEstimateStatus === 'loading'}
+              loading={store.createExpenseStatus === 'loading'}
               // disabled={
               //   saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
               // }
