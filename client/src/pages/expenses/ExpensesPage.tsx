@@ -18,7 +18,7 @@ import AppModal from '../../components/modal/AppModal';
 import { Formik } from 'formik';
 import { FaPlus } from 'react-icons/fa';
 import AppAlert from '../../components/alerts/AppAlert';
-import { clearDeleteExpenseStatus } from '../../store/reducers/expenseReducer';
+import { clearCreateEspenseStatus, clearDeleteExpenseStatus, clearUpdateExpenseDetailStatus } from '../../store/reducers/expenseReducer';
 
 const Expenses = () => {
   const dispatch = useAppDispatch();
@@ -56,7 +56,6 @@ const Expenses = () => {
     } else if (expenseReduder.deleteExpenseStatus === 'completed') {
       setAlert({ type: 'success', message: 'Expense deleted successfully' });
 
-      setAlert(null);
       dispatch(clearDeleteExpenseStatus());
       dispatch(getExpensesAction());
     }
@@ -69,16 +68,26 @@ const Expenses = () => {
   }, [expenseReduder.getExpensesStatus]);
 
   useEffect(() => {
-    if (expenseReduder.updateExpenseStatus === 'failed') {
-      setAlert({ type: 'error', message: expenseReduder.updateExpenseError });
-    } else if (expenseReduder.updateExpenseStatus === 'completed') {
+    if (expenseReduder.updateExpenseDetailStatus === 'failed') {
+      setAlert({ type: 'error', message: expenseReduder.updateExpenseDetailError });
+    } else if (expenseReduder.updateExpenseDetailStatus === 'completed') {
       setAlert({ type: 'success', message: 'Expense updated successfully' });
 
-      setAlert(null);
-      dispatch(clearDeleteExpenseStatus());
+      dispatch(clearUpdateExpenseDetailStatus());
       dispatch(getExpensesAction());
     }
-  }, [expenseReduder.updateExpenseStatus]);
+  }, [expenseReduder.updateExpenseDetailStatus]);
+
+  useEffect(() => {
+    if (expenseReduder.createExpenseStatus === 'failed') {
+      setAlert({ type: 'error', message: expenseReduder.createExpenseError });
+    } else if (expenseReduder.createExpenseStatus === 'completed') {
+      setAlert({ type: 'success', message: 'Expense created successfully' });
+
+      dispatch(clearCreateEspenseStatus());
+      dispatch(getExpensesAction());
+    }
+  }, [expenseReduder.createExpenseStatus]);
 
   const handleExpenseDelete = (id: number) => {
     dispatch(deleteExpenseAction({ id }));

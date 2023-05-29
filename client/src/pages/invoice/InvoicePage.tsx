@@ -738,7 +738,7 @@ function InvoicePage() {
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Total Receivable:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{formatNumberToIntl(invoice.dueAmount)}
+                      &#x20A6;{formatNumberToIntl((grandTotal + calculateTaxTotal(invoice) - discountValue) - totalTransactionAmount)}
                     </span>
                   </Typography>
                 </Grid>
