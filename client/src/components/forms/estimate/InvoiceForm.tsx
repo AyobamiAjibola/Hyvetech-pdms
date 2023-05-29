@@ -211,8 +211,6 @@ function InvoiceForm(props: IProps) {
     const _depositAmount = parseInt(values.depositAmount);
     const _dueBalance = grandTotal - _depositAmount;
 
-    console.log(grandTotal, '_grandTotal_grandTotal');
-
     setDueBalance(_dueBalance);
 
     if (_depositAmount > grandTotal) {
@@ -346,7 +344,6 @@ function InvoiceForm(props: IProps) {
     // validate available stock
     useEffect(() => {
       for (const { quantity: { quantity }, partNumber } of values.parts) {
-        console.log(quantity, 'checks quantity of values.part');
         if (partNumber) {
           //@ts-ignore
           const item = items.find((item) => item.slug === partNumber);

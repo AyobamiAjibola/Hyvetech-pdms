@@ -163,7 +163,7 @@ const Expenses = () => {
         renderCell: params => {
           return (
             <Link style={{ color: 'skyblue', cursor: 'pointer' }} to={`/invoices/${params.row.invoiceId}`}>
-              {params.row.invoiceCode.split('_')[0]}
+              {params.row.invoiceCode?.split('_')[0]}
             </Link>
           );
         },
