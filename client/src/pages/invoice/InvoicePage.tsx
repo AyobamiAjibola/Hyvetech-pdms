@@ -424,7 +424,7 @@ function InvoicePage() {
       const filteredExpenses = expenseReducer.expenses.filter(
         (expense: any) => expense.invoiceCode === invoice?.code
       );
-      console.log(filteredExpenses, 'filtered')
+
       const amount = filteredExpenses.reduce(
         (total: any, expense: any) => total + expense.amount,
         0
@@ -675,13 +675,54 @@ function InvoicePage() {
                 backgroundColor: 'white',
                 width: '100%', p: 4, height: 'auto',
                 display: 'flex', alignItems: 'center',
-                justifyContent: 'right', gap: 2, flexDirection: 'column'
+                justifyContent: 'center', gap: 2, flexDirection: 'column'
               }}
             >
+              {/* <Box sx={{backgroundColor: 'yellow', width: '90%', height: '100%'}}> */}
               <Grid container>
+                <Grid item md={4} xs={12}>
+                  <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
+                    Total Sales:&nbsp;&nbsp;
+                    <span style={{fontSize: 16, color: 'black'}}>
+                      &#x20A6;{formatNumberToIntl((grandTotal + calculateTaxTotal(invoice) - discountValue))}
+                    </span>
+                  </Typography>
+                </Grid>
+                <Grid item md={4} xs={12}>
+                  <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
+                    Total Amount Paid:&nbsp;&nbsp;
+                    <span style={{fontSize: 16, color: 'black'}}>
+                      &#x20A6;{formatNumberToIntl(totalTransactionAmount)}
+                    </span>
+                  </Typography>
+                </Grid>
+                <Grid item md={4} xs={12}>
+                  <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
+                    Total Expenses:&nbsp;&nbsp;
+                    <span style={{fontSize: 16, color: 'black'}}>
+                      &#x20A6;{totalExpensesAmount ? formatNumberToIntl(totalExpensesAmount) : 0.00}
+                    </span>
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              <Grid container
+                sx={{
+                  borderBottom: '2px #CCCCCC solid', pb: 5,
+                  borderHeight: '2rem'
+                }}
+              >
+                <Grid item md={4} xs={12}>
+                  <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
+                    Payments recorded:&nbsp;&nbsp;
+                    <span style={{fontSize: 16, color: 'black'}}>
+                      {invoice.transactions.length}
+                    </span>
+                  </Typography>
+                </Grid>
                 <Grid item md={4} xs={12} flexDirection='row'>
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                    No of Expenses recorded:&nbsp;&nbsp;
+                    Expenses recorded:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
                       {expensesNumber}
                     </span>
@@ -689,30 +730,15 @@ function InvoicePage() {
                 </Grid>
                 <Grid item md={4} xs={12}>
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                    No of Payments recorded:&nbsp;&nbsp;
+                    Total Receivable:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
-                      {invoice.transactions.length}
-                    </span>
-                  </Typography>
-                </Grid>
-                <Grid item md={4} xs={12}>
-                  <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                    Total Amount of Expenses:&nbsp;&nbsp;
-                    <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{totalExpensesAmount ? formatNumberToIntl(totalExpensesAmount) : 0.00}
+                      &#x20A6;{formatNumberToIntl((grandTotal + calculateTaxTotal(invoice) - discountValue) - totalTransactionAmount)}
                     </span>
                   </Typography>
                 </Grid>
               </Grid>
-              <Grid container>
-                <Grid item md={4} xs={12}>
-                  <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                    Total Amount of Payment:&nbsp;&nbsp;
-                    <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{formatNumberToIntl(totalTransactionAmount)}
-                    </span>
-                  </Typography>
-                </Grid>
+
+              <Grid container pt={-2}>
                 <Grid item md={4} xs={12}>
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Book Profit:&nbsp;&nbsp;
@@ -724,26 +750,17 @@ function InvoicePage() {
                     </span>
                   </Typography>
                 </Grid>
+                <Grid md={4}/>
                 <Grid item md={4} xs={12}>
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                    Actual Profit:&nbsp;&nbsp;
+                    Profit/Loss:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
                       &#x20A6; {formatNumberToIntl(totalTransactionAmount - (totalExpensesAmount ? totalExpensesAmount : 0.00))}
                     </span>
                   </Typography>
                 </Grid>
               </Grid>
-              <Grid container>
-                <Grid item md={4} xs={12}>
-                  <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
-                    Total Receivable:&nbsp;&nbsp;
-                    <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{formatNumberToIntl((grandTotal + calculateTaxTotal(invoice) - discountValue) - totalTransactionAmount)}
-                    </span>
-                  </Typography>
-                </Grid>
-                <Grid md={8}/>
-              </Grid>
+              {/* </Box> */}
             </Paper>
           </Collapse>
         </Grid>}
