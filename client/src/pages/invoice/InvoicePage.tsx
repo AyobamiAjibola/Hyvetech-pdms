@@ -134,7 +134,7 @@ function InvoicePage() {
               ? invoice.updateStatus === INVOICE_STATUS.update.draft
                 ? invoice.draftInvoice.grandTotal
                 : invoice.grandTotal
-              : estimate.partsTotal + estimate.laboursTotal;
+              : estimate.grandTotal //estimate.partsTotal + estimate.laboursTotal
       // return estimate.partsTotal + estimate.laboursTotal;
     }
     return 0;
@@ -142,6 +142,7 @@ function InvoicePage() {
 
   const [refundAmount, setRefundable] = useState(0);
   const [balance, setDueBalance] = useState(0);
+
   useEffect(() => {
 
     const _depositAmount = invoice?.depositAmount || 0;
@@ -976,7 +977,9 @@ function InvoicePage() {
                     // @ts-ignore
                     `(${ formatNumberToIntl(
                           calculateDiscount({
-                            total: grandTotal,
+                            total: !invoice.updateStatus
+                                      ? estimate.laboursTotal + estimate.partsTotal
+                                      : grandTotal,
                             discount: invoice.edited
                                         ? invoice.updateStatus === INVOICE_STATUS.update.draft
                                           ? invoice.draftInvoice.discount

@@ -840,6 +840,17 @@ export default class InvoiceController {
           }
         }
 
+        if(invoice.edited && invoice.updateStatus === 'Draft') {
+          const draftInvoice = await invoice.$get('draftInvoice');
+          if(draftInvoice) {
+            await draftInvoice.update({
+              paidAmount: draftInvoice.paidAmount + _amount,
+              dueAmount: draftInvoice.dueAmount - _amount,
+              depositAmount: draftInvoice?.depositAmount + _amount
+            })
+          }
+        }
+
         await invoice.$add('transactions', [transferTransaction]);
       } catch (e) {
         console.log(e);
