@@ -69,6 +69,7 @@ function InvoicePage() {
   const [downloading, setDownloading] = useState<any>(false);
   const [_downloading, _setDownloading] = useState<any>(false);
   const [showMessage, setshowMessage] = useState<boolean>(false);
+  const [_dueAmt, _setDueAmt] = useState<any>();
 
   const params = useParams() as unknown as { id: number };
 
@@ -190,7 +191,7 @@ function InvoicePage() {
       setErrorMessage('');
     };
   }, []);
-
+  console.log(recordData.amount, 'record data amount')
   const handlePaymentRecord = async () => {
     setRecording(true);
     try {
@@ -448,6 +449,14 @@ function InvoicePage() {
     }
     return 0
   }, [invoice?.transactions]);
+
+  useEffect(() => {
+    if(showRecordPayment){
+      invoice?.updateStatus === 'Draft'
+        ? _setDueAmt(invoice.draftInvoice.dueAmount)
+        : _setDueAmt(invoice?.dueAmount)
+    }
+  }, [showRecordPayment])
 
   if (!estimate || !invoice)
     return (
@@ -747,7 +756,15 @@ function InvoicePage() {
                 <Grid item md={4} xs={12}>
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Profit/Loss:&nbsp;&nbsp;
-                    <span style={{fontSize: 16, color: 'black'}}>
+                    <span
+                      style={{
+                        fontSize: 16,
+                        color: Math.sign(totalTransactionAmount - (totalExpensesAmount && totalExpensesAmount)) === -1
+                                ? 'red'
+                                : 'black',
+                        fontWeight: 'bold'
+                        }}
+                      >
                       &#x20A6; {formatNumberToIntl(totalTransactionAmount - (totalExpensesAmount ? totalExpensesAmount : 0.00))}
                     </span>
                   </Typography>
@@ -1105,7 +1122,7 @@ function InvoicePage() {
                 value={recordData.amount}
                 type="numeric"
                 fullWidth
-                placeholder={'Amount to Record Max: ' + formatNumberToIntl(invoice.dueAmount)}
+                placeholder={'Amount to Record Max: ' + formatNumberToIntl(_dueAmt)}
                 onChange={e => {
                   // process entry
                   if (parseInt(e.target.value) > invoice.dueAmount) {

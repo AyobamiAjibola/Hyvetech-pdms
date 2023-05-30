@@ -420,7 +420,7 @@ function InvoicesPage() {
         width: 100,
         sortable: true,
         valueFormatter: ({ value }) => {
-          return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
+          return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value.toFixed(2))) : 0;
         }
       },
       {

@@ -225,7 +225,7 @@ export default function PaymentRecieve() {
             width: 160,
             sortable: true,
             valueGetter: (param: any) => {
-              return `${param.row.currency} ${formatNumberToIntl(param.row.amount)}`;
+              return `${param.row.currency} ${formatNumberToIntl(param.row.amount.toFixed(2))}`;
             },
           },
           {

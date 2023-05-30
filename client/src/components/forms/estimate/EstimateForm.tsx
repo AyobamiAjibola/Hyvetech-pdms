@@ -203,7 +203,6 @@ function EstimateForm(props: IProps) {
   }, [vat, vatPart]);
 
   useEffect(() => {
-    console.log('vat total> ', subTotal + vatTotal - calculateDiscount(subTotal));
     setGrandTotal(subTotal + vatTotal - calculateDiscount(subTotal));
   }, [vatTotal]);
 
