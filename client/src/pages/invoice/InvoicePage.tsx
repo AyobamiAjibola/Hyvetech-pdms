@@ -264,6 +264,18 @@ function InvoicePage() {
       if (!estimate.tax && estimate.taxPart) return parseFloat(`${estimate?.taxPart}`.split(',').join(''));
     }
 
+    //calculating tax if updateStatus is null
+    if(!estimate.updateStatus) {
+      if (estimate.estimate.taxPart && estimate.estimate.tax)
+        return (
+          parseFloat(`${estimate?.estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.estimate?.taxPart}`.split(',').join(''))
+        );
+
+      if (estimate.estimate.tax && !estimate.estimate.taxPart) return parseFloat(`${estimate?.estimate?.tax}`.split(',').join(''));
+
+      if (!estimate.estimate.tax && estimate.estimate.taxPart) return parseFloat(`${estimate?.estimate?.taxPart}`.split(',').join(''));
+    }
+
     return 0;
   };
 
@@ -979,7 +991,7 @@ function InvoicePage() {
                           calculateDiscount({
                             total: !invoice.updateStatus
                                       ? estimate.laboursTotal + estimate.partsTotal
-                                      : grandTotal,
+                                      : subTotal, //grandTotal
                             discount: invoice.edited
                                         ? invoice.updateStatus === INVOICE_STATUS.update.draft
                                           ? invoice.draftInvoice.discount
