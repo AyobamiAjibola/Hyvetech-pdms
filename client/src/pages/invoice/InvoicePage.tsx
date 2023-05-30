@@ -714,11 +714,7 @@ function InvoicePage() {
                   <Typography sx={{fontSize: 15, color: '#7F7F7F'}}>
                     Total Receivable:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
-                      &#x20A6;{formatNumberToIntl(
-                                (grandTotal + calculateTaxTotal(invoice)
-                                // - discountValue
-                                )
-                                - totalTransactionAmount)}
+                      &#x20A6;{formatNumberToIntl(grandTotal - totalTransactionAmount)}
                     </span>
                   </Typography>
                 </Grid>
@@ -730,11 +726,7 @@ function InvoicePage() {
                     Book Profit:&nbsp;&nbsp;
                     <span style={{fontSize: 16, color: 'black'}}>
                       &#x20A6;{formatNumberToIntl(
-                        (grandTotal + calculateTaxTotal(invoice)
-                        // - discountValue
-                        )
-                        - (totalExpensesAmount ? totalExpensesAmount : 0)
-                      )}
+                        grandTotal - (totalExpensesAmount ? totalExpensesAmount : 0))}
                     </span>
                   </Typography>
                 </Grid>
