@@ -21,6 +21,7 @@ const PERFORM_NAME_ENQUIRY = 'autoHyvePay:PERFORM_NAME_ENQUIRY';
 const PERFORM_ACCOUNT_TRANSFER = 'autoHyvePay:PERFORM_ACCOUNT_TRANSFER';
 const GET_KYC_REQUESTS = 'autoHyvePay:GET_KYC_REQUESTS';
 const ACTIVATE_ACCOUNT = 'autoHyvePay:ACTIVATE_ACCOUNT';
+const PERFORM_CBA_ACCOUNT_UPDATE = 'autoHyvePay:PERFORM_CBA_ACCOUNT_UPDATE';
 
 const BANKS = 'autoHyvePay:BANKS';
 
@@ -108,3 +109,12 @@ export const initiateAccountTranfer = asyncThunkWrapper<
 
   return response.data;
 });
+
+export const updateCBAccountUpdate = asyncThunkWrapper<ApiResponseSuccess<any>, { pin: string }>(
+  PERFORM_CBA_ACCOUNT_UPDATE,
+  async (args: { pin: string }) => {
+    const response = await axiosClient.post(`${API_ROOT}/cba/account/update`, args);
+
+    return response.data;
+  },
+);

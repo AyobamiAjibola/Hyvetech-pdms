@@ -109,6 +109,7 @@ export interface AccountTransferDTO {
   clientFeeCharge?: number;
   saveAsBeneficiary?: boolean;
   bankName?: string;
+  pin: string;
 }
 
 export interface AccountTransferResponseDTO {

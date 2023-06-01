@@ -52,3 +52,9 @@ export const getKycAccountRequest = authenticateRouteWrapper(async (req: Request
 
   res.status(result.code).json(result);
 });
+
+export const performAccountUpdate = authenticateRouteWrapper(async (req: Request, res: Response) => {
+  const result = await cbaController.updateAccount(req);
+
+  res.status(result.code).json(result);
+});

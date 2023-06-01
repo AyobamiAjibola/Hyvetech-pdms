@@ -41,6 +41,8 @@ const HyvePayDashboard = () => {
   const [validIDBack, setValidIDBack] = useState<FileList | null>(null);
   const [cacDoc, setCacDoc] = useState<FileList | null>(null);
 
+  const [pin, setPIN] = useState('');
+
   const [loading, setLoading] = useState(false);
 
   const [alerMessage, setAlert] = useState<{ type: 'success' | 'error' | 'info' | 'warning'; message: string } | null>(
@@ -69,6 +71,7 @@ const HyvePayDashboard = () => {
 
       if (!validIDBack) return setAlert({ type: 'info', message: 'Please upload the back picture of a valid ID' });
 
+      if (pin.trim() === '') return setAlert({ type: 'info', message: 'Please provide your HyvePay PIN' });
       // if (!cacDoc) return setAlert({ type: 'info', message: 'Please upload your CAC document' });
 
       setLoading(true);
@@ -96,6 +99,7 @@ const HyvePayDashboard = () => {
           cacUrl: cacDOcResult?.file?.url || '',
           validIdBackUrl: validIDBackResult.file.url,
           validIdFrontUrl: validIDFrontResult.file.url,
+          pin,
         }),
       );
     } catch (error) {
@@ -143,8 +147,8 @@ const HyvePayDashboard = () => {
       },
 
       {
-        field: 'accountNumber',
-        headerName: 'Account number',
+        field: 'beneficiaryName',
+        headerName: 'Beneficiary Name',
         headerAlign: 'center',
         align: 'center',
         type: 'string',
@@ -293,7 +297,7 @@ const HyvePayDashboard = () => {
         component="div"
         sx={{
           display: 'flex',
-          width: { sm: '100%', xs: document.documentElement.clientWidth },
+          width: { sm: '100%', xs: '100%' },
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
@@ -302,7 +306,7 @@ const HyvePayDashboard = () => {
             display: 'flex',
             flexDirection: { lg: 'row', xs: 'column' },
             // justifyContent: 'center',
-            width: { lg: '100%', xs: '50%' },
+            width: { lg: '100%', xs: '100%' },
             gap: { lg: 3, md: 2, xs: 2 },
             ml: { lg: 10 },
             mb: { md: 3 },
@@ -324,11 +328,12 @@ const HyvePayDashboard = () => {
           </Grid>
         </Grid>
       </Box>
+      <br />
       <Box
         component="div"
         sx={{
           display: 'flex',
-          width: { sm: '100%', xs: document.documentElement.clientWidth },
+          width: { sm: '100%', xs: '100%' },
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
@@ -339,7 +344,7 @@ const HyvePayDashboard = () => {
             flexDirection: { lg: 'row', xs: 'column' },
             flexWrap: 'wrap',
             // justifyContent: 'center',
-            width: { lg: '100%', xs: '50%' },
+            width: { lg: '100%', xs: '100%' },
             gap: { lg: 2, md: 2, xs: 2 },
             ml: { lg: 10 },
           }}>
@@ -368,37 +373,31 @@ const HyvePayDashboard = () => {
           />
         </Grid>
       </Box>
-      <Box
-        component="div"
-        sx={{
-          display: 'flex',
-          width: { sm: '100%', xs: document.documentElement.clientWidth },
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: 10,
-        }}>
-        <Grid container>
-          <Grid
-            sx={{
-              display: 'flex',
-              flexDirection: { lg: 'row', xs: 'column' },
-              // justifyContent: 'center',
-              width: { lg: '100%', xs: '50%' },
-              gap: { lg: 8, md: 4, xs: 2 },
-              ml: { lg: 10 },
-            }}
-            item
-            xs={12}>
-            <AppDataGrid
-              loading={autohyvePay.getAllAccountTransactionStatus === 'loading'}
-              rows={autohyvePay.transaction.postingsHistory || []}
-              columns={techColumns}
-              showToolbar
-              getRowId={(row: any) => row.referenceNumber}
-            />
-          </Grid>
+
+      <br />
+      <br />
+
+      <Grid container>
+        <Grid
+          // sx={{
+          //   display: 'flex',
+          //   flexDirection: { lg: 'row', xs: 'column' },
+          //   // justifyContent: 'center',
+          //   width: { lg: '100%', xs: '50%' },
+          //   gap: { lg: 8, md: 4, xs: 2 },
+          //   ml: { lg: 10 },
+          // }}
+          item
+          xs={12}>
+          <AppDataGrid
+            loading={autohyvePay.getAllAccountTransactionStatus === 'loading'}
+            rows={autohyvePay.transaction.postingsHistory || []}
+            columns={techColumns}
+            showToolbar
+            getRowId={(row: any) => row.referenceNumber}
+          />
         </Grid>
-      </Box>
+      </Grid>
 
       {openActivateModal && (
         <AppModal
@@ -432,6 +431,18 @@ const HyvePayDashboard = () => {
               <div style={{ marginBottom: 20 }}>
                 <FormLabel>CAC </FormLabel> <br />
                 <Input onChange={(e: any) => setCacDoc(e.target.files)} type="file" />
+              </div>
+              <div style={{ marginBottom: 30 }}>
+                <TextField
+                  margin="dense"
+                  id="PIN"
+                  label="HyvePay PIN"
+                  type="password"
+                  fullWidth
+                  variant="standard"
+                  value={pin}
+                  onChange={e => setPIN(e.target.value)}
+                />
               </div>
               <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'end' }}>
                 <LoadingButton

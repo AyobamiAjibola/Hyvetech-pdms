@@ -25,6 +25,7 @@ export type PerformNameEnquirySchemaType = {
 
 export const $savePartnerAccountSchema: Joi.SchemaMap<PartnerAccountSchemaType> = {
   businessName: Joi.string().required().label('businessName'),
+  pin: Joi.string().required().label('pin'),
 };
 
 export const performNameEnquirySchema: Joi.SchemaMap<PerformNameEnquirySchemaType> = {
@@ -33,7 +34,8 @@ export const performNameEnquirySchema: Joi.SchemaMap<PerformNameEnquirySchemaTyp
 };
 
 export const $updatePartnerAccountSchema: Joi.SchemaMap<PartnerAccountSchemaType> = {
-  businessName: Joi.string().required().label('businessName'),
+  businessName: Joi.string().optional().label('businessName'),
+  pin: Joi.string().optional().label('pin'),
 };
 
 @Table({
@@ -78,6 +80,9 @@ export default class PartnerAccount extends Model<
 
   @Column(DataType.STRING)
   declare businessName: string;
+
+  @Column(DataType.STRING)
+  declare pin: string;
 
   @BelongsTo(() => Partner)
   declare partner: NonAttribute<Partner>;

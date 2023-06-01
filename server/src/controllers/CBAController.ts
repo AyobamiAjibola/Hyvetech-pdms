@@ -8,6 +8,7 @@ import CBAService from '../services/CBAService';
 import Joi = require('joi');
 import PartnerAccount, {
   $savePartnerAccountSchema,
+  $updatePartnerAccountSchema,
   PartnerAccountSchemaType,
   PerformNameEnquirySchemaType,
   performNameEnquirySchema,
@@ -20,6 +21,8 @@ import {
 } from '../models/AccountActivationRequest';
 import dao from '../services/dao';
 import settings, { MANAGE_ALL, MANAGE_TECHNICIAN } from '../config/settings';
+import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
+import PasswordEncoder from '../utils/PasswordEncoder';
 
 const NO_ACCOUNT_PROVISIONED = 'No account is provisioned for user';
 const PARTNER_NOT_FOUND = 'Partner account not found';
@@ -35,12 +38,15 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
   nameEnquiryId: Joi.number().required().label('nameEnquiryId'),
   saveAsBeneficiary: Joi.boolean().optional().label('saveAsBeneficiary'),
   bankName: Joi.string().optional().label('bankName'),
+  pin: Joi.string().required().label('pin'),
 };
 
 class CBAController {
   private readonly bankService: BankService;
+  private readonly passwordEncoded: BcryptPasswordEncoder;
   constructor(bankService: BankService) {
     this.bankService = bankService;
+    this.passwordEncoded = new PasswordEncoder();
   }
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN])
@@ -50,6 +56,20 @@ class CBAController {
     const response: HttpResponse<PartnerAccount> = {
       code: HttpStatus.OK.code,
       message: 'Account created successfully',
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
+  public async updateAccount(req: Request) {
+    const account = await this.doAccountUpdate(req);
+
+    const response: HttpResponse<PartnerAccount> = {
+      code: HttpStatus.OK.code,
+      message: 'Account updated successfully',
       result: account,
     };
 
@@ -174,6 +194,7 @@ class CBAController {
       email: partner.email,
       businessName: accountRequest.businessName,
       partnerId: partner.id,
+      pin: accountRequest.pin,
     });
 
     partner.accountName = `${response.firstName} ${response.lastName}`;
@@ -301,6 +322,10 @@ class CBAController {
     if (!partnerAccount)
       return Promise.reject(CustomAPIError.response('Account not found', HttpStatus.BAD_REQUEST.code));
 
+    const isMatch = await this.passwordEncoded.match(value.pin, partnerAccount?.pin.trim());
+
+    if (!isMatch) return Promise.reject(CustomAPIError.response('PIN is invalid', HttpStatus.BAD_REQUEST.code));
+
     const beneficiary = await dataSources.beneficiaryDAOService.findByAny({
       where: {
         accountNumber: value.beneficiaryAccount,
@@ -372,6 +397,7 @@ class CBAController {
       email: req.user.email,
       businessName: value.businessName,
       partnerId: req.user.partnerId,
+      pin: value.pin,
     });
 
     partner.isAccountProvisioned = true;
@@ -401,6 +427,23 @@ class CBAController {
 
   private async doGetKycRequests(req: Request) {
     return dataSources.accountActivationDAOService.findAll({});
+  }
+
+  private async doAccountUpdate(req: Request) {
+    const { error, value } = Joi.object<PartnerAccountSchemaType>($updatePartnerAccountSchema).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    const account = await dataSources.partnerAccountDaoService.findByAny({ where: { partnerId: req.user.partnerId } });
+
+    if (!account)
+      return Promise.reject(CustomAPIError.response('Account not yet provisioned', HttpStatus.BAD_REQUEST.code));
+
+    account.pin = await this.passwordEncoded.encode(value.pin);
+
+    await account.save();
+
+    return null;
   }
 }
 

@@ -24,11 +24,12 @@ import ProfileNew from '../components/customer/Profile';
 import UserRoleManagement from '../components/partner/garage/UserRoleManagement';
 import Preferences from '../components/partner/garage/Preferences';
 import CustomerServiceReminder from '../pages/customer/CustomerServiceReminder';
+import HyvePaySetting from '../components/partner/garage/HyvePaySetting';
 
 export const customerDetailTabsTechOnly: ITab[] = [
   { name: 'Profile', Element: ProfileNew },
   { name: 'Vehicles', Element: CustomerVehicles },
-  {name: 'Service Reminder', Element: CustomerServiceReminder}
+  { name: 'Service Reminder', Element: CustomerServiceReminder },
 ];
 
 export const customerDetailTabs: ITab[] = [
@@ -67,6 +68,11 @@ export const partnerDetailTabs: ITab[] = [
   //   name: 'Ride Share Hyve',
   //   Element: RideShareDriver,
   // },
+  {
+    tag: GARAGE_CATEGORY,
+    name: 'HyvePay Settings',
+    Element: HyvePaySetting,
+  },
   {
     tag: GARAGE_CATEGORY,
     name: 'Account Settings',

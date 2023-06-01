@@ -23,6 +23,7 @@ export const $saveAccountActivationRequestSchema: Joi.SchemaMap<AccountActivatio
   cacUrl: Joi.string().optional().allow(null, '').label('cacUrl'),
   validIdBackUrl: Joi.string().optional().label('validIdBackUrl'),
   validIdFrontUrl: Joi.string().optional().label('validIdFrontUrl'),
+  pin: Joi.string().optional().label('pin'),
 };
 
 export const $updateAccountActivationRequestSchema: Joi.SchemaMap<AccountActivationRequestSchemaType> = {
@@ -30,6 +31,7 @@ export const $updateAccountActivationRequestSchema: Joi.SchemaMap<AccountActivat
   cacUrl: Joi.string().optional().label('cacUrl'),
   validIdBackUrl: Joi.string().optional().label('validIdBackUrl'),
   validIdFrontUrl: Joi.string().optional().label('validIdFrontUrl'),
+  pin: Joi.string().optional().label('pin'),
 };
 
 @Table({
@@ -53,6 +55,9 @@ export default class AccountActivationRequest extends Model<
 
   @Column(DataType.STRING)
   declare validIdFrontUrl: string;
+
+  @Column(DataType.STRING)
+  declare pin: string;
 
   @Column(DataType.STRING)
   declare validIdBackUrl: string;

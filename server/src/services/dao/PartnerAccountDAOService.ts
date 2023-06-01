@@ -14,13 +14,18 @@ import { NullishPropertiesOf } from 'sequelize/types/utils';
 import PartAccountRepository from '../../repositories/PartnerAccountRepository';
 import BankService, { AccountTransactionLogDTO } from '../BankService';
 import { ReferenceGenerator } from '../ReferenceGenerator';
+import { appCommonTypes } from '../../@types/app-common';
+import PasswordEncoder from '../../utils/PasswordEncoder';
+import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
 export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
   private readonly parterAccountRepository: PartAccountRepository;
   private readonly bankService: BankService;
+  private passwordEncoder: BcryptPasswordEncoder;
   constructor(repository: PartAccountRepository, bankService: BankService) {
     this.parterAccountRepository = repository;
     this.bankService = bankService;
+    this.passwordEncoder = new PasswordEncoder();
   }
 
   async create(
@@ -41,6 +46,8 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
 
     values.accountNumber = account.accountNumber;
     values.accountRef = reference;
+
+    values.pin = await this.passwordEncoder.encode(values.pin);
 
     return this.parterAccountRepository.save(values, options);
   }
