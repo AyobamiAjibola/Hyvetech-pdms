@@ -920,6 +920,7 @@ declare module '@app-models' {
     clientFeeCharge?: number;
     saveAsBeneficiary?: boolean;
     bankName?: string;
+    pin: string;
   }
 
   export interface AccountTransferResponseDTO {

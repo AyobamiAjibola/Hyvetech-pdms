@@ -8,6 +8,7 @@ import {
   initiateAccountTransfer,
   performAccountActivation,
   performAccountActivationRequest,
+  performAccountUpdate,
   performNameEnquiry,
 } from '../../routes/cbaRoute';
 
@@ -60,6 +61,13 @@ const cbaEndpoint: RouteEndpoints = [
     method: 'get',
     path: '/kyc/requests',
     handler: getKycAccountRequest,
+  },
+
+  {
+    name: 'perform-account-update',
+    method: 'post',
+    path: '/cba/account/update',
+    handler: performAccountUpdate,
   },
 ];
 export default cbaEndpoint;

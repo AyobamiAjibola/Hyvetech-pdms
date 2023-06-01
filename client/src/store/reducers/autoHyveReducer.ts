@@ -9,6 +9,7 @@ import {
   performAccountActivation,
   performNameEnquiryAction,
   requestActivationAction,
+  updateCBAccountUpdate,
 } from '../actions/autoHyveActions';
 import {
   AccountActivateRequest,
@@ -27,6 +28,10 @@ interface IAutoHyveStatus {
   activateAccountStatus: IThunkAPIStatus;
   activateAccountSuccess: string;
   activateAccountError?: string;
+
+  performCBAUpdateStatus: IThunkAPIStatus;
+  performCBAUpdateSuccess: string;
+  performCBAUpdateError?: string;
 
   getKycRequestStatus: IThunkAPIStatus;
   getKycRequestSuccess: string;
@@ -72,6 +77,10 @@ const initialState: IAutoHyveStatus = {
   activateAccountError: '',
   activateAccountStatus: 'idle',
   activateAccountSuccess: '',
+
+  performCBAUpdateError: '',
+  performCBAUpdateStatus: 'idle',
+  performCBAUpdateSuccess: '',
 
   getKycRequestError: '',
   getKycRequestStatus: 'idle',
@@ -174,6 +183,11 @@ const autoHyvePay = createSlice({
         message: 'Transaction successful',
         data: null,
       };
+    },
+    clearCBAUpdateStatus(state: IAutoHyveStatus) {
+      state.performCBAUpdateError = '';
+      state.performCBAUpdateSuccess = '';
+      state.performCBAUpdateStatus = 'idle';
     },
   },
   extraReducers: builder => {
@@ -280,9 +294,22 @@ const autoHyvePay = createSlice({
         state.activateAccountStatus = 'failed';
         state.activateAccountError = action.payload?.message || action.error.message;
       });
+
+    builder
+      .addCase(updateCBAccountUpdate.pending, state => {
+        state.performCBAUpdateStatus = 'loading';
+      })
+      .addCase(updateCBAccountUpdate.fulfilled, state => {
+        state.performCBAUpdateStatus = 'completed';
+      })
+      .addCase(updateCBAccountUpdate.rejected, (state, action) => {
+        state.performCBAUpdateStatus = 'failed';
+        state.performCBAUpdateError = action.payload?.message || action.error.message;
+      });
   },
 });
 
-export const { clearGetDriverStatus, clearAccountHolderDetail, clearTransferStatus } = autoHyvePay.actions;
+export const { clearGetDriverStatus, clearAccountHolderDetail, clearTransferStatus, clearCBAUpdateStatus } =
+  autoHyvePay.actions;
 
 export default autoHyvePay.reducer;

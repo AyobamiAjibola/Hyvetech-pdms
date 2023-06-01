@@ -28,6 +28,8 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
   const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(false);
   const [useBenenficiary, setUseBeneificary] = useState(false);
 
+  const [pin, setPIN] = useState('');
+
   const autohyvePay = useAppSelector(state => state.autoHyveReducer);
 
   const [selectedBeneficiary, setSelectedBeneficary] = useState('');
@@ -47,6 +49,8 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
     if (`${amount}`.trim() === '' || `${amount}`.trim() === '0')
       return setAlert({ type: 'error', message: 'Please provide transfer amount' });
 
+    if (pin.trim() === '') return setAlert({ type: 'error', message: 'Please provide your HyvePay PIN' });
+
     const bankSelected = autohyvePay.banks.find(item => item.bankCode === bank);
 
     if (!bankSelected) return setAlert({ type: 'error', message: 'No bank selected' });
@@ -61,6 +65,7 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
         nameEnquiryId: autohyvePay.accountHolder.nameEnquiryID,
         saveAsBeneficiary,
         bankName: bankSelected.bankName,
+        pin,
       }),
     );
   };
@@ -213,6 +218,18 @@ const TransferDialog: FC<IProps> = ({ show = false, onClose }) => {
                 variant="standard"
                 value={narration}
                 onChange={e => setNarration(e.target.value)}
+              />
+            </div>
+            <div style={{ marginBottom: 30 }}>
+              <TextField
+                margin="dense"
+                id="PIN"
+                label="HyvePay PIN"
+                type="password"
+                fullWidth
+                variant="standard"
+                value={pin}
+                onChange={e => setPIN(e.target.value)}
               />
             </div>
             <div style={{ marginBottom: 30 }}>
