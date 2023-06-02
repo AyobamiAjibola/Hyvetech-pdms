@@ -167,21 +167,21 @@ const HyvePayDashboard = () => {
           return '₦ ' + formatNumberToIntl(value ? value / 100 : 0);
         },
       },
-      {
-        field: 'openingBalance',
-        headerName: 'Opening Balance',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
-        sortable: true,
-        width: 200,
-        valueFormatter: ({ value }) => {
-          return '₦ ' + formatNumberToIntl(value ? value / 100 : 0);
-        },
-      },
+      // {
+      //   field: 'openingBalance',
+      //   headerName: 'Opening Balance',
+      //   headerAlign: 'center',
+      //   align: 'center',
+      //   type: 'string',
+      //   sortable: true,
+      //   width: 200,
+      //   valueFormatter: ({ value }) => {
+      //     return '₦ ' + formatNumberToIntl(value ? value / 100 : 0);
+      //   },
+      // },
       {
         field: 'balanceAfter',
-        headerName: 'Balance After',
+        headerName: 'Balance',
         headerAlign: 'center',
         align: 'center',
         type: 'string',
