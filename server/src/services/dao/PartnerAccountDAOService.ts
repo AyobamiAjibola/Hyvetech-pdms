@@ -41,6 +41,7 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
       firstName: values.firstName,
       lastName: values.lastName,
       phoneNumber: values.phoneNumber,
+      businessName: values.businessName,
       trackingReference: reference,
     });
 
