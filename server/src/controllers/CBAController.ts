@@ -188,8 +188,8 @@ class CBAController {
       return Promise.reject(CustomAPIError.response('Please provide partner phone', HttpStatus.BAD_REQUEST.code));
 
     const response = await dataSources.partnerAccountDaoService.create({
-      firstName: accountRequest.businessName,
-      lastName: 'Ltd',
+      firstName: user.firstName,
+      lastName: user.lastName,
       phoneNumber: partner.phone,
       email: partner.email,
       businessName: accountRequest.businessName,
