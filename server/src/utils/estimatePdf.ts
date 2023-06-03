@@ -3,6 +3,7 @@ import path from 'path';
 import 'dotenv/config';
 import fs from 'fs';
 import Generic from './Generic';
+import PartnerAccount from '../models/PartnerAccount';
 
 export function formatNumberToIntl(amount: number) {
   return new Intl.NumberFormat('en-GB', {
@@ -17,7 +18,7 @@ function base64_encode(file: string) {
   return new Buffer(bitmap).toString('base64');
 }
 
-export const estimatePdfTemplate = async (estimate: Estimate) => {
+export const estimatePdfTemplate = async (estimate: Estimate, accountDetail: PartnerAccount | null) => {
   // console.log((estimate.customer), "estimate")
   const logo = `${estimate.partner.logo}`;
   const partner = estimate.partner;
@@ -38,8 +39,9 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
 
   const calculateTaxTotal = (estimate: any | undefined) => {
     if (!estimate) return 0;
-    const tax = parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
-    return tax
+    const tax =
+      parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''));
+    return tax;
   };
 
   // console.log(mainUrl, "mainUrl");
@@ -420,7 +422,7 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
             <div class="top-section">
                 <div class="header-section">
                     <span class="estimate-name">Estimate</span>
-                    <span class="estimate-num">#${estimate.code.split("_")[0]}</span>
+                    <span class="estimate-num">#${estimate.code.split('_')[0]}</span>
                     <span class="estimate-date">Date: ${new Date(estimate.updatedAt).toDateString()}</span>
                 </div>
     
@@ -448,8 +450,12 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
                     <div class="bill-to-name">${
-                      customer?.companyName ? customer?.companyName : '' ||
-                      `${Generic.capitalizeWord(customer.title ? customer.title : '')} ${Generic.capitalizeWord(customer.firstName ? customer.firstName : '')} ${Generic.capitalizeWord(customer.lastName ? customer.lastName : '')}`
+                      customer?.companyName
+                        ? customer?.companyName
+                        : '' ||
+                          `${Generic.capitalizeWord(customer.title ? customer.title : '')} ${Generic.capitalizeWord(
+                            customer.firstName ? customer.firstName : '',
+                          )} ${Generic.capitalizeWord(customer.lastName ? customer.lastName : '')}`
                     }</div>
                     <div class="bill-to-address">${customer?.contacts[0]?.address || ''}, ${
     customer.contacts[0]?.city || ''
@@ -540,7 +546,7 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
                             <span class="item-warranty-item"></span>
                             <span class="item-cost-item-sub">Subtotal:</span>
                             <span class="item-amount-item-amount">₦ ${formatNumberToIntl(
-                            estimate.partsTotal + estimate.laboursTotal,
+                              estimate.partsTotal + estimate.laboursTotal,
                             )}</span>
                         </div>
                         <div class="item-header-item-total">
@@ -558,9 +564,9 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
                             <span class="item-warranty-item"></span>
                             <span class="item-cost-item-sub">VAT (7.5%):</span>
                             <span class="item-amount-item-amount">₦ ${
-                            // @ts-ignore
-                            //   formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
-                            formatNumberToIntl(calculateTaxTotal(estimate).toFixed(2))
+                              // @ts-ignore
+                              //   formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
+                              formatNumberToIntl(calculateTaxTotal(estimate).toFixed(2))
                             }</span>
                         </div>
                         <div class="item-header-item-total">
@@ -569,7 +575,9 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
                             <span class="item-warranty-item"></span>
                             <div class="total-flex" style="background: #E8E8E8;">
                                 <span class="item-cost-item-sub-total">Total:</span>
-                                <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(estimate.grandTotal)}</span>
+                                <span class="item-amount-item-amount total">₦ ${formatNumberToIntl(
+                                  estimate.grandTotal,
+                                )}</span>
                             </div>
             
                         </div>
@@ -619,17 +627,17 @@ export const estimatePdfTemplate = async (estimate: Estimate) => {
                         <div style="width: 300px">
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Name</span>
-                                <span class="bold">${partner?.accountName || ''}</span>
+                                <span class="bold">${accountDetail?.businessName || ''}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Bank Name</span>
-                                <span class="bold">${partner?.bankName || ''}</span>
+                                <span class="bold">${accountDetail?.accountProvider || ''}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Number</span>
-                                <span class="bold">${partner?.accountNumber || ''}</span>
+                                <span class="bold">${accountDetail?.accountNumber || ''}</span>
                             </div>
                         </div>
 

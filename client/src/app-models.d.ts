@@ -842,6 +842,7 @@ declare module '@app-models' {
     accountNumber?: string;
     accountName?: string;
     accountProvider?: string;
+    businessName?: string;
   }
 
   interface AccountTransactionLogDTO {

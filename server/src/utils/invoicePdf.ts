@@ -4,6 +4,7 @@ import fs from 'fs';
 import Invoice from '../models/Invoice';
 import { INVOICE_STATUS } from '../config/constants';
 import Generic from './Generic';
+import PartnerAccount from '../models/PartnerAccount';
 
 export function formatNumberToIntl(amount: number) {
   return new Intl.NumberFormat('en-GB', {
@@ -18,7 +19,7 @@ function base64_encode(file: string) {
   return new Buffer(bitmap).toString('base64');
 }
 
-export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
+export const invoicePdfTemplate = (invoice: Invoice, terms = '', accountDetail: PartnerAccount | null) => {
   const estimate = invoice.estimate;
   // console.log((estimate.customer), "estimate")
   const logo = `${estimate.partner.logo}`;
@@ -63,27 +64,29 @@ export const invoicePdfTemplate = (invoice: Invoice, terms = '') => {
     console.log(e);
   }
 
-//   const calculateTaxTotal = (invoice: any | undefined) => {
-//     if (!invoice) return 0;
-//     let tax = 0;
-//     if(invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
-//         tax = parseFloat(`${invoice?.draftInvoice?.tax}`.split(',').join('')) + parseFloat(`${invoice?.draftInvoice?.taxPart}`.split(',').join(''));
-//     } else {
-//         tax = parseFloat(`${invoice?.tax}`.split(',').join('')) + parseFloat(`${invoice?.taxPart}`.split(',').join(''));
-//     }
-//     if(invoice.edited === null && !invoice.updateStatus === null){
-//         tax = parseFloat(`${invoice?.estimate?.tax}`.split(',').join('')) + parseFloat(`${invoice?.estimate?.taxPart}`.split(',').join(''));
-//     }
-//     return tax
-//   };
+  //   const calculateTaxTotal = (invoice: any | undefined) => {
+  //     if (!invoice) return 0;
+  //     let tax = 0;
+  //     if(invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
+  //         tax = parseFloat(`${invoice?.draftInvoice?.tax}`.split(',').join('')) + parseFloat(`${invoice?.draftInvoice?.taxPart}`.split(',').join(''));
+  //     } else {
+  //         tax = parseFloat(`${invoice?.tax}`.split(',').join('')) + parseFloat(`${invoice?.taxPart}`.split(',').join(''));
+  //     }
+  //     if(invoice.edited === null && !invoice.updateStatus === null){
+  //         tax = parseFloat(`${invoice?.estimate?.tax}`.split(',').join('')) + parseFloat(`${invoice?.estimate?.taxPart}`.split(',').join(''));
+  //     }
+  //     return tax
+  //   };
 
-const calculateTaxTotal = (invoice: any | undefined) => {
+  const calculateTaxTotal = (invoice: any | undefined) => {
     if (!invoice) return 0;
 
     let tax = 0;
 
     if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft) {
-      tax = parseFloat(invoice.draftInvoice.tax.replace(',', '')) + parseFloat(invoice.draftInvoice.taxPart.replace(',', ''));
+      tax =
+        parseFloat(invoice.draftInvoice.tax.replace(',', '')) +
+        parseFloat(invoice.draftInvoice.taxPart.replace(',', ''));
     } else if (invoice.edited === null && invoice.updateStatus === null) {
       tax = parseFloat(invoice.estimate.tax.replace(',', '')) + parseFloat(invoice.estimate.taxPart.replace(',', ''));
     } else {
@@ -92,7 +95,6 @@ const calculateTaxTotal = (invoice: any | undefined) => {
 
     return tax;
   };
-
 
   // console.log(mainUrl, "mainUrl");
   // @ts-ignore
@@ -488,8 +490,8 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                 <div class="header-section">
                     <span class="addres-head">${partner.name}</span>
                     <span class="addres-location">${partner?.contact?.address || ''} ${partner?.contact?.city || ''} ${
-                    partner?.contact?.district || ''
-                    }<br /> ${partner.contact.state}</span>
+    partner?.contact?.district || ''
+  }<br /> ${partner.contact.state}</span>
                     <span class="addres-phone">${partner.phone}</span>
                 </div>
     
@@ -503,8 +505,12 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
                     <div class="bill-to-name">${
-                      customer?.companyName ? customer?.companyName : '' ||
-                      `${Generic.capitalizeWord(customer?.title ? customer?.title : '')} ${Generic.capitalizeWord(customer?.firstName ? customer?.firstName : '')} ${Generic.capitalizeWord(customer?.lastName ? customer?.lastName : '')}`
+                      customer?.companyName
+                        ? customer?.companyName
+                        : '' ||
+                          `${Generic.capitalizeWord(customer?.title ? customer?.title : '')} ${Generic.capitalizeWord(
+                            customer?.firstName ? customer?.firstName : '',
+                          )} ${Generic.capitalizeWord(customer?.lastName ? customer?.lastName : '')}`
                     }</div>
                     <div class="bill-to-address">${customer?.contacts[0]?.address || ''}, ${
     customer.contacts[0]?.city || ''
@@ -550,7 +556,7 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                 ${estimate.parts
                   .map((part: any, idx1) => {
                     const amount = formatNumberToIntl(parseInt(part?.amount || 0));
-                    console.log(part)
+                    console.log(part);
                     return `
                             <div class="item-header-item">
                     <span class="count-num-item">${idx1 + 1}</span>
@@ -598,11 +604,13 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                             <span class="item-warranty-item"></span>
                             <span class="item-cost-item-sub">Subtotal:</span>
                             <span class="item-amount-item-amount">₦ ${
-                                invoice.edited === null && invoice.updateStatus === null
-                                    ? formatNumberToIntl(invoice?.estimate?.partsTotal + invoice?.estimate?.laboursTotal)
-                                    : invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
-                                        ? formatNumberToIntl(invoice?.draftInvoice?.partsTotal + invoice?.draftInvoice?.laboursTotal)
-                                        : formatNumberToIntl(invoice?.partsTotal + invoice?.laboursTotal)
+                              invoice.edited === null && invoice.updateStatus === null
+                                ? formatNumberToIntl(invoice?.estimate?.partsTotal + invoice?.estimate?.laboursTotal)
+                                : invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                                ? formatNumberToIntl(
+                                    invoice?.draftInvoice?.partsTotal + invoice?.draftInvoice?.laboursTotal,
+                                  )
+                                : formatNumberToIntl(invoice?.partsTotal + invoice?.laboursTotal)
                             }</span>
                         </div>
                         <div class="item-header-item-total">
@@ -612,11 +620,11 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                             <span class="item-cost-item-sub">Discount:</span>
                             <span class="item-amount-item-amount">
                             ${
-                                invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
-                                    ? formatNumberToIntl(invoice?.draftInvoice?.discount || 0)
-                                    : formatNumberToIntl(invoice?.discount || 0)
-                                // formatNumberToIntl(invoice?.draftInvoice?.discount || 0) ||
-                                // formatNumberToIntl(invoice?.discount || 0)
+                              invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                                ? formatNumberToIntl(invoice?.draftInvoice?.discount || 0)
+                                : formatNumberToIntl(invoice?.discount || 0)
+                              // formatNumberToIntl(invoice?.draftInvoice?.discount || 0) ||
+                              // formatNumberToIntl(invoice?.discount || 0)
                             }
                             </span>
                         </div>
@@ -626,8 +634,8 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                             <span class="item-warranty-item"></span>
                             <span class="item-cost-item-sub">VAT (7.5%):</span>
                             <span class="item-amount-item-amount">₦ ${
-                            //@ts-ignore
-                                formatNumberToIntl(calculateTaxTotal(invoice).toFixed(2))
+                              //@ts-ignore
+                              formatNumberToIntl(calculateTaxTotal(invoice).toFixed(2))
                             }</span>
                         </div>
                     </div>
@@ -639,14 +647,13 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                     <div class="total-flex" style="background: #E8E8E8;">
                         <span class="item-cost-item-sub-total">Total:</span>
                         <span class="item-amount-item-amount total">₦ ${
-                        //     formatNumberToIntl(
-                        //   +invoice.draftInvoice?.grandTotal.toFixed(2) || +invoice?.grandTotal.toFixed || +estimate?.grandTotal.toFixed(2) || 0,
-                        // )
-                        invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
-                            ? formatNumberToIntl(
-                                +invoice?.draftInvoice?.grandTotal.toFixed(2))
+                          //     formatNumberToIntl(
+                          //   +invoice.draftInvoice?.grandTotal.toFixed(2) || +invoice?.grandTotal.toFixed || +estimate?.grandTotal.toFixed(2) || 0,
+                          // )
+                          invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                            ? formatNumberToIntl(+invoice?.draftInvoice?.grandTotal.toFixed(2))
                             : formatNumberToIntl(+invoice?.grandTotal.toFixed(2))
-                    }</span>
+                        }</span>
                     </div>
     
                 </div>
@@ -656,10 +663,10 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Paid:</span>
                     <span class="item-amount-item-amount">₦ ${
-                        invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
-                            ? formatNumberToIntl(invoice?.draftInvoice?.paidAmount)
-                            : formatNumberToIntl(invoice?.paidAmount)
-                        // formatNumberToIntl(invoice?.draftInvoice?.paidAmount)
+                      invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                        ? formatNumberToIntl(invoice?.draftInvoice?.paidAmount)
+                        : formatNumberToIntl(invoice?.paidAmount)
+                      // formatNumberToIntl(invoice?.draftInvoice?.paidAmount)
                     }</span>
                 </div>
                 <div class="item-header-item-total">
@@ -668,10 +675,10 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Balance Due:</span>
                     <span class="item-amount-item-amount">₦ ${
-                        invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
-                            ? formatNumberToIntl(invoice?.draftInvoice?.dueAmount)
-                            : formatNumberToIntl(invoice?.dueAmount)
-                        // formatNumberToIntl(invoice?.draftInvoice?.dueAmount)
+                      invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.draft
+                        ? formatNumberToIntl(invoice?.draftInvoice?.dueAmount)
+                        : formatNumberToIntl(invoice?.dueAmount)
+                      // formatNumberToIntl(invoice?.draftInvoice?.dueAmount)
                     }
                     </span>
                 </div>
@@ -719,17 +726,17 @@ const calculateTaxTotal = (invoice: any | undefined) => {
                         <div style="width: 300px">
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Name</span>
-                                <span class="bold">${partner?.accountName || ''}</span>
+                                <span class="bold">${accountDetail?.businessName || ''}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Bank Name</span>
-                                <span class="bold">${partner?.bankName || ''}</span>
+                                <span class="bold">${accountDetail?.accountProvider || ''}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Number</span>
-                                <span class="bold">${partner?.accountNumber || ''}</span>
+                                <span class="bold">${accountDetail?.accountNumber || ''}</span>
                             </div>
                         </div>
 

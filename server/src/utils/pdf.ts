@@ -40,7 +40,13 @@ export const generateEstimateHtml = async (id: any) => {
   estimate.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
   estimate.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
 
-  return estimatePdfTemplate(estimate);
+  const partnerAccount = await dataSources.partnerAccountDaoService.findByAny({
+    where: {
+      partnerId: estimate.partnerId,
+    },
+  });
+
+  return estimatePdfTemplate(estimate, partnerAccount);
 };
 
 export const generateInvoiceHtml = async (id: any, partnerId: any) => {
@@ -69,6 +75,12 @@ export const generateInvoiceHtml = async (id: any, partnerId: any) => {
 
   if (!partner) return null;
 
+  const partnerAccount = await dataSources.partnerAccountDaoService.findByAny({
+    where: {
+      partnerId: partner.id,
+    },
+  });
+
   const preference = await partner.$get('preference');
 
   const parts = invoice.estimate.parts;
@@ -96,7 +108,7 @@ export const generateInvoiceHtml = async (id: any, partnerId: any) => {
 
   // exit(0);
 
-  return invoicePdfTemplate(invoice, preference?.termsAndCondition || '');
+  return invoicePdfTemplate(invoice, preference?.termsAndCondition || '', partnerAccount);
 };
 
 export const generateReceiptHtml = async (id: any, partnerId: any, rName: any) => {

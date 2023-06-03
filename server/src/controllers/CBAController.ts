@@ -421,6 +421,7 @@ class CBAController {
     response.accountNumber = partnerAcount.accountNumber;
     response.accountName = `${partnerAcount.firstName} ${partnerAcount.lastName}`;
     response.accountProvider = partnerAcount.accountProvider;
+    response.businessName = partnerAcount.businessName;
 
     return response;
   }
