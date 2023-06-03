@@ -46,6 +46,7 @@ export interface AccountBalanceDTO {
   accountNumber?: string;
   accountName?: string;
   accountProvider?: string;
+  businessName: string;
 }
 
 export interface AccountTransactionLogDTO {

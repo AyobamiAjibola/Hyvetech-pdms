@@ -1,42 +1,43 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.estimatePdfTemplate = exports.formatNumberToIntl = void 0;
-const path_1 = __importDefault(require("path"));
-require("dotenv/config");
-const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require('path'));
+require('dotenv/config');
+const fs_1 = __importDefault(require('fs'));
 function formatNumberToIntl(amount) {
-    return new Intl.NumberFormat('en-GB', {
-        minimumFractionDigits: 2,
-    }).format(amount);
+  return new Intl.NumberFormat('en-GB', {
+    minimumFractionDigits: 2,
+  }).format(amount);
 }
 exports.formatNumberToIntl = formatNumberToIntl;
 function base64_encode(file) {
-    // read binary data
-    const bitmap = fs_1.default.readFileSync(file);
-    // convert binary data to base64 encoded string
-    return new Buffer(bitmap).toString('base64');
+  // read binary data
+  const bitmap = fs_1.default.readFileSync(file);
+  // convert binary data to base64 encoded string
+  return new Buffer(bitmap).toString('base64');
 }
-const estimatePdfTemplate = (estimate) => {
-    // console.log((estimate.customer), "estimate")
-    const logo = `${estimate.partner.logo}`;
-    const partner = estimate.partner;
-    const customer = estimate.customer;
-    const vehicle = estimate.vehicle;
-    // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
-    // convert image to base 64
-    let mainUrl = '';
-    try {
-        mainUrl = 'data:image/png;base64,' + base64_encode(path_1.default.join(__dirname, "../../", partner.logo));
-    }
-    catch (e) {
-        console.log(e);
-    }
-    // console.log(mainUrl, "mainUrl");
-    // @ts-ignore
-    return `
+const estimatePdfTemplate = estimate => {
+  // console.log((estimate.customer), "estimate")
+  const logo = `${estimate.partner.logo}`;
+  const partner = estimate.partner;
+  const customer = estimate.customer;
+  const vehicle = estimate.vehicle;
+  // const mainUrl = `${process?.env?.SERVER_URL || "https://pdms.jiffixtech.com/"}${partner.logo}`;
+  // convert image to base 64
+  let mainUrl = '';
+  try {
+    mainUrl = 'data:image/png;base64,' + base64_encode(path_1.default.join(__dirname, '../../', partner.logo));
+  } catch (e) {
+    console.log(e);
+  }
+  // console.log(mainUrl, "mainUrl");
+  // @ts-ignore
+  return `
     <!DOCTYPE html>
     <html lang="en">
     
@@ -408,7 +409,7 @@ const estimatePdfTemplate = (estimate) => {
                 <div class="header-section">
                     <span class="estimate-name">Estimate</span>
                     <span class="estimate-num">#${estimate.code}</span>
-                    <span class="estimate-date">Date: ${(new Date(estimate.updatedAt)).toDateString()}</span>
+                    <span class="estimate-date">Date: ${new Date(estimate.updatedAt).toDateString()}</span>
                 </div>
     
                 <div class="header-section">
@@ -418,9 +419,11 @@ const estimatePdfTemplate = (estimate) => {
     
                 <div class="header-section">
                     <span class="addres-head">${partner.name}</span>
-                    <span class="addres-location">${partner?.contact?.address || ""} ${partner?.contact?.city || ""} ${partner?.contact?.district || ""}<br /> ${partner.contact.state}</span>
+                    <span class="addres-location">${partner?.contact?.address || ''} ${partner?.contact?.city || ''} ${
+    partner?.contact?.district || ''
+  }<br /> ${partner.contact.state}</span>
                     <span class="addres-phone">${partner.phone}</span>
-                    <span class="addres-website">${partner?.googleMap || ""}</span>
+                    <span class="addres-website">${partner?.googleMap || ''}</span>
                 </div>
     
             </div>
@@ -432,10 +435,14 @@ const estimatePdfTemplate = (estimate) => {
             <div class="second-section">
                 <div class="left-side">
                     <p class="bill-to">Bill To:</p>
-                    <div class="bill-to-name">${customer?.companyName || `${customer.firstName} ${customer.lastName}`}</div>
-                    <div class="bill-to-address">${customer?.contacts[0]?.address || ""}, ${customer.contacts[0]?.city || ""} ${customer?.contacts[0]?.district || ""}, ${customer?.contacts[0]?.state || ""}</div>
-                    <div class="bill-to-address">${customer?.email || ""}</div>
-                    <div class="bill-to-address">${customer?.phone || ""}</div>
+                    <div class="bill-to-name">${
+                      customer?.companyName || `${customer.firstName} ${customer.lastName}`
+                    }</div>
+                    <div class="bill-to-address">${customer?.contacts[0]?.address || ''}, ${
+    customer.contacts[0]?.city || ''
+  } ${customer?.contacts[0]?.district || ''}, ${customer?.contacts[0]?.state || ''}</div>
+                    <div class="bill-to-address">${customer?.email || ''}</div>
+                    <div class="bill-to-address">${customer?.phone || ''}</div>
                 </div>
                 <div>
                     <span class="vehicle-inforTitle">Vehicle Information:</span>
@@ -472,38 +479,48 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-amount">Amount</span>
                 </div>
                 
-                ${(estimate.parts.map((part, idx1) => {
-        const amount = formatNumberToIntl(parseInt(part?.amount || 0));
-        return (`
+                ${estimate.parts
+                  .map((part, idx1) => {
+                    const amount = formatNumberToIntl(parseInt(part?.amount || 0));
+                    return `
                             <div class="item-header-item">
                     <span class="count-num-item">${idx1 + 1}</span>
                     <span class="item-descrip-item">${part.name}</span>
                     <span class="item-warranty-item">${part.warranty.warranty} ${part.warranty.interval}</span>
-                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part.quantity.quantity} ${part.quantity.unit}</span>
+                    <span class="item-cost-item">₦ ${formatNumberToIntl(part.price)} x ${part.quantity.quantity} ${
+                      part.quantity.unit
+                    }</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
-                            `);
-    })).join().replaceAll(' ,', '')}
+                            `;
+                  })
+                  .join()
+                  .replaceAll(' ,', '')}
                 
-                ${(estimate.labours.map((labour, idx1) => {
-        const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
-        return (`
+                ${estimate.labours
+                  .map((labour, idx1) => {
+                    const amount = formatNumberToIntl(parseInt(labour?.cost || 0));
+                    return `
                             <div class="item-header-item">
-                    <span class="count-num-item">${(estimate.parts).length + 1 + idx1}</span>
+                    <span class="count-num-item">${estimate.parts.length + 1 + idx1}</span>
                     <span class="item-descrip-item">${labour.title}</span>
                     <span class="item-warranty-item"> - </span>
                     <span class="item-cost-item">₦ ${amount} x 1 pcs</span>
                     <span class="item-amount-item">₦ ${amount}</span>
                 </div>
-                            `);
-    })).join().replaceAll(' ,', '')}
+                            `;
+                  })
+                  .join()
+                  .replaceAll(' ,', '')}
                 
                 <div class="item-header-item-total first">
                     <span class="count-num-item"></span>
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Subtotal:</span>
-                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(estimate.partsTotal + estimate.laboursTotal)}</span>
+                    <span class="item-amount-item-amount">₦ ${formatNumberToIntl(
+                      estimate.partsTotal + estimate.laboursTotal,
+                    )}</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -520,8 +537,9 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">VAT (7.5%):</span>
                     <span class="item-amount-item-amount">₦ ${
-    // @ts-ignore
-    formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))}</span>
+                      // @ts-ignore
+                      formatNumberToIntl(parseFloat(estimate?.tax || 0) + parseFloat(estimate?.taxPart || 0))
+                    }</span>
                 </div>
                 <div class="item-header-item-total">
                     <span class="count-num-item"></span>
@@ -538,7 +556,9 @@ const estimatePdfTemplate = (estimate) => {
                     <span class="item-descrip-item"></span>
                     <span class="item-warranty-item"></span>
                     <span class="item-cost-item-sub">Job Duration:</span>
-                    <span class="item-amount-item-amount">${estimate.jobDurationValue} ${estimate.jobDurationUnit}(s)</span>
+                    <span class="item-amount-item-amount">${estimate.jobDurationValue} ${
+    estimate.jobDurationUnit
+  }(s)</span>
                 </div>
 
                 <!--
@@ -569,17 +589,17 @@ const estimatePdfTemplate = (estimate) => {
                         <div style="width: 300px">
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Name</span>
-                                <span class="bold">${partner?.accountName || ""}</span>
+                                <span class="bold">${partner?.businessName || ''}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Bank Name</span>
-                                <span class="bold">${partner?.bankName || ""}</span>
+                                <span class="bold">${partner?.bankName || ''}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Number</span>
-                                <span class="bold">${partner?.accountNumber || ""}</span>
+                                <span class="bold">${partner?.accountNumber || ''}</span>
                             </div>
                         </div>
 
@@ -587,21 +607,7 @@ const estimatePdfTemplate = (estimate) => {
                     </div>
                 </div>
 
-                <div class="parerntWrapper">
-                    <div style="font-size: 12px; font-weight: 600; margin-top: 12px;">Method 2</div>
-
-                    <div style="font-size: 11px; display: flex; flex: 1; margin-left: 10px; flex-direction: column;">
-                        <p style="font-size: 12px;">A more secure & faster way to pay</p>
-                        <ol>
-                            <li>Open the <a href="https://onelink.to/fh7uc5">AutoHyve mobile app</a> or visit/click <a
-                            href="http://app.myautohyve.com/">app.myautohyve.com</a> </li>
-
-                            <li>Sign in with your Email address (username), and Phone number (as password)</li>
-                            <li>Open <span>Estimate #${estimate.code}</span>, and click on <span>“Approve and Pay Deposit”</span></li>
-                        </ol>
-                        <p style="font-size: 12px;">PS: you can pay using your bank card, transfer, or USSD. once successful, your invoice and receipt is created automatically.</p>
-                    </div>
-                </div>
+              
             </div>
     </body>
     </html>

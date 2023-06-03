@@ -349,7 +349,7 @@ const HyvePayDashboard = () => {
             ml: { lg: 10 },
           }}>
           <DataCard
-            title={`${autohyvePay.account.accountName} - ${autohyvePay.account.accountProvider}`}
+            title={`${autohyvePay.account.businessName} - ${autohyvePay.account.accountProvider}`}
             data={autohyvePay.account.accountNumber}
             bgColor={green[400]}
           />
