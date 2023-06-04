@@ -344,7 +344,8 @@ function EstimateForm(props: IProps) {
       const partName = e.target.value;
 
       const tempItem = itemReducer.items;
-      const newDetail = tempItem.find((item: any) => item.name === partName?.name)
+      const newDetail = tempItem.find((item: any) => item.slug === partName?.slug);
+  
       setFieldValue(`parts.${index}.quantity.unit`, newDetail?.unit || '');
       setFieldValue(`parts.${index}.price`, newDetail?.sellingPrice || 0);
       setFieldValue(`parts.${index}.quantity.quantity`, 1);
@@ -530,7 +531,7 @@ function EstimateForm(props: IProps) {
   // validate available stock
   useEffect(() => {
     for (const { quantity: { quantity }, partNumber } of values.parts) {
-      console.log(quantity, 'checks quantity of values.part');
+
       if (partNumber) {
         //@ts-ignore
         const item = items.find((item) => item.slug === partNumber);
