@@ -124,7 +124,7 @@ export default class DashboardController {
         // getTransaction
 
         // expenses
-        const _expensesByMonth = await this.filterByMonth(expenses, _month.id);
+        const _expensesByMonth = await this.filterByMonthExp(expenses, _month.id);
         __expenses.push(this.getExpenses(_expensesByMonth));
         // __expenses.push(_expensesByMonth.length);
       }
