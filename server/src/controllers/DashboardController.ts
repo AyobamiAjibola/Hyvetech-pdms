@@ -37,7 +37,7 @@ export default class DashboardController {
       // get filtered for month
       const estimatesByMonth = await this.filterByMonth(estimates, month);
       const invoicesByMonth = await this.filterByMonth(invoices, month);
-      const expensesByMonth = await this.filterByMonth(expenses, month);
+      const expensesByMonth = await this.filterByMonthExp(expenses, month);
       const customersByMonth = await this.filterByMonth(customers, month);
       const remindersByMonth = await this.filterByMonth(reminders, month);
       const transactionsByMonth = await this.filterByMonth(transactions, month);
@@ -244,6 +244,25 @@ export default class DashboardController {
       if (_item != null) {
         const _month = new Date(_item.createdAt).getMonth() + 1;
         const _year = new Date(_item.createdAt).getFullYear();
+
+        if (_month == month && _year == year) {
+          newCollection.push(_item);
+        }
+      }
+    });
+
+    return newCollection;
+  }
+
+  //expenses filter by date modified
+  public static async filterByMonthExp(collection: any[], month: any) {
+    const newCollection: any[] = [];
+    const year = new Date().getFullYear();
+
+    collection.map(_item => {
+      if (_item != null) {
+        const _month = new Date(_item.dateModified).getMonth() + 1;
+        const _year = new Date(_item.dateModified).getFullYear();
 
         if (_month == month && _year == year) {
           newCollection.push(_item);
