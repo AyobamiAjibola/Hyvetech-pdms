@@ -99,10 +99,7 @@ export default class TechnicianController {
         queue: QUEUE_EVENTS.name,
         data: {
           to: user.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
+          from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
           subject: `Welcome to ${partner.name} Garage`,
           html: mail,
           bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],

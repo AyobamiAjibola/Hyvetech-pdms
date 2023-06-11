@@ -8,6 +8,7 @@ import {
   initiateAccountTransfer,
   performAccountActivation,
   performAccountActivationRequest,
+  performAccountPinUpdate,
   performAccountUpdate,
   performNameEnquiry,
 } from '../../routes/cbaRoute';
@@ -61,6 +62,13 @@ const cbaEndpoint: RouteEndpoints = [
     method: 'get',
     path: '/kyc/requests',
     handler: getKycAccountRequest,
+  },
+
+  {
+    name: 'perform-account-pin-update',
+    method: 'post',
+    path: '/cba/account/pin/update',
+    handler: performAccountPinUpdate,
   },
 
   {

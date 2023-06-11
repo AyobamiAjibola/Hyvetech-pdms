@@ -100,6 +100,10 @@ export const READ_GUEST = 'read_guest';
 export const VIEW_ANALYTICS = 'view_analytics';
 
 const settings: AppSettings = {
+  mailer: {
+    from: <string>process.env.MAILER_FROM,
+    customerSupport: <string>process.env.MAIL_CUSTOMER_SUPPORT,
+  },
   sendGrid: {
     apiKey: <string>process.env.SENDGRID_API_KEY,
   },

@@ -86,6 +86,7 @@ declare module '@app-models' {
     description: string;
     partNumber: string;
     active: boolean;
+    slug?: string;
   }
 
   interface IState {
@@ -718,6 +719,7 @@ declare module '@app-models' {
     note?: string;
     count?: number;
     sentStatus?: string;
+    internalNote?: string;
   }
 
   interface IServiceReminder {
@@ -814,6 +816,7 @@ declare module '@app-models' {
     discount: number;
     discountType: string;
     updateStatus: string;
+    internalNote?: string;
   }
 
   interface AccountDTO {

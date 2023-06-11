@@ -80,6 +80,15 @@ const KycRequestPage = () => {
         width: 300,
       },
       {
+        field: 'nin',
+        headerName: 'NIN',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        sortable: true,
+        width: 300,
+      },
+      {
         field: 'cacUrl',
         headerName: 'CAC Doc',
         headerAlign: 'center',

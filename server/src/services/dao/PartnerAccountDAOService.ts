@@ -48,7 +48,7 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
     values.accountNumber = account.accountNumber;
     values.accountRef = reference;
 
-    values.pin = await this.passwordEncoder.encode(values.pin);
+    // values.pin = await this.passwordEncoder.encode(values.pin);
 
     return this.parterAccountRepository.save(values, options);
   }
@@ -60,7 +60,8 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
   getPartnerAccountTransactions(payload: AccountTransactionLogDTO) {
     return this.bankService.getAccountTransactionLog(payload);
   }
-  update(
+
+  async update(
     t: PartnerAccount,
     values: Optional<
       InferCreationAttributes<PartnerAccount, { omit: never }>,
@@ -68,6 +69,13 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
     >,
     options?: UpdateOptions<InferAttributes<PartnerAccount, { omit: never }>> | undefined,
   ): Promise<PartnerAccount> {
+    await this.bankService.updateAccount({
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      businessName: values.businessName,
+      trackingReference: t.accountRef as string,
+    });
     return this.parterAccountRepository.updateOne(t, values, options);
   }
   findById(

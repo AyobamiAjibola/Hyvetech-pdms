@@ -29,6 +29,38 @@ export const performNameEnquiry = authenticateRouteWrapper(async (req: Request, 
   res.status(result.code).json(result);
 });
 
+/**
+ * @swagger
+ *  /api/v1/account/request/activation:
+ *  post:
+ *   description: Create virtual account
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/definitions/CreateVirtualAccount'
+ *   responses:
+ *    200:
+ *     description: OK
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/definitions/CreateVirtualAccount'
+ *    400:
+ *     description: Bad requests
+ *     content:
+ *      application/json:
+ *       schema:
+ *         $ref: '#/definitions/ErrorResponse'
+ *    401:
+ *     description: Unauthorized
+ *     content:
+ *       application/json:
+ *        schema:
+ *          $ref: '#/definitions/ErrorResponse'
+ */
+
 export const performAccountActivationRequest = authenticateRouteWrapper(async (req: Request, res: Response) => {
   const result = await cbaController.performAccountActivationRequest(req);
 
@@ -49,6 +81,12 @@ export const initiateAccountTransfer = authenticateRouteWrapper(async (req: Requ
 
 export const getKycAccountRequest = authenticateRouteWrapper(async (req: Request, res: Response) => {
   const result = await cbaController.getKyRequests(req);
+
+  res.status(result.code).json(result);
+});
+
+export const performAccountPinUpdate = authenticateRouteWrapper(async (req: Request, res: Response) => {
+  const result = await cbaController.updateAccountPin(req);
 
   res.status(result.code).json(result);
 });

@@ -40,7 +40,8 @@ export const $sendInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   dueAmount: Joi.number().allow().label('Due Amount'),
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
-  note: Joi.string().allow('').label('note')
+  note: Joi.string().allow('').label('note'),
+  internalNote: Joi.string().optional().allow('').label('note'),
 };
 
 export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
@@ -64,6 +65,7 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
   note: Joi.string().allow('').label('note'),
+  internalNote: Joi.string().optional().label('internalNote'),
 };
 
 @Table({ tableName: 'invoices', timestamps: true, paranoid: true })
@@ -84,6 +86,9 @@ export default class Invoice extends Model<InferAttributes<Invoice>, InferCreati
 
   @Column(DataType.DOUBLE)
   declare grandTotal: number;
+
+  @Column(DataType.STRING)
+  declare internalNote?: string;
 
   @Column(DataType.DOUBLE)
   declare depositAmount: number;

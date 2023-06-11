@@ -34,7 +34,16 @@ import DraftInvoice from '../models/DraftInvoice';
 import HttpResponse = appCommonTypes.HttpResponse;
 import IDepositForEstimate = appCommonTypes.IDepositForEstimate;
 import IGenerateInvoice = appCommonTypes.IGenerateInvoice;
-import { CREATE_ESTIMATE, CREATE_INVOICE, CREATE_PAYMENT, DELETE_ESTIMATE, MANAGE_ALL, MANAGE_TECHNICIAN, READ_INVOICE, UPDATE_PAYMENT } from '../config/settings';
+import {
+  CREATE_ESTIMATE,
+  CREATE_INVOICE,
+  CREATE_PAYMENT,
+  DELETE_ESTIMATE,
+  MANAGE_ALL,
+  MANAGE_TECHNICIAN,
+  READ_INVOICE,
+  UPDATE_PAYMENT,
+} from '../config/settings';
 
 const transactionDoesNotExist = 'Transaction Does not exist.';
 
@@ -165,17 +174,21 @@ export default class InvoiceController {
     );
 
     const fetch_invoice = await dataSources.invoiceDAOService.findAll({
-      include: [{
-        model: Estimate,
-        where: { partnerId: partner.id }
-      }],
+      include: [
+        {
+          model: Estimate,
+          where: { partnerId: partner.id },
+        },
+      ],
     });
 
     //DEDUCT FROM ITEM QUANTITY LOGIC
-    const items = await dataSources.itemStockDAOService.findAll({where: {
-      //@ts-ignore
-      partnerId: partner.id
-    }})
+    const items = await dataSources.itemStockDAOService.findAll({
+      where: {
+        //@ts-ignore
+        partnerId: partner.id,
+      },
+    });
 
     for (const item of items) {
       const { slug, type } = item;
@@ -192,7 +205,7 @@ export default class InvoiceController {
         });
 
         if (findEstimate) {
-          const obj: { partNumber: string, quantity: { quantity: number } } = JSON.parse(findEstimate);
+          const obj: { partNumber: string; quantity: { quantity: number } } = JSON.parse(findEstimate);
           const itemQty: number = obj.quantity.quantity;
 
           const findItem = await dataSources.itemStockDAOService.findByAny({ where: { slug: obj.partNumber } });
@@ -211,7 +224,9 @@ export default class InvoiceController {
 
     const invoiceValues: Partial<Attributes<Invoice>> = {
       // code: Generic.randomize({ number: true, count: 6 }),
-      code: Generic.generateCode(fetch_invoice, 'INV', partner.id) + `_${Generic.randomize({ count: 4, alphanumeric: true })}`,
+      code:
+        Generic.generateCode(fetch_invoice, 'INV', partner.id) +
+        `_${Generic.randomize({ count: 4, alphanumeric: true })}`,
       depositAmount: estimate.depositAmount,
       paidAmount: estimate.depositAmount,
       tax: estimate.tax,
@@ -262,7 +277,7 @@ export default class InvoiceController {
   @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async generateInvoiceManually(req: Request) {
     try {
-      const partner = req.user.partner
+      const partner = req.user.partner;
       const estimate = await dataSources.estimateDAOService.findById(req.body.id);
 
       if (!estimate) {
@@ -275,16 +290,20 @@ export default class InvoiceController {
       }
 
       const fetch_invoice = await dataSources.invoiceDAOService.findAll({
-        include: [{
-          model: Estimate,
-          where: { partnerId: partner.id }
-        }],
+        include: [
+          {
+            model: Estimate,
+            where: { partnerId: partner.id },
+          },
+        ],
       });
 
-      const items = await dataSources.itemStockDAOService.findAll({where: {
-        //@ts-ignore
-        partnerId: partner.id
-      }})
+      const items = await dataSources.itemStockDAOService.findAll({
+        where: {
+          //@ts-ignore
+          partnerId: partner.id,
+        },
+      });
 
       //DEDUCT FROM ITEM QUANTITY LOGIC
       for (const item of items) {
@@ -302,7 +321,7 @@ export default class InvoiceController {
           });
 
           if (findEstimate) {
-            const obj: { partNumber: string, quantity: { quantity: number } } = JSON.parse(findEstimate);
+            const obj: { partNumber: string; quantity: { quantity: number } } = JSON.parse(findEstimate);
             const itemQty: number = obj.quantity.quantity;
 
             const findItem = await dataSources.itemStockDAOService.findByAny({ where: { slug: obj.partNumber } });
@@ -320,7 +339,9 @@ export default class InvoiceController {
       }
 
       const invoiceValues: Partial<Attributes<Invoice>> = {
-        code: Generic.generateCode(fetch_invoice, 'INV', partner.id) + `_${Generic.randomize({ count: 4, alphanumeric: true })}`,
+        code:
+          Generic.generateCode(fetch_invoice, 'INV', partner.id) +
+          `_${Generic.randomize({ count: 4, alphanumeric: true })}`,
         depositAmount: 0,
         paidAmount: 0,
         tax: estimate.tax,
@@ -335,7 +356,7 @@ export default class InvoiceController {
 
       const invoice = await dataSources.invoiceDAOService.create(invoiceValues as CreationAttributes<Invoice>);
 
-      const count = estimate.count + 1
+      const count = estimate.count + 1;
       await estimate.update({ status: ESTIMATE_STATUS.invoiced, count: count });
       //@ts-ignore
       await estimate.addInvoice(invoice);
@@ -418,7 +439,9 @@ export default class InvoiceController {
         const labours = invoice.draftInvoice.labours;
 
         invoice.draftInvoice.parts = parts.length ? parts.map(part => JSON.parse(part)) : [INITIAL_PARTS_VALUE];
-        invoice.draftInvoice.labours = labours.length ? labours.map(labour => JSON.parse(labour)) : [INITIAL_LABOURS_VALUE];
+        invoice.draftInvoice.labours = labours.length
+          ? labours.map(labour => JSON.parse(labour))
+          : [INITIAL_LABOURS_VALUE];
       }
       if (invoice.edited && invoice.updateStatus === INVOICE_STATUS.update.sent) {
         const parts = invoice.parts;
@@ -900,13 +923,16 @@ export default class InvoiceController {
 
     const items = await dataSources.itemStockDAOService.findAll({
       //@ts-ignore
-      where: {partnerId: req.user.partner.id}
-    })
+      where: { partnerId: req.user.partner.id },
+    });
 
     //ITEM SUB AND ADDITION LOGIC
     //------START------//
     for (const item of value.parts) {
-      const { partNumber, quantity: { quantity } } = item as any;
+      const {
+        partNumber,
+        quantity: { quantity },
+      } = item as any;
 
       const matchingItem = items.find((value: any) => value.slug === partNumber);
 
@@ -925,7 +951,7 @@ export default class InvoiceController {
           const object = JSON.parse(parsedPart);
           const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
           await matchingItem.update({ quantity: matchingItem.quantity + itemQty });
-        }else{
+        } else {
           const itemQty = parseInt(quantity);
           await matchingItem.update({ quantity: matchingItem.quantity - itemQty });
         }
@@ -939,7 +965,6 @@ export default class InvoiceController {
       paidAmount: invoice.depositAmount,
     });
 
-
     if (draftInvoice) {
       await this.doSave(draftInvoice, value);
     } else {
@@ -951,10 +976,14 @@ export default class InvoiceController {
         updateStatus: invoice.updateStatus,
         expiresIn: estimate.expiresIn,
         edited: invoice.edited,
+        internalNote: invoice.internalNote,
       };
 
       for (const item of value.parts) {
-        const { partNumber, quantity: { quantity } } = item as any;
+        const {
+          partNumber,
+          quantity: { quantity },
+        } = item as any;
         const index = items.findIndex((value: any) => value.slug === partNumber);
 
         if (index !== -1) {
@@ -1014,7 +1043,6 @@ export default class InvoiceController {
       draftInvoice = await DraftInvoice.create(data as CreationAttributes<DraftInvoice>);
 
       await invoice.$set('draftInvoice', draftInvoice);
-
     }
 
     await estimate.update({ note: value.note });
@@ -1051,15 +1079,18 @@ export default class InvoiceController {
 
     const items = await dataSources.itemStockDAOService.findAll({
       //@ts-ignore
-      where: {partnerId: req.user.partner.id}
-    })
+      where: { partnerId: req.user.partner.id },
+    });
 
     let draftInvoice = await invoice.$get('draftInvoice');
 
     //ITEM SUB AND ADDITION LOGIC
     //------START------//
     for (const item of value.parts) {
-      const { partNumber, quantity: { quantity } } = item as any;
+      const {
+        partNumber,
+        quantity: { quantity },
+      } = item as any;
 
       const matchingItem = items.find((value: any) => value.slug === partNumber);
 
@@ -1078,7 +1109,7 @@ export default class InvoiceController {
           const object = JSON.parse(parsedPart);
           const itemQty = parseInt(object.quantity.quantity) - parseInt(quantity);
           await matchingItem.update({ quantity: matchingItem.quantity + itemQty });
-        }else{
+        } else {
           const itemQty = parseInt(quantity);
           await matchingItem.update({ quantity: matchingItem.quantity - itemQty });
         }
@@ -1104,6 +1135,7 @@ export default class InvoiceController {
       edited: true,
       discount: value.discount,
       discountType: value.discountType,
+      internalNote: value.internalNote,
     });
 
     // const draftInvoice = await invoice.$get('draftInvoice');
@@ -1126,7 +1158,6 @@ export default class InvoiceController {
   }
 
   private static async doSave(invoice: DraftInvoice | Invoice, value: InvoiceSchemaType) {
-
     for (const valueKey in value) {
       const key = valueKey as keyof InvoiceSchemaType;
 
@@ -1186,7 +1217,6 @@ export default class InvoiceController {
         });
       }
     }
-
   }
 
   private static async doAssignJob(estimate: Estimate) {
@@ -1238,25 +1268,28 @@ export default class InvoiceController {
     const invoice = await dataSources.invoiceDAOService.findById(+invoiceId);
     if (!invoice) return Promise.reject(CustomAPIError.response(`Invoice not found`, HttpStatus.NOT_FOUND.code));
 
-    const expense = await dataSources.expenseDAOService.findByAny({ where: {invoiceCode: invoice.code} });
+    const expense = await dataSources.expenseDAOService.findByAny({ where: { invoiceCode: invoice.code } });
     const transaction = await dataSources.transactionDAOService.findByAny({
       where: {
         // @ts-ignore
-        invoiceId: invoice.id
-      }
-    })
+        invoiceId: invoice.id,
+      },
+    });
     // const find_transaction = transaction.find(transaction => transaction.invoiceId === invoice.id)
 
-    if (expense || transaction) return Promise.reject(CustomAPIError.response(`transExpError`, HttpStatus.NOT_FOUND.code));
+    if (expense || transaction)
+      return Promise.reject(CustomAPIError.response(`transExpError`, HttpStatus.NOT_FOUND.code));
 
     const estimate = await invoice?.$get('estimate');
 
-    const count = estimate?.count && estimate?.count - 1
+    const count = estimate?.count && estimate?.count - 1;
     let status: any;
-    if(estimate?.count && estimate?.count === 1) {
-      if(estimate?.sentStatus === ESTIMATE_STATUS.sent) {
-        status = ESTIMATE_STATUS.sent
-      } else { status = ESTIMATE_STATUS.draft }
+    if (estimate?.count && estimate?.count === 1) {
+      if (estimate?.sentStatus === ESTIMATE_STATUS.sent) {
+        status = ESTIMATE_STATUS.sent;
+      } else {
+        status = ESTIMATE_STATUS.draft;
+      }
     }
 
     await estimate?.update({ status: status, count: count });

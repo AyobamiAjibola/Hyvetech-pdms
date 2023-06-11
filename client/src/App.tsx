@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import React from 'react';
+import './App.css';
 
 import MainLayout from './components/layouts/MainLayout';
 import useAppTheme from './hooks/useAppTheme';

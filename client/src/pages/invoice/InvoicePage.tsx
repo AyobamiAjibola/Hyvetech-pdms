@@ -1,7 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IBillingInformation, IEstimate, IInvoice } from '@app-models';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, Avatar, Box, Button, Divider, FormControl, Grid, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  Grid,
+  Input,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import capitalize from 'capitalize';
 import InsightImg from '../../assets/images/estimate_vector.png';
 import { ILabour, IPart } from '../../components/forms/models/estimateModel';
@@ -18,11 +33,12 @@ import useAppDispatch from '../../hooks/useAppDispatch';
 import useAppSelector from '../../hooks/useAppSelector';
 import { setInvoiceCode } from '../../store/reducers/expenseReducer';
 import { makeStyles } from '@mui/styles';
+import moment from 'moment';
 
 const useStyles = makeStyles({
   select: {
     '&:hover': {
-      background: '#F1F0F1'
+      background: '#F1F0F1',
     },
   },
 });
@@ -111,15 +127,16 @@ function InvoicePage() {
   const subTotal = useMemo(() => {
     if (invoice && estimate) {
       const laboursTotal = invoice.edited
-                            ? invoice.updateStatus === INVOICE_STATUS.update.draft
-                              ? invoice.draftInvoice.laboursTotal
-                              : invoice.laboursTotal
-                            : estimate.laboursTotal;
-      const partsTotal = invoice && invoice.edited
-                          ? invoice.updateStatus === INVOICE_STATUS.update.draft
-                            ? invoice.draftInvoice.partsTotal
-                            : invoice.partsTotal
-                          : estimate.partsTotal;
+        ? invoice.updateStatus === INVOICE_STATUS.update.draft
+          ? invoice.draftInvoice.laboursTotal
+          : invoice.laboursTotal
+        : estimate.laboursTotal;
+      const partsTotal =
+        invoice && invoice.edited
+          ? invoice.updateStatus === INVOICE_STATUS.update.draft
+            ? invoice.draftInvoice.partsTotal
+            : invoice.partsTotal
+          : estimate.partsTotal;
 
       return laboursTotal + partsTotal;
     }
@@ -129,10 +146,10 @@ function InvoicePage() {
   const grandTotal = useMemo(() => {
     if (invoice && estimate) {
       return invoice.edited
-              ? invoice.updateStatus === INVOICE_STATUS.update.draft
-                ? invoice.draftInvoice.grandTotal
-                : invoice.grandTotal
-              : estimate.partsTotal + estimate.laboursTotal;
+        ? invoice.updateStatus === INVOICE_STATUS.update.draft
+          ? invoice.draftInvoice.grandTotal
+          : invoice.grandTotal
+        : estimate.partsTotal + estimate.laboursTotal;
       // return estimate.partsTotal + estimate.laboursTotal;
     }
     return 0;
@@ -178,7 +195,7 @@ function InvoicePage() {
     setTimeout(() => {
       setDownloading(false);
       window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
-      setSelectedValue('')
+      setSelectedValue('');
     }, 3000);
   };
 
@@ -217,7 +234,7 @@ function InvoicePage() {
       console.log(e);
     }
     setRecording(false);
-    setSelectedValue('')
+    setSelectedValue('');
   };
 
   const calculateDiscount = ({
@@ -241,18 +258,21 @@ function InvoicePage() {
   const calculateTaxTotal = (estimate: IInvoice | undefined) => {
     if (!estimate) return 0;
 
-    if(estimate.updateStatus === INVOICE_STATUS.update.draft ) {
+    if (estimate.updateStatus === INVOICE_STATUS.update.draft) {
       if (estimate.draftInvoice.taxPart && estimate.draftInvoice.tax)
-      return (
-        parseFloat(`${estimate?.draftInvoice?.tax}`.split(',').join('')) + parseFloat(`${estimate?.draftInvoice?.taxPart}`.split(',').join(''))
-      );
+        return (
+          parseFloat(`${estimate?.draftInvoice?.tax}`.split(',').join('')) +
+          parseFloat(`${estimate?.draftInvoice?.taxPart}`.split(',').join(''))
+        );
 
-      if (estimate.draftInvoice.tax && !estimate.draftInvoice.taxPart) return parseFloat(`${estimate?.draftInvoice?.tax}`.split(',').join(''));
+      if (estimate.draftInvoice.tax && !estimate.draftInvoice.taxPart)
+        return parseFloat(`${estimate?.draftInvoice?.tax}`.split(',').join(''));
 
-      if (!estimate.draftInvoice.tax && estimate.draftInvoice.taxPart) return parseFloat(`${estimate?.draftInvoice?.taxPart}`.split(',').join(''));
+      if (!estimate.draftInvoice.tax && estimate.draftInvoice.taxPart)
+        return parseFloat(`${estimate?.draftInvoice?.taxPart}`.split(',').join(''));
     }
 
-    if(estimate.updateStatus === INVOICE_STATUS.update.sent ) {
+    if (estimate.updateStatus === INVOICE_STATUS.update.sent) {
       if (estimate.taxPart && estimate.tax)
         return (
           parseFloat(`${estimate?.tax}`.split(',').join('')) + parseFloat(`${estimate?.taxPart}`.split(',').join(''))
@@ -267,127 +287,127 @@ function InvoicePage() {
   };
 
   //share pdf logic --- start
-    const _generateDownload = async () => {
-      const rName = invoice?.code + '.pdf';
-      // @ts-ignore
-      const payload = {
-        type: 'INVOICE',
-        id: invoice?.id || -1,
-        rName,
+  const _generateDownload = async () => {
+    const rName = invoice?.code + '.pdf';
+    // @ts-ignore
+    const payload = {
+      type: 'INVOICE',
+      id: invoice?.id || -1,
+      rName,
+    };
+    _setDownloading(true);
+
+    try {
+      const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
+      console.log(response.data);
+    } catch (e) {
+      console.log(e);
+    }
+
+    setTimeout(() => {
+      _setDownloading(false);
+      setSelectedValue('');
+    }, 1000);
+  };
+  const handleShareLink = async () => {
+    _generateDownload();
+
+    const fileUrl = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
+    const message =
+      `${invoice?.estimate?.partner.name} has sent you an invoice.\nAmount Paid: NGN${
+        invoice?.depositAmount && formatNumberToIntl(invoice?.depositAmount)
+      }\n\n` + fileUrl;
+
+    try {
+      const shareData = {
+        title: 'Invoice',
+        text: `${message}`,
+        // url: fileUrl
       };
-      _setDownloading(true);
 
-      try {
-        const response = await axiosClient.post(`${API_ROOT}/request-pdf`, payload);
-        console.log(response.data);
-      } catch (e) {
-        console.log(e);
-      }
+      await navigator.share(shareData);
 
-      setTimeout(() => {
-        _setDownloading(false);
-        setSelectedValue('');
-      }, 1000);
-    };
-    const handleShareLink = async () => {
+      console.log('File shared successfully');
+    } catch (error: any) {
+      console.error('Error sharing file:', error);
+    }
+  };
 
-      _generateDownload()
+  const handleShareLinkNoMessage = async () => {
+    _generateDownload();
 
-      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
-      const message = `${invoice?.estimate?.partner.name} has sent you an invoice.\nAmount Paid: NGN${invoice?.depositAmount && formatNumberToIntl(invoice?.depositAmount)}\n\n` + fileUrl
+    const fileUrl = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
 
-      try {
+    try {
+      const shareData = {
+        title: 'Invoice',
+        // text: `${message}`
+        url: fileUrl,
+      };
 
-        const shareData = {
-          title: 'Invoice',
-          text: `${message}`
-          // url: fileUrl
-        };
+      await navigator.share(shareData);
 
-        await navigator.share(shareData);
+      console.log('File shared successfully');
+    } catch (error: any) {
+      console.error('Error sharing file:', error);
+    }
+  };
 
-        console.log('File shared successfully');
-      } catch (error: any) {
-        console.error('Error sharing file:', error);
-      }
-    };
+  const handleSharePdf = async () => {
+    _generateDownload();
+    const fileUrl = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
+    const message = `${invoice?.estimate?.partner.name} has sent you an invoice.`;
 
-    const handleShareLinkNoMessage = async () => {
+    try {
+      const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
+      const blob = response.data;
+      const file = new File([blob], `${message} - ${invoice?.code}_invoice.pdf`, { type: 'application/pdf' });
 
-      _generateDownload()
+      const shareData = {
+        title: 'Invoice',
+        text: `${message}`,
+        // url: fileUrl
+        files: [file],
+      };
 
-      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
+      await navigator.share(shareData);
 
-      try {
-        const shareData = {
-          title: 'Invoice',
-          // text: `${message}`
-          url: fileUrl
-        };
-
-        await navigator.share(shareData);
-
-        console.log('File shared successfully');
-      } catch (error: any) {
-        console.error('Error sharing file:', error);
-      }
-    };
-
-    const handleSharePdf = async () => {
-      _generateDownload()
-      const fileUrl  = `${settings.api.baseURL}/uploads/pdf/${invoice?.code}.pdf`;
-      const message = `${invoice?.estimate?.partner.name} has sent you an invoice.`
-
-      try {
-        const response = await axiosClient.get(fileUrl, { responseType: 'blob' });
-        const blob = response.data;
-        const file = new File([blob], `${message} - ${invoice?.code}_invoice.pdf`, { type: 'application/pdf' });
-
-        const shareData = {
-          title: 'Invoice',
-          text: `${message}`,
-          // url: fileUrl
-          files: [file]
-        };
-
-        await navigator.share(shareData);
-
-        console.log('File shared successfully');
-      } catch (error: any) {
-        console.error('Error sharing file:', error);
-      }
-    };
+      console.log('File shared successfully');
+    } catch (error: any) {
+      console.error('Error sharing file:', error);
+    }
+  };
 
   //share pdf logic --- end
 
   const data: any = {
     open_modal: 'true',
-    id: invoice?.id
-  }
-  console.log(invoice, 'checking invoice')
+    id: invoice?.id,
+  };
+  console.log(invoice, 'checking invoice');
   const handleChange = (event: any) => {
     const value = event.target.value as string;
     setSelectedValue(value);
-    if (value === "Share unique link") {
+    if (value === 'Share unique link') {
       document.documentElement.clientWidth <= 912 ? handleShareLink() : handleShareLinkNoMessage();
     }
-    if(value === "Record Payment") {
-      setShowRecordPayment(true)
+    if (value === 'Record Payment') {
+      setShowRecordPayment(true);
     }
-    if(value === "Record Expenses") {
-      generateExpense()
+    if (value === 'Record Expenses') {
+      generateExpense();
     }
-    if(value === "Download Pdf") {
-      generateDownload()
+    if (value === 'Download Pdf') {
+      generateDownload();
     }
-    if (value === "Share PDF") {
-      handleSharePdf()
+    if (value === 'Share PDF') {
+      handleSharePdf();
     }
-    if(value === 'Reminder') {
+    if (value === 'Reminder') {
       navigate('/reminders');
-        Object.entries(data).forEach(([key, value]) => {
-          //@ts-ignore
-          sessionStorage.setItem(key, value);
+      Object.entries(data).forEach(([key, value]) => {
+        //@ts-ignore
+        sessionStorage.setItem(key, value);
       });
     }
   };
@@ -419,37 +439,34 @@ function InvoicePage() {
         </Typography>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-
-          <FormControl sx={{ m: 1, width: {sm: 300, xs: 170} }}>
+          <FormControl sx={{ m: 1, width: { sm: 300, xs: 170 } }}>
             <InputLabel id="demo-simple-select-helper-label">Select an action</InputLabel>
             <Select
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               value={selectedValue}
               label="Select an action"
-              onChange={handleChange}
-            >
-              <MenuItem value="">
-                ...
-              </MenuItem>
-              <MenuItem className={classes.select}
+              onChange={handleChange}>
+              <MenuItem value="">...</MenuItem>
+              <MenuItem
+                className={classes.select}
                 value={'Record Payment'}
-                disabled={invoice.grandTotal === invoice.paidAmount}
-              >Record Payment</MenuItem>
-              <MenuItem className={classes.select}
-                value={'Record Expenses'}
-              >Record Expenses</MenuItem>
+                disabled={invoice.grandTotal === invoice.paidAmount}>
+                Record Payment
+              </MenuItem>
+              <MenuItem className={classes.select} value={'Record Expenses'}>
+                Record Expenses
+              </MenuItem>
               <MenuItem value={'Download Pdf'} className={classes.select}>
                 {downloading ? 'Downloading...' : 'Download Pdf'}
               </MenuItem>
-              <MenuItem value={'Share unique link'} className={classes.select}
-              >
+              <MenuItem value={'Share unique link'} className={classes.select}>
                 {_downloading ? 'Sharing...' : 'Share unique link'}
               </MenuItem>
-              <MenuItem className={classes.select}
+              <MenuItem
+                className={classes.select}
                 value={'Share PDF'}
-                disabled={document.documentElement.clientWidth > 912}
-              >
+                disabled={document.documentElement.clientWidth > 912}>
                 {_downloading ? 'Sharing...' : 'Share PDF'}
               </MenuItem>
               <MenuItem value={'Reminder'} className={classes.select}>
@@ -459,90 +476,90 @@ function InvoicePage() {
           </FormControl>
         </div>
 
-        <Grid container my={3}
+        <Grid
+          container
+          my={3}
           sx={{
             display: 'flex',
-            flexDirection: {xs: 'column', sm: 'row'},
-            justifyContent: {xs: 'left', sm: 'space-between'},
-            alignItems: {xs: 'left', sm: 'center'}
-          }}
-        >
-          <Grid item xs
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: { xs: 'left', sm: 'space-between' },
+            alignItems: { xs: 'left', sm: 'center' },
+          }}>
+          <Grid
+            item
+            xs
             sx={{
-              mb: {xs: 2, sm: 0}
-            }}
-          >
-          <Grid item xs>
-            <img
-              alt=""
-              width="20%"
-              crossOrigin="anonymous"
-              src={`${settings.api.baseURL}/${estimate?.partner?.logo}`}
-            />
-          </Grid>
-            <Typography gutterBottom
-              sx={{fontSize: {xs: '14px', sm: '16px'}, fontWeight: 600, mt: {xs: 2, sm: 0}}}
-            >
+              mb: { xs: 2, sm: 0 },
+            }}>
+            <Grid item xs>
+              <img
+                alt=""
+                width="20%"
+                crossOrigin="anonymous"
+                src={`${settings.api.baseURL}/${estimate?.partner?.logo}`}
+              />
+            </Grid>
+            <Typography
+              gutterBottom
+              sx={{ fontSize: { xs: '14px', sm: '16px' }, fontWeight: 600, mt: { xs: 2, sm: 0 } }}>
               {estimate?.partner.name}
             </Typography>
             <Stack>
-              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+              <Typography gutterBottom sx={{ fontSize: { xs: '13px', sm: '16px' } }}>
                 {estimate?.partner?.contact.address}
               </Typography>
-              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+              <Typography gutterBottom sx={{ fontSize: { xs: '13px', sm: '16px' } }}>
                 {estimate?.partner?.contact?.district} {estimate?.partner?.contact?.state}
               </Typography>
-              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+              <Typography gutterBottom sx={{ fontSize: { xs: '13px', sm: '16px' } }}>
                 {estimate?.partner.phone}
               </Typography>
-              <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}}}>
+              <Typography gutterBottom sx={{ fontSize: { xs: '13px', sm: '16px' } }}>
                 {estimate?.partner.email}
               </Typography>
             </Stack>
           </Grid>
 
           <Grid item xs>
-            <Typography gutterBottom
+            <Typography
+              gutterBottom
               sx={{
                 fontWeight: 600,
-                fontSize: {xs: '14px', sm: '16px'},
-                textAlign: {sm: 'right', xs: 'left'}
-              }}
-            >
+                fontSize: { xs: '14px', sm: '16px' },
+                textAlign: { sm: 'right', xs: 'left' },
+              }}>
               Billing Information
             </Typography>
             <Stack>
-              <Typography variant="body1"
+              <Typography
+                variant="body1"
                 gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-                sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
-              >
+                sx={{ fontSize: { xs: '13px', sm: '16px' }, textAlign: { sm: 'right', xs: 'left' } }}>
                 {owner}
               </Typography>
               {billingInformation ? (
-                <Typography variant="body1"
+                <Typography
+                  variant="body1"
                   gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
                   sx={{
-                    textAlign: {sm: 'right', xs: 'left'}
-                  }}
-                >
-                  <Typography variant="body2"
-                    gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-                  >
+                    textAlign: { sm: 'right', xs: 'left' },
+                  }}>
+                  <Typography variant="body2" gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}>
                     {billingInformation.address} {billingInformation.district} {billingInformation.state}
                   </Typography>
-                  <Typography variant="body2"
-                    gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}
-                  >
+                  <Typography variant="body2" gutterBottom={document.documentElement.clientWidth <= 375 ? false : true}>
                     {billingInformation.phone}
                   </Typography>
                 </Typography>
               ) : (
-                <Typography variant="body1" gutterBottom
-                  sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: {sm: 'right', xs: 'left'}}}
-                >
+                <Typography
+                  variant="body1"
+                  gutterBottom
+                  sx={{ fontSize: { xs: '13px', sm: '16px' }, textAlign: { sm: 'right', xs: 'left' } }}>
                   <p>{_driver?.email || ''}</p>
                   <p>{_driver?.phone || ''}</p>
                   {estimate.address}
+                  <p>{moment(estimate.createdAt).format('YYYY-MM-DD')}</p>
                 </Typography>
               )}
             </Stack>
@@ -584,32 +601,43 @@ function InvoicePage() {
         </Grid>
         <Grid container my={3}>
           <Grid item xs>
-            <Typography gutterBottom sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}, mr: {xs: 2, sm: 0}}}>Vehicle</Typography>
-            <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, mr: {xs: 2, sm: 0}}}>
+            <Typography
+              gutterBottom
+              sx={{ fontWeight: 600, fontSize: { xs: '13px', sm: '16px' }, mr: { xs: 2, sm: 0 } }}>
+              Vehicle
+            </Typography>
+            <Typography sx={{ fontSize: { xs: '13px', sm: '16px' }, mr: { xs: 2, sm: 0 } }}>
               {estimate?.vehicle.modelYear} {estimate?.vehicle.make} {estimate?.vehicle.model}
             </Typography>
           </Grid>
           <Grid item xs>
-            <Typography gutterBottom sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}}}>Reg. No</Typography>
-            <Typography sx={{fontSize: {xs: '13px', sm: '16px'}}}>
-              {estimate?.vehicle.plateNumber}
+            <Typography gutterBottom sx={{ fontWeight: 600, fontSize: { xs: '13px', sm: '16px' } }}>
+              Reg. No
             </Typography>
+            <Typography sx={{ fontSize: { xs: '13px', sm: '16px' } }}>{estimate?.vehicle.plateNumber}</Typography>
           </Grid>
           <Grid item xs>
-            <Typography gutterBottom sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}, mr: {xs: 2, sm: 0}}}>Mileage</Typography>
-            <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, mr: {xs: 2, sm: 0}}}>
+            <Typography
+              gutterBottom
+              sx={{ fontWeight: 600, fontSize: { xs: '13px', sm: '16px' }, mr: { xs: 2, sm: 0 } }}>
+              Mileage
+            </Typography>
+            <Typography sx={{ fontSize: { xs: '13px', sm: '16px' }, mr: { xs: 2, sm: 0 } }}>
               {estimate?.vehicle.mileageValue} {estimate?.vehicle.mileageUnit}
             </Typography>
           </Grid>
           <Grid item xs>
-            <Typography gutterBottom sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}}}>VIN</Typography>
+            <Typography gutterBottom sx={{ fontWeight: 600, fontSize: { xs: '13px', sm: '16px' } }}>
+              VIN
+            </Typography>
             <Typography
               sx={{
                 width: '100%',
-                wordBreak: "break-all",
-                fontSize: {xs: '13px', sm: '16px'}
-              }}
-            >{estimate?.vehicle.vin}</Typography>
+                wordBreak: 'break-all',
+                fontSize: { xs: '13px', sm: '16px' },
+              }}>
+              {estimate?.vehicle.vin}
+            </Typography>
           </Grid>
         </Grid>
         <Grid container>
@@ -625,36 +653,41 @@ function InvoicePage() {
           borderColor={theme => (theme.palette.mode === 'dark' ? '#676767' : '#000000')}
           justifyContent="center"
           alignItems="center"
-          columns={14} item>
-          <Grid item xs={2} sx={{display: {xs: 'none', sm: 'block'}}}>
+          columns={14}
+          item>
+          <Grid item xs={2} sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Avatar src={InsightImg} sx={{ width: 20, height: 20 }} />
           </Grid>
-          <Grid item xs={4} sm={3}
-            alignItems='left'
+          <Grid
+            item
+            xs={4}
+            sm={3}
+            alignItems="left"
             sx={{
               width: '100%',
-              wordBreak: "break-word",
+              wordBreak: 'break-word',
               fontWeight: 600,
-              fontSize: {xs: '13px', sm: '16px'}
-            }}
-          >
+              fontSize: { xs: '13px', sm: '16px' },
+            }}>
             {/* Item Description */}
             {document.documentElement.clientWidth <= 375 ? 'Item Desc' : 'Item Description'}
           </Grid>
-          <Grid item xs={3} sm={3} sx={{fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}>
+          <Grid item xs={3} sm={3} sx={{ fontWeight: 600, fontSize: { xs: '13px', sm: '16px' }, textAlign: 'center' }}>
             Warranty
           </Grid>
-          <Grid item xs={4} sm={3}
+          <Grid
+            item
+            xs={4}
+            sm={3}
             sx={{
               width: '100%',
-              wordBreak: "break-word",
+              wordBreak: 'break-word',
               fontWeight: 600,
-              fontSize: {xs: '13px', sm: '16px'}
-            }}
-          >
+              fontSize: { xs: '13px', sm: '16px' },
+            }}>
             Unit Cost x Qty
           </Grid>
-          <Grid item xs={3} sx={{textAlign: {xs: 'right'}, fontWeight: 600, fontSize: {xs: '13px', sm: '16px'}}}>
+          <Grid item xs={3} sx={{ textAlign: { xs: 'right' }, fontWeight: 600, fontSize: { xs: '13px', sm: '16px' } }}>
             Amount
           </Grid>
         </Grid>
@@ -675,21 +708,21 @@ function InvoicePage() {
                     sx={{ pb: 2.5 }}
                     borderBottom="0.01px solid"
                     borderColor="#676767">
-                    <Grid item xs={1} sx={{display: {xs: 'none', sm: 'block'}}}/>
-                    <Grid item xs={4} sm={3}
-                      sx={{fontSize: {xs: '13px', sm: '16px'}, wordBreak: 'break-word', width: '100%'}}
-                    >
+                    <Grid item xs={1} sx={{ display: { xs: 'none', sm: 'block' } }} />
+                    <Grid
+                      item
+                      xs={4}
+                      sm={3}
+                      sx={{ fontSize: { xs: '13px', sm: '16px' }, wordBreak: 'break-word', width: '100%' }}>
                       {part && part.name}
                     </Grid>
-                    <Grid item xs={3} sm={3}
-                      sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}
-                    >
+                    <Grid item xs={3} sm={3} sx={{ fontSize: { xs: '13px', sm: '16px' }, textAlign: 'center' }}>
                       {part?.warranty?.warranty} {part?.warranty?.interval}
                     </Grid>
-                    <Grid item xs={4} sm={3} sx={{textAlign: {xs:'left'}, fontSize: {xs: '13px', sm: '16px'}}}>
+                    <Grid item xs={4} sm={3} sx={{ textAlign: { xs: 'left' }, fontSize: { xs: '13px', sm: '16px' } }}>
                       {formatNumberToIntl(+part.price)} x {part?.quantity?.quantity || ''} {part?.quantity?.unit || 0}
                     </Grid>
-                    <Grid item xs={3} sx={{textAlign: {xs:'right'}, fontSize: {xs: '13px', sm: '16px'}}}>
+                    <Grid item xs={3} sx={{ textAlign: { xs: 'right' }, fontSize: { xs: '13px', sm: '16px' } }}>
                       {amount}
                     </Grid>
                   </Grid>
@@ -709,36 +742,36 @@ function InvoicePage() {
                     sx={{ pb: 2.5 }}
                     borderBottom="0.01px solid"
                     borderColor="#676767">
-                    <Grid item xs={1} sx={{display: {xs: 'none', sm: 'block'}}}/>
-                    <Grid item xs={4} sm={3}
-                      sx={{fontSize: {xs: '13px', sm: '16px'}}}
-                    >
+                    <Grid item xs={1} sx={{ display: { xs: 'none', sm: 'block' } }} />
+                    <Grid item xs={4} sm={3} sx={{ fontSize: { xs: '13px', sm: '16px' } }}>
                       {labour?.title}
                     </Grid>
-                    <Grid item xs={3} sm={3} sx={{fontSize: {xs: '13px', sm: '16px'}, textAlign: 'center'}}>
+                    <Grid item xs={3} sm={3} sx={{ fontSize: { xs: '13px', sm: '16px' }, textAlign: 'center' }}>
                       -
                     </Grid>
-                    <Grid item xs={4} sm={3} sx={{textAlign: {xs:'left'}, fontSize: {xs: '13px', sm: '16px'}}}>
+                    <Grid item xs={4} sm={3} sx={{ textAlign: { xs: 'left' }, fontSize: { xs: '13px', sm: '16px' } }}>
                       {formatNumberToIntl(+labour.cost)} x 1
                     </Grid>
-                    <Grid item xs={3} sx={{textAlign: {xs:'right'}, fontSize: {xs: '13px', sm: '16px'}}}>
+                    <Grid item xs={3} sx={{ textAlign: { xs: 'right' }, fontSize: { xs: '13px', sm: '16px' } }}>
                       {formatNumberToIntl(+labour.cost)}
                     </Grid>
                   </Grid>
                 );
               })}
         </Grid>
-        <Grid item xs={12} my={3}
+        <Grid
+          item
+          xs={12}
+          my={3}
           sx={{
             display: 'flex',
-            flexDirection: 'row'
-          }}
-        >
+            flexDirection: 'row',
+          }}>
           <Grid item xs>
             <TextField
               value={estimate?.note}
               InputProps={{
-                readOnly: true
+                readOnly: true,
               }}
               InputLabelProps={{
                 shrink: true,
@@ -746,47 +779,71 @@ function InvoicePage() {
               // fullWidth
               multiline
               rows={4}
-              name='note'
-              label='Note/Remarks'
+              name="note"
+              label="Note/Remarks"
               sx={{
-                width: '50%'
+                width: '50%',
+              }}
+            />
+            <br /> <br />
+            <TextField
+              value={estimate?.internalNote}
+              InputProps={{
+                readOnly: true,
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              // fullWidth
+              multiline
+              rows={4}
+              name="internalNote"
+              label="Internal Note"
+              sx={{
+                width: '50%',
               }}
             />
           </Grid>
           <Grid item xs>
             <Grid item container justifyContent="center" alignItems="center" my={3}>
               <Grid item xs={10} />
-              <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+              <Grid
+                item
+                flexGrow={1}
+                sx={{ pb: 2.5 }}
+                textAlign="right"
+                borderBottom="0.01px solid"
+                borderColor="#676767">
+                <Typography gutterBottom sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>
                   Subtotal: {formatNumberToIntl(subTotal)}
                 </Typography>
                 {/* @ts-ignore */}
-                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                <Typography gutterBottom sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>
                   VAT(7.5%):{' '}
                   {
                     // @ts-ignore
                     formatNumberToIntl(calculateTaxTotal(invoice))
                   }
                 </Typography>
-                <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+                <Typography gutterBottom sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>
                   Discount:{' '}
                   {
                     // @ts-ignore
-                    `(${ formatNumberToIntl(
-                          calculateDiscount({
-                            total: grandTotal,
-                            discount: invoice.edited
-                                        ? invoice.updateStatus === INVOICE_STATUS.update.draft
-                                          ? invoice.draftInvoice.discount
-                                          : invoice.discount
-                                        : estimate.discount,
-                            discountType: invoice.edited
-                                            ? invoice.updateStatus === INVOICE_STATUS.update.draft
-                                              ? invoice.draftInvoice.discountType
-                                              : invoice.discountType
-                                            : estimate.discountType
-                          }))
-                      })`
+                    `(${formatNumberToIntl(
+                      calculateDiscount({
+                        total: grandTotal,
+                        discount: invoice.edited
+                          ? invoice.updateStatus === INVOICE_STATUS.update.draft
+                            ? invoice.draftInvoice.discount
+                            : invoice.discount
+                          : estimate.discount,
+                        discountType: invoice.edited
+                          ? invoice.updateStatus === INVOICE_STATUS.update.draft
+                            ? invoice.draftInvoice.discountType
+                            : invoice.discountType
+                          : estimate.discountType,
+                      }),
+                    )})`
                   }
                 </Typography>
               </Grid>
@@ -796,7 +853,7 @@ function InvoicePage() {
         <Grid item container justifyContent="center" alignItems="center" my={3}>
           <Grid item xs={10} />
           <Grid item flexGrow={1} sx={{ pb: 2.5 }} textAlign="right" borderBottom="0.01px solid" borderColor="#676767">
-            <Typography gutterBottom sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+            <Typography gutterBottom sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>
               TOTAL:{' '}
               {formatNumberToIntl(
                 grandTotal,
@@ -823,7 +880,7 @@ function InvoicePage() {
         </Grid>
 
         <Grid item container justifyContent="center" alignItems="center" xs={12}>
-          <Grid item xs={8}/>
+          <Grid item xs={8} />
           <Grid item flexGrow={1} xs>
             <Box
               sx={{
@@ -832,9 +889,11 @@ function InvoicePage() {
                 alignItems: 'center',
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
-              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Paid</Typography>
+              <Typography sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>Paid</Typography>
               <Typography sx={{ ml: 7 }} />
-              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>₦{formatNumberToIntl(invoice.depositAmount)}</Typography>
+              <Typography sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>
+                ₦{formatNumberToIntl(invoice.depositAmount)}
+              </Typography>
             </Box>
           </Grid>
         </Grid>
@@ -848,9 +907,9 @@ function InvoicePage() {
                 alignItems: 'center',
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
-              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Balance Due:</Typography>
+              <Typography sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>Balance Due:</Typography>
               <Typography sx={{ mr: 7 }} />
-              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>
+              <Typography sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>
                 {/* ₦{Math.sign(invoice.dueAmount) === -1 ? '0.00' : formatNumberToIntl(invoice.dueAmount)} */}₦
                 {Math.sign(balance) === -1 ? '0.00' : formatNumberToIntl(balance)}
               </Typography>
@@ -867,23 +926,27 @@ function InvoicePage() {
                 alignItems: 'center',
                 color: theme => (theme.palette.mode === 'dark' ? '#ededed' : '#263238'),
               }}>
-              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>Refund Due:</Typography>
+              <Typography sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>Refund Due:</Typography>
               <Typography sx={{ mr: 7 }} />
               {/* <Typography>₦{formatNumberToIntl(invoice.refundable)}</Typography> */}
-              <Typography sx={{fontSize: {xs: '13px', sm: '16px'}, fontWeight: 600}}>₦{formatNumberToIntl(refundAmount)}</Typography>
+              <Typography sx={{ fontSize: { xs: '13px', sm: '16px' }, fontWeight: 600 }}>
+                ₦{formatNumberToIntl(refundAmount)}
+              </Typography>
             </Box>
           </Grid>
         </Grid>
 
         <AppModal
           show={showRecordPayment}
-          onClose={() => {setShowRecordPayment(false), setSelectedValue('')}}
+          onClose={() => {
+            setShowRecordPayment(false), setSelectedValue('');
+          }}
           title="Record Payment"
           size="md"
-          ActionComponent={<Button onClick={() => handlePaymentRecord()} >{recording ? 'Recording' : 'Record'}</Button>}
+          ActionComponent={<Button onClick={() => handlePaymentRecord()}>{recording ? 'Recording' : 'Record'}</Button>}
           // fullWidth
           Content={
-            <Box sx={{ width: {sm: 300, xs: 250} }}>
+            <Box sx={{ width: { sm: 300, xs: 250 } }}>
               <Input
                 value={recordData.amount}
                 type="numeric"

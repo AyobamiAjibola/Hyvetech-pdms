@@ -27,7 +27,11 @@ import { INVOICE_STATUS, LOCAL_STORAGE, MESSAGES } from '../../config/constants'
 import { verifyRefundCustomerAction } from '../../store/actions/transactionActions';
 import useAdmin from '../../hooks/useAdmin';
 import { getInvoicesAction } from '../../store/actions/invoiceActions';
-import { clearDeleteInvoiceStatus, clearSaveInvoiceStatus, clearSendInvoiceStatus } from '../../store/reducers/invoiceReducer';
+import {
+  clearDeleteInvoiceStatus,
+  clearSaveInvoiceStatus,
+  clearSendInvoiceStatus,
+} from '../../store/reducers/invoiceReducer';
 import { formatNumberToIntl, reload } from '../../utils/generic';
 import { CustomHookMessage } from '@app-types';
 
@@ -46,23 +50,22 @@ function InvoicesPage() {
   const routerQuery = useRouterQuery();
 
   useEffect(() => {
-    if(invoiceReducer.deleteInvoiceStatus === 'completed') {
-      dispatch(clearDeleteInvoiceStatus())
-        setSuccess({
-            message: "Invoice Deleted Successfully"
-        })
+    if (invoiceReducer.deleteInvoiceStatus === 'completed') {
+      dispatch(clearDeleteInvoiceStatus());
+      setSuccess({
+        message: 'Invoice Deleted Successfully',
+      });
 
-        reload()
+      reload();
     }
 
-    if(invoiceReducer.deleteInvoiceStatus === 'failed') {
-      dispatch(clearDeleteInvoiceStatus())
-      if(invoiceReducer?.deleteInvoiceError === "transExpError") {
-        setInvDel(true)
+    if (invoiceReducer.deleteInvoiceStatus === 'failed') {
+      dispatch(clearDeleteInvoiceStatus());
+      if (invoiceReducer?.deleteInvoiceError === 'transExpError') {
+        setInvDel(true);
       }
     }
-
-  }, [dispatch, invoiceReducer.deleteInvoiceStatus])
+  }, [dispatch, invoiceReducer.deleteInvoiceStatus]);
 
   useEffect(() => {
     const reference = routerQuery.get('reference');
@@ -387,7 +390,7 @@ function InvoicesPage() {
         sortable: true,
         valueFormatter: ({ value }) => {
           return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
-        }
+        },
       },
       {
         field: 'depositAmount',
@@ -399,7 +402,7 @@ function InvoicesPage() {
         sortable: true,
         valueFormatter: ({ value }) => {
           return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
-        }
+        },
       },
       {
         field: 'dueAmount',
@@ -423,7 +426,7 @@ function InvoicesPage() {
         sortable: true,
         valueFormatter: ({ value }) => {
           return value ? (Math.sign(value) === -1 ? 0 : formatNumberToIntl(value)) : 0;
-        }
+        },
       },
       {
         field: 'status',
@@ -435,11 +438,11 @@ function InvoicesPage() {
         type: 'string',
         renderCell: params => {
           return params.row.status === INVOICE_STATUS.paid ? (
-            <Chip label={"Fully Paid"} size="small" color="success" />
-          ) : ((params.row.status === INVOICE_STATUS.deposit) && (params.row.depositAmount != 0) ) ? (
-            <Chip label={ (params.row.depositAmount != 0) ? "Partially Paid" : ""} size="small" color="warning" />
-          ) : (params.row.status === INVOICE_STATUS.deposit && (params.row.depositAmount == 0)) ? (
-            <Chip label={ (params.row.depositAmount != 0) ? "" : "Not Paid"} size="small" color="error" />
+            <Chip label={'Fully Paid'} size="small" color="success" />
+          ) : params.row.status === INVOICE_STATUS.deposit && params.row.depositAmount != 0 ? (
+            <Chip label={params.row.depositAmount != 0 ? 'Partially Paid' : ''} size="small" color="warning" />
+          ) : params.row.status === INVOICE_STATUS.deposit && params.row.depositAmount == 0 ? (
+            <Chip label={params.row.depositAmount != 0 ? '' : 'Not Paid'} size="small" color="error" />
           ) : params.row.status === INVOICE_STATUS.overDue ? (
             <Chip label={INVOICE_STATUS.overDue} size="small" color="error" />
           ) : null;
@@ -469,7 +472,7 @@ function InvoicesPage() {
             icon={<Cancel sx={{ color: 'indianred' }} />}
             onClick={() => {
               const _invoice = params.row as IInvoice;
-              invoice.onDelete(_invoice.id)
+              invoice.onDelete(_invoice.id);
             }}
             label="Delete"
             showInMenu={false}
@@ -500,9 +503,7 @@ function InvoicesPage() {
           <AppDataGrid
             rows={invoice.invoices}
             // columns={columns}
-            columns={isTechAdmin ? techColumns :
-                      isSuperAdmin ? superAdminColumns : []
-                    }
+            columns={isSuperAdmin ? superAdminColumns : techColumns}
             showToolbar
             loading={invoiceReducer.getInvoicesStatus === 'loading'}
           />
@@ -571,25 +572,25 @@ function InvoicesPage() {
           dispatch(setOpenTransactionPopup(false));
         }}
       />
-      {closeEstimateModal && <AppModal
-        fullWidth
-        show={closeEstimateModal}
-        Content={<DialogContentText>{MESSAGES.closeEstimateModal}</DialogContentText>}
-        ActionComponent={
-          <DialogActions>
-            <Button
-              onClick={() => {
-                setCloseEstimateModal(false),
-                invoice.handleCloseEdit()
-              }}
-            >
-              Yes
-            </Button>
-            <Button onClick={() => setCloseEstimateModal(false)}>No</Button>
-          </DialogActions>
-        }
-        onClose={() => setCloseEstimateModal(false)}
-      />}
+      {closeEstimateModal && (
+        <AppModal
+          fullWidth
+          show={closeEstimateModal}
+          Content={<DialogContentText>{MESSAGES.closeEstimateModal}</DialogContentText>}
+          ActionComponent={
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  setCloseEstimateModal(false), invoice.handleCloseEdit();
+                }}>
+                Yes
+              </Button>
+              <Button onClick={() => setCloseEstimateModal(false)}>No</Button>
+            </DialogActions>
+          }
+          onClose={() => setCloseEstimateModal(false)}
+        />
+      )}
       <AppLoader show={transactionReducer.initRefundCustomerStatus === 'loading'} />
       <AppLoader show={transactionReducer.verifyRefundCustomerStatus === 'loading'} />
       <AppModal

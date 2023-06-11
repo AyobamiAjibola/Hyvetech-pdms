@@ -50,7 +50,11 @@ import { ESTIMATE_STATUS, STATES } from '../../../config/constants';
 import useAdmin from '../../../hooks/useAdmin';
 import { getCustomerAction } from '../../../store/actions/customerActions';
 import { useParams } from 'react-router-dom';
-import { getOwnersFilterDataAction, getPartnerAction, getPartnerFilterDataAction } from '../../../store/actions/partnerActions';
+import {
+  getOwnersFilterDataAction,
+  getPartnerAction,
+  getPartnerFilterDataAction,
+} from '../../../store/actions/partnerActions';
 import { FaPlus } from 'react-icons/fa';
 import CreateCustomerModal from '../../modal/CreateCustomer';
 import useItemStock from '../../../hooks/useItemStock';
@@ -137,7 +141,7 @@ function EstimateForm(props: IProps) {
   const itemReducer = useAppSelector(state => state.itemStockReducer);
   const reminderReducer = useAppSelector(state => state.serviceReminderReducer);
   const [vehicleReminder, setVehicleReminder] = useState<any>(reminderReducer.reminders);
-  const [openReminderModal, setOpenReminderModal] = useState<boolean>(false)
+  const [openReminderModal, setOpenReminderModal] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
@@ -171,8 +175,12 @@ function EstimateForm(props: IProps) {
   const params = useParams();
   const admin = useAdmin();
   const { items } = useItemStock();
-  const partsOnly = items.filter(partsItem => {return partsItem.type === 'part' && partsItem.active === true});
-  const serviceOnly = items.filter(serviceItem => {return serviceItem.type === 'service' && serviceItem.active === true});
+  const partsOnly = items.filter(partsItem => {
+    return partsItem.type === 'part' && partsItem.active === true;
+  });
+  const serviceOnly = items.filter(serviceItem => {
+    return serviceItem.type === 'service' && serviceItem.active === true;
+  });
 
   const partnerId = useMemo(() => {
     return +(params.id as unknown as string) || admin.user?.partner?.id;
@@ -208,7 +216,10 @@ function EstimateForm(props: IProps) {
   }, [vatTotal]);
 
   useEffect(() => {
-    if (partnerReducer.getOwnersFilterDataStatus === 'completed' || partnerReducer.getPartnerFilterDataStatus === 'completed') {
+    if (
+      partnerReducer.getOwnersFilterDataStatus === 'completed' ||
+      partnerReducer.getPartnerFilterDataStatus === 'completed'
+    ) {
       // setOptions(partnerReducer.ownersFilterData);
       setRawOption(!fetch ? partnerReducer.partnerFilterData : partnerReducer.ownersFilterData);
     }
@@ -226,7 +237,7 @@ function EstimateForm(props: IProps) {
     for (let i = 0; i < values.parts.length; i++) {
       if (values.parts[i].amount) {
         // total += parseInt(values.parts[i].amount);
-        total += +values.parts[i].amount
+        total += +values.parts[i].amount;
       }
     }
     setPartTotal(total);
@@ -313,9 +324,7 @@ function EstimateForm(props: IProps) {
 
         setFieldValue(newDetail.label, newDetail.value);
         setFieldTouched(newDetail.label, false);
-
       });
-
     }
   }, [vehicleReducer.getVehicleVINStatus, vehicleReducer.vehicleVINDetails, setFieldValue, setFieldTouched]);
 
@@ -345,7 +354,7 @@ function EstimateForm(props: IProps) {
       const partName = e.target.value;
 
       const tempItem = itemReducer.items;
-      const newDetail = tempItem.find((item: any) => item.name === partName?.name)
+      const newDetail = tempItem.find((item: any) => item.name === partName?.name);
       setFieldValue(`parts.${index}.quantity.unit`, newDetail?.unit || '');
       setFieldValue(`parts.${index}.price`, newDetail?.sellingPrice || 0);
       setFieldValue(`parts.${index}.quantity.quantity`, 1);
@@ -353,12 +362,15 @@ function EstimateForm(props: IProps) {
       //@ts-ignore
       setFieldValue(`parts.${index}.partNumber`, newDetail?.slug || '');
       //@ts-ignore
-      setFieldValue(`parts.${index}.name`, `${partName?.name && capitalize.words(partName?.name)} [${newDetail?.slug}]` || '');
+      setFieldValue(
+        `parts.${index}.name`,
+        `${partName?.name && capitalize.words(partName?.name)} [${newDetail?.slug}]` || '',
+      );
       setFieldTouched(`parts.${index}.name`, false);
 
       setFieldTouched(`parts.${index}.quantity.quantity`, false);
     },
-    [ setFieldValue, setFieldTouched, itemReducer.items],
+    [setFieldValue, setFieldTouched, itemReducer.items],
   );
 
   const _handleChangeService = useCallback(
@@ -367,12 +379,12 @@ function EstimateForm(props: IProps) {
 
       setFieldValue(`labours.${index}.title`, `${partName?.name && capitalize.words(partName?.name)}` || '');
       const tempItem = itemReducer.items;
-      const newDetail = tempItem.find((item: any) => item.name === partName?.name)
+      const newDetail = tempItem.find((item: any) => item.name === partName?.name);
       setFieldValue(`labours.${index}.cost`, newDetail?.sellingPrice || 0);
 
       setFieldTouched(`labours.${index}.cost`, false);
     },
-    [ setFieldValue, setFieldTouched, itemReducer.items],
+    [setFieldValue, setFieldTouched, itemReducer.items],
   );
 
   const handleChangeQtyAndPrice = useCallback(
@@ -448,9 +460,9 @@ function EstimateForm(props: IProps) {
   useEffect(() => {
     if (customerReducer.getCustomerStatus === 'completed' || reminderReducer.getRemindersStatus === 'completed') {
       const _reminderId = sessionStorage.getItem('id');
-      const reminderId = _reminderId && parseInt(_reminderId) || -1
+      const reminderId = (_reminderId && parseInt(_reminderId)) || -1;
       const __customer: any = reminderReducer.reminders.find(reminder => {
-        if(reminder.id === reminderId) return reminder
+        if (reminder.id === reminderId) return reminder;
       });
 
       const _customer: any = __customer ? __customer?.customer : customerReducer.customer;
@@ -467,8 +479,8 @@ function EstimateForm(props: IProps) {
 
         setactiveId(_customer.id);
         const vinList = __customer
-                        ? [__customer.vehicle.vin.toString()]
-                        : _customer.vehicles.map((_data: any) => _data?.vin || '');
+          ? [__customer.vehicle.vin.toString()]
+          : _customer.vehicles.map((_data: any) => _data?.vin || '');
 
         setvinOptions(vinList);
 
@@ -486,29 +498,26 @@ function EstimateForm(props: IProps) {
         });
       }
 
-      if(__customer != undefined){
+      if (__customer != undefined) {
         setFieldValue('vin', __customer.vehicle.vin);
         setFieldValue('make', __customer.vehicle.make);
         setFieldValue('model', __customer.vehicle.model);
         setFieldValue('modelYear', __customer.vehicle.modelYear);
         setFieldValue('plateNumber', __customer.vehicle.plateNumber);
       }
-
     }
-
   }, [value, customerReducer.getCustomerStatus, reminderReducer.getRemindersStatus]);
 
   useEffect(() => {
-    dispatch(getReminderAction())
+    dispatch(getReminderAction());
   }, []);
 
   useEffect(() => {
-    if(reminderReducer.getRemindersStatus === 'completed') {
+    if (reminderReducer.getRemindersStatus === 'completed') {
       const condition = (obj: any) => obj.vehicle.vin === values.vin && obj.partnerId === admin.user?.partner?.id;
       setVehicleReminder(reminderReducer.reminders.filter(condition));
     }
-
-  },[reminderReducer.getRemindersStatus, values.vin]);
+  }, [reminderReducer.getRemindersStatus, values.vin]);
 
   //listen for tax changes and adjust
   useEffect(() => {
@@ -530,11 +539,14 @@ function EstimateForm(props: IProps) {
 
   // validate available stock
   useEffect(() => {
-    for (const { quantity: { quantity }, partNumber } of values.parts) {
+    for (const {
+      quantity: { quantity },
+      partNumber,
+    } of values.parts) {
       console.log(quantity, 'checks quantity of values.part');
       if (partNumber) {
         //@ts-ignore
-        const item = items.find((item) => item.slug === partNumber);
+        const item = items.find(item => item.slug === partNumber);
         if (item?.quantity && +item.quantity < +quantity) {
           setError({ message: 'Low on stock, please add stock' });
         }
@@ -610,7 +622,7 @@ function EstimateForm(props: IProps) {
       return option;
     }
     if (option && option.name) {
-      return `${capitalize.words(option.name)} | ${option.slug} $^%&*(Stock: ${option.quantity ? option.quantity : 0})`
+      return `${capitalize.words(option.name)} | ${option.slug} $^%&*(Stock: ${option.quantity ? option.quantity : 0})`;
     }
     return '';
   };
@@ -620,12 +632,10 @@ function EstimateForm(props: IProps) {
     const labelParts = label.split('$^%&*');
     return (
       <li {...props} style={{ display: 'block' }}>
-        <span style={{ fontSize: "16px", textAlign: 'left', fontWeight: 400, display: 'block' }}>
-          {labelParts[0]}
-        </span>
+        <span style={{ fontSize: '16px', textAlign: 'left', fontWeight: 400, display: 'block' }}>{labelParts[0]}</span>
         {labelParts[1] && (
           <>
-            <span style={{ fontSize: "12px", textAlign: 'right', marginBottom: '1px', display: 'block' }}>
+            <span style={{ fontSize: '12px', textAlign: 'right', marginBottom: '1px', display: 'block' }}>
               {/* {'(Stock'} */}
               {labelParts[1]}
             </span>
@@ -647,26 +657,22 @@ function EstimateForm(props: IProps) {
   };
 
   const isOptionEqualToValue = (option: any, value: any) => {
-    return option === value || option.name === value
-  }
+    return option === value || option.name === value;
+  };
 
   const filterOptionsParts = (partsOnly: any, state: any) => {
-    if (state.inputValue === "") {
+    if (state.inputValue === '') {
       return [];
     } else {
-      return partsOnly.filter((option: any) =>
-        option.name.toLowerCase().includes(state.inputValue?.toLowerCase())
-      );
+      return partsOnly.filter((option: any) => option.name.toLowerCase().includes(state.inputValue?.toLowerCase()));
     }
   };
 
   const filterOptionsLabour = (serviceOnly: any, state: any) => {
-    if (state.inputValue === "") {
+    if (state.inputValue === '') {
       return [];
     } else {
-      return serviceOnly.filter((option: any) =>
-        option.name.toLowerCase().includes(state.inputValue?.toLowerCase())
-      );
+      return serviceOnly.filter((option: any) => option.name.toLowerCase().includes(state.inputValue?.toLowerCase()));
     }
   };
 
@@ -685,16 +691,16 @@ function EstimateForm(props: IProps) {
 
   const data: any = {
     open_modal: undefined,
-    id: undefined
-  }
+    id: undefined,
+  };
 
   useEffect(() => {
-    if(removeSessionStorage){
+    if (removeSessionStorage) {
       Object.keys(data).forEach(key => {
         sessionStorage.removeItem(key);
       });
     }
-  }, [removeSessionStorage])
+  }, [removeSessionStorage]);
 
   return (
     <React.Fragment>
@@ -707,7 +713,6 @@ function EstimateForm(props: IProps) {
             <Divider orientation="horizontal" />
           </Grid>
           <Grid sx={{ width: '100%' }} justifyContent="center" alignItems="center" mt={8}>
-
             <Grid container justifyContent="center" alignItems="center">
               <Grid item xs={12} md={6}>
                 <Autocomplete
@@ -738,11 +743,11 @@ function EstimateForm(props: IProps) {
                         filterData(e.target.value);
                       }}
                       onClick={() => {
-                        handleSearch()
+                        handleSearch();
                       }}
                       onKeyDown={(e: any) => {
                         if (e.key === 'Enter') {
-                          handleSearch()
+                          handleSearch();
                         } else {
                           setShowDrop(false);
                         }
@@ -754,19 +759,21 @@ function EstimateForm(props: IProps) {
                         ...props.InputProps,
                         endAdornment: (
                           <React.Fragment>
-                            {partnerReducer.getOwnersFilterDataStatus === 'loading' || partnerReducer.getPartnerFilterDataStatus === 'loading'
-                              ? ( <CircularProgress color="inherit" size={20} /> )
-                              : <Button
-                                  sx={{
-                                    zIndex: 1,
-                                    cursor: 'pointer',
-                                    backgroundColor: '#181818', color: 'white',
-                                    '&:hover': {color: '#181818', backgroundColor: 'white', boxShadow: 2}
-                                  }}
-                                >
-                                  <Search fontSize='medium'/>
-                                </Button>
-                            }
+                            {partnerReducer.getOwnersFilterDataStatus === 'loading' ||
+                            partnerReducer.getPartnerFilterDataStatus === 'loading' ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : (
+                              <Button
+                                sx={{
+                                  zIndex: 1,
+                                  cursor: 'pointer',
+                                  backgroundColor: '#181818',
+                                  color: 'white',
+                                  '&:hover': { color: '#181818', backgroundColor: 'white', boxShadow: 2 },
+                                }}>
+                                <Search fontSize="medium" />
+                              </Button>
+                            )}
                             {props.InputProps.endAdornment}
                           </React.Fragment>
                         ),
@@ -778,30 +785,35 @@ function EstimateForm(props: IProps) {
                 />
               </Grid>
 
-              <Grid ml={2} sx={{display: 'flex', alignItems: {xs: 'left', md: 'none', cursor: 'pointer'}}}>
+              <Grid ml={2} sx={{ display: 'flex', alignItems: { xs: 'left', md: 'none', cursor: 'pointer' } }}>
                 <Box onClick={toggleFetch}>
-                  {fetch
-                    ? <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#FBA91A'}}>
-                        <ToggleOn color="inherit" fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic', color: '#797979'}}>AutoHyve Users</span>
-                      </Box>
-                    : <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#797979'}}>
-                        <ToggleOff color='inherit' fontSize='large'/>&nbsp;<span style={{fontSize: '14px', fontStyle: 'italic'}}>Customers</span>
-                      </Box>
-                  }
+                  {fetch ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#FBA91A' }}>
+                      <ToggleOn color="inherit" fontSize="large" />
+                      &nbsp;
+                      <span style={{ fontSize: '14px', fontStyle: 'italic', color: '#797979' }}>AutoHyve Users</span>
+                    </Box>
+                  ) : (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#797979' }}>
+                      <ToggleOff color="inherit" fontSize="large" />
+                      &nbsp;<span style={{ fontSize: '14px', fontStyle: 'italic' }}>Customers</span>
+                    </Box>
+                  )}
                 </Box>
               </Grid>
             </Grid>
 
             {/* <Divider orientation="horizontal" /> */}
           </Grid>
-          <Grid flexDirection="column" sx={{width: '100%'}}>
-            <Grid container justifyContent="center"
+          <Grid flexDirection="column" sx={{ width: '100%' }}>
+            <Grid
+              container
+              justifyContent="center"
               alignItems="center"
               sx={{
-                mt: {xs: 2},
-                width: {xs: '100%', md: '50%'}
-              }}
-            >
+                mt: { xs: 2 },
+                width: { xs: '100%', md: '50%' },
+              }}>
               <Typography
                 onClick={() => setCreateModal(true)}
                 color={'skyblue'}
@@ -810,7 +822,7 @@ function EstimateForm(props: IProps) {
                   display: 'flex',
                   alignItems: 'center',
                   cursor: 'pointer',
-                  textAlign: 'center'
+                  textAlign: 'center',
                 }}>
                 <FaPlus style={{ marginRight: 8 }} />
                 New Customer
@@ -971,15 +983,12 @@ function EstimateForm(props: IProps) {
               </Typography>
               <Divider orientation="horizontal" />
 
-              <Tooltip title="Vehicle Service Reminder" placement="top"
-                sx={{mb: 8}}
-              >
+              <Tooltip title="Vehicle Service Reminder" placement="top" sx={{ mb: 8 }}>
                 <IconButton
-                  sx={{color: '#181818'}}
+                  sx={{ color: '#181818' }}
                   onClick={() => setOpenReminderModal(true)}
                   // disabled={vehicleReducer.getVehicleVINStatus !== 'completed'}
-                  disabled={!values.vin}
-                >
+                  disabled={!values.vin}>
                   <CalendarMonth />
                 </IconButton>
               </Tooltip>
@@ -1031,11 +1040,11 @@ function EstimateForm(props: IProps) {
                                         isOptionEqualToValue={isOptionEqualToValue}
                                         // @ts-ignore
                                         onChange={(_, newValue) => {
-                                          _handleChangePart({ target: { value: newValue } }, index)
+                                          _handleChangePart({ target: { value: newValue } }, index);
                                         }}
                                         //@ts-ignore
                                         value={part[value]}
-                                        renderInput={params =>
+                                        renderInput={params => (
                                           <TextField
                                             {...params}
                                             label={value}
@@ -1044,12 +1053,17 @@ function EstimateForm(props: IProps) {
                                             InputProps={{
                                               ...params.InputProps,
                                               endAdornment: (
-                                                <InputAdornment position="end" sx={{ position: 'absolute', left: {lg: '90%', xs: '80%'} }}>
-                                                  {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
+                                                <InputAdornment
+                                                  position="end"
+                                                  sx={{ position: 'absolute', left: { lg: '90%', xs: '80%' } }}>
+                                                  {itemReducer.getItemsStatus === 'loading' && (
+                                                    <CircularProgress size={25} />
+                                                  )}
                                                 </InputAdornment>
                                               ),
                                             }}
-                                          />}
+                                          />
+                                        )}
                                       />
                                     </Grid>
                                   )}
@@ -1112,61 +1126,66 @@ function EstimateForm(props: IProps) {
                         );
                       })}
                     <br />
-                    <Grid item xs={12} justifyContent='left'>
-                      {document.documentElement.clientWidth <= 375
-                          ? <Button
-                              onClick={() =>
-                                partsProps.push({
-                                  name: '',
-                                  warranty: { warranty: '', interval: '' },
-                                  quantity: { quantity: '0', unit: '' },
-                                  price: '0',
-                                  amount: '0',
-                                })
-                              }>
-                              {'Add Part'}
-                            </Button>
-                          : <IconButton
-                              onClick={() =>
-                                partsProps.push({
-                                  name: '',
-                                  warranty: { warranty: '', interval: '' },
-                                  quantity: { quantity: '0', unit: '' },
-                                  price: '0',
-                                  amount: '0',
-                                })}
-                            >
-                              <Typography
-                                color={'skyblue'}
-                                style={{
-                                  // marginLeft: 20,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  cursor: 'pointer',
-                                }}>
-                                <FaPlus style={{ marginRight: 8 }} />
-                                Add Part
-                              </Typography>
-                            </IconButton>
-                      }
+                    <Grid item xs={12} justifyContent="left">
+                      {document.documentElement.clientWidth <= 375 ? (
+                        <Button
+                          onClick={() =>
+                            partsProps.push({
+                              name: '',
+                              warranty: { warranty: '', interval: '' },
+                              quantity: { quantity: '0', unit: '' },
+                              price: '0',
+                              amount: '0',
+                            })
+                          }>
+                          {'Add Part'}
+                        </Button>
+                      ) : (
+                        <IconButton
+                          onClick={() =>
+                            partsProps.push({
+                              name: '',
+                              warranty: { warranty: '', interval: '' },
+                              quantity: { quantity: '0', unit: '' },
+                              price: '0',
+                              amount: '0',
+                            })
+                          }>
+                          <Typography
+                            color={'skyblue'}
+                            style={{
+                              // marginLeft: 20,
+                              display: 'flex',
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                            }}>
+                            <FaPlus style={{ marginRight: 8 }} />
+                            Add Part
+                          </Typography>
+                        </IconButton>
+                      )}
                     </Grid>
 
-                    <Grid item xs={12} container spacing={2} columns={13}
+                    <Grid
+                      item
+                      xs={12}
+                      container
+                      spacing={2}
+                      columns={13}
                       sx={{
-                        display: 'flex', flexDirection: 'row',
-                        alignItems: 'center'
-                      }}
-                    >
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
                       <Divider orientation="horizontal" />
                       <Grid item sm={4} xs={0} />
                       <Grid item sm={4} xs={6} mb={2} mt={2}>
                         <Typography
                           style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'left'
-                            }}
-                          >
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'left',
+                          }}>
                           {/* Part(s): ₦{formatNumberToIntl(Math.round(partTotal))} */}
                           Part(s): ₦{formatNumberToIntl(+partTotal.toFixed(2))}
                         </Typography>
@@ -1187,9 +1206,9 @@ function EstimateForm(props: IProps) {
                           style={{
                             display: 'flex',
                             flexDirection: 'row',
-                            alignItems: 'center', justifyContent: 'right'
-                          }}
-                        >
+                            alignItems: 'center',
+                            justifyContent: 'right',
+                          }}>
                           <span>Apply Tax</span>
                           <Checkbox checked={enableTaxPart} onClick={() => setEnableTaxPart(!enableTaxPart)} />
                         </div>
@@ -1230,36 +1249,44 @@ function EstimateForm(props: IProps) {
                                         value={labour[value]}
                                         onChange={handleChange}
                                       /> */}
-                                    <Autocomplete
-                                      options={serviceOnly}
-                                      filterOptions={filterOptionsLabour}
-                                      openOnFocus
-                                      noOptionsText="..."
-                                      getOptionLabel={getOptionLabelLabour}
-                                      isOptionEqualToValue={isOptionEqualToValue}
-                                      // @ts-ignore
-                                      onChange={(_, newValue) => {
-                                        _handleChangeService({ target: { value: newValue } }, index)
-                                      }}
-                                      //@ts-ignore
-                                      value={labour[value]}
-                                      renderInput={params =>
-                                        <TextField
-                                          {...params}
-                                          label={value}
-                                          onChange={handleChange}
-                                          name={`labours.${index}.${value}`}
-                                          InputProps={{
-                                            ...params.InputProps,
-                                            endAdornment: (
-                                              <InputAdornment position="end" sx={{ position: 'absolute', left: {lg: '95%', md: '85%', xs: '78%'} }}>
-                                                {itemReducer.getItemsStatus === 'loading' && <CircularProgress size={25} />}
-                                              </InputAdornment>
-                                            ),
-                                          }}
-                                        />}
-                                    />
-                                  </Grid>
+                                      <Autocomplete
+                                        options={serviceOnly}
+                                        filterOptions={filterOptionsLabour}
+                                        openOnFocus
+                                        noOptionsText="..."
+                                        getOptionLabel={getOptionLabelLabour}
+                                        isOptionEqualToValue={isOptionEqualToValue}
+                                        // @ts-ignore
+                                        onChange={(_, newValue) => {
+                                          _handleChangeService({ target: { value: newValue } }, index);
+                                        }}
+                                        //@ts-ignore
+                                        value={labour[value]}
+                                        renderInput={params => (
+                                          <TextField
+                                            {...params}
+                                            label={value}
+                                            onChange={handleChange}
+                                            name={`labours.${index}.${value}`}
+                                            InputProps={{
+                                              ...params.InputProps,
+                                              endAdornment: (
+                                                <InputAdornment
+                                                  position="end"
+                                                  sx={{
+                                                    position: 'absolute',
+                                                    left: { lg: '95%', md: '85%', xs: '78%' },
+                                                  }}>
+                                                  {itemReducer.getItemsStatus === 'loading' && (
+                                                    <CircularProgress size={25} />
+                                                  )}
+                                                </InputAdornment>
+                                              ),
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </Grid>
                                   )}
                                   {value === 'cost' && (
                                     <Grid item xs={4}>
@@ -1289,39 +1316,38 @@ function EstimateForm(props: IProps) {
                         );
                       })}
                     {/* <br /> */}
-                    <Grid item xs={12} justifyContent='left'>
-                      {document.documentElement.clientWidth <= 375
-                          ? <Button
-                              onClick={() =>
-                                laboursProps.push({
-                                  title: '',
-                                  cost: '0',
-                                })
-                              }
-                            >
-                              {'Add Service'}
-                            </Button>
-                          : <IconButton
-                              onClick={() =>
-                                laboursProps.push({
-                                  title: '',
-                                  cost: '0',
-                                })
-                              }
-                            >
-                            <Typography
-                              color={'skyblue'}
-                              style={{
-                                // marginLeft: 20,
-                                display: 'flex',
-                                alignItems: 'center',
-                                cursor: 'pointer',
-                              }}>
-                              <FaPlus style={{ marginRight: 8 }} />
-                                Add Service
-                            </Typography>
-                            </IconButton>
-                      }
+                    <Grid item xs={12} justifyContent="left">
+                      {document.documentElement.clientWidth <= 375 ? (
+                        <Button
+                          onClick={() =>
+                            laboursProps.push({
+                              title: '',
+                              cost: '0',
+                            })
+                          }>
+                          {'Add Service'}
+                        </Button>
+                      ) : (
+                        <IconButton
+                          onClick={() =>
+                            laboursProps.push({
+                              title: '',
+                              cost: '0',
+                            })
+                          }>
+                          <Typography
+                            color={'skyblue'}
+                            style={{
+                              // marginLeft: 20,
+                              display: 'flex',
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                            }}>
+                            <FaPlus style={{ marginRight: 8 }} />
+                            Add Service
+                          </Typography>
+                        </IconButton>
+                      )}
                     </Grid>
                   </React.Fragment>
                 );
@@ -1329,15 +1355,14 @@ function EstimateForm(props: IProps) {
             />
           </Grid>
           <Grid item xs={12} container spacing={2} columns={13}>
-            <Grid item sm={4} xs={0}/>
+            <Grid item sm={4} xs={0} />
             <Grid item sm={4} xs={6} mb={2} mt={2}>
               <Typography
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'left'
-                }}
-              >
+                  justifyContent: 'left',
+                }}>
                 {/* Service Charge(s): ₦{formatNumberToIntl(Math.round(labourTotal))} */}
                 Service Charge(s): ₦{formatNumberToIntl(+labourTotal.toFixed(2))}
               </Typography>
@@ -1348,7 +1373,7 @@ function EstimateForm(props: IProps) {
                   label={`${fields.tax.label} (VAT 7.5%)`}
                   variant="outlined"
                   fullWidth
-                  sx={{ mb: 2, mt: 2, color: 'black'}}
+                  sx={{ mb: 2, mt: 2, color: 'black' }}
                   type="number"
                 />
               )}
@@ -1359,9 +1384,9 @@ function EstimateForm(props: IProps) {
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'center', justifyContent: 'right'
-                }}
-              >
+                  alignItems: 'center',
+                  justifyContent: 'right',
+                }}>
                 <span>Apply Tax</span>
                 <Checkbox checked={enableTaxLabor} onClick={() => setEnableTaxLabor(!enableTaxLabor)} />
               </div>
@@ -1377,17 +1402,19 @@ function EstimateForm(props: IProps) {
             <Grid item>
               <Grid container spacing={2}>
                 <Grid item>
-                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Sub-Total:</Typography>
+                  <Typography sx={{ fontSize: { sm: '20px', xs: '15px' }, fontWeight: 600 }}>Sub-Total:</Typography>
                 </Grid>
                 <Grid item>
-                  <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(subTotal)}</Typography>
+                  <Typography sx={{ fontSize: { sm: '20px', xs: '15px' }, fontWeight: 600 }}>
+                    ₦{formatNumberToIntl(subTotal)}
+                  </Typography>
                 </Grid>
               </Grid>
             </Grid>
             <br />
             <Grid container spacing={0}>
               <Grid item xs={2} mr={5}>
-                <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Discount:</Typography>
+                <Typography sx={{ fontSize: { sm: '20px', xs: '15px' }, fontWeight: 600 }}>Discount:</Typography>
               </Grid>
               <Grid container xs={8} spacing={2}>
                 <Grid item>
@@ -1428,6 +1455,18 @@ function EstimateForm(props: IProps) {
                 rows={3}
                 name={fields.note.name}
                 label={fields.note.label}
+              />
+            </Grid>
+            <br />
+            <Grid item xs={12}>
+              <TextField
+                value={values.internalNote}
+                onChange={handleChange}
+                fullWidth
+                multiline
+                rows={3}
+                name={'internalNote'}
+                label={'Internal Note'}
               />
             </Grid>
             <br />
@@ -1475,31 +1514,37 @@ function EstimateForm(props: IProps) {
               />
             </Grid>
           </Grid>
-          <Grid item xs={12}
+          <Grid
+            item
+            xs={12}
             sx={{
               display: 'flex',
-              flexDirection: {sm: 'row', xs: 'column'},
-              mt: 2, mb: 2
-            }}
-          >
+              flexDirection: { sm: 'row', xs: 'column' },
+              mt: 2,
+              mb: 2,
+            }}>
             <Grid item sm={6} xs={12}>
               <Grid item>
                 <Grid container spacing={2}>
                   <Grid item>
-                    <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>VAT(7.5%):</Typography>
+                    <Typography sx={{ fontSize: { sm: '20px', xs: '15px' }, fontWeight: 600 }}>VAT(7.5%):</Typography>
                   </Grid>
                   <Grid item>
-                    <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(+vatTotal.toFixed(2))}</Typography>
+                    <Typography sx={{ fontSize: { sm: '20px', xs: '15px' }, fontWeight: 600 }}>
+                      ₦{formatNumberToIntl(+vatTotal.toFixed(2))}
+                    </Typography>
                   </Grid>
                 </Grid>
               </Grid>
               <Grid item>
                 <Grid container spacing={2}>
                   <Grid item>
-                    <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>Grand Total:</Typography>
+                    <Typography sx={{ fontSize: { sm: '20px', xs: '15px' }, fontWeight: 600 }}>Grand Total:</Typography>
                   </Grid>
                   <Grid item>
-                    <Typography sx={{fontSize: {sm: '20px', xs: '15px'}, fontWeight: 600}}>₦{formatNumberToIntl(+grandTotal.toFixed(2))}</Typography>
+                    <Typography sx={{ fontSize: { sm: '20px', xs: '15px' }, fontWeight: 600 }}>
+                      ₦{formatNumberToIntl(+grandTotal.toFixed(2))}
+                    </Typography>
                   </Grid>
                 </Grid>
               </Grid>
@@ -1507,13 +1552,14 @@ function EstimateForm(props: IProps) {
             <Grid item sm={6} xs={12} />
           </Grid>
           {parseInt(values.depositAmount) > 0 && parseInt(values.depositAmount) <= grandTotal && (
-            <Grid item xs={12}
+            <Grid
+              item
+              xs={12}
               sx={{
                 display: 'flex',
                 justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
+                alignItems: 'center',
+              }}>
               <Divider sx={{ mb: 3 }} flexItem orientation="horizontal" />
               <LoadingButton
                 type="submit"
@@ -1528,9 +1574,9 @@ function EstimateForm(props: IProps) {
                 onClick={() => {
                   props.setDiscountType && props.setDiscountType(discountType);
                   props.setDiscount && props.setDiscount(discount);
-                  props.setSave(true); setRemoveSessionStorage(true)
-                }}
-              >
+                  props.setSave(true);
+                  setRemoveSessionStorage(true);
+                }}>
                 {'Save'}
               </LoadingButton>
               <LoadingButton
@@ -1542,7 +1588,8 @@ function EstimateForm(props: IProps) {
                 onClick={() => {
                   props.setDiscountType && props.setDiscountType(discountType);
                   props.setDiscount && props.setDiscount(discount);
-                  props.setSave(false); setRemoveSessionStorage(true)
+                  props.setSave(false);
+                  setRemoveSessionStorage(true);
                 }}
                 variant="contained"
                 color="success"
@@ -1563,17 +1610,17 @@ function EstimateForm(props: IProps) {
       {openReminderModal && (
         <AppModal
           fullWidth
-          size={document.documentElement.clientWidth > 375 ? "lg" : undefined}
+          size={document.documentElement.clientWidth > 375 ? 'lg' : undefined}
           fullScreen={document.documentElement.clientWidth > 375 ? false : true}
           show={openReminderModal}
           Content={
             <>
-              <RemindersModal
-                vehicleReminder={vehicleReminder}
-              />
+              <RemindersModal vehicleReminder={vehicleReminder} />
             </>
           }
-          onClose={() => {setOpenReminderModal(false)}}
+          onClose={() => {
+            setOpenReminderModal(false);
+          }}
         />
       )}
 

@@ -18,6 +18,13 @@ import Joi from 'joi';
 
 export type PartnerAccountSchemaType = Attributes<PartnerAccount>;
 
+export type CBAAccountUpdateType = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  businessName: string;
+};
+
 export type PerformNameEnquirySchemaType = {
   beneficiaryBankCode: string;
   beneficiaryAccountNumber: string;
@@ -26,6 +33,7 @@ export type PerformNameEnquirySchemaType = {
 export const $savePartnerAccountSchema: Joi.SchemaMap<PartnerAccountSchemaType> = {
   businessName: Joi.string().required().label('businessName'),
   pin: Joi.string().required().label('pin'),
+  nin: Joi.string().required().label('nin'),
 };
 
 export const performNameEnquirySchema: Joi.SchemaMap<PerformNameEnquirySchemaType> = {
@@ -33,9 +41,17 @@ export const performNameEnquirySchema: Joi.SchemaMap<PerformNameEnquirySchemaTyp
   beneficiaryAccountNumber: Joi.string().required().label('beneficiaryAccountNumber'),
 };
 
-export const $updatePartnerAccountSchema: Joi.SchemaMap<PartnerAccountSchemaType> = {
+export const $updatePartnerAccountSchema: Joi.SchemaMap<PartnerAccountSchemaType & { currentPin: string }> = {
   businessName: Joi.string().optional().label('businessName'),
   pin: Joi.string().optional().label('pin'),
+  currentPin: Joi.string().optional().label('currentPin'),
+};
+
+export const $updateCBAAccountDetail: Joi.SchemaMap<CBAAccountUpdateType> = {
+  businessName: Joi.string().optional().label('businessName'),
+  firstName: Joi.string().optional().label('firstName'),
+  lastName: Joi.string().optional().label('lastName'),
+  email: Joi.string().optional().label('email'),
 };
 
 @Table({
@@ -74,6 +90,9 @@ export default class PartnerAccount extends Model<
 
   @Column(DataType.STRING)
   declare middleName: CreationOptional<string>;
+
+  @Column(DataType.STRING)
+  declare nin: string;
 
   @Column(DataType.STRING)
   declare phoneNumber: string;

@@ -12,6 +12,8 @@ export default interface BankService {
 
   performNameEnquiry: (payload: ConfirmRecipientDTO) => Promise<AccountHolder>;
 
+  updateAccount: (payload: AccountUpdateDTO) => Promise<AccountResponseDTO>;
+
   intiateTransfer: (payload: AccountTransferDTO) => Promise<AccountTransferResponseDTO>;
 }
 
@@ -28,6 +30,14 @@ export interface AccountDTO {
   firstName: string;
   trackingReference?: string;
   id?: string;
+}
+
+export interface AccountUpdateDTO {
+  email?: string;
+  businessName?: string;
+  lastName?: string;
+  firstName?: string;
+  trackingReference: string;
 }
 
 export interface AccountResponseDTO {

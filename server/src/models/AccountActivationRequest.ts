@@ -24,6 +24,7 @@ export const $saveAccountActivationRequestSchema: Joi.SchemaMap<AccountActivatio
   validIdBackUrl: Joi.string().optional().label('validIdBackUrl'),
   validIdFrontUrl: Joi.string().optional().label('validIdFrontUrl'),
   pin: Joi.string().optional().label('pin'),
+  nin: Joi.string().required().label('nin'),
 };
 
 export const $updateAccountActivationRequestSchema: Joi.SchemaMap<AccountActivationRequestSchemaType> = {
@@ -61,6 +62,9 @@ export default class AccountActivationRequest extends Model<
 
   @Column(DataType.STRING)
   declare validIdBackUrl: string;
+
+  @Column(DataType.STRING)
+  declare nin: string;
 
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare isApproved: CreationOptional<boolean>;

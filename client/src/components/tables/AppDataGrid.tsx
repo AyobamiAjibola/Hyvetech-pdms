@@ -41,6 +41,7 @@ function AppDataGrid(props: IProps) {
         disableColumnSelector
         componentsProps={{
           toolbar: {
+            autoComplete: 'off',
             showQuickFilter: true,
             quickFilterProps: { debounceMs: 500 },
           },

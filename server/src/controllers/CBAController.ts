@@ -8,7 +8,9 @@ import CBAService from '../services/CBAService';
 import Joi = require('joi');
 import PartnerAccount, {
   $savePartnerAccountSchema,
+  $updateCBAAccountDetail,
   $updatePartnerAccountSchema,
+  CBAAccountUpdateType,
   PartnerAccountSchemaType,
   PerformNameEnquirySchemaType,
   performNameEnquirySchema,
@@ -23,6 +25,10 @@ import dao from '../services/dao';
 import settings, { MANAGE_ALL, MANAGE_TECHNICIAN } from '../config/settings';
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import PasswordEncoder from '../utils/PasswordEncoder';
+import { appModelTypes } from '../@types/app-model';
+import MailgunMessageData = appModelTypes.MailgunMessageData;
+import QueueManager from '../services/QueueManager';
+import { MAIL_QUEUE_EVENTS } from '../config/constants';
 
 const NO_ACCOUNT_PROVISIONED = 'No account is provisioned for user';
 const PARTNER_NOT_FOUND = 'Partner account not found';
@@ -64,8 +70,8 @@ class CBAController {
 
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN])
-  public async updateAccount(req: Request) {
-    const account = await this.doAccountUpdate(req);
+  public async updateAccountPin(req: Request) {
+    const account = await this.doAccountPinUpdate(req);
 
     const response: HttpResponse<PartnerAccount> = {
       code: HttpStatus.OK.code,
@@ -74,6 +80,38 @@ class CBAController {
     };
 
     return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
+  public async updateAccount(req: Request) {
+    const account = await this.doUpdateAccount(req);
+
+    const response: HttpResponse<PartnerAccount> = {
+      code: HttpStatus.OK.code,
+      message: 'Account updated successfully',
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  private async doUpdateAccount(req: Request) {
+    const { error, value } = Joi.object<CBAAccountUpdateType>($updateCBAAccountDetail).validate(req.body);
+
+    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+    const account = await dataSources.partnerAccountDaoService.findByAny({ where: { partnerId: req.user.partnerId } });
+
+    if (!account)
+      return Promise.reject(CustomAPIError.response('Account not yet provisioned', HttpStatus.BAD_REQUEST.code));
+
+    return dataSources.partnerAccountDaoService.update(account, {
+      firstName: value.firstName,
+      lastName: value.lastName,
+      email: value.email,
+      businessName: value.businessName,
+    } as any);
   }
 
   @TryCatch
@@ -195,6 +233,7 @@ class CBAController {
       businessName: accountRequest.businessName,
       partnerId: partner.id,
       pin: accountRequest.pin,
+      nin: accountRequest.nin,
     });
 
     partner.accountName = `${response.firstName} ${response.lastName}`;
@@ -251,39 +290,21 @@ class CBAController {
     // send mail here
 
     // eslint-disable-next-line promise/catch-or-return
-    dataSources.mailService
-      .sendHtmlMail({
-        to: 'admin@myautohyve.com',
-        from: 'support@myautohyve.com',
-        subject: 'Account activation request',
-        html: `
-         <div> The following AutoHyve user is activating a HyvePay account and requires verification.</div>
+    const mailData: MailgunMessageData = {
+      to: settings.mailer.customerSupport,
+      from: settings.mailer.from,
+      subject: 'Account activation requested',
+      template: 'partner_account_activation_request',
+      'h:X-Mailgun-Variables': JSON.stringify({
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        businessName: value.businessName,
+        phone: req.user.phone,
+        email: req.user.email,
+      }),
+    };
 
-         <div>
-           AutoHyve user details:
-          - ${req.user.firstName} ${req.user.lastName} \n
-          - ${value.businessName} \n
-          - ${req.user.phone} \n
-          - ${req.user.email} \n 
-         </div>
-          <br />
-
-         <div>
-          Attached are the users identification documents: \n
-            1. ID card 
-            2. NIN 
-            3. CAC (if available)
-         </div>
-        `,
-      })
-      .then(() => {
-        console.log('successfully send');
-
-        return 0;
-      })
-      .catch((err: any) => {
-        console.log('error', err);
-      });
+    QueueManager.dispatch({ queue: MAIL_QUEUE_EVENTS.name, data: mailData });
 
     return response;
   }
@@ -399,6 +420,7 @@ class CBAController {
       businessName: value.businessName,
       partnerId: req.user.partnerId,
       pin: value.pin,
+      nin: value.nin,
     });
 
     partner.isAccountProvisioned = true;
@@ -431,8 +453,10 @@ class CBAController {
     return dataSources.accountActivationDAOService.findAll({});
   }
 
-  private async doAccountUpdate(req: Request) {
-    const { error, value } = Joi.object<PartnerAccountSchemaType>($updatePartnerAccountSchema).validate(req.body);
+  private async doAccountPinUpdate(req: Request) {
+    const { error, value } = Joi.object<PartnerAccountSchemaType & { currentPin: string }>(
+      $updatePartnerAccountSchema,
+    ).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -440,6 +464,9 @@ class CBAController {
 
     if (!account)
       return Promise.reject(CustomAPIError.response('Account not yet provisioned', HttpStatus.BAD_REQUEST.code));
+
+    if (!(await this.passwordEncoded.match(value.currentPin, account.pin)))
+      return Promise.reject(CustomAPIError.response('PIN do not match', HttpStatus.BAD_REQUEST.code));
 
     account.pin = await this.passwordEncoded.encode(value.pin);
 
