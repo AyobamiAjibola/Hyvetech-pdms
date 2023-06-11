@@ -1,11 +1,11 @@
-import { HasPermission, TryCatch } from '../decorators';
-import BankService, * as appModels from '../services/BankService';
-import { appCommonTypes } from '../@types/app-common';
+import { HasPermission, TryCatch } from "../decorators";
+import BankService, * as appModels from "../services/BankService";
+import { appCommonTypes } from "../@types/app-common";
 import HttpResponse = appCommonTypes.HttpResponse;
-import HttpStatus from '../helpers/HttpStatus';
-import { Request } from 'express';
-import CBAService from '../services/CBAService';
-import Joi = require('joi');
+import HttpStatus from "../helpers/HttpStatus";
+import { Request } from "express";
+import CBAService from "../services/CBAService";
+import Joi = require("joi");
 import PartnerAccount, {
   $savePartnerAccountSchema,
   $updateCBAAccountDetail,
@@ -14,38 +14,39 @@ import PartnerAccount, {
   PartnerAccountSchemaType,
   PerformNameEnquirySchemaType,
   performNameEnquirySchema,
-} from '../models/PartnerAccount';
-import dataSources from '../services/dao';
-import CustomAPIError from '../exceptions/CustomAPIError';
+} from "../models/PartnerAccount";
+import dataSources from "../services/dao";
+import CustomAPIError from "../exceptions/CustomAPIError";
 import {
   $saveAccountActivationRequestSchema,
   AccountActivationRequestSchemaType,
-} from '../models/AccountActivationRequest';
-import dao from '../services/dao';
-import settings, { MANAGE_ALL, MANAGE_TECHNICIAN } from '../config/settings';
+} from "../models/AccountActivationRequest";
+import dao from "../services/dao";
+import settings, { MANAGE_ALL, MANAGE_TECHNICIAN } from "../config/settings";
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
-import PasswordEncoder from '../utils/PasswordEncoder';
-import { appModelTypes } from '../@types/app-model';
+import PasswordEncoder from "../utils/PasswordEncoder";
+import { appModelTypes } from "../@types/app-model";
 import MailgunMessageData = appModelTypes.MailgunMessageData;
-import QueueManager from '../services/QueueManager';
-import { MAIL_QUEUE_EVENTS } from '../config/constants';
+import QueueManager from "../services/QueueManager";
+import { MAIL_QUEUE_EVENTS } from "../config/constants";
 
-const NO_ACCOUNT_PROVISIONED = 'No account is provisioned for user';
-const PARTNER_NOT_FOUND = 'Partner account not found';
+const NO_ACCOUNT_PROVISIONED = "No account is provisioned for user";
+const PARTNER_NOT_FOUND = "Partner account not found";
 
-export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> = {
-  trackingReference: Joi.string().optional().label('trackingReference'),
-  beneficiaryAccount: Joi.string().required().label('beneficiaryAccount'),
-  amount: Joi.number().required().label('amount'),
-  narration: Joi.string().required().label('narration'),
-  beneficiaryBankCode: Joi.string().required().label('beneficiaryBankCode'),
-  beneficiaryName: Joi.string().optional().label('beneficiaryName'),
-  senderName: Joi.string().optional().label('senderName'),
-  nameEnquiryId: Joi.number().required().label('nameEnquiryId'),
-  saveAsBeneficiary: Joi.boolean().optional().label('saveAsBeneficiary'),
-  bankName: Joi.string().optional().label('bankName'),
-  pin: Joi.string().required().label('pin'),
-};
+export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> =
+  {
+    trackingReference: Joi.string().optional().label("trackingReference"),
+    beneficiaryAccount: Joi.string().required().label("beneficiaryAccount"),
+    amount: Joi.number().required().label("amount"),
+    narration: Joi.string().required().label("narration"),
+    beneficiaryBankCode: Joi.string().required().label("beneficiaryBankCode"),
+    beneficiaryName: Joi.string().optional().label("beneficiaryName"),
+    senderName: Joi.string().optional().label("senderName"),
+    nameEnquiryId: Joi.number().required().label("nameEnquiryId"),
+    saveAsBeneficiary: Joi.boolean().optional().label("saveAsBeneficiary"),
+    bankName: Joi.string().optional().label("bankName"),
+    pin: Joi.string().required().label("pin"),
+  };
 
 class CBAController {
   private readonly bankService: BankService;
@@ -61,7 +62,7 @@ class CBAController {
 
     const response: HttpResponse<PartnerAccount> = {
       code: HttpStatus.OK.code,
-      message: 'Account created successfully',
+      message: "Account created successfully",
       result: account,
     };
 
@@ -75,7 +76,7 @@ class CBAController {
 
     const response: HttpResponse<PartnerAccount> = {
       code: HttpStatus.OK.code,
-      message: 'Account updated successfully',
+      message: "Account updated successfully",
       result: account,
     };
 
@@ -89,7 +90,7 @@ class CBAController {
 
     const response: HttpResponse<PartnerAccount> = {
       code: HttpStatus.OK.code,
-      message: 'Account updated successfully',
+      message: "Account updated successfully",
       result: account,
     };
 
@@ -97,14 +98,29 @@ class CBAController {
   }
 
   private async doUpdateAccount(req: Request) {
-    const { error, value } = Joi.object<CBAAccountUpdateType>($updateCBAAccountDetail).validate(req.body);
+    const { error, value } = Joi.object<CBAAccountUpdateType>(
+      $updateCBAAccountDetail
+    ).validate(req.body);
 
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    const account = await dataSources.partnerAccountDaoService.findByAny({ where: { partnerId: req.user.partnerId } });
+    const account = await dataSources.partnerAccountDaoService.findByAny({
+      where: { partnerId: req.user.partnerId },
+    });
 
     if (!account)
-      return Promise.reject(CustomAPIError.response('Account not yet provisioned', HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          "Account not yet provisioned",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     return dataSources.partnerAccountDaoService.update(account, {
       firstName: value.firstName,
@@ -121,7 +137,7 @@ class CBAController {
 
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
-      message: 'Account balance retrieved successfully',
+      message: "Account balance retrieved successfully",
       result: account,
     };
 
@@ -135,7 +151,7 @@ class CBAController {
 
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
-      message: 'Transaction successful',
+      message: "Transaction successful",
       result: account,
     };
 
@@ -149,7 +165,7 @@ class CBAController {
 
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
-      message: 'Account transactions retrieved successfully',
+      message: "Account transactions retrieved successfully",
       result: account,
     };
 
@@ -163,7 +179,7 @@ class CBAController {
 
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
-      message: 'Account requests successfully',
+      message: "Account requests successfully",
       result: account,
     };
 
@@ -177,7 +193,7 @@ class CBAController {
 
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
-      message: 'Account details retrieved successfully',
+      message: "Account details retrieved successfully",
       result: account,
     };
 
@@ -191,7 +207,7 @@ class CBAController {
 
     const response: HttpResponse<typeof data> = {
       code: HttpStatus.OK.code,
-      message: 'Account provisioned successfully',
+      message: "Account provisioned successfully",
       result: data,
     };
 
@@ -201,29 +217,58 @@ class CBAController {
   private async doAccountActivation(req: Request) {
     const requestId = req.params.id;
 
-    const accountRequest = await dataSources.accountActivationDAOService.findById(+requestId);
+    const accountRequest =
+      await dataSources.accountActivationDAOService.findById(+requestId);
 
     if (!accountRequest)
       return Promise.reject(
-        CustomAPIError.response(`No active request for given request ID {${requestId}}`, HttpStatus.BAD_REQUEST.code),
+        CustomAPIError.response(
+          `No active request for given request ID {${requestId}}`,
+          HttpStatus.BAD_REQUEST.code
+        )
       );
 
-    const partner = await dao.partnerDAOService.findById(accountRequest.partnerId);
-    if (!partner) return Promise.reject(CustomAPIError.response(PARTNER_NOT_FOUND, HttpStatus.BAD_REQUEST.code));
+    const partner = await dao.partnerDAOService.findById(
+      accountRequest.partnerId
+    );
+    if (!partner)
+      return Promise.reject(
+        CustomAPIError.response(PARTNER_NOT_FOUND, HttpStatus.BAD_REQUEST.code)
+      );
 
-    const user = await dataSources.userDAOService.findByAdminUserByPartnerId(partner.id);
+    const user = await dataSources.userDAOService.findByAdminUserByPartnerId(
+      partner.id
+    );
 
-    if (!user) return Promise.reject(CustomAPIError.response('No such user found', HttpStatus.BAD_REQUEST.code));
+    if (!user)
+      return Promise.reject(
+        CustomAPIError.response(
+          "No such user found",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    const partnerAccount = await dao.partnerAccountDaoService.findByAny({ where: { partnerId: partner.id } });
+    const partnerAccount = await dao.partnerAccountDaoService.findByAny({
+      where: { partnerId: partner.id },
+    });
 
     if (partnerAccount) return partnerAccount;
 
-    if (partner.email.trim() === '')
-      return Promise.reject(CustomAPIError.response('Please provide partner email', HttpStatus.BAD_REQUEST.code));
+    if (partner.email.trim() === "")
+      return Promise.reject(
+        CustomAPIError.response(
+          "Please provide partner email",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    if (partner.phone.trim() === '')
-      return Promise.reject(CustomAPIError.response('Please provide partner phone', HttpStatus.BAD_REQUEST.code));
+    if (partner.phone.trim() === "")
+      return Promise.reject(
+        CustomAPIError.response(
+          "Please provide partner phone",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     const response = await dataSources.partnerAccountDaoService.create({
       firstName: user.firstName,
@@ -241,7 +286,7 @@ class CBAController {
     partner.bankName = response.accountProvider;
     accountRequest.isApproved = true;
 
-    partner.accountProvisionStatus = 'APPROVED';
+    partner.accountProvisionStatus = "APPROVED";
 
     partner.isAccountProvisioned = true;
 
@@ -257,7 +302,7 @@ class CBAController {
 
     const response: HttpResponse<typeof data> = {
       code: HttpStatus.OK.code,
-      message: 'Request sent successfully',
+      message: "Request sent successfully",
       result: data,
     };
 
@@ -266,16 +311,28 @@ class CBAController {
 
   private async doAccountActivationRequest(req: Request) {
     const { error, value } = Joi.object<AccountActivationRequestSchemaType>(
-      $saveAccountActivationRequestSchema,
+      $saveAccountActivationRequestSchema
     ).validate(req.body);
 
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-    const partner = await dao.partnerDAOService.findById(req.user.partnerId);
-    if (!partner) return Promise.reject(CustomAPIError.response(PARTNER_NOT_FOUND, HttpStatus.BAD_REQUEST.code));
-
-    if (partner.accountProvisionStatus === 'PENDING')
+    if (error)
       return Promise.reject(
-        CustomAPIError.response('Your account request is still been reviewed.', HttpStatus.BAD_REQUEST.code),
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+    const partner = await dao.partnerDAOService.findById(req.user.partnerId);
+    if (!partner)
+      return Promise.reject(
+        CustomAPIError.response(PARTNER_NOT_FOUND, HttpStatus.BAD_REQUEST.code)
+      );
+
+    if (partner.accountProvisionStatus === "PENDING")
+      return Promise.reject(
+        CustomAPIError.response(
+          "Your account request is still been reviewed.",
+          HttpStatus.BAD_REQUEST.code
+        )
       );
     value.partnerId = partner.id;
 
@@ -283,19 +340,18 @@ class CBAController {
 
     const response = await dao.accountActivationDAOService.create(value);
 
-    partner.accountProvisionStatus = 'PENDING';
+    partner.accountProvisionStatus = "PENDING";
 
     await partner.save();
 
     // send mail here
-
     // eslint-disable-next-line promise/catch-or-return
     const mailData: MailgunMessageData = {
       to: settings.mailer.customerSupport,
       from: settings.mailer.from,
-      subject: 'Account activation requested',
-      template: 'partner_account_activation_request',
-      'h:X-Mailgun-Variables': JSON.stringify({
+      subject: "Account activation requested",
+      template: "partner_account_activation_request",
+      "h:X-Mailgun-Variables": JSON.stringify({
         firstName: req.user.firstName,
         lastName: req.user.lastName,
         businessName: value.businessName,
@@ -310,9 +366,17 @@ class CBAController {
   }
 
   private async doPerformNameEnquiry(req: Request) {
-    const { error, value } = Joi.object<PerformNameEnquirySchemaType>(performNameEnquirySchema).validate(req.body);
+    const { error, value } = Joi.object<PerformNameEnquirySchemaType>(
+      performNameEnquirySchema
+    ).validate(req.body);
 
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     const partnerAcount = await dataSources.partnerAccountDaoService.findByAny({
       where: {
@@ -320,33 +384,59 @@ class CBAController {
       },
     });
     if (!partnerAcount)
-      return Promise.reject(CustomAPIError.response(NO_ACCOUNT_PROVISIONED, HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          NO_ACCOUNT_PROVISIONED,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     return this.bankService.performNameEnquiry({
       beneficiaryAccountNumber: value.beneficiaryAccountNumber,
       beneficiaryBankCode: value.beneficiaryBankCode,
       senderTrackingReference: partnerAcount.accountRef,
-      isRequestFromVirtualAccount: 'True',
+      isRequestFromVirtualAccount: "True",
     });
   }
 
   private async doInitiateTransfer(req: Request) {
-    const { error, value } = Joi.object<appModels.AccountTransferDTO>(accountTransferSchema).validate(req.body);
+    const { error, value } = Joi.object<appModels.AccountTransferDTO>(
+      accountTransferSchema
+    ).validate(req.body);
 
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    const partnerAccount = await dataSources.partnerAccountDaoService.findByAny({
-      where: {
-        partnerId: req.user.partner.id,
-      },
-    });
+    const partnerAccount = await dataSources.partnerAccountDaoService.findByAny(
+      {
+        where: {
+          partnerId: req.user.partner.id,
+        },
+      }
+    );
 
     if (!partnerAccount)
-      return Promise.reject(CustomAPIError.response('Account not found', HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          "Account not found",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    const isMatch = await this.passwordEncoded.match(value.pin, partnerAccount?.pin.trim());
+    const isMatch = await this.passwordEncoded.match(
+      value.pin,
+      partnerAccount?.pin.trim()
+    );
 
-    if (!isMatch) return Promise.reject(CustomAPIError.response('PIN is invalid', HttpStatus.BAD_REQUEST.code));
+    if (!isMatch)
+      return Promise.reject(
+        CustomAPIError.response("PIN is invalid", HttpStatus.BAD_REQUEST.code)
+      );
 
     const beneficiary = await dataSources.beneficiaryDAOService.findByAny({
       where: {
@@ -381,7 +471,12 @@ class CBAController {
       },
     });
     if (!partnerAcount)
-      return Promise.reject(CustomAPIError.response(NO_ACCOUNT_PROVISIONED, HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          NO_ACCOUNT_PROVISIONED,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     return this.bankService.getAccountTransactionLog({
       page: {
@@ -393,24 +488,49 @@ class CBAController {
   }
 
   private async doCreateAccount(req: Request) {
-    const { error, value } = Joi.object<PartnerAccountSchemaType>($savePartnerAccountSchema).validate(req.body);
+    const { error, value } = Joi.object<PartnerAccountSchemaType>(
+      $savePartnerAccountSchema
+    ).validate(req.body);
 
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    const account = await dataSources.partnerAccountDaoService.findByAny({ where: { partnerId: req.user.partnerId } });
+    const account = await dataSources.partnerAccountDaoService.findByAny({
+      where: { partnerId: req.user.partnerId },
+    });
 
     if (account)
       return Promise.reject(
-        CustomAPIError.response('Account has already been provisioned for partner', HttpStatus.BAD_REQUEST.code),
+        CustomAPIError.response(
+          "Account has already been provisioned for partner",
+          HttpStatus.BAD_REQUEST.code
+        )
       );
 
-    const partner = await dataSources.partnerDAOService.findById(req.user.partnerId);
+    const partner = await dataSources.partnerDAOService.findById(
+      req.user.partnerId
+    );
 
     if (!partner)
-      return Promise.reject(CustomAPIError.response('Partner account not found', HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          "Partner account not found",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    if (!req.user.phone || req.user.phone.trim() === '')
-      return Promise.reject(CustomAPIError.response('Phone number is required', HttpStatus.BAD_REQUEST.code));
+    if (!req.user.phone || req.user.phone.trim() === "")
+      return Promise.reject(
+        CustomAPIError.response(
+          "Phone number is required",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     const response = dataSources.partnerAccountDaoService.create({
       firstName: req.user.firstName,
@@ -438,9 +558,16 @@ class CBAController {
     });
 
     if (!partnerAcount)
-      return Promise.reject(CustomAPIError.response('No account is provisioned for user', HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          "No account is provisioned for user",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    const response = await this.bankService.getVirtualAccountBalance(partnerAcount?.accountRef as string);
+    const response = await this.bankService.getVirtualAccountBalance(
+      partnerAcount?.accountRef as string
+    );
     response.accountNumber = partnerAcount.accountNumber;
     response.accountName = `${partnerAcount.firstName} ${partnerAcount.lastName}`;
     response.accountProvider = partnerAcount.accountProvider;
@@ -454,19 +581,34 @@ class CBAController {
   }
 
   private async doAccountPinUpdate(req: Request) {
-    const { error, value } = Joi.object<PartnerAccountSchemaType & { currentPin: string }>(
-      $updatePartnerAccountSchema,
-    ).validate(req.body);
+    const { error, value } = Joi.object<
+      PartnerAccountSchemaType & { currentPin: string }
+    >($updatePartnerAccountSchema).validate(req.body);
 
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
-    const account = await dataSources.partnerAccountDaoService.findByAny({ where: { partnerId: req.user.partnerId } });
+    const account = await dataSources.partnerAccountDaoService.findByAny({
+      where: { partnerId: req.user.partnerId },
+    });
 
     if (!account)
-      return Promise.reject(CustomAPIError.response('Account not yet provisioned', HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          "Account not yet provisioned",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     if (!(await this.passwordEncoded.match(value.currentPin, account.pin)))
-      return Promise.reject(CustomAPIError.response('PIN do not match', HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response("PIN do not match", HttpStatus.BAD_REQUEST.code)
+      );
 
     account.pin = await this.passwordEncoded.encode(value.pin);
 

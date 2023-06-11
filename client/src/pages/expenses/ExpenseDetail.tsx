@@ -23,8 +23,7 @@ import {
 import { getInvoicesAction } from '../../store/actions/invoiceActions';
 import { getPayStackBanksAction } from '../../store/actions/miscellaneousActions';
 import {
-  clearGetExpenseStatus,
-  clearUpdateExpenseDetailStatus
+  clearGetExpenseStatus
 } from '../../store/reducers/expenseReducer';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -44,14 +43,14 @@ const ExpenseDetail = () => {
   const [category, setCategory] = useState<IExpenseCategory | null>();
   const [type, setType] = useState<IExpenseType | null>();
   const [invoice, setInvoice] = useState<IInvoice | null>();
-  const [dateModified, setDateModified] = useState(new Date());
   const [suucessAlert, setSuccessAlert] = useState('');
   const navigate = useNavigate();
   const params = useParams() as unknown as { id: number };
   const [errorAlert, setErrorAlert] = useState('');
   const [edit, setEdit] = useState<boolean>(false)
-  const [date, setDate] = useState<string | null>('')
-
+  const [date, setDate] = useState<any | null>(new Date())
+  const [dateModified, setDateModified] = useState(new Date(date));
+  
   useEffect(() => {
     if (store.updateExpenseDetailStatus === 'completed') {
       setType(null);
@@ -59,14 +58,10 @@ const ExpenseDetail = () => {
       setCategory(null);
       setNote('');
       setAmount('');
-      dispatch(clearUpdateExpenseDetailStatus());
-      navigate(-1);
+      navigate('/expenses');
     } else if (store.updateExpenseDetailStatus === 'failed') {
       setErrorAlert(store.updateExpenseDetailError);
     }
-    return () => {
-      dispatch(clearUpdateExpenseDetailStatus());
-    };
   }, [store.updateExpenseDetailStatus]);
 
   useEffect(() => {
@@ -75,7 +70,7 @@ const ExpenseDetail = () => {
     dispatch(getExpenseTypesActions());
     dispatch(getInvoicesAction());
     dispatch(getPayStackBanksAction());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(getSingleExpenseAction(params.id));
@@ -85,9 +80,8 @@ const ExpenseDetail = () => {
     if(store.getExpensesStatus === 'completed'){
       setExpense(store.expense);
     }
-
     dispatch(clearGetExpenseStatus())
-  }, [dispatch, store.expense]);
+  }, [dispatch, store.getExpensesStatus]);
 
   useEffect(() => {
     setNote(expense?.note);
@@ -99,6 +93,10 @@ const ExpenseDetail = () => {
     setInvoice(expense?.invoice)
     setDate(expense?.dateModified)
   },[expense])
+
+  useEffect(() => {
+    setDateModified(new Date(date))
+  }, [date])
 
   const handleDate = (newValue: any) => {
     setDateModified(newValue)
@@ -120,8 +118,7 @@ const ExpenseDetail = () => {
         type,
         invoice,
         dateModified,
-        amount: amount === undefined ? null : +amount,
-        status: expense?.status
+        amount: amount === undefined ? null : +amount
       }),
     );
   };
@@ -141,7 +138,7 @@ const ExpenseDetail = () => {
       return option;
     }
     if (option && option.code) {
-      return option.code;
+      return option.code.split('_')[0];
     }
     return '';
   };
@@ -205,7 +202,8 @@ const ExpenseDetail = () => {
             initialValues={{}}
             onSubmit={() => {
               handleFormSubmit();
-            }}>
+            }}
+          >
             {() => (
               <Form autoComplete="off" autoCorrect="off">
                 <Grid spacing={document.documentElement.clientWidth <= 375 ? 4 : 6}
@@ -439,7 +437,7 @@ const ExpenseDetail = () => {
                             }}
                           />
                         )}
-                        defaultValue={edit ? invoice?.code : invoice}
+                        defaultValue={edit ? invoice?.code.split('_')[0] : invoice}
                         onChange={(_: any, newValue: any) => {
                           setInvoice(newValue);
                         }}
@@ -469,7 +467,7 @@ const ExpenseDetail = () => {
                 {edit && <LoadingButton
                   type="submit"
                   loading={store.updateExpenseDetailStatus === 'loading'}
-                  disabled={store.updateExpenseDetailStatus === 'loading' || expense?.status === 'PAID'}
+                  disabled={expense?.status === 'PAID'}
                   variant="contained"
                   color="secondary"
                   endIcon={<Save />}

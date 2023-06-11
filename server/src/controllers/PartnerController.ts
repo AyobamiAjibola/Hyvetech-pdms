@@ -40,6 +40,8 @@ import { HasPermission, TryCatch } from '../decorators';
 import Preference, { $savePreferenceSchema, PreferenceSchemaType } from '../models/Pereference';
 
 import { promisify } from 'util';
+import ItemStock from '../models/ItemStock';
+import ServiceReminder from '../models/ServiceReminder';
 // import { IncomingForm, File } from 'formidable';
 
 interface IPaymentPlanModelDescription {
@@ -489,7 +491,7 @@ export default class PartnerController {
   public async getPartners(req: Request) {
     try {
       const partners = await dataSources.partnerDAOService.findAll({
-        include: [Category, User, Contact],
+        include: [Category, User, Contact, ItemStock, ServiceReminder],
       });
 
       const results = PartnerController.formatPartners(partners);

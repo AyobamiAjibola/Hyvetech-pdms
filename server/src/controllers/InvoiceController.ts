@@ -863,6 +863,25 @@ export default class InvoiceController {
           }
         }
 
+        // update draft invoice
+        if(invoice.edited && invoice.updateStatus === 'Draft') {
+          const draftInvoice = await invoice.$get('draftInvoice');
+
+          if(draftInvoice) {
+            const amount = +_amount + draftInvoice.depositAmount;
+            const newDueAmount = draftInvoice.grandTotal - amount;
+            console.log(amount, draftInvoice.depositAmount, 'paid amount new')
+
+            await draftInvoice.update({
+              paidAmount: amount,
+              dueAmount: newDueAmount,
+              depositAmount: amount,
+              refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : draftInvoice.refundable,
+              status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
+            })
+          }
+        }
+
         await invoice.$add('transactions', [transferTransaction]);
       } catch (e) {
         console.log(e);
@@ -870,7 +889,7 @@ export default class InvoiceController {
       }
 
       // update invoice
-      const amount = invoice.depositAmount + parseInt(_amount);
+      const amount = +_amount + invoice.depositAmount;
       const newDueAmount = invoice.grandTotal - amount;
 
       const payload = {
@@ -880,8 +899,6 @@ export default class InvoiceController {
         refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : invoice.refundable,
         status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
       };
-
-      console.log(payload, _amount, amount);
 
       await invoice.update(payload);
 

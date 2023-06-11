@@ -130,13 +130,14 @@ export const updateExpenseDetailAction = asyncThunkWrapper<
 >(UPDATE_EXPENSE_DETAILS, async data => {
   const response = await axiosClient.patch(
     `${API_ROOT}/expense/${data.id}`,
-    data.status === 'UNPAID' && {
+    // data.status === 'UNPAID' && {
+    {
       amount: data.amount,
       expenseCategoryId: data.category?.id,
       expenseTypeId: data.type?.id,
       invoiceId: data.invoice?.id,
       note: data.note,
-      dateModified: data.dateModified,
+      dateModified: data.dateModified
     },
   );
   return response.data;

@@ -30,8 +30,8 @@ function Workshops() {
   const navigate = useNavigate();
   const partners = usePartner();
   const { isSuperAdmin } = useAdmin();
-  const estimate = useEstimate()
-  const invoice = useInvoice()
+  const estimate = useEstimate();
+  const invoice = useInvoice();
   const [id, setId] = useState<number>();
   const [showDelete, setShowDelete] = useState<boolean>(false);
   const [_timeout, _setTimeout] = useState<NodeJS.Timer>();
@@ -110,6 +110,8 @@ function Workshops() {
     };
   }, [_timeout, dispatch]);
 
+  //@ts-ignore
+  console.log(partners.rows.reminders ? partners.rows.reminders.length : 0, partners.rows, 'item and reminder')
   const getWorkshops = useMemo(() => {
     return [
       {
@@ -190,6 +192,32 @@ function Workshops() {
             }
           })
           return count;
+        },
+      },
+      {
+        field: 'reminderCount',
+        headerName: 'Reminder Count',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 100,
+        sortable: true,
+        valueGetter: params => {
+          //@ts-ignore
+          return params.row.reminders ? params.row.reminders.length : 0;
+        },
+      },
+      {
+        field: 'itemCount',
+        headerName: 'Item Count',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 100,
+        sortable: true,
+        valueGetter: params => {
+          //@ts-ignore
+          return params.row.itemStocks ? params.row.itemStocks.length : 0;
         },
       },
       {

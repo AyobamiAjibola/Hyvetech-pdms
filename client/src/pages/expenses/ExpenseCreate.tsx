@@ -23,7 +23,6 @@ import { getInvoicesAction } from '../../store/actions/invoiceActions';
 import { getPayStackBanksAction } from '../../store/actions/miscellaneousActions';
 import {
   clearCreateBeneficiaryStatus,
-  clearCreateEspenseStatus,
   clearCreateExpenseCategoryStatus,
   clearCreateExpenseTypeStatus,
   setInvoiceCode
@@ -69,15 +68,11 @@ const ExpenseCreate = () => {
       setType(null);
       setAmount('');
       setReference('');
-      dispatch(clearCreateEspenseStatus());
       dispatch(setInvoiceCode(''))
-      navigate(-1);
+      navigate('/expenses');
     } else if (store.createExpenseStatus === 'failed') {
       setErrorAlert(store.createExpenseError);
     }
-    return () => {
-      dispatch(clearCreateEspenseStatus());
-    };
   }, [store.createExpenseStatus]);
 
   useEffect(() => {
@@ -104,13 +99,13 @@ const ExpenseCreate = () => {
     if (!type) return setErrorAlert('Please select type');
 
     let findRef = ''
-    expenseReducer.expenses.find(value => {
+    expenseReducer.expenses.find((value: any) => {
       value.reference === reference && (findRef = value.reference)
     })
     if (findRef !== '') return setErrorAlert('This payment has already been recorded');
 
     const invoiceCode = invoiceStore.invoices.find((inv: IInvoice) => inv.code === expenseReducer.invoiceCode)
-      
+
     dispatch(
       createExpenseAction({
         category,
@@ -428,7 +423,7 @@ const ExpenseCreate = () => {
               <Grid item md={6} sm={12} xs={12}>
                 {expenseReducer.invoiceCode === ''
                   ? <Autocomplete
-                      getOptionLabel={option => option.code}
+                      getOptionLabel={option => option.code.split('_')[0]}
                       disabled={category?.name === "Others" || category?.name === "Overhead"}
                       renderInput={props => (
                         <TextField
@@ -454,7 +449,6 @@ const ExpenseCreate = () => {
                     />
                   : <TextField
                       value={expenseReducer.invoiceCode}
-                      // onChange={e => setReference(e.target.value)}
                       fullWidth
                       variant="outlined"
                       label="Invoice"
@@ -476,11 +470,7 @@ const ExpenseCreate = () => {
 
             <LoadingButton
               type="submit"
-              loading={store.createEstimateStatus === 'loading'}
-              disabled={store.createEstimateStatus === 'loading'}
-              // disabled={
-              //   saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
-              // }
+              loading={store.createExpenseStatus === 'loading'}
               variant="contained"
               color="secondary"
               endIcon={<Save />}>
@@ -585,9 +575,6 @@ const ExpenseCreate = () => {
                   type="submit"
                   loading={store.createBeneficiaryStatus === 'loading'}
                   disabled={store.createBeneficiaryStatus === 'loading'}
-                  // disabled={
-                  //   saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
-                  // }
                   onClick={() => {
                     handleOnCreateBeneficiary();
                   }}
@@ -647,9 +634,6 @@ const ExpenseCreate = () => {
                   type="submit"
                   loading={store.createExpenseCategoryStatus === 'loading'}
                   disabled={store.createExpenseCategoryStatus === 'loading'}
-                  // disabled={
-                  //   saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
-                  // }
                   onClick={handleCreateExpenseCategory}
                   variant="contained"
                   color="secondary"
@@ -706,9 +690,6 @@ const ExpenseCreate = () => {
                   type="submit"
                   loading={store.createExpenseTypeStatus === 'loading'}
                   disabled={store.createExpenseTypeStatus === 'loading'}
-                  // disabled={
-                  //   saveStatus || values.status === ESTIMATE_STATUS.sent || values.status === ESTIMATE_STATUS.invoiced
-                  // }
                   onClick={handleCreateExpenseType}
                   variant="contained"
                   color="secondary"

@@ -16,6 +16,7 @@ import Partner from '../models/Partner';
 import ServiceReminder from '../models/ServiceReminder';
 import dao from '../services/dao';
 import { Op } from 'sequelize';
+import ItemStock from '../models/ItemStock';
 
 export default class DashboardController {
   @HasPermission([MANAGE_ALL, VIEW_ANALYTICS, MANAGE_TECHNICIAN])
@@ -36,15 +37,15 @@ export default class DashboardController {
       // get filtered for month
       const estimatesByMonth = await this.filterByMonth(estimates, month);
       const invoicesByMonth = await this.filterByMonth(invoices, month);
-      const expensesByMonth = await this.filterByMonth(expenses, month);
+      const expensesByMonth = await this.filterByMonthExp(expenses, month);
       const customersByMonth = await this.filterByMonth(customers, month);
       const remindersByMonth = await this.filterByMonth(reminders, month);
-      // const transactionsByMonth = await this.filterByMonth(transactions, month);
+      const transactionsByMonth = await this.filterByMonth(transactions, month);
 
       const mRevenue = this.getRevenue(invoicesByMonth);
       const mReceipt = this.getReceipt(invoicesByMonth);
       const mReceivable = this.getReceivable(invoicesByMonth);
-      // const mExpense = expensesByMonth.length
+      const mTransaction = this.getTransaction(transactionsByMonth);
       const mExpense = this.getExpenses(expensesByMonth);
       const mEstimate = estimatesByMonth.length;
       const mInvoice = invoicesByMonth.length;
@@ -123,7 +124,7 @@ export default class DashboardController {
         // getTransaction
 
         // expenses
-        const _expensesByMonth = await this.filterByMonth(expenses, _month.id);
+        const _expensesByMonth = await this.filterByMonthExp(expenses, _month.id);
         __expenses.push(this.getExpenses(_expensesByMonth));
         // __expenses.push(_expensesByMonth.length);
       }
@@ -135,6 +136,7 @@ export default class DashboardController {
           mReceivable,
           mRevenue,
           mExpense,
+          mTransaction,
           mReceipt,
           mEstimate,
           mInvoice,
@@ -242,6 +244,25 @@ export default class DashboardController {
       if (_item != null) {
         const _month = new Date(_item.createdAt).getMonth() + 1;
         const _year = new Date(_item.createdAt).getFullYear();
+
+        if (_month == month && _year == year) {
+          newCollection.push(_item);
+        }
+      }
+    });
+
+    return newCollection;
+  }
+
+  //expenses filter by date modified
+  public static async filterByMonthExp(collection: any[], month: any) {
+    const newCollection: any[] = [];
+    const year = new Date().getFullYear();
+
+    collection.map(_item => {
+      if (_item != null) {
+        const _month = new Date(_item.dateModified).getMonth() + 1;
+        const _year = new Date(_item.dateModified).getFullYear();
 
         if (_month == month && _year == year) {
           newCollection.push(_item);
@@ -371,6 +392,14 @@ export default class DashboardController {
     return await Customer.findAll();
   }
 
+  public static async getRemindersSuperAdminRaw() {
+    return await ServiceReminder.findAll();
+  }
+
+  public static async getItemsSuperAdminRaw() {
+    return await ItemStock.findAll();
+  }
+
   public static getEstimateValueAdmin(estimates: Estimate[]) {
     let amount = 0;
 
@@ -460,6 +489,8 @@ export default class DashboardController {
       const users = await this.getUsersSuperAdminRaw();
       const vehicles = await this.getVehicleSuperAdminRaw();
       const partners = await this.getPartnerSuperAdminRaw();
+      const reminders = await this.getRemindersSuperAdminRaw();
+      const items = await this.getItemsSuperAdminRaw();
 
       const allEstimate = await this.filterByMonthAndYear(estimates, start_date, end_date, month, day, year);
       const allInvoice = await this.filterByMonthAndYear(invoices, start_date, end_date, month, day, year);
@@ -469,6 +500,8 @@ export default class DashboardController {
       const allUsers = await this.filterByMonthAndYear(users, start_date, end_date, month, day, year);
       const allVehicles = await this.filterByMonthAndYear(vehicles, start_date, end_date, month, day, year);
       const allPartners = await this.filterByMonthAndYear(partners, start_date, end_date, month, day, year);
+      const allReminders = await this.filterByMonthAndYear(reminders, start_date, end_date, month, day, year);
+      const allItems = await this.filterByMonthAndYear(items, start_date, end_date, month, day, year);
 
       const receivables = this.getReceivable(allInvoice)
       const paymentReceived = this.getTransaction(allPayments)
@@ -483,6 +516,8 @@ export default class DashboardController {
       const mAllUser = allUsers.length;
       const mAllVehicle = allVehicles.length;
       const mAllPartner = allPartners.length;
+      const mAllReminder = allReminders.length;
+      const mAllItem = allItems.length
 
       const response: HttpResponse<any> = {
         message: HttpStatus.OK.value,
@@ -497,7 +532,7 @@ export default class DashboardController {
           expenseValue,
           invoiceValue,
           paymentReceived,
-          receivables,
+          receivables, mAllReminder, mAllItem,
           mAllUser, mAllVehicle, mAllPartner
         },
       };
