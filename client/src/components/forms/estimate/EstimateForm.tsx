@@ -42,11 +42,7 @@ import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import TextInputField from "../fields/TextInputField";
 // @ts-ignore
-import {
-  filterPhoneNumber,
-  formatNumberToIntl,
-  reload,
-} from "../../../utils/generic";
+import { formatNumberToIntl, reload } from "../../../utils/generic";
 import SelectField, { ISelectData } from "../fields/SelectField";
 import WarrantyFields from "./WarrantyFields";
 import QuantityFields from "./QuantityFields";
