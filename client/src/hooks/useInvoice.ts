@@ -2,7 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { IInvoice } from '@app-models';
 import useAppDispatch from './useAppDispatch';
 import useAppSelector from './useAppSelector';
-import { deleteInvoiceAction, getInvoicesAction, saveInvoiceAction, sendInvoiceAction } from '../store/actions/invoiceActions';
+import {
+  deleteInvoiceAction,
+  getInvoicesAction,
+  saveInvoiceAction,
+  sendInvoiceAction,
+} from '../store/actions/invoiceActions';
 import { clearGetInvoicesStatus } from '../store/reducers/invoiceReducer';
 import { CustomHookMessage } from '@app-types';
 import estimateModel, { IEstimateValues, ILabour, IPart } from '../components/forms/models/estimateModel';
@@ -41,7 +46,8 @@ function getUpdateData(
     grandTotal: grandTotal.toFixed(2),
     refundable: refundable.toFixed(2),
     dueAmount: dueAmount.toFixed(2),
-    note: values.note
+    note: values.note,
+    internalNote: values.internalNote,
   };
 }
 
@@ -188,7 +194,7 @@ export default function useInvoice() {
           count: vehicle && vehicle.mileageValue ? vehicle.mileageValue : '',
           unit: vehicle && vehicle.mileageUnit ? vehicle.mileageUnit : '',
         };
-        const note = invoice.estimate.note ? invoice.estimate.note : ''
+        const note = invoice.estimate.note ? invoice.estimate.note : '';
 
         if (invoice.edited && invoice.draftInvoice) {
           const draftInvoice = invoice.draftInvoice;
@@ -222,7 +228,7 @@ export default function useInvoice() {
             status,
             invoice,
             taxPart,
-            note
+            note,
           }));
 
           setGrandTotal(draftInvoice.grandTotal);
@@ -261,7 +267,7 @@ export default function useInvoice() {
             labours,
             status,
             invoice,
-            note
+            note,
           }));
 
           setGrandTotal(invoice.grandTotal);
@@ -282,8 +288,8 @@ export default function useInvoice() {
           const tax = `${estimate.tax}`;
           const status = estimate.status;
 
-          const _parts = parts?.length && parts.map((part: any) => JSON.parse(part))
-          const _labours = labours?.length && labours.map((labour: any) => JSON.parse(labour))
+          const _parts = parts?.length && parts.map((part: any) => JSON.parse(part));
+          const _labours = labours?.length && labours.map((labour: any) => JSON.parse(labour));
 
           setInitialValues(prevState => ({
             ...prevState,
@@ -305,7 +311,7 @@ export default function useInvoice() {
             labours: _labours,
             status,
             invoice,
-            note
+            note,
           }));
 
           setGrandTotal(estimate.grandTotal);
@@ -319,9 +325,7 @@ export default function useInvoice() {
         setInvoice(invoice);
         setEstimateId(estimateId);
         setShowEdit(true);
-
       }
-
     },
     [dispatch, estimateId, invoices],
   );

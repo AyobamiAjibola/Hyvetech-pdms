@@ -19,6 +19,7 @@ import {
   ESTIMATE_STATUS,
   INITIAL_LABOURS_VALUE,
   INITIAL_PARTS_VALUE,
+  MAIL_QUEUE_EVENTS,
   QUEUE_EVENTS,
 } from '../config/constants';
 import Vehicle from '../models/Vehicle';
@@ -48,6 +49,8 @@ import {
   UPDATE_ESTIMATE,
   MANAGE_ALL,
 } from '../config/settings';
+import email_content from '../resources/templates/email/email_content';
+import QueueManager from '../services/QueueManager';
 
 export default class EstimateController {
   @TryCatch
@@ -59,7 +62,7 @@ export default class EstimateController {
       // console.log('before 1')
       await estimate.update({
         status: ESTIMATE_STATUS.sent,
-        sentStatus: ESTIMATE_STATUS.sent
+        sentStatus: ESTIMATE_STATUS.sent,
       });
       // console.log('before 2')
 
@@ -249,7 +252,7 @@ export default class EstimateController {
 
     await estimate.update({
       status: ESTIMATE_STATUS.sent,
-      sentStatus: ESTIMATE_STATUS.sent
+      sentStatus: ESTIMATE_STATUS.sent,
     });
 
     // send mail
@@ -432,7 +435,7 @@ export default class EstimateController {
         mileageValue: value.mileageValue,
         mileageUnit: value.mileageUnit,
         disount: value.discount,
-        discountType: value.discountType
+        discountType: value.discountType,
       };
 
       const vin = await dataSources.vinDAOService.findByAny({
@@ -577,12 +580,12 @@ export default class EstimateController {
     }
 
     const estimates = await dataSources.estimateDAOService.findAll();
-    const est: any = []
-    estimates.map((estimate) => {
-      if(estimate.partnerId === partner.id) {
-        est.push(estimate)
+    const est: any = [];
+    estimates.map(estimate => {
+      if (estimate.partnerId === partner.id) {
+        est.push(estimate);
       }
-    })
+    });
 
     const estimateValues: Partial<Estimate> = {
       jobDurationUnit: value.jobDurationUnit,
@@ -602,7 +605,8 @@ export default class EstimateController {
       discount: value.discount,
       discountType: value.discountType,
       note: value.note,
-      count: 0
+      count: 0,
+      internalNote: value.internalNote,
     };
 
     const estimate = await dataSources.estimateDAOService.create(estimateValues as CreationAttributes<Estimate>);
@@ -633,34 +637,51 @@ export default class EstimateController {
       await generatePdf(html, rName);
 
       // set seperate listener to send mail after 6 seconds
-      setTimeout(() => {
-        (async () => {
-          try {
-            await sendMail({
-              to: user.email,
-              replyTo: partner.email,
-              // @ts-ignore
-              'reply-to': partner.email,
-              from: {
-                name: 'AutoHyve',
-                address: <string>process.env.SMTP_EMAIL_FROM2,
-              },
-              subject: `${partner.name} has sent you an estimate on AutoHyve`,
-              html: mail,
-              bcc: [<string>process.env.SMTP_BCC],
-              attachments: [
-                {
-                  filename: rName,
-                  path: path.join(__dirname, '../../uploads/', 'pdf', rName),
-                  cid: rName,
-                },
-              ],
-            });
-          } catch (err) {
-            console.log(err);
-          }
-        })();
-      }, 5000);
+      await QueueManager.dispatch({
+        queue: MAIL_QUEUE_EVENTS.name,
+        data: {
+          to: user.email,
+          from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+          subject: `${partner.name} has sent you an estimate on AutoHyve`,
+          html: mail,
+          bcc: [<string>process.env.SMTP_EMAIL_FROM],
+          attachments: [
+            {
+              filename: rName,
+              path: path.join(__dirname, '../../uploads/', 'pdf', rName),
+              cid: rName,
+            },
+          ],
+        },
+      });
+      // setTimeout(() => {
+      //   (async () => {
+      //     try {
+      //       await sendMail({
+      //         to: user.email,
+      //         replyTo: partner.email,
+      //         // @ts-ignore
+      //         'reply-to': partner.email,
+      //         from: {
+      //           name: 'AutoHyve',
+      //           address: <string>process.env.SMTP_EMAIL_FROM2,
+      //         },
+      //         subject: `${partner.name} has sent you an estimate on AutoHyve`,
+      //         html: mail,
+      //         bcc: [<string>process.env.SMTP_BCC],
+      //         attachments: [
+      //           {
+      //             filename: rName,
+      //             path: path.join(__dirname, '../../uploads/', 'pdf', rName),
+      //             cid: rName,
+      //           },
+      //         ],
+      //       });
+      //     } catch (err) {
+      //       console.log(err);
+      //     }
+      //   })();
+      // }, 5000);
     } catch (e) {
       console.log(e);
     }
@@ -792,12 +813,12 @@ export default class EstimateController {
     }
 
     const estimates_save = await dataSources.estimateDAOService.findAll();
-    const esti: any = []
-    estimates_save.map((estimate) => {
-      if(estimate.partnerId === partner.id) {
-        esti.push(estimate)
+    const esti: any = [];
+    estimates_save.map(estimate => {
+      if (estimate.partnerId === partner.id) {
+        esti.push(estimate);
       }
-    })
+    });
 
     const estimateValues: Partial<Estimate> = {
       jobDurationUnit: value.jobDurationUnit,
@@ -812,12 +833,13 @@ export default class EstimateController {
       addressType: value.addressType,
       tax: value.tax,
       taxPart: value.taxPart,
-      code: Generic.generateCode(esti, 'EST', partner.id)+`_${Generic.randomize({ count: 4, alphanumeric: true })}`,
+      code: Generic.generateCode(esti, 'EST', partner.id) + `_${Generic.randomize({ count: 4, alphanumeric: true })}`,
       // code: Generic.randomize({ count: 6, number: true }),
       expiresIn: ESTIMATE_EXPIRY_DAYS,
       discount: value.discount,
       discountType: value.discountType,
-      note: value.note
+      note: value.note,
+      internalNote: value.internalNote,
     };
 
     const estimate = await dataSources.estimateDAOService.create(estimateValues as CreationAttributes<Estimate>);
@@ -901,12 +923,11 @@ export default class EstimateController {
       taxPart: value.taxPart,
       discount: value.discount,
       discountType: value.discountType,
-      note: value.note
+      note: value.note,
     };
 
     await estimate.update(estimateValues);
 
     return { estimate };
   }
-
 }

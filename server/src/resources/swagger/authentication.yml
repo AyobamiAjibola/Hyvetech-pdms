@@ -39,6 +39,26 @@ definitions:
       password:
         type: string
 
+  CreateVirtualAccount:
+    type: object
+    required:
+      - businessName
+      - cacUrl
+      - pin
+      - validIdBackUrl
+      - validIdFrontUrl
+    properties:
+      businessName:
+        type: string
+      cacUrl:
+        type: string
+      pin:
+        type: string
+      validIdBackUrl:
+        type: string
+      validIdFrontUrl:
+        type: string
+
   ErrorResponse:
     type: object
       - code
@@ -48,7 +68,6 @@ definitions:
         type: number
       message:
         type: string
-
 
   SignInSuccessResponse:
     type: object

@@ -22,6 +22,9 @@ export default class DraftInvoice extends Model<InferAttributes<DraftInvoice>, I
   @Column(DataType.DOUBLE)
   declare grandTotal: number;
 
+  @Column(DataType.STRING)
+  declare internalNote?: string;
+
   @Column(DataType.DOUBLE)
   declare depositAmount: number;
 

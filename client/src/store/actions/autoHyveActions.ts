@@ -110,10 +110,10 @@ export const initiateAccountTranfer = asyncThunkWrapper<
   return response.data;
 });
 
-export const updateCBAccountUpdate = asyncThunkWrapper<ApiResponseSuccess<any>, { pin: string }>(
+export const updateCBAccountUpdate = asyncThunkWrapper<ApiResponseSuccess<any>, { pin: string; currentPin: string }>(
   PERFORM_CBA_ACCOUNT_UPDATE,
   async (args: { pin: string }) => {
-    const response = await axiosClient.post(`${API_ROOT}/cba/account/update`, args);
+    const response = await axiosClient.post(`${API_ROOT}/cba/account/pin/update`, args);
 
     return response.data;
   },

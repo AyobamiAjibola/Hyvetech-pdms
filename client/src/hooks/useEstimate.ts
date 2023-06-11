@@ -211,7 +211,8 @@ export default function useEstimate() {
       grandTotal: grandTotal.toFixed(2),
       discount,
       discountType,
-      note: values.note
+      note: values.note,
+      internalNote: values.internalNote,
     };
 
     dispatch(createEstimateAction(data));
@@ -254,7 +255,8 @@ export default function useEstimate() {
       // grandTotal: Math.round(grandTotal),
       discount,
       discountType,
-      note: values.note
+      note: values.note,
+      internalNote: values.internalNote,
     };
 
     console.log(data);
@@ -298,7 +300,8 @@ export default function useEstimate() {
       grandTotal: grandTotal.toFixed(2),
       discount,
       discountType,
-      note: values.note
+      note: values.note,
+      internalNote: values.internalNote,
     };
 
     void dispatch(updateEstimateAction(data));
@@ -359,7 +362,8 @@ export default function useEstimate() {
       // grandTotal: Math.round(grandTotal),
       discount,
       discountType,
-      note: values.note
+      note: values.note,
+      internalNote: values.internalNote,
     };
 
     void dispatch(sendDraftEstimateAction(data));
@@ -405,7 +409,7 @@ export default function useEstimate() {
           labours,
           status: estimate.status,
           estimate: { ...estimate },
-          note: estimate.note
+          note: estimate.note,
         }));
 
         setGrandTotal(estimate.grandTotal);

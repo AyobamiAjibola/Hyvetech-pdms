@@ -20,6 +20,7 @@ import {
   CANCEL_APPOINTMENT,
   DRIVE_IN_CATEGORY,
   HYBRID_CATEGORY,
+  MAIL_QUEUE_EVENTS,
   MAIN_OFFICE,
   MOBILE_CATEGORY,
   MOBILE_INSPECTION_TIME,
@@ -358,11 +359,8 @@ export default class AppointmentController {
       //send email
       await QueueManager.publish({
         data: {
-          to: customerData.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
+          to: MAIL_QUEUE_EVENTS.name,
+          from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
           subject: 'Jiffix Appointment Confirmation',
           bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,
@@ -648,12 +646,10 @@ export default class AppointmentController {
 
       //send email
       await QueueManager.publish({
+        queue: MAIL_QUEUE_EVENTS.name,
         data: {
           to: customer.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
+          from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
           subject: 'Vehicle Appointment Reschedule Confirmation',
           bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,
@@ -763,12 +759,10 @@ export default class AppointmentController {
 
       //send email
       await QueueManager.publish({
+        queue: MAIL_QUEUE_EVENTS.name,
         data: {
           to: customer.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
+          from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
           subject: 'Vehicle Appointment Cancellation Confirmation',
           bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
           html: mailHtml,

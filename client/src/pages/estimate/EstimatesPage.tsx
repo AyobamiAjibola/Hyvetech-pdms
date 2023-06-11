@@ -136,7 +136,7 @@ function EstimatesPage() {
         },
         sortable: true,
         sortingOrder: ['desc'],
-      }
+      },
       // {
       //   field: 'actions',
       //   type: 'actions',
@@ -207,7 +207,7 @@ function EstimatesPage() {
         width: 150,
         renderCell: params => {
           const code = params.row.code;
-          const result = code.split("_")[0]
+          const result = code.split('_')[0];
           return (
             <span
               style={{ color: 'skyblue', cursor: 'pointer' }}
@@ -347,36 +347,36 @@ function EstimatesPage() {
 
   const data: any = {
     open_modal: undefined,
-    id: undefined
-  }
+    id: undefined,
+  };
 
   useEffect(() => {
-    if(removeSessionStorage){
+    if (removeSessionStorage) {
       Object.keys(data).forEach(key => {
         sessionStorage.removeItem(key);
       });
     }
-  }, [removeSessionStorage])
+  }, [removeSessionStorage]);
 
   useEffect(() => {
-    if(sessionStorage.getItem('open_modal') === 'true'){
-      estimate.setShowCreate(true)
+    if (sessionStorage.getItem('open_modal') === 'true') {
+      estimate.setShowCreate(true);
     }
-  },[]);
+  }, []);
 
-    // remove open modal and id from session storage on page reload
-    useEffect(() => {
-      const handleBeforeUnload = () => {
-        sessionStorage.removeItem('open_modal');
-        sessionStorage.removeItem('id');
-      };
+  // remove open modal and id from session storage on page reload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      sessionStorage.removeItem('open_modal');
+      sessionStorage.removeItem('id');
+    };
 
-      window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
-      return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
-      };
-    }, []);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   return (
     <EstimatePageContext.Provider
@@ -396,23 +396,26 @@ function EstimatesPage() {
             Estimates
           </Typography>
         </Grid>
-        {isTechAdmin && <Grid item>
-          <Button variant="outlined" color="success" size="small" onClick={() => estimate.setShowCreate(true)}
-            sx={{
-              mb: {sm: 0, xs: 2}
-            }}
-          >
-            Generate
-          </Button>
-        </Grid>}
+        {isTechAdmin && (
+          <Grid item>
+            <Button
+              variant="outlined"
+              color="success"
+              size="small"
+              onClick={() => estimate.setShowCreate(true)}
+              sx={{
+                mb: { sm: 0, xs: 2 },
+              }}>
+              Generate
+            </Button>
+          </Grid>
+        )}
       </Grid>
       <Grid container>
         <Grid item xs={12}>
           <AppDataGrid
             rows={estimate.estimates}
-            columns={isTechAdmin ? techColumns :
-                      isSuperAdmin ? superAdminColumns : []
-                    }
+            columns={isSuperAdmin ? superAdminColumns : techColumns}
             showToolbar
             loading={estimateReducer.getEstimatesStatus === 'loading'}
           />
@@ -433,7 +436,7 @@ function EstimatesPage() {
       {estimate.showCreate && (
         <AppModal
           fullWidth
-          size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
+          size={document.documentElement.clientWidth > 375 ? 'xl' : undefined}
           fullScreen={true}
           show={estimate.showCreate}
           Content={
@@ -458,8 +461,7 @@ function EstimatesPage() {
                 partTotal={estimate.partTotal}
                 grandTotal={estimate.grandTotal}
                 isSubmitting={
-                  estimateReducer.createEstimateStatus === 'loading' ||
-                  estimateReducer.saveEstimateStatus === 'loading'
+                  estimateReducer.createEstimateStatus === 'loading' || estimateReducer.saveEstimateStatus === 'loading'
                 }
                 setSave={estimate.setSave}
               />
@@ -472,7 +474,7 @@ function EstimatesPage() {
       {estimate.showEdit && (
         <AppModal
           fullWidth
-          size={document.documentElement.clientWidth > 375 ? "xl" : undefined}
+          size={document.documentElement.clientWidth > 375 ? 'xl' : undefined}
           fullScreen={true}
           show={estimate.showEdit}
           Content={
@@ -520,27 +522,29 @@ function EstimatesPage() {
         }
         onClose={() => estimate.setShowDelete(false)}
       />
-      {closeEstimateModal && <AppModal
-        fullWidth
-        show={closeEstimateModal}
-        Content={<DialogContentText>{MESSAGES.closeEstimateModal}</DialogContentText>}
-        ActionComponent={
-          <DialogActions>
-            <Button
-              onClick={() => {
-                setCloseEstimateModal(false),
-                estimate.setShowCreate(false),
-                estimate.setShowEdit(false),
-                reload(), setRemoveSessionStorage(true)
-              }}
-            >
-              Yes
-            </Button>
-            <Button onClick={() => setCloseEstimateModal(false)}>No</Button>
-          </DialogActions>
-        }
-        onClose={() => setCloseEstimateModal(false)}
-      />}
+      {closeEstimateModal && (
+        <AppModal
+          fullWidth
+          show={closeEstimateModal}
+          Content={<DialogContentText>{MESSAGES.closeEstimateModal}</DialogContentText>}
+          ActionComponent={
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  setCloseEstimateModal(false),
+                    estimate.setShowCreate(false),
+                    estimate.setShowEdit(false),
+                    reload(),
+                    setRemoveSessionStorage(true);
+                }}>
+                Yes
+              </Button>
+              <Button onClick={() => setCloseEstimateModal(false)}>No</Button>
+            </DialogActions>
+          }
+          onClose={() => setCloseEstimateModal(false)}
+        />
+      )}
       <AppLoader show={estimateReducer.deleteEstimateStatus === 'loading'} />
     </EstimatePageContext.Provider>
   );

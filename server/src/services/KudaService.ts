@@ -50,6 +50,17 @@ class KudaService implements BankService {
       },
     );
   }
+  async updateAccount(payload: appModelTypes.AccountUpdateDTO): Promise<appModelTypes.AccountResponseDTO> {
+    const response = await this.network.post('', {
+      servicetype: 'ADMIN_UPDATE_VIRTUAL_ACCOUNT',
+      requestref: ReferenceGenerator.generate(),
+      data: {
+        ...payload,
+      },
+    });
+
+    return response.data.data as appModelTypes.AccountResponseDTO;
+  }
 
   async performNameEnquiry(payload: appModelTypes.ConfirmRecipientDTO) {
     const response = await this.network.post('', {

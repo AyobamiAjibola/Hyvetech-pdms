@@ -42,6 +42,7 @@ const HyvePayDashboard = () => {
   const [cacDoc, setCacDoc] = useState<FileList | null>(null);
 
   const [pin, setPIN] = useState('');
+  const [nin, setNIN] = useState('');
 
   const [loading, setLoading] = useState(false);
 
@@ -100,6 +101,7 @@ const HyvePayDashboard = () => {
           validIdBackUrl: validIDBackResult.file.url,
           validIdFrontUrl: validIDFrontResult.file.url,
           pin,
+          nin,
         }),
       );
     } catch (error) {
@@ -408,6 +410,18 @@ const HyvePayDashboard = () => {
           title="Activate Account"
           Content={
             <React.Fragment>
+              <div style={{ marginBottom: 20 }}>
+                <TextField
+                  margin="dense"
+                  id="NIN"
+                  label="National Identification Number(NIN)"
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  value={nin}
+                  onChange={e => setNIN(e.target.value)}
+                />
+              </div>
               <div style={{ marginBottom: 20 }}>
                 <TextField
                   margin="dense"

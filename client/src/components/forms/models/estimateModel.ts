@@ -44,6 +44,7 @@ export interface IEstimateValues {
   paidAmount: string;
   estimate?: any;
   note?: string;
+  internalNote?: string;
 }
 
 const fields = {
@@ -304,13 +305,13 @@ const initialValues: IEstimateValues = {
       quantity: { quantity: '0', unit: '' },
       price: '0',
       amount: '0',
-      partNumber: ''
+      partNumber: '',
     },
   ],
   labours: [{ title: '', cost: '0' }],
   tax: '0',
   taxPart: '0',
-  note: ''
+  note: '',
 };
 
 const schema = Yup.object().shape({

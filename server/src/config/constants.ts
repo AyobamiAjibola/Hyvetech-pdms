@@ -400,6 +400,10 @@ export const QUEUE_EVENTS: QueueEvents = {
   name: 'DEFAULT',
 };
 
+export const MAIL_QUEUE_EVENTS: QueueEvents = {
+  name: 'email',
+};
+
 export const MAIN_OFFICE = 'No. 10, 45 Road, off 1st Avenue Gwarimpa';
 
 export const RESCHEDULE_CONSTRAINT = 3600000;

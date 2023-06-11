@@ -151,7 +151,7 @@ export declare namespace appCommonTypes {
     driverId: string;
   };
 
-  type QueueMailTypes = 'DEFAULT' | 'WEBSITE' | 'BOOKING' | 'CUSTOMER';
+  type QueueMailTypes = 'DEFAULT' | 'WEBSITE' | 'BOOKING' | 'CUSTOMER' | 'email';
   type AnyObjectType = { [p: string]: any };
 
   export type IPartWarranty = { warranty: string; interval: string };
@@ -197,6 +197,10 @@ export declare namespace appCommonTypes {
   }
 
   interface AppSettings {
+    mailer: {
+      from: string;
+      customerSupport: string;
+    };
     sendGrid: {
       apiKey: string;
     };

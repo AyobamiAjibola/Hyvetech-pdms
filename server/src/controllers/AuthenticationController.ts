@@ -11,7 +11,7 @@ import { InferAttributes } from 'sequelize/types';
 import { QueueManager } from 'rabbitmq-email-manager';
 import email_content from '../resources/templates/email/email_content';
 import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
-import { CATEGORIES, GARAGE_ADMIN_ROLE, QUEUE_EVENTS } from '../config/constants';
+import { CATEGORIES, GARAGE_ADMIN_ROLE, MAIL_QUEUE_EVENTS, QUEUE_EVENTS } from '../config/constants';
 import dataSources from '../services/dao';
 import settings from '../config/settings';
 import { CreationAttributes, Op } from 'sequelize';
@@ -103,7 +103,7 @@ export default class AuthenticationController {
 
       //todo: Send email with credentials
       await QueueManager.publish({
-        queue: QUEUE_EVENTS.name,
+        queue: MAIL_QUEUE_EVENTS.name,
         data: {
           to: user.email,
           from: {
@@ -433,13 +433,10 @@ export default class AuthenticationController {
     });
 
     await QueueManager.publish({
-      queue: QUEUE_EVENTS.name,
+      queue: MAIL_QUEUE_EVENTS.name,
       data: {
         to: user.email,
-        from: {
-          name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-          address: <string>process.env.SMTP_EMAIL_FROM,
-        },
+        from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
         subject: mailSubject,
         html: mailText,
         bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],

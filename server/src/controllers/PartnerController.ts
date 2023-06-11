@@ -279,10 +279,8 @@ export default class PartnerController {
             queue: QUEUE_EVENTS.name,
             data: {
               to: user.email,
-              from: {
-                name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-                address: <string>process.env.SMTP_EMAIL_FROM,
-              },
+              from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+
               subject: mailSubject,
               html: mailText,
               bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
@@ -405,7 +403,7 @@ export default class PartnerController {
       }
 
       const result = PartnerController.formatPartner(partner);
-      console.log(result, 'result')
+      console.log(result, 'result');
 
       const response: HttpResponse<Partner> = {
         code: HttpStatus.OK.code,
@@ -433,13 +431,12 @@ export default class PartnerController {
         const basePath = `${UPLOAD_BASE_PATH}/partners`;
 
         try {
-
           const { error, value } = Joi.object<CreatePartnerType>($createPartnerSettings).validate(fields);
 
           if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
           const partner = await dataSources.partnerDAOService.findById(+partnerId, {
-            include: [Contact, Category, User]
+            include: [Contact, Category, User],
           });
 
           if (!partner)
@@ -453,9 +450,9 @@ export default class PartnerController {
           value.workingHours = JSON.parse(value.workingHours);
 
           for (const valueKey in value) {
-             //@ts-ignore
+            //@ts-ignore
             if (valueKey !== 'logo' && value[valueKey].length) {
-               //@ts-ignore
+              //@ts-ignore
               await partner.update({ [valueKey]: value[valueKey] });
             }
           }
@@ -476,7 +473,7 @@ export default class PartnerController {
           const response: HttpResponse<InferAttributes<Partner>> = {
             code: HttpStatus.OK.code,
             message: `Updated Settings Successfully`,
-            result: partner
+            result: partner,
           };
 
           resolve(response);
