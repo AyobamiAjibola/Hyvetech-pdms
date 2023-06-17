@@ -1,34 +1,43 @@
-import { Box, Button, Chip, FormLabel, Grid, Input, TextField, Typography } from '@mui/material';
-import React, { useEffect, useMemo, useState } from 'react';
-import DataCard from '../../components/data/DataCard';
-import { cyan, green, lime, teal } from '@mui/material/colors';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { GridColDef } from '@mui/x-data-grid';
+import {
+  Box,
+  Button,
+  Chip,
+  FormLabel,
+  Grid,
+  Input,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
+import DataCard from "../../components/data/DataCard";
+import { cyan, green, lime, teal } from "@mui/material/colors";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { GridColDef } from "@mui/x-data-grid";
 // import { Edit } from '@mui/icons-material';
-import moment from 'moment';
-import AppDataGrid from '../../components/tables/AppDataGrid';
-import AppModal from '../../components/modal/AppModal';
-import AppAlert from '../../components/alerts/AppAlert';
+import moment from "moment";
+import AppDataGrid from "../../components/tables/AppDataGrid";
+import AppModal from "../../components/modal/AppModal";
+import AppAlert from "../../components/alerts/AppAlert";
 import {
   getAccountBalanceAction,
   getAccountTransactionsAction,
   requestActivationAction,
   uploadFile,
-} from '../../store/actions/autoHyveActions';
-import useAppDispatch from '../../hooks/useAppDispatch';
-import { LoadingButton } from '@mui/lab';
-import useAppSelector from '../../hooks/useAppSelector';
-import useAdmin from '../../hooks/useAdmin';
-import { getPartnerAction } from '../../store/actions/partnerActions';
-import { formatNumberToIntl } from '../../utils/generic';
-import { DateRange } from '@mui/x-date-pickers-pro';
-import { UploadResult } from '@app-models';
-import TransferDialog from './TransferDialog';
+} from "../../store/actions/autoHyveActions";
+import useAppDispatch from "../../hooks/useAppDispatch";
+import { LoadingButton } from "@mui/lab";
+import useAppSelector from "../../hooks/useAppSelector";
+import useAdmin from "../../hooks/useAdmin";
+import { getPartnerAction } from "../../store/actions/partnerActions";
+import { formatNumberToIntl } from "../../utils/generic";
+import { DateRange } from "@mui/x-date-pickers-pro";
+import { UploadResult } from "@app-models";
+import TransferDialog from "./TransferDialog";
 
 const HyvePayDashboard = () => {
   const [openActivateModal, setOpenActivateModal] = useState(false);
 
-  const autohyvePay = useAppSelector(state => state.autoHyveReducer);
+  const autohyvePay = useAppSelector((state) => state.autoHyveReducer);
 
   const dispatch = useAppDispatch();
 
@@ -36,19 +45,20 @@ const HyvePayDashboard = () => {
 
   const [canInitiateTransfer, setCanIntiateTrafer] = useState(false);
 
-  const [businessName, setBusinessName] = useState('');
+  const [businessName, setBusinessName] = useState("");
   const [validIDFront, setValidIDFront] = useState<FileList | null>(null);
   const [validIDBack, setValidIDBack] = useState<FileList | null>(null);
   const [cacDoc, setCacDoc] = useState<FileList | null>(null);
 
-  const [pin, setPIN] = useState('');
-  const [nin, setNIN] = useState('');
+  const [pin, setPIN] = useState("");
+  const [nin, setNIN] = useState("");
 
   const [loading, setLoading] = useState(false);
 
-  const [alerMessage, setAlert] = useState<{ type: 'success' | 'error' | 'info' | 'warning'; message: string } | null>(
-    null,
-  );
+  const [alerMessage, setAlert] = useState<{
+    type: "success" | "error" | "info" | "warning";
+    message: string;
+  } | null>(null);
 
   const admin = useAdmin();
 
@@ -56,40 +66,56 @@ const HyvePayDashboard = () => {
     return admin.user?.partnerId;
   }, [admin.user]);
 
-  const partnerReducer = useAppSelector(state => state.partnerReducer);
+  const partnerReducer = useAppSelector((state) => state.partnerReducer);
 
   useEffect(() => {
-    if (partnerReducer.getPartnerStatus === 'idle') {
+    if (partnerReducer.getPartnerStatus === "idle") {
       if (partnerId) dispatch(getPartnerAction(partnerId));
     }
   }, [dispatch, partnerId, partnerReducer.getPartnerStatus]);
 
   const handleOnActivate = async () => {
     try {
-      if (businessName.trim() === '') return setAlert({ type: 'info', message: 'Please provide your business name' });
+      if (businessName.trim() === "")
+        return setAlert({
+          type: "info",
+          message: "Please provide your business name",
+        });
 
-      if (!validIDFront) return setAlert({ type: 'info', message: 'Please upload the front picture of a valid ID' });
+      if (!validIDFront)
+        return setAlert({
+          type: "info",
+          message: "Please upload the front picture of a valid ID",
+        });
 
-      if (!validIDBack) return setAlert({ type: 'info', message: 'Please upload the back picture of a valid ID' });
+      if (!validIDBack)
+        return setAlert({
+          type: "info",
+          message: "Please upload the back picture of a valid ID",
+        });
 
-      if (pin.trim() === '') return setAlert({ type: 'info', message: 'Please provide your HyvePay PIN' });
+      if (pin.trim() === "")
+        return setAlert({
+          type: "info",
+          message: "Please provide your HyvePay PIN",
+        });
       // if (!cacDoc) return setAlert({ type: 'info', message: 'Please upload your CAC document' });
 
       setLoading(true);
 
       const formData1 = new FormData();
 
-      formData1.append('file', validIDFront[0]);
+      formData1.append("file", validIDFront[0]);
 
       const validIDFrontResult = await uploadFile(formData1);
 
       const formData2 = new FormData();
-      formData2.append('file', validIDBack[0]);
+      formData2.append("file", validIDBack[0]);
       const validIDBackResult = await uploadFile(formData2);
       let cacDOcResult: UploadResult | null = null;
       if (cacDoc) {
         const formData3 = new FormData();
-        formData3.append('file', cacDoc[0]);
+        formData3.append("file", cacDoc[0]);
 
         cacDOcResult = await uploadFile(formData3);
       }
@@ -97,12 +123,12 @@ const HyvePayDashboard = () => {
       dispatch(
         requestActivationAction({
           businessName,
-          cacUrl: cacDOcResult?.file?.url || '',
+          cacUrl: cacDOcResult?.file?.url || "",
           validIdBackUrl: validIDBackResult.file.url,
           validIdFrontUrl: validIDFrontResult.file.url,
           pin,
           nin,
-        }),
+        })
       );
     } catch (error) {
       setLoading(false);
@@ -110,22 +136,22 @@ const HyvePayDashboard = () => {
   };
 
   useEffect(() => {
-    if (autohyvePay.requestAccountActivationStatus === 'completed') {
+    if (autohyvePay.requestAccountActivationStatus === "completed") {
       setOpenActivateModal(false);
       setLoading(false);
       setAlert({
-        type: 'success',
+        type: "success",
         message:
-          'Activation request submitted successfully. Your account will be activated within 4 hours after verification is complete.',
+          "Activation request submitted successfully. Your account will be activated within 4 hours after verification is complete.",
       });
       if (partnerId) dispatch(getPartnerAction(partnerId));
-    } else if (autohyvePay.requestAccountActivationStatus === 'failed') {
+    } else if (autohyvePay.requestAccountActivationStatus === "failed") {
       setLoading(false);
     }
   }, [autohyvePay.requestAccountActivationStatus]);
 
   useEffect(() => {
-    if (partnerReducer.partner?.accountProvisionStatus === 'APPROVED') {
+    if (partnerReducer.partner?.accountProvisionStatus === "APPROVED") {
       setCanIntiateTrafer(true);
       dispatch(getAccountBalanceAction());
       dispatch(getAccountTransactionsAction());
@@ -135,38 +161,38 @@ const HyvePayDashboard = () => {
   const techColumns = useMemo(() => {
     return [
       {
-        field: 'realDate',
-        headerName: 'Date',
-        headerAlign: 'center',
-        align: 'center',
+        field: "realDate",
+        headerName: "Date",
+        headerAlign: "center",
+        align: "center",
         width: 160,
-        type: 'string',
+        type: "string",
         valueFormatter: ({ value }) => {
-          return value ? moment(value).format('DD/MM/YYYY hh:mm') : '-';
+          return value ? moment(value).format("DD/MM/YYYY hh:mm") : "-";
         },
         sortable: true,
-        sortingOrder: ['desc'],
+        sortingOrder: ["desc"],
       },
 
       {
-        field: 'beneficiaryName',
-        headerName: 'Beneficiary Name',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "beneficiaryName",
+        headerName: "Beneficiary Name",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         width: 300,
         sortable: true,
       },
       {
-        field: 'amount',
-        headerName: 'Amount',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'number',
+        field: "amount",
+        headerName: "Amount",
+        headerAlign: "center",
+        align: "center",
+        type: "number",
         sortable: true,
 
         valueFormatter: ({ value }) => {
-          return '₦ ' + formatNumberToIntl(value ? value / 100 : 0);
+          return "₦ " + formatNumberToIntl(value ? value / 100 : 0);
         },
       },
       // {
@@ -182,38 +208,38 @@ const HyvePayDashboard = () => {
       //   },
       // },
       {
-        field: 'balanceAfter',
-        headerName: 'Balance',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "balanceAfter",
+        headerName: "Balance",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         width: 200,
         sortable: true,
         valueFormatter: ({ value }) => {
-          return '₦ ' + formatNumberToIntl(value ? value / 100 : 0);
+          return "₦ " + formatNumberToIntl(value ? value / 100 : 0);
         },
       },
       {
-        field: 'narration',
-        headerName: 'Narration',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "narration",
+        headerName: "Narration",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         sortable: true,
         width: 200,
       },
       {
-        field: 'postingRecordType',
-        headerName: 'Type',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "postingRecordType",
+        headerName: "Type",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         sortable: true,
-        renderCell: params => {
+        renderCell: (params) => {
           return params.row.postingRecordType === 2 ? (
-            <Chip label={'Credit'} size="small" color="success" />
+            <Chip label={"Credit"} size="small" color="success" />
           ) : (
-            <Chip label={'Debit'} size="small" color="error" />
+            <Chip label={"Debit"} size="small" color="error" />
           );
         },
       },
@@ -255,15 +281,15 @@ const HyvePayDashboard = () => {
   }, []);
 
   const handleOnDateChange = (value: DateRange<Date>) => {
-    const dateIsInComplete = value.some(item => item === null);
+    const dateIsInComplete = value.some((item) => item === null);
 
     if (dateIsInComplete) return;
 
     dispatch(
       getAccountTransactionsAction({
-        startDate: moment(value[0]).format('DD/MM/YYYY'),
-        endDate: moment(value[1]).format('DD/MM/YYYY'),
-      }),
+        startDate: moment(value[0]).format("DD/MM/YYYY"),
+        endDate: moment(value[1]).format("DD/MM/YYYY"),
+      })
     );
   };
 
@@ -275,20 +301,32 @@ const HyvePayDashboard = () => {
 
   const renderActivateButton = () => {
     if (!partnerReducer.partner?.accountProvisionStatus) return null;
-    if (partnerReducer.partner?.accountProvisionStatus === 'NOT_REQUESTED')
+    if (
+      partnerReducer.partner?.accountProvisionStatus === "NOT_REQUESTED" ||
+      partnerReducer.partner?.accountProvisionStatus === "DECLINED"
+    )
       return (
-        <Button onClick={() => setOpenActivateModal(true)} color="error" variant="contained">
+        <Button
+          onClick={() => setOpenActivateModal(true)}
+          color="error"
+          variant="contained"
+        >
           Activate Account
         </Button>
       );
-    if (partnerReducer.partner?.accountProvisionStatus === 'PENDING')
+    if (partnerReducer.partner?.accountProvisionStatus === "PENDING")
       return (
-        <Button disabled={true} onClick={() => setOpenActivateModal(true)} color="error" variant="contained">
+        <Button
+          disabled={true}
+          onClick={() => setOpenActivateModal(true)}
+          color="error"
+          variant="contained"
+        >
           Activate Account
         </Button>
       );
-    if (partnerReducer.partner?.accountProvisionStatus === 'APPROVED') return null;
-    if (partnerReducer.partner?.accountProvisionStatus === 'DECLINED') return null;
+    if (partnerReducer.partner?.accountProvisionStatus === "APPROVED")
+      return null;
   };
   return (
     <React.Fragment>
@@ -298,35 +336,41 @@ const HyvePayDashboard = () => {
       <Box
         component="div"
         sx={{
-          display: 'flex',
-          width: { sm: '100%', xs: '100%' },
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
+          display: "flex",
+          width: { sm: "100%", xs: "100%" },
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Grid
           sx={{
-            display: 'flex',
-            flexDirection: { lg: 'row', xs: 'column' },
+            display: "flex",
+            flexDirection: { lg: "row", xs: "column" },
             // justifyContent: 'center',
-            width: { lg: '100%', xs: '100%' },
+            width: { lg: "100%", xs: "100%" },
             gap: { lg: 3, md: 2, xs: 2 },
             ml: { lg: 10 },
             mb: { md: 3 },
-            justifyContent: 'end',
+            justifyContent: "end",
           }}
-          container>
+          container
+        >
           <Grid item>{renderActivateButton()}</Grid>
           <Grid item>
             <Button
               onClick={() => setIntiateTransfer(true)}
               disabled={!canInitiateTransfer}
               color="success"
-              variant="outlined">
+              variant="outlined"
+            >
               Initiate Transaction
             </Button>
           </Grid>
           <Grid item>
-            <DateRangePicker onChange={handleOnDateChange} localeText={{ start: 'Start Date', end: 'End Date' }} />
+            <DateRangePicker
+              onChange={handleOnDateChange}
+              localeText={{ start: "Start Date", end: "End Date" }}
+            />
           </Grid>
         </Grid>
       </Box>
@@ -334,22 +378,24 @@ const HyvePayDashboard = () => {
       <Box
         component="div"
         sx={{
-          display: 'flex',
-          width: { sm: '100%', xs: '100%' },
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
+          display: "flex",
+          width: { sm: "100%", xs: "100%" },
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Grid
           item
           sx={{
-            display: 'flex',
-            flexDirection: { lg: 'row', xs: 'column' },
-            flexWrap: 'wrap',
+            display: "flex",
+            flexDirection: { lg: "row", xs: "column" },
+            flexWrap: "wrap",
             // justifyContent: 'center',
-            width: { lg: '100%', xs: '100%' },
+            width: { lg: "100%", xs: "100%" },
             gap: { lg: 2, md: 2, xs: 2 },
             ml: { lg: 10 },
-          }}>
+          }}
+        >
           <DataCard
             title={`${autohyvePay.account.businessName} - ${autohyvePay.account.accountProvider}`}
             data={autohyvePay.account.accountNumber}
@@ -357,19 +403,24 @@ const HyvePayDashboard = () => {
           />
           <DataCard
             title="Available Balance"
-            data={'₦ ' + formatNumberToIntl(autohyvePay.account.availableBalance / 100)}
+            data={
+              "₦ " +
+              formatNumberToIntl(autohyvePay.account.availableBalance / 100)
+            }
             bgColor={teal[400]}
             toggleValue
           />
           <DataCard
             title="Total Credit"
-            data={'₦ ' + formatNumberToIntl(autohyvePay.transaction.totalCredit)}
+            data={
+              "₦ " + formatNumberToIntl(autohyvePay.transaction.totalCredit)
+            }
             bgColor={cyan[400]}
             toggleValue
           />
           <DataCard
             title="Total Debit"
-            data={'₦ ' + formatNumberToIntl(autohyvePay.transaction.totalDebit)}
+            data={"₦ " + formatNumberToIntl(autohyvePay.transaction.totalDebit)}
             bgColor={lime[400]}
             toggleValue
           />
@@ -390,9 +441,10 @@ const HyvePayDashboard = () => {
           //   ml: { lg: 10 },
           // }}
           item
-          xs={12}>
+          xs={12}
+        >
           <AppDataGrid
-            loading={autohyvePay.getAllAccountTransactionStatus === 'loading'}
+            loading={autohyvePay.getAllAccountTransactionStatus === "loading"}
             rows={autohyvePay.transaction.postingsHistory || []}
             columns={techColumns}
             showToolbar
@@ -403,7 +455,7 @@ const HyvePayDashboard = () => {
 
       {openActivateModal && (
         <AppModal
-          size={document.documentElement.clientWidth > 375 ? 'lg' : 'md'}
+          size={document.documentElement.clientWidth > 375 ? "lg" : "md"}
           fullScreen={false}
           show={openActivateModal}
           fullWidth={true}
@@ -419,7 +471,7 @@ const HyvePayDashboard = () => {
                   fullWidth
                   variant="standard"
                   value={nin}
-                  onChange={e => setNIN(e.target.value)}
+                  onChange={(e) => setNIN(e.target.value)}
                 />
               </div>
               <div style={{ marginBottom: 20 }}>
@@ -431,20 +483,29 @@ const HyvePayDashboard = () => {
                   fullWidth
                   variant="standard"
                   value={businessName}
-                  onChange={e => setBusinessName(e.target.value)}
+                  onChange={(e) => setBusinessName(e.target.value)}
                 />
               </div>
               <div style={{ marginBottom: 20 }}>
                 <FormLabel>Valid Identity Card(Front)</FormLabel> <br />
-                <Input onChange={(e: any) => setValidIDFront(e.target.files)} type="file" />
+                <Input
+                  onChange={(e: any) => setValidIDFront(e.target.files)}
+                  type="file"
+                />
               </div>
               <div style={{ marginBottom: 20 }}>
                 <FormLabel>Valid Identity Card(Back)</FormLabel> <br />
-                <Input onChange={(e: any) => setValidIDBack(e.target.files)} type="file" />
+                <Input
+                  onChange={(e: any) => setValidIDBack(e.target.files)}
+                  type="file"
+                />
               </div>
               <div style={{ marginBottom: 20 }}>
                 <FormLabel>CAC </FormLabel> <br />
-                <Input onChange={(e: any) => setCacDoc(e.target.files)} type="file" />
+                <Input
+                  onChange={(e: any) => setCacDoc(e.target.files)}
+                  type="file"
+                />
               </div>
               <div style={{ marginBottom: 30 }}>
                 <TextField
@@ -455,16 +516,23 @@ const HyvePayDashboard = () => {
                   fullWidth
                   variant="standard"
                   value={pin}
-                  onChange={e => setPIN(e.target.value)}
+                  onChange={(e) => setPIN(e.target.value)}
                 />
               </div>
-              <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'end' }}>
+              <div
+                style={{
+                  marginBottom: 20,
+                  display: "flex",
+                  justifyContent: "end",
+                }}
+              >
                 <LoadingButton
                   loading={loading}
                   disabled={loading}
                   onClick={handleOnActivate}
                   type="submit"
-                  variant="contained">
+                  variant="contained"
+                >
                   Activate
                 </LoadingButton>
               </div>
@@ -478,9 +546,9 @@ const HyvePayDashboard = () => {
 
       <AppAlert
         onClose={() => setAlert(null)}
-        alertType={alerMessage ? alerMessage.type : 'info'}
+        alertType={alerMessage ? alerMessage.type : "info"}
         show={alerMessage !== null}
-        message={alerMessage?.message || ''}
+        message={alerMessage?.message || ""}
       />
     </React.Fragment>
   );

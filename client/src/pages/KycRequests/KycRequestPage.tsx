@@ -1,69 +1,99 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import useAppDispatch from '../../hooks/useAppDispatch';
-import { getKycRequestAction, performAccountActivation } from '../../store/actions/autoHyveActions';
-import moment from 'moment';
-import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { Check, Pageview } from '@mui/icons-material';
-import { AccountActivateRequest } from '@app-models';
-import { Box, Button, Chip, Grid, Typography } from '@mui/material';
-import AppDataGrid from '../../components/tables/AppDataGrid';
-import useAppSelector from '../../hooks/useAppSelector';
-import { Link } from 'react-router-dom';
-import AppAlert from '../../components/alerts/AppAlert';
+import React, { useEffect, useMemo, useState } from "react";
+import useAppDispatch from "../../hooks/useAppDispatch";
+import {
+  getKycRequestAction,
+  performAccountActivatioRejection,
+  performAccountActivation,
+} from "../../store/actions/autoHyveActions";
+import moment from "moment";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { Cancel, Check, Pageview } from "@mui/icons-material";
+import { AccountActivateRequest } from "@app-models";
+import { Box, Button, Chip, Grid, Typography } from "@mui/material";
+import AppDataGrid from "../../components/tables/AppDataGrid";
+import useAppSelector from "../../hooks/useAppSelector";
+import { Link } from "react-router-dom";
+import AppAlert from "../../components/alerts/AppAlert";
+import { clearAccountActivationError } from "../../store/reducers/autoHyveReducer";
 
 const KycRequestPage = () => {
   const dispatch = useAppDispatch();
 
-  const autohyvePay = useAppSelector(state => state.autoHyveReducer);
-  const [alerMessage, setAlert] = useState<{ type: 'success' | 'error' | 'info' | 'warning'; message: string } | null>(
-    null,
-  );
+  const autohyvePay = useAppSelector((state) => state.autoHyveReducer);
+  const [alerMessage, setAlert] = useState<{
+    type: "success" | "error" | "info" | "warning";
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     dispatch(getKycRequestAction());
   }, []);
 
   useEffect(() => {
-    if (autohyvePay.activateAccountStatus === 'completed') {
-      setAlert({ type: 'success', message: 'Operation successful' });
+    if (autohyvePay.activateAccountStatus === "completed") {
+      setAlert({ type: "success", message: "Operation successful" });
       dispatch(getKycRequestAction());
-    } else if (autohyvePay.activateAccountStatus === 'failed') {
-      setAlert({ type: 'error', message: autohyvePay.activateAccountError || 'Unable to perform action' });
+    } else if (autohyvePay.activateAccountStatus === "failed") {
+      setAlert({
+        type: "error",
+        message: autohyvePay.activateAccountError || "Unable to perform action",
+      });
     }
   }, [autohyvePay.activateAccountStatus]);
 
   useEffect(() => {
-    if (autohyvePay.getKycRequestStatus === 'failed') {
-      setAlert({ type: 'error', message: autohyvePay.getKycRequestError || 'Unable to perform action' });
+    if (autohyvePay.performAccountActivationRejectionStatus === "completed") {
+      setAlert({ type: "success", message: "Operation successful" });
+      dispatch(getKycRequestAction());
+      dispatch(clearAccountActivationError());
+    } else if (
+      autohyvePay.performAccountActivationRejectionStatus === "failed"
+    ) {
+      setAlert({
+        type: "error",
+        message: autohyvePay.activateAccountError || "Unable to perform action",
+      });
+    }
+  }, [autohyvePay.performAccountActivationRejectionStatus]);
+
+  useEffect(() => {
+    if (autohyvePay.getKycRequestStatus === "failed") {
+      setAlert({
+        type: "error",
+        message: autohyvePay.getKycRequestError || "Unable to perform action",
+      });
     }
   }, [autohyvePay.getKycRequestStatus]);
 
   const techColumns = useMemo(() => {
     return [
       {
-        field: 'createdAt',
-        headerName: 'Date',
-        headerAlign: 'center',
-        align: 'center',
+        field: "createdAt",
+        headerName: "Date",
+        headerAlign: "center",
+        align: "center",
         width: 160,
-        type: 'string',
+        type: "string",
         valueFormatter: ({ value }) => {
-          return value ? moment(value).format('DD/MM/YYYY') : '-';
+          return value ? moment(value).format("DD/MM/YYYY") : "-";
         },
         sortable: true,
-        sortingOrder: ['desc'],
+        sortingOrder: ["desc"],
       },
 
       {
-        field: 'partnerId',
-        headerName: 'Partner',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "partnerId",
+        headerName: "Partner",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         sortable: true,
-        renderCell: params => {
+        renderCell: (params) => {
           return (
-            <Link style={{ color: 'skyblue', cursor: 'pointer' }} to={`/partner/${params.row.id}`}>
+            <Link
+              style={{ color: "skyblue", cursor: "pointer" }}
+              to={`/partner/${params.row.id}`}
+            >
               {/* {`EXP - 00${params.row.partnerId}${params.row.expenseCode}`} */}
               {params.row.partnerId}
             </Link>
@@ -71,34 +101,38 @@ const KycRequestPage = () => {
         },
       },
       {
-        field: 'businessName',
-        headerName: 'Business Name',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'number',
+        field: "businessName",
+        headerName: "Business Name",
+        headerAlign: "center",
+        align: "center",
+        type: "number",
         sortable: true,
         width: 300,
       },
       {
-        field: 'nin',
-        headerName: 'NIN',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'number',
+        field: "nin",
+        headerName: "NIN",
+        headerAlign: "center",
+        align: "center",
+        type: "number",
         sortable: true,
         width: 300,
       },
       {
-        field: 'cacUrl',
-        headerName: 'CAC Doc',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "cacUrl",
+        headerName: "CAC Doc",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         sortable: true,
         width: 200,
-        renderCell: params => {
+        renderCell: (params) => {
           return (
-            <a style={{ color: 'skyblue', cursor: 'pointer' }} target="__blank" href={params.row.cacUrl}>
+            <a
+              style={{ color: "skyblue", cursor: "pointer" }}
+              target="__blank"
+              href={params.row.cacUrl}
+            >
               {/* {`EXP - 00${params.row.partnerId}${params.row.expenseCode}`} */}
               <Pageview />
             </a>
@@ -106,48 +140,54 @@ const KycRequestPage = () => {
         },
       },
       {
-        field: 'validIdBackUrl',
-        headerName: 'Valid ID Back',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "validIdBackUrl",
+        headerName: "Valid ID Back",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         width: 200,
         sortable: true,
-        renderCell: params => {
+        renderCell: (params) => {
           return (
-            <Button onClick={() => window.open(params.row.validIdBackUrl, '_blank')}>
-              <Pageview style={{ color: 'skyblue', cursor: 'pointer' }} />;
+            <Button
+              onClick={() => window.open(params.row.validIdBackUrl, "_blank")}
+            >
+              <Pageview style={{ color: "skyblue", cursor: "pointer" }} />;
             </Button>
           );
         },
       },
       {
-        field: 'isApproved',
-        headerName: 'Status',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "isApproved",
+        headerName: "Status",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         width: 200,
         sortable: true,
-        renderCell: params => {
+        renderCell: (params) => {
           return params.row.isApproved ? (
-            <Chip label={'Approved'} size="small" color="success" />
+            <Chip label={"Approved"} size="small" color="success" />
           ) : (
-            <Chip label={'Pending Approval'} size="small" color="error" />
+            <Chip label={"Pending Approval"} size="small" color="error" />
           );
         },
       },
       {
-        field: 'validIdFrontUrl',
-        headerName: 'Valid ID Front',
-        headerAlign: 'center',
-        align: 'center',
-        type: 'string',
+        field: "validIdFrontUrl",
+        headerName: "Valid ID Front",
+        headerAlign: "center",
+        align: "center",
+        type: "string",
         sortable: true,
         width: 200,
-        renderCell: params => {
+        renderCell: (params) => {
           return (
-            <a style={{ color: 'skyblue', cursor: 'pointer' }} target="__blank" href={params.row.validIdFrontUrl}>
+            <a
+              style={{ color: "skyblue", cursor: "pointer" }}
+              target="__blank"
+              href={params.row.validIdFrontUrl}
+            >
               {/* {`EXP - 00${params.row.partnerId}${params.row.expenseCode}`} */}
               <Pageview />
             </a>
@@ -156,32 +196,30 @@ const KycRequestPage = () => {
       },
 
       {
-        field: 'actions',
-        type: 'actions',
-        headerAlign: 'center',
-        align: 'center',
+        field: "actions",
+        type: "actions",
+        headerAlign: "center",
+        align: "center",
         getActions: (params: any) => {
           const row = params.row as any;
           return [
-            // <GridActionsCellItem
-            //   key={0}
-            //   icon={<Visibility sx={{ color: 'dodgerblue' }} />}
-            //   onClick={() => {
-            //     void dispatch(getEstimatesAction());
-            //     navigate(`/estimates/${row.id}`, { state: { estimate: row } });
-            //   }}
-            //   label="View"
-            //   showInMenu={false}
-            // />,
-
             <GridActionsCellItem
               //  sx={{ display: isTechAdmin ? 'block' : 'none' }}
               key={1}
-              icon={<Check sx={{ color: 'limegreen' }} />}
+              icon={<Check sx={{ color: "limegreen" }} />}
               onClick={() => dispatch(performAccountActivation(row.id))}
               //disabled={!isTechAdmin || row.status === ESTIMATE_STATUS.invoiced}
               //  disabled={!isTechAdmin}
               label="Edit"
+              showInMenu={false}
+            />,
+            <GridActionsCellItem
+              key={0}
+              icon={<Cancel color="error" />}
+              onClick={() => {
+                void dispatch(performAccountActivatioRejection(row.id));
+              }}
+              label="View"
               showInMenu={false}
             />,
           ];
@@ -197,26 +235,32 @@ const KycRequestPage = () => {
       <Box
         component="div"
         sx={{
-          display: 'flex',
-          width: { sm: '100%', xs: document.documentElement.clientWidth },
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          display: "flex",
+          width: { sm: "100%", xs: document.documentElement.clientWidth },
+          justifyContent: "space-between",
+          alignItems: "center",
           marginTop: 10,
-        }}>
+        }}
+      >
         <Grid container>
           <Grid
             sx={{
-              display: 'flex',
-              flexDirection: { lg: 'row', xs: 'column' },
+              display: "flex",
+              flexDirection: { lg: "row", xs: "column" },
               // justifyContent: 'center',
-              width: { lg: '100%', xs: '50%' },
+              width: { lg: "100%", xs: "50%" },
               gap: { lg: 8, md: 4, xs: 2 },
               ml: { lg: 10 },
             }}
             item
-            xs={12}>
+            xs={12}
+          >
             <AppDataGrid
-              loading={autohyvePay.getKycRequestStatus === 'loading'}
+              loading={
+                autohyvePay.getKycRequestStatus === "loading" ||
+                autohyvePay.performAccountActivationRejectionStatus ===
+                  "loading"
+              }
               rows={autohyvePay.accountRequests || []}
               columns={techColumns}
               showToolbar
@@ -226,9 +270,9 @@ const KycRequestPage = () => {
       </Box>
       <AppAlert
         onClose={() => setAlert(null)}
-        alertType={alerMessage ? alerMessage.type : 'info'}
+        alertType={alerMessage ? alerMessage.type : "info"}
         show={alerMessage !== null}
-        message={alerMessage?.message || ''}
+        message={alerMessage?.message || ""}
       />
     </div>
   );

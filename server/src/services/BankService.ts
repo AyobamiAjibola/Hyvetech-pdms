@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 export default interface BankService {
   createAccount: (payload: AccountDTO) => Promise<AccountResponseDTO>;
@@ -8,13 +8,21 @@ export default interface BankService {
 
   getBanks: () => Promise<Bank[]>;
 
-  getAccountTransactionLog: (payload: AccountTransactionLogDTO) => Promise<AccountTransactionsResponseDTO>;
+  getAccountTransactionLog: (
+    payload: AccountTransactionLogDTO
+  ) => Promise<AccountTransactionsResponseDTO>;
+
+  getMainAccountTransactionLog: (
+    payload: AccountTransactionLogDTO
+  ) => Promise<AccountTransactionsResponseDTO>;
 
   performNameEnquiry: (payload: ConfirmRecipientDTO) => Promise<AccountHolder>;
 
   updateAccount: (payload: AccountUpdateDTO) => Promise<AccountResponseDTO>;
 
-  intiateTransfer: (payload: AccountTransferDTO) => Promise<AccountTransferResponseDTO>;
+  intiateTransfer: (
+    payload: AccountTransferDTO
+  ) => Promise<AccountTransferResponseDTO>;
 }
 
 export interface Bank {
@@ -60,8 +68,10 @@ export interface AccountBalanceDTO {
 }
 
 export interface AccountTransactionLogDTO {
-  accountId: string;
-  page: PaginationDTO;
+  accountId?: string;
+  page?: PaginationDTO;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface PostingEntry {

@@ -1,80 +1,94 @@
-import { appCommonTypes } from '../../@types/app-common';
+import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 import {
   createAccountHandler,
   getAccountBalance,
   getAccountTransactions,
   getKycAccountRequest,
+  getMainAccountTransactions,
   initiateAccountTransfer,
   performAccountActivation,
+  performAccountActivationRejection,
   performAccountActivationRequest,
   performAccountPinUpdate,
   performAccountUpdate,
   performNameEnquiry,
-} from '../../routes/cbaRoute';
+} from "../../routes/cbaRoute";
 
 const cbaEndpoint: RouteEndpoints = [
   {
-    name: 'create-account',
-    method: 'post',
-    path: '/account/create',
+    name: "create-account",
+    method: "post",
+    path: "/account/create",
     handler: createAccountHandler,
   },
 
   {
-    name: 'get-account-balance',
-    method: 'get',
-    path: '/account/balance',
+    name: "get-account-balance",
+    method: "get",
+    path: "/account/balance",
     handler: getAccountBalance,
   },
   {
-    name: 'get-account-transactions',
-    method: 'get',
-    path: '/account/transactions',
+    name: "get-account-transactions",
+    method: "get",
+    path: "/account/transactions",
     handler: getAccountTransactions,
   },
   {
-    name: 'perform-name-enquiry',
-    method: 'post',
-    path: '/account/enquiry',
+    name: "get-main-account-transactions",
+    method: "post",
+    path: "/account/main/transactions",
+    handler: getMainAccountTransactions,
+  },
+  {
+    name: "perform-name-enquiry",
+    method: "post",
+    path: "/account/enquiry",
     handler: performNameEnquiry,
   },
   {
-    name: 'perform-account-activation-request',
-    method: 'post',
-    path: '/account/request/activation',
+    name: "perform-account-activation-request",
+    method: "post",
+    path: "/account/request/activation",
     handler: performAccountActivationRequest,
   },
   {
-    name: 'perform-account-activation',
-    method: 'get',
-    path: '/account/request/:id/activate',
+    name: "perform-account-activation",
+    method: "get",
+    path: "/account/request/:id/activate",
     handler: performAccountActivation,
   },
   {
-    name: 'perform-account-transfer',
-    method: 'post',
-    path: '/account/transfer',
+    name: "perform-account-activation-rejection",
+    method: "get",
+    path: "/account/request/:id/decline-activation",
+    handler: performAccountActivationRejection,
+  },
+  {
+    name: "perform-account-transfer",
+    method: "post",
+    path: "/account/transfer",
     handler: initiateAccountTransfer,
   },
   {
-    name: 'perform-account-transfer',
-    method: 'get',
-    path: '/kyc/requests',
+    name: "perform-account-transfer",
+    method: "get",
+    path: "/kyc/requests",
     handler: getKycAccountRequest,
   },
 
   {
-    name: 'perform-account-pin-update',
-    method: 'post',
-    path: '/cba/account/pin/update',
+    name: "perform-account-pin-update",
+    method: "post",
+    path: "/cba/account/pin/update",
     handler: performAccountPinUpdate,
   },
 
   {
-    name: 'perform-account-update',
-    method: 'post',
-    path: '/cba/account/update',
+    name: "perform-account-update",
+    method: "post",
+    path: "/cba/account/update",
     handler: performAccountUpdate,
   },
 ];
