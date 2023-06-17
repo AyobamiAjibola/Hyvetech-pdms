@@ -48,6 +48,18 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
     pin: Joi.string().required().label("pin"),
   };
 
+export const filterAccountTransactionSchema: Joi.SchemaMap<appModels.AccountTransactionLogDTO> =
+  {
+    startDate: Joi.string().optional().label("startDate"),
+    endDate: Joi.string().optional().label("endDate"),
+    page: Joi.object({
+      pageSize: Joi.number().optional().label("pageSize"),
+      pageNumber: Joi.number().optional().label("pageNumber"),
+    })
+      .optional()
+      .label("page"),
+  };
+
 class CBAController {
   private readonly bankService: BankService;
   private readonly passwordEncoded: BcryptPasswordEncoder;
@@ -174,6 +186,20 @@ class CBAController {
 
   @TryCatch
   @HasPermission([MANAGE_ALL])
+  public async getMainAccountTransactions(req: Request) {
+    const account = await this.doGetMainAccountTransactions(req);
+
+    const response: HttpResponse<typeof account> = {
+      code: HttpStatus.OK.code,
+      message: "Account transactions retrieved successfully",
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_ALL])
   public async getKyRequests(req: Request) {
     const account = await this.doGetKycRequests(req);
 
@@ -212,6 +238,67 @@ class CBAController {
     };
 
     return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_ALL])
+  public async performAccountActivationRejection(req: Request) {
+    const data = await this.doAccountActivationRejection(req);
+
+    const response: HttpResponse<typeof data> = {
+      code: HttpStatus.OK.code,
+      message: "Operation successful",
+      result: data,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  private async doAccountActivationRejection(req: Request) {
+    const requestId = req.params.id;
+
+    const accountRequest =
+      await dataSources.accountActivationDAOService.findById(+requestId);
+
+    if (!accountRequest)
+      return Promise.reject(
+        CustomAPIError.response(
+          `No active request for given request ID {${requestId}}`,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+
+    const partner = await dao.partnerDAOService.findById(
+      accountRequest.partnerId
+    );
+    if (!partner)
+      return Promise.reject(
+        CustomAPIError.response(PARTNER_NOT_FOUND, HttpStatus.BAD_REQUEST.code)
+      );
+
+    const user = await dataSources.userDAOService.findByAdminUserByPartnerId(
+      partner.id
+    );
+
+    if (!user)
+      return Promise.reject(
+        CustomAPIError.response(
+          "No such user found",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+
+    accountRequest.isApproved = false;
+
+    partner.accountProvisionStatus = "DECLINED";
+
+    partner.isAccountProvisioned = false;
+
+    await partner.save();
+
+    await accountRequest.save();
+
+    return partner;
   }
 
   private async doAccountActivation(req: Request) {
@@ -462,6 +549,29 @@ class CBAController {
     });
 
     return response;
+  }
+
+  private async doGetMainAccountTransactions(req: Request) {
+    const { error, value } = Joi.object<appModels.AccountTransactionLogDTO>(
+      filterAccountTransactionSchema
+    ).validate(req.body);
+
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+
+    return this.bankService.getMainAccountTransactionLog({
+      startDate: value?.startDate,
+      endDate: value?.endDate,
+      page: {
+        pageSize: value?.page?.pageSize || 1000,
+        pageNumber: value?.page?.pageNumber || 1,
+      },
+    });
   }
 
   private async doGetAccountTransactions(req: Request) {
