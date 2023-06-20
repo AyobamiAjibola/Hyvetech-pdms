@@ -540,7 +540,12 @@ function AdminDashboard() {
             >
               <DataCard
                 title="Gross Inflow"
-                data={dashboardReducer.transaction.totalCredit || 0}
+                data={
+                  "₦ " +
+                  formatNumberToIntl(
+                    dashboardReducer.transaction.totalCredit / 100 || 0
+                  )
+                }
                 bgColor={cyan[600]}
               />
             </Grid>
@@ -570,7 +575,12 @@ function AdminDashboard() {
             >
               <DataCard
                 title="Gross Transaction Volumne"
-                data={dashboardReducer.transaction.totalDebit || 0}
+                data={
+                  "₦ " +
+                  formatNumberToIntl(
+                    dashboardReducer.transaction.totalDebit / 100 || 0
+                  )
+                }
                 bgColor={purple[100]}
               />
             </Grid>
