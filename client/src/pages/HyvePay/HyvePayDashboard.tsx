@@ -448,7 +448,6 @@ const HyvePayDashboard = () => {
             rows={autohyvePay.transaction.postingsHistory || []}
             columns={techColumns}
             showToolbar
-            getRowId={(row: any) => row.referenceNumber}
           />
         </Grid>
       </Grid>
