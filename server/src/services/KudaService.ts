@@ -156,8 +156,8 @@ class KudaService implements BankService {
       RequestRef: ReferenceGenerator.generate(),
       data: {
         ...rest,
-        pageSize: payload.page?.pageNumber || 1,
-        pageNumber: payload.page?.pageSize || 1000,
+        pageNumber: payload.page?.pageNumber || 1,
+        pageSize: payload.page?.pageSize || 1000,
       },
     });
 
@@ -166,8 +166,8 @@ class KudaService implements BankService {
       RequestRef: ReferenceGenerator.generate(),
       data: {
         ...rest,
-        pageSize: payload.page?.pageNumber || 1,
-        pageNumber: payload.page?.pageSize || 1000,
+        pageSize: payload.page?.pageSize || 1,
+        pageNumber: payload.page?.pageNumber || 1000,
       },
     });
     return response.data.data as appModelTypes.AccountTransactionsResponseDTO;
