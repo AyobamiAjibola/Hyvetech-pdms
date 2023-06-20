@@ -33,6 +33,7 @@ import { formatNumberToIntl } from "../../utils/generic";
 import { DateRange } from "@mui/x-date-pickers-pro";
 import { UploadResult } from "@app-models";
 import TransferDialog from "./TransferDialog";
+import { uniqueId } from "lodash";
 
 const HyvePayDashboard = () => {
   const [openActivateModal, setOpenActivateModal] = useState(false);
@@ -448,6 +449,7 @@ const HyvePayDashboard = () => {
             rows={autohyvePay.transaction.postingsHistory || []}
             columns={techColumns}
             showToolbar
+            getRowId={(row: any) => uniqueId("HPY")}
           />
         </Grid>
       </Grid>
