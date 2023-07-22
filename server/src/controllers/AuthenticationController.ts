@@ -1,27 +1,32 @@
-import { Request } from 'express';
+import { Request } from "express";
 
-import Joi from 'joi';
+import Joi from "joi";
 
-import { appCommonTypes } from '../@types/app-common';
-import User, { $loginSchema, $userSchema } from '../models/User';
-import CustomAPIError from '../exceptions/CustomAPIError';
-import HttpStatus from '../helpers/HttpStatus';
-import Generic from '../utils/Generic';
-import { InferAttributes } from 'sequelize/types';
-import { QueueManager } from 'rabbitmq-email-manager';
-import email_content from '../resources/templates/email/email_content';
-import create_customer_success_email from '../resources/templates/email/create_customer_success_email';
-import { CATEGORIES, GARAGE_ADMIN_ROLE, MAIL_QUEUE_EVENTS, QUEUE_EVENTS } from '../config/constants';
-import dataSources from '../services/dao';
-import settings from '../config/settings';
-import { CreationAttributes, Op } from 'sequelize';
-import Permission from '../models/Permission';
-import Partner from '../models/Partner';
-import { TryCatch } from '../decorators';
-import Contact from '../models/Contact';
-import PartnerController from './PartnerController';
-import garage_partner_welcome_email from '../resources/templates/email/garage_partner_welcome_email';
-import capitalize from 'capitalize';
+import { appCommonTypes } from "../@types/app-common";
+import User, { $loginSchema, $userSchema } from "../models/User";
+import CustomAPIError from "../exceptions/CustomAPIError";
+import HttpStatus from "../helpers/HttpStatus";
+import Generic from "../utils/Generic";
+import { InferAttributes } from "sequelize/types";
+import { QueueManager } from "rabbitmq-email-manager";
+import email_content from "../resources/templates/email/email_content";
+import create_customer_success_email from "../resources/templates/email/create_customer_success_email";
+import {
+  CATEGORIES,
+  GARAGE_ADMIN_ROLE,
+  MAIL_QUEUE_EVENTS,
+  QUEUE_EVENTS,
+} from "../config/constants";
+import dataSources from "../services/dao";
+import settings from "../config/settings";
+import { CreationAttributes, Op } from "sequelize";
+import Permission from "../models/Permission";
+import Partner from "../models/Partner";
+import { TryCatch } from "../decorators";
+import Contact from "../models/Contact";
+import PartnerController from "./PartnerController";
+import garage_partner_welcome_email from "../resources/templates/email/garage_partner_welcome_email";
+import capitalize from "capitalize";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
@@ -34,6 +39,8 @@ export interface IGarageSignupModel {
   dialCode: string;
   state: string;
   isRegistered: boolean;
+  address?: string;
+  password?: string;
 }
 
 export default class AuthenticationController {
@@ -51,7 +58,13 @@ export default class AuthenticationController {
     try {
       const { error, value } = Joi.object($userSchema).validate(req.body);
 
-      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
 
       const userExist = await dataSources.userDAOService.findByAny({
         where: {
@@ -60,23 +73,34 @@ export default class AuthenticationController {
       });
 
       if (userExist)
-        return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.BAD_REQUEST.value,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
 
       //find role by name
       const role = await dataSources.roleDAOService.findByAny({
         where: { slug: value.role },
       });
 
-      if (!role) return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
+      if (!role)
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.NOT_FOUND.value,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
 
       value.password = Generic.generateRandomString(15);
 
       const user = await dataSources.userDAOService.create(value);
 
       //associate user with role
-      await user.$set('roles', [role]);
+      await user.$set("roles", [role]);
 
-      const platforms = value.companyName.split(',');
+      const platforms = value.companyName.split(",");
 
       for (const platform of platforms) {
         const partner = await dataSources.partnerDAOService.findByAny({
@@ -84,9 +108,14 @@ export default class AuthenticationController {
         });
 
         if (!partner)
-          return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
+          return Promise.reject(
+            CustomAPIError.response(
+              HttpStatus.NOT_FOUND.value,
+              HttpStatus.NOT_FOUND.code
+            )
+          );
 
-        await partner.$add('users', [user]);
+        await partner.$add("users", [user]);
       }
 
       const mailText = create_customer_success_email({
@@ -112,7 +141,10 @@ export default class AuthenticationController {
           },
           subject: `Welcome to Jiffix ${value.companyName}`,
           html: mail,
-          bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+          bcc: [
+            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+            <string>process.env.SMTP_EMAIL_FROM,
+          ],
         },
       });
 
@@ -137,31 +169,64 @@ export default class AuthenticationController {
       //validate request body
       const { error, value } = Joi.object($loginSchema).validate(req.body);
 
-      if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
 
       //find user by username
-      const user = await dataSources.userDAOService.findByUsername(value.username, { include: [Partner] });
+      const user = await dataSources.userDAOService.findByUsername(
+        value.username,
+        { include: [Partner] }
+      );
 
       if (!user)
-        return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.UNAUTHORIZED.value,
+            HttpStatus.UNAUTHORIZED.code
+          )
+        );
 
       //verify password
       const hash = user.password;
       const password = value.password;
 
-      const isMatch = await this.passwordEncoder.match(password.trim(), hash.trim());
+      const isMatch = await this.passwordEncoder.match(
+        password.trim(),
+        hash.trim()
+      );
 
       if (!isMatch)
-        return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.UNAUTHORIZED.value,
+            HttpStatus.UNAUTHORIZED.code
+          )
+        );
 
       if (!user.active)
         return Promise.reject(
-          CustomAPIError.response('Account is disabled. Please contact administrator', HttpStatus.UNAUTHORIZED.code),
+          CustomAPIError.response(
+            "Account is disabled. Please contact administrator",
+            HttpStatus.UNAUTHORIZED.code
+          )
         );
 
-      const role = await dataSources.roleDAOService.findById(user.roleId, { include: [Permission] });
+      const role = await dataSources.roleDAOService.findById(user.roleId, {
+        include: [Permission],
+      });
 
-      if (!role) return Promise.reject(CustomAPIError.response(`Roles does not exist`, HttpStatus.UNAUTHORIZED.code));
+      if (!role)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Roles does not exist`,
+            HttpStatus.UNAUTHORIZED.code
+          )
+        );
 
       const permissions = [];
 
@@ -182,11 +247,14 @@ export default class AuthenticationController {
         loginToken: jwt,
       };
 
-      await dataSources.userDAOService.update(user, <InferAttributes<User>>updateValues);
+      await dataSources.userDAOService.update(
+        user,
+        <InferAttributes<User>>updateValues
+      );
 
       const response: HttpResponse<string> = {
         code: HttpStatus.OK.code,
-        message: 'Login successful',
+        message: "Login successful",
         result: jwt,
       };
 
@@ -205,18 +273,18 @@ export default class AuthenticationController {
     try {
       const user = await dataSources.userDAOService.findByAny({
         where: {
-          username: 'guest',
+          username: "guest",
         },
       });
 
       if (user) {
-        const roles = await user.$get('roles');
+        const roles = await user.$get("roles");
 
         const permissions = [];
 
         for (const role of roles) {
-          const _permissions = await role.$get('permissions', {
-            attributes: ['action', 'subject'],
+          const _permissions = await role.$get("permissions", {
+            attributes: ["action", "subject"],
           });
 
           for (const _permission of _permissions) {
@@ -247,34 +315,45 @@ export default class AuthenticationController {
       const rawPassword = process.env.BOOTSTRAP_PASS;
 
       if (undefined === rawPassword)
-        return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.BAD_REQUEST.value,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
 
       //find role by name
       const role = await dataSources.roleDAOService.findByAny({
         where: { slug: settings.roles[2] },
       });
 
-      if (!role) return Promise.reject(CustomAPIError.response(HttpStatus.NOT_FOUND.value, HttpStatus.NOT_FOUND.code));
+      if (!role)
+        return Promise.reject(
+          CustomAPIError.response(
+            HttpStatus.NOT_FOUND.value,
+            HttpStatus.NOT_FOUND.code
+          )
+        );
 
       const hash = await this.passwordEncoder.encode(rawPassword);
 
       const guestUser: any = {
-        firstName: 'Anonymous',
-        lastName: 'Anonymous',
-        username: 'guest',
+        firstName: "Anonymous",
+        lastName: "Anonymous",
+        username: "guest",
         password: hash,
       };
 
       const created = await dataSources.userDAOService.create(guestUser);
-      await created.$add('roles', [role]);
+      await created.$add("roles", [role]);
 
-      const roles = await created.$get('roles');
+      const roles = await created.$get("roles");
 
       const permissions = [];
 
       for (const role of roles) {
-        const _permissions = await role.$get('permissions', {
-          attributes: ['action', 'subject'],
+        const _permissions = await role.$get("permissions", {
+          attributes: ["action", "subject"],
         });
 
         for (const _permission of _permissions) {
@@ -312,7 +391,7 @@ export default class AuthenticationController {
 
   public async signOut(req: Request) {
     try {
-      await req.user.update({ loginToken: '' });
+      await req.user.update({ loginToken: "" });
 
       const response: HttpResponse<null> = {
         code: HttpStatus.OK.code,
@@ -328,19 +407,35 @@ export default class AuthenticationController {
   @TryCatch
   public async garageSignup(req: Request) {
     const { error, value } = Joi.object<IGarageSignupModel>({
-      firstName: Joi.string().max(80).label('First Name').required(),
-      lastName: Joi.string().max(80).label('Last Name').required(),
-      name: Joi.string().required().label('Workshop/Business Name'),
-      email: Joi.string().email().label('Email Address').required(),
-      phone: Joi.string().length(11).required().label('Phone Number'),
-      dialCode: Joi.string().required().label('Dial Code'),
-      state: Joi.string().label('State').required(),
-      isRegistered: Joi.boolean().truthy().label('Legally Registered').required(),
+      firstName: Joi.string().max(80).label("First Name").required(),
+      lastName: Joi.string().max(80).label("Last Name").required(),
+      name: Joi.string().required().label("Workshop/Business Name"),
+      email: Joi.string().email().label("Email Address").required(),
+      address: Joi.string().optional(),
+      phone: Joi.string().required().label("Phone Number"),
+      dialCode: Joi.string().optional().label("Dial Code"),
+      state: Joi.string().label("State").required(),
+      password: Joi.string().min(8).optional(),
+      isRegistered: Joi.boolean()
+        .truthy()
+        .label("Legally Registered")
+        .optional(),
     }).validate(req.body);
 
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
     if (!value)
-      return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          HttpStatus.BAD_REQUEST.value,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     //check if partner with email or name already exist
     const partnerExist = await dataSources.partnerDAOService.findByAny({
@@ -351,7 +446,10 @@ export default class AuthenticationController {
 
     if (partnerExist)
       return Promise.reject(
-        CustomAPIError.response(`Partner with name or email already exist`, HttpStatus.BAD_REQUEST.code),
+        CustomAPIError.response(
+          `Partner with name or email already exist`,
+          HttpStatus.BAD_REQUEST.code
+        )
       );
 
     const state = await dataSources.stateDAOService.findByAny({
@@ -360,9 +458,15 @@ export default class AuthenticationController {
       },
     });
 
-    if (!state) return Promise.reject(CustomAPIError.response(`State does not exist`, HttpStatus.NOT_FOUND.code));
+    if (!state)
+      return Promise.reject(
+        CustomAPIError.response(
+          `State does not exist`,
+          HttpStatus.NOT_FOUND.code
+        )
+      );
 
-    const password = <string>process.env.PARTNER_PASS;
+    const password = value.password || <string>process.env.PARTNER_PASS;
 
     const partnerValues: Partial<Partner> = {
       email: value.email,
@@ -379,7 +483,13 @@ export default class AuthenticationController {
       where: { slug: settings.roles[4] },
     });
 
-    if (!role) return Promise.reject(CustomAPIError.response(`Role does not exist`, HttpStatus.NOT_FOUND.code));
+    if (!role)
+      return Promise.reject(
+        CustomAPIError.response(
+          `Role does not exist`,
+          HttpStatus.NOT_FOUND.code
+        )
+      );
 
     const userValues: Partial<User> = {
       username: value.email,
@@ -394,7 +504,7 @@ export default class AuthenticationController {
 
     const contactValues: Partial<Contact> = {
       state: state.name,
-      country: 'Nigeria',
+      country: "Nigeria",
     };
 
     //find garage category
@@ -405,22 +515,33 @@ export default class AuthenticationController {
     });
 
     if (!category)
-      return Promise.reject(CustomAPIError.response(`Category does not exist`, HttpStatus.BAD_REQUEST.code));
+      return Promise.reject(
+        CustomAPIError.response(
+          `Category does not exist`,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
 
     //create partner
-    const partner = await dataSources.partnerDAOService.create(<CreationAttributes<Partner>>partnerValues);
+    const partner = await dataSources.partnerDAOService.create(
+      <CreationAttributes<Partner>>partnerValues
+    );
 
     //create default admin user
-    const user = await dataSources.userDAOService.create(<CreationAttributes<User>>userValues);
+    const user = await dataSources.userDAOService.create(
+      <CreationAttributes<User>>userValues
+    );
 
-    const contact = await dataSources.contactDAOService.create(<CreationAttributes<Contact>>contactValues);
+    const contact = await dataSources.contactDAOService.create(
+      <CreationAttributes<Contact>>contactValues
+    );
 
-    await partner.$add('categories', [category]);
-    await partner.$set('contact', contact);
-    await partner.$set('users', user);
-    await user.$set('roles', [role]);
+    await partner.$add("categories", [category]);
+    await partner.$set("contact", contact);
+    await partner.$set("users", user);
+    await user.$set("roles", [role]);
 
-    await role.$add('users', [user]);
+    await role.$add("users", [user]);
 
     const result = PartnerController.formatPartner(partner);
 
@@ -439,7 +560,10 @@ export default class AuthenticationController {
         from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
         subject: mailSubject,
         html: mailText,
-        bcc: [<string>process.env.SMTP_CUSTOMER_CARE_EMAIL, <string>process.env.SMTP_EMAIL_FROM],
+        bcc: [
+          <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+          <string>process.env.SMTP_EMAIL_FROM,
+        ],
       },
     });
 

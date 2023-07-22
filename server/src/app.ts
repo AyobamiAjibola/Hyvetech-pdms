@@ -1,25 +1,25 @@
-import express, { json, static as _static } from 'express';
-import path from 'path';
-import helmet from 'helmet';
-import cors from 'cors';
-import morgan from 'morgan';
-import swaggerJsdoc from 'swagger-jsdoc';
-import { serve, setup } from 'swagger-ui-express';
-import cookieParser from 'cookie-parser';
+import express, { json, static as _static } from "express";
+import path from "path";
+import helmet from "helmet";
+import cors from "cors";
+import morgan from "morgan";
+import swaggerJsdoc from "swagger-jsdoc";
+import { serve, setup } from "swagger-ui-express";
+import cookieParser from "cookie-parser";
 
-import settings from './config/settings';
-import globalExceptionHandler from './middleware/globalExceptionHandler';
-import config from './config';
+import settings from "./config/settings";
+import globalExceptionHandler from "./middleware/globalExceptionHandler";
+import config from "./config";
 
-import router from './routes';
-
+import router from "./routes";
 
 const app = express();
 const openapiSpecification = swaggerJsdoc(config.swagger); //configure swagger API documentation
 export const corsOptions = {
   origin: [
-    'http://localhost:3000',
-    'http://localhost:3002',
+    "http://localhost:3000",
+    "http://localhost:3002",
+    "http://127.0.0.1:5173",
     <string>process.env.CLIENT_HOST,
     <string>process.env.CLIENT_HOST_WWW,
     <string>process.env.CLIENT_IP,
@@ -40,9 +40,9 @@ app.use(cookieParser(settings.cookie.secret));
 app.use(cors(corsOptions)); //handle cors operations
 // app.use(cors()); //handle cors operations
 app.use(json()); // Parse incoming requests data
-app.use(morgan('dev')); //Route debugger
+app.use(morgan("dev")); //Route debugger
 
-app.use('/uploads', _static(path.resolve('uploads')));
+app.use("/uploads", _static(path.resolve("uploads")));
 
 // Route API documentation
 app.use(`${settings.service.apiRoot}/docs`, serve, setup(openapiSpecification));
