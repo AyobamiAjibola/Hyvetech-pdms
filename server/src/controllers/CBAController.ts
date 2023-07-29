@@ -48,6 +48,14 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
     pin: Joi.string().required().label("pin"),
   };
 
+export interface IBeneficiaryModel {
+  name: string;
+  accountName: string;
+  bankName: string;
+  accountNumber: string;
+  bankCode: string;
+}
+
 export const filterAccountTransactionSchema: Joi.SchemaMap<appModels.AccountTransactionLogDTO> =
   {
     startDate: Joi.string().optional().label("startDate"),
@@ -79,6 +87,65 @@ class CBAController {
     };
 
     return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
+  public async createBeneficiary(req: Request) {
+    const { error, value } = Joi.object<IBeneficiaryModel>({
+      name: Joi.string().required(),
+      bankName: Joi.string().required(),
+      bankCode: Joi.string().required(),
+      accountName: Joi.string().required(),
+      accountNumber: Joi.string().required(),
+    }).validate(req.body);
+
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+    if (!value)
+      return Promise.reject(
+        CustomAPIError.response(
+          HttpStatus.BAD_REQUEST.value,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+
+    const beneficiary = await dataSources.beneficiaryDAOService.findByAny({
+      where: {
+        accountNumber: value.accountNumber,
+        partnerId: req.user.partnerId,
+      },
+    });
+
+    const response: HttpResponse<IBeneficiaryModel> = {
+      message: `Beneficiary successfully created.`,
+      code: HttpStatus.OK.code,
+      result: null,
+    };
+
+    if (beneficiary)
+      return Promise.reject(
+        CustomAPIError.response(
+          "Beneficiary already added",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+
+    response.result = await dataSources.beneficiaryDAOService.create({
+      name: value.name,
+      accountName: value.accountName,
+      accountNumber: value.accountNumber,
+      bankCode: value.bankCode,
+      partnerId: req.user.partner.id,
+      bankName: value.bankName as string,
+    });
+
+    return response;
   }
 
   @TryCatch

@@ -2,6 +2,7 @@ import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
 import {
   createAccountHandler,
+  createBeneficiary,
   getAccountBalance,
   getAccountTransactions,
   getKycAccountRequest,
@@ -70,6 +71,12 @@ const cbaEndpoint: RouteEndpoints = [
     method: "post",
     path: "/account/transfer",
     handler: initiateAccountTransfer,
+  },
+  {
+    name: "add-beneficiary",
+    method: "post",
+    path: "/beneficary/add",
+    handler: createBeneficiary,
   },
   {
     name: "perform-account-transfer",

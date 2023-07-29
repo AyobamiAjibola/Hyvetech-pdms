@@ -101,6 +101,14 @@ export const initiateAccountTransfer = authenticateRouteWrapper(
   }
 );
 
+export const createBeneficiary = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await cbaController.createBeneficiary(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
 export const getKycAccountRequest = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
     const result = await cbaController.getKyRequests(req);
