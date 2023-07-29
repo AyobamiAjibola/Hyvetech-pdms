@@ -40,7 +40,9 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
       | undefined
   ): Promise<PartnerAccount> {
     const reference = ReferenceGenerator.generate();
-    if (values.phoneNumber.startsWith("234")) {
+    if (values.phoneNumber.startsWith("2340")) {
+      values.phoneNumber = values.phoneNumber.slice(3);
+    } else if (values.phoneNumber.startsWith("234")) {
       values.phoneNumber = `0${values.phoneNumber.slice(3)}`;
     }
     const account = await this.bankService.createAccount({
