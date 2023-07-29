@@ -1,6 +1,6 @@
-import { appModelTypes } from '../../@types/app-model';
+import { appModelTypes } from "../../@types/app-model";
 import ICrudDAO = appModelTypes.ICrudDAO;
-import PartnerAccount from '../../models/PartnerAccount';
+import PartnerAccount from "../../models/PartnerAccount";
 import {
   Optional,
   InferCreationAttributes,
@@ -9,13 +9,13 @@ import {
   UpdateOptions,
   FindOptions,
   DestroyOptions,
-} from 'sequelize';
-import { NullishPropertiesOf } from 'sequelize/types/utils';
-import PartAccountRepository from '../../repositories/PartnerAccountRepository';
-import BankService, { AccountTransactionLogDTO } from '../BankService';
-import { ReferenceGenerator } from '../ReferenceGenerator';
-import { appCommonTypes } from '../../@types/app-common';
-import PasswordEncoder from '../../utils/PasswordEncoder';
+} from "sequelize";
+import { NullishPropertiesOf } from "sequelize/types/utils";
+import PartAccountRepository from "../../repositories/PartnerAccountRepository";
+import BankService, { AccountTransactionLogDTO } from "../BankService";
+import { ReferenceGenerator } from "../ReferenceGenerator";
+import { appCommonTypes } from "../../@types/app-common";
+import PasswordEncoder from "../../utils/PasswordEncoder";
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 
 export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
@@ -31,11 +31,18 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
   async create(
     values: Optional<
       InferCreationAttributes<PartnerAccount, { omit: never }>,
-      NullishPropertiesOf<InferCreationAttributes<PartnerAccount, { omit: never }>>
+      NullishPropertiesOf<
+        InferCreationAttributes<PartnerAccount, { omit: never }>
+      >
     >,
-    options?: CreateOptions<InferAttributes<PartnerAccount, { omit: never }>> | undefined,
+    options?:
+      | CreateOptions<InferAttributes<PartnerAccount, { omit: never }>>
+      | undefined
   ): Promise<PartnerAccount> {
     const reference = ReferenceGenerator.generate();
+    if (values.phoneNumber.startsWith("234")) {
+      values.phoneNumber = `0${values.phoneNumber.slice(3)}`;
+    }
     const account = await this.bankService.createAccount({
       email: values.email,
       firstName: values.firstName,
@@ -65,9 +72,13 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
     t: PartnerAccount,
     values: Optional<
       InferCreationAttributes<PartnerAccount, { omit: never }>,
-      NullishPropertiesOf<InferCreationAttributes<PartnerAccount, { omit: never }>>
+      NullishPropertiesOf<
+        InferCreationAttributes<PartnerAccount, { omit: never }>
+      >
     >,
-    options?: UpdateOptions<InferAttributes<PartnerAccount, { omit: never }>> | undefined,
+    options?:
+      | UpdateOptions<InferAttributes<PartnerAccount, { omit: never }>>
+      | undefined
   ): Promise<PartnerAccount> {
     await this.bankService.updateAccount({
       firstName: values.firstName,
@@ -80,21 +91,29 @@ export class PartnerAccountDAOService implements ICrudDAO<PartnerAccount> {
   }
   findById(
     id: number,
-    options?: FindOptions<InferAttributes<PartnerAccount, { omit: never }>> | undefined,
+    options?:
+      | FindOptions<InferAttributes<PartnerAccount, { omit: never }>>
+      | undefined
   ): Promise<PartnerAccount | null> {
     throw this.parterAccountRepository.findById(id, options);
   }
   deleteById(
     id: number,
-    options?: DestroyOptions<InferAttributes<PartnerAccount, { omit: never }>> | undefined,
+    options?:
+      | DestroyOptions<InferAttributes<PartnerAccount, { omit: never }>>
+      | undefined
   ): Promise<void> {
     return this.parterAccountRepository.deleteById(id, options);
   }
-  findByAny(options: FindOptions<InferAttributes<PartnerAccount, { omit: never }>>): Promise<PartnerAccount | null> {
+  findByAny(
+    options: FindOptions<InferAttributes<PartnerAccount, { omit: never }>>
+  ): Promise<PartnerAccount | null> {
     return this.parterAccountRepository.findOne(options);
   }
   findAll(
-    options?: FindOptions<InferAttributes<PartnerAccount, { omit: never }>> | undefined,
+    options?:
+      | FindOptions<InferAttributes<PartnerAccount, { omit: never }>>
+      | undefined
   ): Promise<PartnerAccount[]> {
     return this.parterAccountRepository.findAll(options);
   }
