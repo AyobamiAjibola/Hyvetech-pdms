@@ -9,65 +9,87 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { Attributes, CreationOptional, InferAttributes } from 'sequelize/types';
-import Contact from './Contact';
-import { InferCreationAttributes, NonAttribute } from 'sequelize';
-import User from './User';
-import PartnerCategory from './PartnerCategory';
-import Category from './Category';
-import Plan from './Plan';
-import PartnerRideShareDriver from './PartnerRideShareDriver';
-import RideShareDriver from './RideShareDriver';
-import Job from './Job';
-import Technician from './Technician';
-import PartnerTechnician from './PartnerTechnician';
-import CheckList from './CheckList';
-import PartnerCheckList from './PartnerCheckList';
-import Estimate from './Estimate';
-import Transaction from './Transaction';
-import Expense from './Expense';
-import Beneficiary from './Beneficiary';
-import ExpenseType from './ExpenseType';
-import Role from './Role';
-import Preference from './Pereference';
-import ItemStock from './ItemStock';
-import ReminderType from './ReminderType';
-import ServiceReminder from './ServiceReminder';
-import PartnerAccount from './PartnerAccount';
-import Joi from 'joi';
+} from "sequelize-typescript";
+import { Attributes, CreationOptional, InferAttributes } from "sequelize/types";
+import Contact from "./Contact";
+import { InferCreationAttributes, NonAttribute } from "sequelize";
+import User from "./User";
+import PartnerCategory from "./PartnerCategory";
+import Category from "./Category";
+import Plan from "./Plan";
+import PartnerRideShareDriver from "./PartnerRideShareDriver";
+import RideShareDriver from "./RideShareDriver";
+import Job from "./Job";
+import Technician from "./Technician";
+import PartnerTechnician from "./PartnerTechnician";
+import CheckList from "./CheckList";
+import PartnerCheckList from "./PartnerCheckList";
+import Estimate from "./Estimate";
+import Transaction from "./Transaction";
+import Expense from "./Expense";
+import Beneficiary from "./Beneficiary";
+import ExpenseType from "./ExpenseType";
+import Role from "./Role";
+import Preference from "./Pereference";
+import ItemStock from "./ItemStock";
+import ReminderType from "./ReminderType";
+import ServiceReminder from "./ServiceReminder";
+import PartnerAccount from "./PartnerAccount";
+import Joi from "joi";
 
 export type CreatePartnerType = Attributes<Partner>;
+export type UpdatePartnerProfile = {
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+  state?: string;
+  district?: string;
+  address?: string;
+  phone?: string;
+};
 export const $createPartnerKyc: Joi.SchemaMap<CreatePartnerType> = {
-  cac: Joi.string().allow('').label('CAC'),
-  name: Joi.string().label('Company Full Name'),
-  nameOfDirector: Joi.string().allow('').label('Name of Director'),
-  nameOfManager: Joi.string().allow('').label('Name of Manager'),
-  vatNumber: Joi.string().allow('').label('VAT Number'),
-  workshopAddress: Joi.string().allow('').label('Workshop Address'),
+  cac: Joi.string().allow("").label("CAC"),
+  name: Joi.string().label("Company Full Name"),
+  nameOfDirector: Joi.string().allow("").label("Name of Director"),
+  nameOfManager: Joi.string().allow("").label("Name of Manager"),
+  vatNumber: Joi.string().allow("").label("VAT Number"),
+  workshopAddress: Joi.string().allow("").label("Workshop Address"),
+};
+
+export const $updatePartnerProfile: Joi.SchemaMap<UpdatePartnerProfile> = {
+  firstName: Joi.string().optional(),
+  lastName: Joi.string().optional(),
+  password: Joi.string().optional(),
+  state: Joi.string().optional(),
+  district: Joi.string().optional(),
+  address: Joi.string().optional(),
+  phone: Joi.string().optional(),
 };
 
 export const $createPartnerSettings: Joi.SchemaMap<CreatePartnerType> = {
-  accountName: Joi.string().allow('').label('Account Name'),
-  accountNumber: Joi.string().allow('').label('Account Number'),
-  bankName: Joi.string().allow('').label('Bank Name'),
-  googleMap: Joi.string().allow('').label('Google Map Link'),
-  logo: Joi.binary().allow().label('Company Logo'),
-  phone: Joi.string().allow('').label('Phone'),
-  totalStaff: Joi.string().allow('').label('Total Staff'),
-  totalTechnicians: Joi.string().allow('').label('Total Technicians'),
-  brands: Joi.string().allow('').label('Company Brands'),
-  workingHours: Joi.string().allow('').label('Working Hours'),
+  accountName: Joi.string().allow("").label("Account Name"),
+  accountNumber: Joi.string().allow("").label("Account Number"),
+  bankName: Joi.string().allow("").label("Bank Name"),
+  googleMap: Joi.string().allow("").label("Google Map Link"),
+  logo: Joi.binary().allow().label("Company Logo"),
+  phone: Joi.string().allow("").label("Phone"),
+  totalStaff: Joi.string().allow("").label("Total Staff"),
+  totalTechnicians: Joi.string().allow("").label("Total Technicians"),
+  brands: Joi.string().allow("").label("Company Brands"),
+  workingHours: Joi.string().allow("").label("Working Hours"),
 };
 
 @Table({
   timestamps: true,
-  tableName: 'partners',
+  tableName: "partners",
 })
-export default class Partner extends Model<InferAttributes<Partner>, InferCreationAttributes<Partner>> {
+export default class Partner extends Model<
+  InferAttributes<Partner>,
+  InferCreationAttributes<Partner>
+> {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.INTEGER, field: 'partner_id', allowNull: false })
+  @Column({ type: DataType.INTEGER, field: "partner_id", allowNull: false })
   declare id: CreationOptional<number>;
 
   @Column(DataType.STRING)
@@ -130,13 +152,13 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
   @Column(DataType.ARRAY(DataType.STRING))
   declare workingHours: string[];
 
-  @HasOne(() => Contact, { onDelete: 'SET NULL' })
+  @HasOne(() => Contact, { onDelete: "SET NULL" })
   declare contact: NonAttribute<Contact>;
 
-  @HasMany(() => Plan, { onDelete: 'SET NULL' })
+  @HasMany(() => Plan, { onDelete: "SET NULL" })
   declare plans: NonAttribute<Array<Plan>>;
 
-  @HasMany(() => Job, { onDelete: 'SET NULL' })
+  @HasMany(() => Job, { onDelete: "SET NULL" })
   declare jobs: NonAttribute<Array<Job>>;
 
   @HasMany(() => User)
@@ -170,16 +192,24 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
   declare roles: NonAttribute<Array<Role>>;
 
   @BelongsToMany(() => CheckList, () => PartnerCheckList)
-  declare checkLists: NonAttribute<Array<CheckList & { PartnerCheckList: PartnerCheckList }>>;
+  declare checkLists: NonAttribute<
+    Array<CheckList & { PartnerCheckList: PartnerCheckList }>
+  >;
 
   @BelongsToMany(() => RideShareDriver, () => PartnerRideShareDriver)
-  declare rideShareDrivers: NonAttribute<Array<RideShareDriver & { PartnerRideShareDriver: PartnerRideShareDriver }>>;
+  declare rideShareDrivers: NonAttribute<
+    Array<RideShareDriver & { PartnerRideShareDriver: PartnerRideShareDriver }>
+  >;
 
   @BelongsToMany(() => Technician, () => PartnerTechnician)
-  declare technicians: NonAttribute<Array<Technician & { PartnerTechnician: PartnerTechnician }>>;
+  declare technicians: NonAttribute<
+    Array<Technician & { PartnerTechnician: PartnerTechnician }>
+  >;
 
   @BelongsToMany(() => Category, () => PartnerCategory)
-  declare categories: NonAttribute<Array<Category & { PartnerCategory: PartnerCategory }>>;
+  declare categories: NonAttribute<
+    Array<Category & { PartnerCategory: PartnerCategory }>
+  >;
 
   @HasMany(() => Transaction)
   declare transactions: NonAttribute<Transaction[]>;
@@ -190,6 +220,6 @@ export default class Partner extends Model<InferAttributes<Partner>, InferCreati
   @Column({ type: DataType.STRING, defaultValue: false })
   declare isAccountProvisioned: CreationOptional<boolean>;
 
-  @Column({ type: DataType.STRING, defaultValue: 'NOT_REQUESTED' })
+  @Column({ type: DataType.STRING, defaultValue: "NOT_REQUESTED" })
   declare accountProvisionStatus: CreationOptional<string>;
 }
