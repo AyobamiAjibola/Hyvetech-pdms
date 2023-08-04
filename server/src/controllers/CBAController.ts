@@ -265,6 +265,26 @@ class CBAController {
     return Promise.resolve(response);
   }
 
+  public async getAccountDetail(req: Request) {
+    const { accountNumber } = req.body;
+    const account = await dao.partnerAccountDaoService.findByAny({
+      where: { accountNumber },
+    });
+
+    if (!account)
+      return Promise.reject(
+        CustomAPIError.response(`No such account`, HttpStatus.BAD_REQUEST.code)
+      );
+
+    const response: HttpResponse<string> = {
+      code: HttpStatus.OK.code,
+      message: "Account retrieved successfully",
+      result: account.phoneNumber,
+    };
+
+    return Promise.resolve(response);
+  }
+
   @TryCatch
   @HasPermission([MANAGE_ALL])
   public async getKyRequests(req: Request) {

@@ -1,13 +1,14 @@
-import * as AWS from 'aws-sdk';
-import Busboy from 'busboy';
-import asyncErrorWrapper from '../middleware/asyncErrorWrapper';
-import endpoints from '../config/endpoints';
-import multer from 'multer';
-import settings from '../config/settings';
-import { Router } from 'express';
-import { PassThrough } from 'stream';
+import * as AWS from "aws-sdk";
+import Busboy from "busboy";
+import asyncErrorWrapper from "../middleware/asyncErrorWrapper";
+import endpoints from "../config/endpoints";
+import multer from "multer";
+import settings from "../config/settings";
+import { Router } from "express";
+import { PassThrough } from "stream";
+import { getAccountDetail } from "./cbaRoute";
 
-type RouteMethods = 'get' | 'post' | 'put' | 'delete' | 'patch';
+type RouteMethods = "get" | "post" | "put" | "delete" | "patch";
 
 AWS.config.update({
   accessKeyId: settings.amazon.s3.accessKey,
@@ -19,15 +20,17 @@ const s3 = new AWS.S3();
 
 const router = Router();
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: "uploads/" });
 
-endpoints.forEach(value => {
+endpoints.forEach((value) => {
   const method = value.method as RouteMethods;
 
   router[method](value.path, asyncErrorWrapper(value.handler));
 });
 
-router.post('/upload/file', (req, res) => {
+router.post("/account/detail", asyncErrorWrapper(getAccountDetail));
+
+router.post("/upload/file", (req, res) => {
   const busboy = Busboy({ headers: req.headers });
 
   let uploadedUrl: string;
@@ -37,13 +40,13 @@ router.post('/upload/file', (req, res) => {
 
   let fileKey: any = null;
 
-  busboy.on('file', (name, file, info) => {
+  busboy.on("file", (name, file, info) => {
     const pass = new PassThrough();
     const params: AWS.S3.PutObjectRequest = {
       Bucket: settings.amazon.s3.bucketName,
       Key: info.filename,
       Body: pass,
-      ACL: 'public-read',
+      ACL: "public-read",
     };
 
     const uploadStream = s3.upload(params);
@@ -52,8 +55,10 @@ router.post('/upload/file', (req, res) => {
     file.pipe(pass);
 
     // Get the uploaded file URL
-    uploadStream.on('httpUploadProgress', progress => {
-      console.log(`Uploaded ${progress.loaded} bytes of ${progress.total} bytes`);
+    uploadStream.on("httpUploadProgress", (progress) => {
+      console.log(
+        `Uploaded ${progress.loaded} bytes of ${progress.total} bytes`
+      );
     });
 
     uploadStream.send(function (err, data) {
@@ -91,7 +96,7 @@ router.post('/upload/file', (req, res) => {
     });
   });
 
-  busboy.on('finish', function () {
+  busboy.on("finish", function () {
     busboyFinishTime = new Date();
     // if (busboyFinishTime && s3UploadFinishTime) {
     //   res.json({

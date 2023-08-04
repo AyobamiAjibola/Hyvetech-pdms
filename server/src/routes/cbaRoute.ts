@@ -140,3 +140,9 @@ export const getMainAccountTransactions = authenticateRouteWrapper(
     res.status(result.code).json(result);
   }
 );
+
+export const getAccountDetail = async (req: Request, res: Response) => {
+  const result = await cbaController.getAccountDetail(req);
+
+  res.status(result.code).json(result);
+};
