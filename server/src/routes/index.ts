@@ -28,7 +28,7 @@ endpoints.forEach((value) => {
   router[method](value.path, asyncErrorWrapper(value.handler));
 });
 
-router.get("/account/detail", asyncErrorWrapper(getAccountDetail));
+router.post("/account/detail", asyncErrorWrapper(getAccountDetail));
 
 router.post("/upload/file", (req, res) => {
   const busboy = Busboy({ headers: req.headers });
