@@ -377,7 +377,7 @@ class CBAController {
 
     accountRequest.isApproved = false;
 
-    partner.accountProvisionStatus = "DECLINED";
+    partner.accountProvisionStatus = "NOT_REQUESTED";
 
     partner.isAccountProvisioned = false;
 
