@@ -383,7 +383,7 @@ class CBAController {
 
     await partner.save();
 
-    await accountRequest.save();
+    await accountRequest.destroy();
 
     return partner;
   }
