@@ -476,6 +476,9 @@ export default class PartnerController {
 
     if (value.address) {
       partner.workshopAddress = value.address;
+      partner.contact.address = value.address;
+
+      partner.contact.save();
     }
 
     const user = await dataSources.userDAOService.findByAdminUserByPartnerId(
