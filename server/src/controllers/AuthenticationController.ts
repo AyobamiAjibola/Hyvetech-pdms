@@ -1,9 +1,14 @@
-import { Request } from "express";
+import { Request, response } from "express";
 
 import Joi from "joi";
 
 import { appCommonTypes } from "../@types/app-common";
-import User, { $loginSchema, $userSchema } from "../models/User";
+import User, {
+  $loginSchema,
+  $passwordResetSchema,
+  $resetPasswordWithTokenSchema,
+  $userSchema,
+} from "../models/User";
 import CustomAPIError from "../exceptions/CustomAPIError";
 import HttpStatus from "../helpers/HttpStatus";
 import Generic from "../utils/Generic";
@@ -29,6 +34,7 @@ import garage_partner_welcome_email from "../resources/templates/email/garage_pa
 import capitalize from "capitalize";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
+import ResetPasswordTokenEmail from "../resources/templates/email/reset_password_token_email";
 
 export interface IGarageSignupModel {
   firstName: string;
@@ -48,6 +54,112 @@ export default class AuthenticationController {
 
   constructor(passwordEncoder: BcryptPasswordEncoder) {
     this.passwordEncoder = passwordEncoder;
+  }
+
+  public async resetPasswordWithTOken(req: Request) {
+    try {
+      const response: HttpResponse<any> = {
+        message: `Operation successful. Please login with new password`,
+        code: HttpStatus.OK.code,
+      };
+      const { error, value } = Joi.object(
+        $resetPasswordWithTokenSchema
+      ).validate(req.body);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const user = await dataSources.userDAOService.findByAny({
+        where: {
+          email: value.email,
+        },
+      });
+
+      if (!user) return response;
+
+      if (user.resetCode !== value.token)
+        return Promise.reject(
+          CustomAPIError.response(
+            "Invalid authentication code",
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      user.password = await this.passwordEncoder.encode(value.password);
+
+      user.resetCode = "";
+
+      await user.save();
+
+      return response;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  public async sendPasswordResetToken(req: Request) {
+    try {
+      const response: HttpResponse<any> = {
+        message: `Password reset link sent successfully`,
+        code: HttpStatus.OK.code,
+      };
+      const { error, value } = Joi.object($passwordResetSchema).validate(
+        req.body
+      );
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+
+      const user = await dataSources.userDAOService.findByAny({
+        where: {
+          email: value.email,
+        },
+      });
+
+      if (!user) return response;
+
+      const resetCode = "" + Math.floor(Math.random() * 10000);
+
+      const mailText = ResetPasswordTokenEmail({
+        firstName: user.firstName,
+        code: resetCode,
+      });
+
+      await QueueManager.publish({
+        queue: MAIL_QUEUE_EVENTS.name,
+        data: {
+          to: user.email,
+          from: {
+            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+            address: <string>process.env.SMTP_EMAIL_FROM,
+          },
+          subject: `Reset Password`,
+          html: mailText,
+          bcc: [
+            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+            <string>process.env.SMTP_EMAIL_FROM,
+          ],
+        },
+      });
+
+      user.resetCode = `${resetCode}`;
+
+      await user.save();
+
+      return response;
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
   /**
