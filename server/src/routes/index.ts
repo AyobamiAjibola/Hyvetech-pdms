@@ -7,6 +7,7 @@ import settings from "../config/settings";
 import { Router } from "express";
 import { PassThrough } from "stream";
 import { getAccountDetail } from "./cbaRoute";
+import { resetPasswordWithToken, sendPasswordResetToken } from "./authRoute";
 
 type RouteMethods = "get" | "post" | "put" | "delete" | "patch";
 
@@ -29,6 +30,13 @@ endpoints.forEach((value) => {
 });
 
 router.post("/account/detail", asyncErrorWrapper(getAccountDetail));
+
+router.post(
+  "/send-password-reset-token",
+  asyncErrorWrapper(sendPasswordResetToken)
+);
+
+router.post("/password-reset", asyncErrorWrapper(resetPasswordWithToken));
 
 router.post("/upload/file", (req, res) => {
   const busboy = Busboy({ headers: req.headers });

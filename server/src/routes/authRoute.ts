@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import AuthenticationController from '../controllers/AuthenticationController';
-import PasswordEncoder from '../utils/PasswordEncoder';
-import authenticateRouteWrapper from '../middleware/authenticateRouteWrapper';
-import settings from '../config/settings';
+import { Request, Response } from "express";
+import AuthenticationController from "../controllers/AuthenticationController";
+import PasswordEncoder from "../utils/PasswordEncoder";
+import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
+import settings from "../config/settings";
 
 const passwordEncoder = new PasswordEncoder();
 const authenticationController = new AuthenticationController(passwordEncoder);
@@ -79,7 +79,7 @@ export const signInHandler = async (req: Request, res: Response) => {
   const response = await authenticationController.signIn(req);
 
   res.cookie(settings.cookie.name, response.result, {
-    sameSite: 'none',
+    sameSite: "none",
     secure: true,
     signed: true,
     httpOnly: true,
@@ -94,21 +94,33 @@ export const bootstrapHandler = async (req: Request, res: Response) => {
   res.status(response.code).json(response);
 };
 
-export const signOutHandler = authenticateRouteWrapper(async (req: Request, res: Response) => {
-  const response = await authenticationController.signOut(req);
+export const signOutHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const response = await authenticationController.signOut(req);
 
-  res.clearCookie(settings.cookie.name, {
-    sameSite: 'none',
-    secure: true,
-    signed: true,
-    httpOnly: true,
-  });
+    res.clearCookie(settings.cookie.name, {
+      sameSite: "none",
+      secure: true,
+      signed: true,
+      httpOnly: true,
+    });
 
-  res.status(response.code).json(response);
-});
+    res.status(response.code).json(response);
+  }
+);
 
 export const garageSignUpHandler = async (req: Request, res: Response) => {
   const response = await authenticationController.garageSignup(req);
 
+  res.status(response.code).json(response);
+};
+
+export const sendPasswordResetToken = async (req: Request, res: Response) => {
+  const response = await authenticationController.sendPasswordResetToken(req);
+  res.status(response.code).json(response);
+};
+
+export const resetPasswordWithToken = async (req: Request, res: Response) => {
+  const response = await authenticationController.resetPasswordWithTOken(req);
   res.status(response.code).json(response);
 };
