@@ -1,17 +1,17 @@
-import { appModelTypes } from './app-model';
-import Permission from '../models/Permission';
-import type { Fields, Files } from 'formidable';
-import type { Attributes } from 'sequelize';
-import IncomingForm from 'formidable/Formidable';
-import User from '../models/User';
+import { appModelTypes } from "./app-model";
+import Permission from "../models/Permission";
+import type { Fields, Files } from "formidable";
+import type { Attributes } from "sequelize";
+import IncomingForm from "formidable/Formidable";
+import User from "../models/User";
 
-import CheckList from '../models/CheckList';
-import Transaction from '../models/Transaction';
+import CheckList from "../models/CheckList";
+import Transaction from "../models/Transaction";
 
 export declare namespace appCommonTypes {
   import IPermission = appModelTypes.IPermission;
 
-  type DatabaseEnv = 'development' | 'production' | 'test';
+  type DatabaseEnv = "development" | "production" | "test";
   type CheckListAnswerType = {
     id: string;
     answer: string;
@@ -33,98 +33,98 @@ export declare namespace appCommonTypes {
     title: string;
     questions: Array<CheckListQuestionType>;
   };
-  type CheckListType = Partial<Omit<CheckList, 'sections'>> & {
+  type CheckListType = Partial<Omit<CheckList, "sections">> & {
     sections: Array<CheckListSectionType>;
   };
   type Roles =
-    | 'ADMIN_ROLE'
-    | 'GUEST_ROLE'
-    | 'USER_ROLE'
-    | 'CUSTOMER_ROLE'
-    | 'GARAGE_ADMIN_ROLE'
-    | 'GARAGE_TECHNICIAN_ROLE'
-    | 'RIDE_SHARE_ADMIN_ROLE'
-    | 'RIDE_SHARE_DRIVER_ROLE';
+    | "ADMIN_ROLE"
+    | "GUEST_ROLE"
+    | "USER_ROLE"
+    | "CUSTOMER_ROLE"
+    | "GARAGE_ADMIN_ROLE"
+    | "GARAGE_TECHNICIAN_ROLE"
+    | "RIDE_SHARE_ADMIN_ROLE"
+    | "RIDE_SHARE_DRIVER_ROLE";
   type Permissions =
-    | 'manage_all'
-    | 'create_booking'
-    | 'read_booking'
-    | 'update_booking'
-    | 'delete_booking'
-    | 'create_user'
-    | 'read_user'
-    | 'update_user'
-    | 'delete_user'
-    | 'create_customer'
-    | 'read_customer'
-    | 'update_customer'
-    | 'delete_customer'
-    | 'create_role'
-    | 'read_role'
-    | 'update_role'
-    | 'delete_role'
-    | 'create_plan'
-    | 'read_plan'
-    | 'update_plan'
-    | 'delete_plan'
-    | 'create_technician'
-    | 'read_technician'
-    | 'update_technician'
-    | 'delete_technician'
-    | 'manage_technician'
-    | 'create_driver'
-    | 'read_driver'
-    | 'update_driver'
-    | 'delete_driver'
-    | 'manage_driver'
-    | 'read_guest'
-    | 'read_expense'
-    | 'update_expense'
-    | 'delete_expense'
-    | 'create_expense'
-    | 'read_invoice'
-    | 'update_invoice'
-    | 'delete_invoice'
-    | 'create_invoice'
-    | 'read_payment'
-    | 'create_payment'
-    | 'update_payment'
-    | 'delete_payment'
-    | 'create_estimate'
-    | 'read_estimate'
-    | 'delete_estimate'
-    | 'update_estimate'
-    | 'create_vendor'
-    | 'read_vendor'
-    | 'delete_vendor'
-    | 'update_vendor'
-    | 'create_beneficiary'
-    | 'read_beneficiary'
-    | 'delete_beneficiary'
-    | 'update_beneficiary'
-    | 'create_payment_received'
-    | 'update_payment_received'
-    | 'delete_payment_received'
-    | 'read_payment_received'
-    | 'create_expense_type'
-    | 'update_expense_type'
-    | 'delete_expense_type'
-    | 'delete_expense_type'
-    | 'read_expense_type'
-    | 'create_workshop_profile'
-    | 'update_workshop_profile'
-    | 'delete_workshop_profile'
-    | 'update_workshop_profile'
-    | 'read_workshop_profile'
-    | 'create_transaction'
-    | 'update_transaction'
-    | 'delete_transaction'
-    | 'read_transaction'
-    | 'create_item'
-    | 'read_item'
-    | 'delete_item'
-    | 'update_item'
-    | 'view_analytics';
+    | "manage_all"
+    | "create_booking"
+    | "read_booking"
+    | "update_booking"
+    | "delete_booking"
+    | "create_user"
+    | "read_user"
+    | "update_user"
+    | "delete_user"
+    | "create_customer"
+    | "read_customer"
+    | "update_customer"
+    | "delete_customer"
+    | "create_role"
+    | "read_role"
+    | "update_role"
+    | "delete_role"
+    | "create_plan"
+    | "read_plan"
+    | "update_plan"
+    | "delete_plan"
+    | "create_technician"
+    | "read_technician"
+    | "update_technician"
+    | "delete_technician"
+    | "manage_technician"
+    | "create_driver"
+    | "read_driver"
+    | "update_driver"
+    | "delete_driver"
+    | "manage_driver"
+    | "read_guest"
+    | "read_expense"
+    | "update_expense"
+    | "delete_expense"
+    | "create_expense"
+    | "read_invoice"
+    | "update_invoice"
+    | "delete_invoice"
+    | "create_invoice"
+    | "read_payment"
+    | "create_payment"
+    | "update_payment"
+    | "delete_payment"
+    | "create_estimate"
+    | "read_estimate"
+    | "delete_estimate"
+    | "update_estimate"
+    | "create_vendor"
+    | "read_vendor"
+    | "delete_vendor"
+    | "update_vendor"
+    | "create_beneficiary"
+    | "read_beneficiary"
+    | "delete_beneficiary"
+    | "update_beneficiary"
+    | "create_payment_received"
+    | "update_payment_received"
+    | "delete_payment_received"
+    | "read_payment_received"
+    | "create_expense_type"
+    | "update_expense_type"
+    | "delete_expense_type"
+    | "delete_expense_type"
+    | "read_expense_type"
+    | "create_workshop_profile"
+    | "update_workshop_profile"
+    | "delete_workshop_profile"
+    | "update_workshop_profile"
+    | "read_workshop_profile"
+    | "create_transaction"
+    | "update_transaction"
+    | "delete_transaction"
+    | "read_transaction"
+    | "create_item"
+    | "read_item"
+    | "delete_item"
+    | "update_item"
+    | "view_analytics";
 
   type VINProvider = {
     name: string;
@@ -151,7 +151,12 @@ export declare namespace appCommonTypes {
     driverId: string;
   };
 
-  type QueueMailTypes = 'DEFAULT' | 'WEBSITE' | 'BOOKING' | 'CUSTOMER' | 'email';
+  type QueueMailTypes =
+    | "DEFAULT"
+    | "WEBSITE"
+    | "BOOKING"
+    | "CUSTOMER"
+    | "email";
   type AnyObjectType = { [p: string]: any };
 
   export type IPartWarranty = { warranty: string; interval: string };
@@ -197,6 +202,11 @@ export declare namespace appCommonTypes {
   }
 
   interface AppSettings {
+    termii: {
+      host: string;
+      key: string;
+      from: string;
+    };
     mailer: {
       from: string;
       customerSupport: string;
@@ -277,7 +287,11 @@ export declare namespace appCommonTypes {
     results?: T[];
   }
 
-  type AsyncWrapper = (req: Request, res: Response, next: NextFunction) => Promise<void>;
+  type AsyncWrapper = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => Promise<void>;
 
   interface RouteEndpointConfig {
     name: string;
@@ -398,7 +412,7 @@ export declare namespace appCommonTypes {
     subtitle?: string;
     sound?: boolean | string;
     vibrate?: boolean | number[];
-    priority?: 'min' | 'low' | 'default' | 'high' | 'max';
+    priority?: "min" | "low" | "default" | "high" | "max";
     badge?: number;
   }
 

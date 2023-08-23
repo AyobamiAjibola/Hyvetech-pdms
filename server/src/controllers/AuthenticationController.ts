@@ -156,6 +156,21 @@ export default class AuthenticationController {
 
       await user.save();
 
+      dataSources.termiiService
+        .sendMessage({
+          to: user.phone,
+          sms: `Your password reset code is ${resetCode}`,
+          channel: "generic",
+          type: "plain",
+        })
+        .then(() => {
+          console.log("message sent successfully>");
+          return -1;
+        })
+        .catch((error) => {
+          console.log("Failed to send message? ", error);
+        });
+
       return response;
     } catch (error) {
       return Promise.reject(error);
