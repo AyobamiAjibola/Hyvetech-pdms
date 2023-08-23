@@ -1,103 +1,103 @@
-import { appCommonTypes } from '../@types/app-common';
+import { appCommonTypes } from "../@types/app-common";
 import AppSettings = appCommonTypes.AppSettings;
 
-export const MANAGE_ALL = 'manage_all';
+export const MANAGE_ALL = "manage_all";
 
-export const CREATE_BOOKING = 'create_booking';
-export const READ_BOOKING = 'read_booking';
-export const UPDATE_BOOKING = 'update_booking';
-export const DELETE_BOOKING = 'delete_booking';
+export const CREATE_BOOKING = "create_booking";
+export const READ_BOOKING = "read_booking";
+export const UPDATE_BOOKING = "update_booking";
+export const DELETE_BOOKING = "delete_booking";
 
-export const CREATE_USER = 'create_user';
-export const READ_USER = 'read_user';
-export const UPDATE_USER = 'update_user';
-export const DELETE_USER = 'delete_user';
+export const CREATE_USER = "create_user";
+export const READ_USER = "read_user";
+export const UPDATE_USER = "update_user";
+export const DELETE_USER = "delete_user";
 
-export const CREATE_CUSTOMER = 'create_customer';
-export const READ_CUSTOMER = 'read_customer';
-export const UPDATE_CUSTOMER = 'update_customer';
-export const DELETE_CUSTOMER = 'delete_customer';
+export const CREATE_CUSTOMER = "create_customer";
+export const READ_CUSTOMER = "read_customer";
+export const UPDATE_CUSTOMER = "update_customer";
+export const DELETE_CUSTOMER = "delete_customer";
 
-export const CREATE_ROLE = 'create_role';
-export const READ_ROLE = 'read_role';
-export const UPDATE_ROLE = 'update_role';
-export const DELETE_ROLE = 'delete_role';
+export const CREATE_ROLE = "create_role";
+export const READ_ROLE = "read_role";
+export const UPDATE_ROLE = "update_role";
+export const DELETE_ROLE = "delete_role";
 
-export const CREATE_PLAN = 'create_plan';
-export const READ_PLAN = 'read_plan';
-export const UPDATE_PLAN = 'update_plan';
-export const DELETE_PLAN = 'delete_plan';
+export const CREATE_PLAN = "create_plan";
+export const READ_PLAN = "read_plan";
+export const UPDATE_PLAN = "update_plan";
+export const DELETE_PLAN = "delete_plan";
 
-export const CREATE_TECHNICIAN = 'create_technician';
-export const READ_TECHNICIAN = 'read_technician';
-export const UPDATE_TECHINICIN = 'update_technician';
-export const DELETE_TECHNICIAN = 'delete_technician';
-export const MANAGE_TECHNICIAN = 'manage_technician';
+export const CREATE_TECHNICIAN = "create_technician";
+export const READ_TECHNICIAN = "read_technician";
+export const UPDATE_TECHINICIN = "update_technician";
+export const DELETE_TECHNICIAN = "delete_technician";
+export const MANAGE_TECHNICIAN = "manage_technician";
 
-export const CREATE_DRIVER = 'create_driver';
-export const READ_DRIVER = 'read_driver';
-export const UPDATE_DRIVER = 'update_driver';
-export const DELETE_DRIVER = 'delete_driver';
-export const MANAGER_DRIVER = 'manage_driver';
+export const CREATE_DRIVER = "create_driver";
+export const READ_DRIVER = "read_driver";
+export const UPDATE_DRIVER = "update_driver";
+export const DELETE_DRIVER = "delete_driver";
+export const MANAGER_DRIVER = "manage_driver";
 
-export const CREATE_EXPENSE = 'create_expense';
-export const READ_EXPENSE = 'read_expense';
-export const UPDATE_EXPENSE = 'update_expense';
-export const DELETE_EXPENSE = 'delete_expense';
+export const CREATE_EXPENSE = "create_expense";
+export const READ_EXPENSE = "read_expense";
+export const UPDATE_EXPENSE = "update_expense";
+export const DELETE_EXPENSE = "delete_expense";
 
-export const CREATE_ESTIMATE = 'create_estimate';
-export const READ_ESTIMATE = 'read_estimate';
-export const UPDATE_ESTIMATE = 'update_estimate';
-export const DELETE_ESTIMATE = 'delete_estimate';
+export const CREATE_ESTIMATE = "create_estimate";
+export const READ_ESTIMATE = "read_estimate";
+export const UPDATE_ESTIMATE = "update_estimate";
+export const DELETE_ESTIMATE = "delete_estimate";
 
-export const CREATE_INVOICE = 'create_invoice';
-export const READ_INVOICE = 'read_invoice';
-export const UPDATE_INVOICE = 'update_invoice';
-export const DELETE_INVOICE = 'delete_invoice';
+export const CREATE_INVOICE = "create_invoice";
+export const READ_INVOICE = "read_invoice";
+export const UPDATE_INVOICE = "update_invoice";
+export const DELETE_INVOICE = "delete_invoice";
 
-export const CREATE_PAYMENT = 'create_payment';
-export const READ_PAYMENT = 'read_payment';
-export const UPDATE_PAYMENT = 'update_payment';
-export const DELETE_PAYMENT = 'delete_payment';
+export const CREATE_PAYMENT = "create_payment";
+export const READ_PAYMENT = "read_payment";
+export const UPDATE_PAYMENT = "update_payment";
+export const DELETE_PAYMENT = "delete_payment";
 
-export const CREATE_VENDOR = 'create_vendor';
-export const UPDATE_VENDOR = 'update_vendor';
-export const READ_VENDOR = 'read_vendor';
-export const DELETE_VENDOR = 'delete_vendor';
+export const CREATE_VENDOR = "create_vendor";
+export const UPDATE_VENDOR = "update_vendor";
+export const READ_VENDOR = "read_vendor";
+export const DELETE_VENDOR = "delete_vendor";
 
-export const CREATE_PAYMENT_RECIEVED = 'create_payment_received';
-export const UPDATE_PAYMENT_RECIEVED = 'update_payment_received';
-export const READ_PAYMENT_RECIEVED = 'read_payment_received';
-export const DELETE_PAYMENT_RECIEVED = 'delete_payment_received';
+export const CREATE_PAYMENT_RECIEVED = "create_payment_received";
+export const UPDATE_PAYMENT_RECIEVED = "update_payment_received";
+export const READ_PAYMENT_RECIEVED = "read_payment_received";
+export const DELETE_PAYMENT_RECIEVED = "delete_payment_received";
 
-export const CREATE_BENEFICIARY = 'create_beneficiary';
-export const UPDATE_BENEFICIARY = 'update_beneficiary';
-export const READ_BENEFICIARY = 'read_beneficiary';
-export const DELETE_BENEFICIARY = 'delete_beneficiary';
+export const CREATE_BENEFICIARY = "create_beneficiary";
+export const UPDATE_BENEFICIARY = "update_beneficiary";
+export const READ_BENEFICIARY = "read_beneficiary";
+export const DELETE_BENEFICIARY = "delete_beneficiary";
 
-export const CREATE_EXPENSE_TYPE = 'create_expense_type';
-export const UPDATE_EXPENSE_TYPE = 'update_expense_type';
-export const READ_EXPENSE_TYPE = 'read_expense_type';
-export const DELETE_EXPENSE_TYPE = 'delete_expense_type';
+export const CREATE_EXPENSE_TYPE = "create_expense_type";
+export const UPDATE_EXPENSE_TYPE = "update_expense_type";
+export const READ_EXPENSE_TYPE = "read_expense_type";
+export const DELETE_EXPENSE_TYPE = "delete_expense_type";
 
-export const CREATE_WORKSHOP_PROFILE = 'create_workshop_profile';
-export const UPDATE_WORKSHOP_PROFILEY = 'update_workshop_profile';
-export const READ_WORKSHOP_PROFILE = 'read_workshop_profile';
-export const DELETE_WORKSHOP_PROFILE = 'delete_workshop_profile';
+export const CREATE_WORKSHOP_PROFILE = "create_workshop_profile";
+export const UPDATE_WORKSHOP_PROFILEY = "update_workshop_profile";
+export const READ_WORKSHOP_PROFILE = "read_workshop_profile";
+export const DELETE_WORKSHOP_PROFILE = "delete_workshop_profile";
 
-export const CREATE_TRANSACTION = 'create_transaction';
-export const UPDATE_TRANSACTION = 'update_transaction';
-export const READ_TRANSACTION = 'read_transaction';
-export const DELETE_TRANSACTION = 'delete_transaction';
+export const CREATE_TRANSACTION = "create_transaction";
+export const UPDATE_TRANSACTION = "update_transaction";
+export const READ_TRANSACTION = "read_transaction";
+export const DELETE_TRANSACTION = "delete_transaction";
 
-export const CREATE_ITEM = 'create_item';
-export const UPDATE_ITEM = 'update_item';
-export const READ_ITEM = 'read_item';
-export const DELETE_ITEM = 'delete_item';
+export const CREATE_ITEM = "create_item";
+export const UPDATE_ITEM = "update_item";
+export const READ_ITEM = "read_item";
+export const DELETE_ITEM = "delete_item";
 
-export const READ_GUEST = 'read_guest';
+export const READ_GUEST = "read_guest";
 
-export const VIEW_ANALYTICS = 'view_analytics';
+export const VIEW_ANALYTICS = "view_analytics";
 
 const settings: AppSettings = {
   mailer: {
@@ -107,7 +107,10 @@ const settings: AppSettings = {
   sendGrid: {
     apiKey: <string>process.env.SENDGRID_API_KEY,
   },
-  cookie: { name: process.env.COOKIE_AUTH as string, secret: process.env.COOKIE_AUTH as string },
+  cookie: {
+    name: process.env.COOKIE_AUTH as string,
+    secret: process.env.COOKIE_AUTH as string,
+  },
   permissions: [
     MANAGE_ALL,
 
@@ -208,15 +211,20 @@ const settings: AppSettings = {
     VIEW_ANALYTICS,
   ],
   roles: [
-    'ADMIN_ROLE',
-    'CUSTOMER_ROLE',
-    'GUEST_ROLE',
-    'USER_ROLE',
-    'GARAGE_ADMIN_ROLE',
-    'GARAGE_TECHNICIAN_ROLE',
-    'RIDE_SHARE_ADMIN_ROLE',
-    'RIDE_SHARE_DRIVER_ROLE',
+    "ADMIN_ROLE",
+    "CUSTOMER_ROLE",
+    "GUEST_ROLE",
+    "USER_ROLE",
+    "GARAGE_ADMIN_ROLE",
+    "GARAGE_TECHNICIAN_ROLE",
+    "RIDE_SHARE_ADMIN_ROLE",
+    "RIDE_SHARE_DRIVER_ROLE",
   ],
+  termii: {
+    host: <string>process.env.TERMII_HOST,
+    key: <string>process.env.TERMII_SECRET,
+    from: <string>process.env.TERMII_FROM,
+  },
   vinProviders: [
     {
       name: <string>process.env.VIN_PROVIDER1,
@@ -245,12 +253,12 @@ const settings: AppSettings = {
     },
   },
   tags: [
-    { name: '2/3-Wheeler' },
-    { name: 'Sedan/SUV/CUV' },
-    { name: 'Buses/Mini-Van' },
-    { name: 'Pickup Truck' },
-    { name: '0.5 - 3 Ton Truck' },
-    { name: 'Heavy Duty Truck' },
+    { name: "2/3-Wheeler" },
+    { name: "Sedan/SUV/CUV" },
+    { name: "Buses/Mini-Van" },
+    { name: "Pickup Truck" },
+    { name: "0.5 - 3 Ton Truck" },
+    { name: "Heavy Duty Truck" },
   ],
   client: {
     host: <string>process.env.CLIENT_HOST,
@@ -265,25 +273,25 @@ const settings: AppSettings = {
     ip: <string>process.env.CUSTOMER_APP_IP,
   },
   schedule: {
-    name: 'Inspection promo timeslot',
+    name: "Inspection promo timeslot",
     default: true,
-    status: 'active',
+    status: "active",
     timeSlots: [
-      { id: 1, time: '9am - 11am', available: true, label: 'Morning' },
-      { id: 2, time: '11am - 1pm', available: true, label: 'Late Morning' },
-      { id: 3, time: '1pm - 3pm', available: true, label: 'Afternoon' },
-      { id: 4, time: '3pm - 5pm', available: true, label: 'Late Afternoon' },
+      { id: 1, time: "9am - 11am", available: true, label: "Morning" },
+      { id: 2, time: "11am - 1pm", available: true, label: "Late Morning" },
+      { id: 3, time: "1pm - 3pm", available: true, label: "Afternoon" },
+      { id: 4, time: "3pm - 5pm", available: true, label: "Late Afternoon" },
     ],
   },
   discounts: [
     {
-      label: 'GWARIMPA_DISTRICT_ONE_TIME_DRIVE_IN',
-      description: 'Gwarinpa district one time, drive-in discount',
+      label: "GWARIMPA_DISTRICT_ONE_TIME_DRIVE_IN",
+      description: "Gwarinpa district one time, drive-in discount",
       value: 80.0,
     },
     {
-      label: 'GWARIMPA_DISTRICT_ONE_TIME_MOBILE',
-      description: 'Gwarinpa district one time, mobile discount',
+      label: "GWARIMPA_DISTRICT_ONE_TIME_MOBILE",
+      description: "Gwarinpa district one time, mobile discount",
       value: 44.44,
     },
   ],
@@ -307,7 +315,7 @@ const settings: AppSettings = {
       user: <string>process.env.SMTP_CONFIG_USERNAME,
       pass: <string>process.env.SMTP_CONFIG_PASSWORD,
     },
-    secure: <string>process.env.SMTP_CONFIG_SECURE === 'yes',
+    secure: <string>process.env.SMTP_CONFIG_SECURE === "yes",
   },
   amazon: {
     s3: {
