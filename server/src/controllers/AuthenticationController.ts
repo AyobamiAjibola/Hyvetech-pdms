@@ -76,13 +76,11 @@ export default class AuthenticationController {
 
       const user = await dataSources.userDAOService.findByAny({
         where: {
-          email: value.email,
+          resetCode: value.token,
         },
       });
 
-      if (!user) return response;
-
-      if (user.resetCode !== value.token)
+      if (!user)
         return Promise.reject(
           CustomAPIError.response(
             "Invalid authentication code",
