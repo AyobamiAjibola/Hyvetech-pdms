@@ -2,6 +2,7 @@ declare module '@app-interfaces' {
   import React from 'react';
   import { AnyObjectType } from '@app-types';
   import {
+    Accounts,
     ICheckList,
     ICustomer,
     ICustomerSubscription,
@@ -125,6 +126,8 @@ declare module '@app-interfaces' {
     setVehicles: React.Dispatch<React.SetStateAction<IVehicle[]>>;
     showVehicles: boolean;
     setShowVehicles: React.Dispatch<React.SetStateAction<boolean>>;
+    accounts: Accounts | null;
+    setAccounts: React.Dispatch<React.SetStateAction<Accounts | null>>;
   }
 
   interface CustomerPageContextProps {

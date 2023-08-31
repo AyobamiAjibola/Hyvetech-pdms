@@ -2,13 +2,19 @@ import Joi from "joi";
 
 export default interface BankService {
   createAccount: (payload: AccountDTO) => Promise<AccountResponseDTO>;
-  getAllAccount: (payload: PaginationDTO) => Promise<AccountDTO[]>;
+  getAllAccount: (payload: PaginationDTO) => Promise<VirtualAccountsDTO>;
   getMainAccountBalance: () => Promise<AccountBalanceDTO>;
   getVirtualAccountBalance: (accountId: string) => Promise<AccountBalanceDTO>;
+  disableAccount: (accountId: string) => Promise<void>;
+  enableAccount: (accountId: string) => Promise<void>;
 
   getBanks: () => Promise<Bank[]>;
 
   getAccountTransactionLog: (
+    payload: AccountTransactionLogDTO
+  ) => Promise<AccountTransactionsResponseDTO>;
+
+  getAccountTransactionLogFiltered: (
     payload: AccountTransactionLogDTO
   ) => Promise<AccountTransactionsResponseDTO>;
 
@@ -38,6 +44,25 @@ export interface AccountDTO {
   firstName: string;
   trackingReference?: string;
   id?: string;
+}
+
+export interface VirtualAccountsDTO {
+  accounts: Accounts[];
+  totalCount: number
+}
+
+export interface Accounts {
+  accountNumber: string;
+  email: string;
+  phoneNumber: string;
+  lastName: string;
+  firstName: string;
+  middleName: string;
+  businessName: string;
+  accountName: string;
+  trackingReference: string;
+  creationDate: Date;
+  isDeleted: boolean;
 }
 
 export interface AccountUpdateDTO {
@@ -72,6 +97,8 @@ export interface AccountTransactionLogDTO {
   page?: PaginationDTO;
   startDate?: string;
   endDate?: string;
+  pageSize?: number;
+  pageNumber?: number;
 }
 
 export interface PostingEntry {

@@ -35,7 +35,6 @@ function CustomersPage() {
 
   const handleView = (customer: ICustomer) => {
     setCustomer(customer);
-    // console.log(customer, "customercustomercustomercustomer")
     navigate(`/customers/${customer.id}`, { state: { customer } });
   };
 

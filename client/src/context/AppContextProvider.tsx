@@ -2,7 +2,7 @@ import React, { createContext, useState } from 'react';
 
 import { AppContextProps } from '@app-interfaces';
 import AbilityContext, { ability } from './AbilityContext';
-import { ICustomer, IRideShareDriver, IVehicle } from '@app-models';
+import { Accounts, ICustomer, IRideShareDriver, IVehicle } from '@app-models';
 import PrivateLayout from '../components/layouts/PrivateLayout';
 
 export const AppContext = createContext<AppContextProps | null>(null);
@@ -21,6 +21,7 @@ export default function AppContextProvider() {
   const [vehicle, setVehicle] = useState<IVehicle | null>(null);
   const [vehicles, setVehicles] = useState<IVehicle[]>([]);
   const [showVehicles, setShowVehicles] = useState<boolean>(false);
+  const [accounts, setAccounts] = useState<Accounts | null>(null);
 
   return (
     <AbilityContext.Provider value={ability}>
@@ -52,6 +53,8 @@ export default function AppContextProvider() {
           setShowVehicles,
           driver,
           setDriver,
+          accounts,
+          setAccounts
         }}>
         <PrivateLayout />
       </AppContext.Provider>

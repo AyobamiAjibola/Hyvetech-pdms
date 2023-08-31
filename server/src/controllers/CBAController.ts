@@ -166,7 +166,7 @@ class CBAController {
   @HasPermission([MANAGE_TECHNICIAN])
   public async updateAccount(req: Request) {
     const account = await this.doUpdateAccount(req);
-
+  
     const response: HttpResponse<PartnerAccount> = {
       code: HttpStatus.OK.code,
       message: "Account updated successfully",
@@ -191,6 +191,7 @@ class CBAController {
 
     const account = await dataSources.partnerAccountDaoService.findByAny({
       where: { partnerId: req.user.partnerId },
+      // where: { accountRef: req.params.ref }
     });
 
     if (!account)
@@ -201,12 +202,67 @@ class CBAController {
         )
       );
 
-    return dataSources.partnerAccountDaoService.update(account, {
+    // Check if email is changing
+    if (account.email !== value.email) {
+      const user = await dataSources.userDAOService.findByAny({
+        where: { email: account.email },
+      });
+      const partner = await dataSources.partnerDAOService.findById(
+        account.partnerId
+      );
+
+      if (!partner) {
+        return Promise.reject(
+          CustomAPIError.response(
+            'Partner not found',
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+      }
+
+      if (!user) {
+        return Promise.reject(
+          CustomAPIError.response(
+            'User not found',
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+      }
+
+       //verify password
+       const hash = user.password;
+       const password = value.password;
+ 
+       const isMatch = await this.passwordEncoded.match(
+         password.trim(),
+         hash.trim()
+       );
+ 
+       if (!isMatch)
+         return Promise.reject(
+           CustomAPIError.response(
+            "Password is incorrect",
+            HttpStatus.BAD_REQUEST.code
+           )
+         );
+
+      // Perform updates concurrently
+      await Promise.all([
+        dataSources.userDAOService.update(user, {
+          email: value.email,
+          username: value.email,
+        } as any),
+        dataSources.partnerDAOService.update(partner, { email: value.email } as any),
+      ]);
+    }
+
+    return await dataSources.partnerAccountDaoService.update(account, {
       firstName: value.firstName,
       lastName: value.lastName,
       email: value.email,
       businessName: value.businessName,
     } as any);
+
   }
 
   @TryCatch
@@ -217,6 +273,48 @@ class CBAController {
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
       message: "Account balance retrieved successfully",
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_ALL])
+  public async getAccounts(req: Request) {
+    const accounts = await this.doGetVirtualAccount(req);
+
+    const response: HttpResponse<any> = {
+      code: HttpStatus.OK.code,
+      message: "Accounts retrieved successfully",
+      result: accounts,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_ALL])
+  public async disableAccount(req: Request) {
+    const account = await this.doDisableAccount(req);
+
+    const response: HttpResponse<any> = {
+      code: HttpStatus.OK.code,
+      message: "Account disabled successfully",
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_ALL])
+  public async enableAccount(req: Request) {
+    const account = await this.doEnableAccount(req);
+
+    const response: HttpResponse<any> = {
+      code: HttpStatus.OK.code,
+      message: "Account enabled successfully",
       result: account,
     };
 
@@ -241,6 +339,20 @@ class CBAController {
   @HasPermission([MANAGE_TECHNICIAN])
   public async getAccountTransactions(req: Request) {
     const account = await this.doGetAccountTransactions(req);
+
+    const response: HttpResponse<typeof account> = {
+      code: HttpStatus.OK.code,
+      message: "Account transactions retrieved successfully",
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+  
+  @TryCatch
+  @HasPermission([MANAGE_ALL])
+  public async getVirAccountTransactionsFiltered(req: Request) {
+    const account = await this.doGetVirAccountTransactions(req);
 
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
@@ -651,6 +763,9 @@ class CBAController {
         )
       );
 
+    // const startDate = req.query.startDate as string;
+    // const endDate = req.query.endDate as string;
+
     return this.bankService.getMainAccountTransactionLog({
       startDate: value?.startDate,
       endDate: value?.endDate,
@@ -658,7 +773,20 @@ class CBAController {
         pageSize: value?.page?.pageSize || 1000,
         pageNumber: value?.page?.pageNumber || 1,
       },
+      // pageSize: 1000,
+      // pageNumber: 1,
     });
+    // Filter the accounts based on the realDate range if both startDate and endDate are provided
+    // if (startDate && endDate) {
+    //   const filteredAccounts = response.postingsHistory.filter(account => {
+    //     const realDate = new Date(account.realDate);
+    //     return realDate >= new Date(startDate) && realDate <= new Date(endDate);
+    //   });
+  
+    //   response.postingsHistory = filteredAccounts;
+    // }
+
+    // return response;
   }
 
   private async doGetAccountTransactions(req: Request) {
@@ -682,6 +810,59 @@ class CBAController {
       },
       accountId: partnerAcount.accountRef as string,
     });
+  }
+
+  private async doGetVirAccountTransactions(req: Request) {
+
+    // const partnerAcount = await dataSources.partnerAccountDaoService.findByAny({
+    //   where: {
+    //     accountRef: req.body.accountRef,
+    //   },
+    // });
+    // if (!partnerAcount)
+    //   return Promise.reject(
+    //     CustomAPIError.response(
+    //       NO_ACCOUNT_PROVISIONED,
+    //       HttpStatus.BAD_REQUEST.code
+    //     )
+    //   );
+    
+    const startDate = req.query.startDate as string;
+    const endDate = req.query.endDate as string;
+
+    const response = await this.bankService.getAccountTransactionLog({
+      page: {
+        pageSize: 1000,
+        pageNumber: 0,
+      },
+      accountId: req.body.accountRef // partnerAcount.accountRef as string,
+    });
+
+    // Filter the accounts based on the realDate range if both startDate and endDate are provided
+    if (startDate && endDate) {
+      const filteredTransactions = response.postingsHistory.filter(account => {
+        const realDate = new Date(account.realDate);
+        return realDate >= new Date(startDate) && realDate <= new Date(endDate);
+      });
+
+      // Sort the filteredTransactions based on realDate
+      filteredTransactions.sort((a, b) => {
+        const dateA = new Date(a.realDate);
+        const dateB = new Date(b.realDate);
+        return dateB.getTime() - dateA.getTime();
+      });
+
+      response.postingsHistory = filteredTransactions;
+    } else {
+      // Sort all transactions based on realDate
+      response.postingsHistory.sort((a, b) => {
+        const dateA = new Date(a.realDate);
+        const dateB = new Date(b.realDate);
+        return dateB.getTime() - dateA.getTime();
+      });
+    }
+
+    return response;
   }
 
   private async doCreateAccount(req: Request) {
@@ -769,6 +950,61 @@ class CBAController {
     response.accountName = `${partnerAcount.firstName} ${partnerAcount.lastName}`;
     response.accountProvider = partnerAcount.accountProvider;
     response.businessName = partnerAcount.businessName;
+
+    return response;
+  }
+
+  private async doGetVirtualAccount(req: Request) {
+    const pageNumber = parseInt(req.query.pageNumber as string, 10) || 1;
+    // const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+
+    const startDate = req.query.startDate as string;
+    const endDate = req.query.endDate as string;
+
+    const response = await this.bankService.getAllAccount({
+      pageNumber,
+      pageSize: 1000,
+    });
+
+    // Filter the accounts based on the creationDate range if both startDate and endDate are provided
+    if (startDate && endDate) {
+      const filteredAccounts = response.accounts.filter(account => {
+        const creationDate = new Date(account.creationDate);
+        return creationDate >= new Date(startDate) && creationDate <= new Date(endDate);
+      });
+
+      // Sort the filteredAccounts based on creationDate
+      filteredAccounts.sort((a, b) => {
+        const dateA = new Date(a.creationDate);
+        const dateB = new Date(b.creationDate);
+        return dateB.getTime() - dateA.getTime();
+      });
+
+      response.accounts = filteredAccounts;
+    } else {
+      // Sort all accounts based on creationDate
+      response.accounts.sort((a, b) => {
+        const dateA = new Date(a.creationDate);
+        const dateB = new Date(b.creationDate);
+        return dateB.getTime() - dateA.getTime();
+      });
+    }
+
+    return response;
+  }
+
+  private async doDisableAccount(req: Request) {
+    const refNum = req.params.refNum;
+ 
+    const response = await this.bankService.disableAccount(refNum);
+
+    return response;
+  }
+
+  private async doEnableAccount(req: Request) {
+    const refNum = req.params.refNum;
+
+    const response = await this.bankService.enableAccount(refNum);
 
     return response;
   }

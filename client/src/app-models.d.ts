@@ -896,7 +896,7 @@ declare module '@app-models' {
     transferCharge: number;
     sessionID: string;
   }
-
+  
   interface UploadResult {
     file: {
       url: string;
@@ -934,5 +934,24 @@ declare module '@app-models' {
     status: boolean;
     message: string;
     data: any;
+  }
+
+  export interface VirtualAccountsDTO {
+    accounts: Accounts[];
+    totalCounts: number
+  }
+
+  export interface Accounts {
+    accountNumber: string;
+    email: string;
+    phoneNumber: string;
+    lastName: string;
+    firstName: string;
+    middleName: string;
+    businessName: string;
+    accountName: string;
+    trackingReference: string;
+    creationDate: Date;
+    isDeleted: boolean;
   }
 }

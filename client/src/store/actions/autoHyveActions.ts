@@ -7,6 +7,7 @@ import {
   AccountTransferResponseDTO,
   IBank,
   UploadResult,
+  VirtualAccountsDTO,
 } from "@app-models";
 import axiosClient from "../../config/axiosClient";
 import settings from "../../config/settings";
@@ -23,6 +24,9 @@ const GET_KYC_REQUESTS = "autoHyvePay:GET_KYC_REQUESTS";
 const ACTIVATE_ACCOUNT = "autoHyvePay:ACTIVATE_ACCOUNT";
 const PERFORM_CBA_ACCOUNT_UPDATE = "autoHyvePay:PERFORM_CBA_ACCOUNT_UPDATE";
 const ACTIVATE_ACCOUNT_REJECTION = "autoHyvePay:ACTIVATE_ACCOUNT_REJECTION";
+const VIRTUAL_ACCOUNTS = "autoHyvePay:VIRTUAL_ACCOUNTS";
+const ACCOUNT_TRANSACTIONS_FILTERED = "autoHyvePay:ACCOUNT_TRANSACTIONS_FILTERED";
+const MAIN_ACCOUNT_TRANSACTION_LOGS = "autoHyvePay:MAIN_ACCOUNT_TRANSACTION_LOGS";
 
 const BANKS = "autoHyvePay:BANKS";
 
@@ -91,6 +95,61 @@ export const getAccountTransactionsAction = asyncThunkWrapper<
   }
 );
 
+export const getMainAccountTransactionLogsAction = asyncThunkWrapper<
+  ApiResponseSuccess<AccountTransactionsResponseDTO>,
+  { startDate?: string; endDate?: string } | void
+>(
+  MAIN_ACCOUNT_TRANSACTION_LOGS,
+  async (args: any) => {
+    let response;
+    if(args.startDate !== "" || args.endDate !== "") {
+      response = await axiosClient.post(
+        `${API_ROOT}/account/main/transactions`,
+        {startDate: args.startDate, endDate: args.endDate}
+      );
+    } else {
+      response = await axiosClient.post(
+        `${API_ROOT}/account/main/transactions`
+      );
+    }
+
+    return response.data;
+  }
+);
+
+export const getAccountTransactionsFilteredAction = asyncThunkWrapper<
+  ApiResponseSuccess<AccountTransactionsResponseDTO>,
+  { startDate?: string; endDate?: string; accountRef: string } | void
+>(
+  ACCOUNT_TRANSACTIONS_FILTERED,
+  async (args: any) => {
+    const response = await axiosClient.post(
+      args.startDate && args.endDate
+        ? `${API_ROOT}/account/transactions/filtered?startDate=${args.startDate}&endDate=${args.endDate}`
+        : `${API_ROOT}/account/transactions/filtered`,
+        {accountRef: args.accountRef}
+    );
+
+    return response.data;
+  }
+);
+
+export const getVirtualAccountsAction = asyncThunkWrapper<
+  ApiResponseSuccess<VirtualAccountsDTO>,
+  { startDate: string; endDate: string } | void
+>(
+  VIRTUAL_ACCOUNTS,
+  async (args: { startDate: string; endDate: string } | void) => {
+    const response = await axiosClient.get(
+      args
+        ? `${API_ROOT}/virtual/accounts?startDate=${args.startDate}&endDate=${args.endDate}`
+        : `${API_ROOT}/virtual/accounts`
+    );
+
+    return response.data;
+  }
+);
+
 export const getAllBankAction = asyncThunkWrapper<
   ApiResponseSuccess<IBank[]>,
   void
@@ -99,8 +158,6 @@ export const getAllBankAction = asyncThunkWrapper<
 
   return response.data;
 });
-
-// /account/request/:id/activate
 
 export const getKycRequestAction = asyncThunkWrapper<
   ApiResponseSuccess<AccountActivateRequest[]>,

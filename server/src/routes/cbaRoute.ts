@@ -21,9 +21,41 @@ export const getAccountBalance = authenticateRouteWrapper(
   }
 );
 
+export const disableAccount = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await cbaController.disableAccount(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
+export const enableAccount = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await cbaController.enableAccount(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
+export const getAccounts = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await cbaController.getAccounts(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
 export const getAccountTransactions = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
     const result = await cbaController.getAccountTransactions(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
+export const getVirAccountTransactionsFiltered = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await cbaController.getVirAccountTransactionsFiltered(req);
 
     res.status(result.code).json(result);
   }

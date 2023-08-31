@@ -23,6 +23,7 @@ export type CBAAccountUpdateType = {
   lastName: string;
   email: string;
   businessName: string;
+  password: string;
 };
 
 export type PerformNameEnquirySchemaType = {
@@ -52,6 +53,7 @@ export const $updateCBAAccountDetail: Joi.SchemaMap<CBAAccountUpdateType> = {
   firstName: Joi.string().optional().label('firstName'),
   lastName: Joi.string().optional().label('lastName'),
   email: Joi.string().optional().label('email'),
+  password: Joi.string().optional().label('password')
 };
 
 @Table({

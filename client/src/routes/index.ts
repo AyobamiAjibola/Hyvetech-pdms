@@ -50,7 +50,18 @@ export const sideNavs: ISideNav[] = [
     path: '/hyvePay',
     Icon: HyvePayIconWrapper,
   },
-
+  {
+    tag: 'super',
+    name: 'Virtual Accounts',
+    path: '/virtual/accounts',
+    Icon: HyvePayIconWrapper,
+  },
+  {
+    tag: 'super',
+    name: 'HyvePay Transactions',
+    path: '/hyvepay/transactions',
+    Icon: HyvePayIconWrapper,
+  },
   { tag: 'super', name: 'Customers', path: '/customers', Icon: Groups },
   { tag: 'super', name: 'KYC Requests', path: '/kyc/requests', Icon: Groups },
   { tag: 'techs', name: 'Customers', path: '/customers', Icon: Groups },
