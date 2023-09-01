@@ -232,7 +232,7 @@ function VirtualAccountTransactions () {
                 >
                     <Card
                         name={"Count"}
-                        price={`${transactions.totalRecordInStore} Transactions`}
+                        price={`${transactions.rows.length} Transactions`}
                         color={"#FFEDED"}
                         cardName={"Transactions"}
                         eyeD={false}
