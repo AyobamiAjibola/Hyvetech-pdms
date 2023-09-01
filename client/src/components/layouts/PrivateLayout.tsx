@@ -53,6 +53,9 @@ import RemindersPage from '../../pages/serviceReminder/RemindersPage';
 import ReminderPage from '../../pages/serviceReminder/ReminderPage';
 import HyvePay from '../../pages/HyvePay/HyvePay';
 import KycRequest from '../../pages/KycRequests/KycRequests';
+import VirtualAccount from '../../pages/virtualAccounts/VirtualAccounts';
+import HyvePayTransactions from '../../pages/HyvePay_Transaction/HyvePayTransactions';
+import VirtualAccountTransactions from '../../pages/virtualAccounts/VirtualAccountTransactions';
 
 function PrivateLayout() {
   const { setOpenSideNav, openSideNav } = useContext(AppContext) as AppContextProps;
@@ -165,6 +168,9 @@ function PrivateLayout() {
             <Route path="/items/:id" element={<ItemPage />} />
             <Route path="/reminders" element={<RemindersPage />} />
             <Route path="/reminder/:id" element={<ReminderPage />} />
+            <Route path="/virtual/accounts" element={<VirtualAccount/>} />
+            <Route path="/hyvepay/transactions" element={<HyvePayTransactions/>} />
+            <Route path="/account/transactions/:id" element={<VirtualAccountTransactions />} />
 
             <Route path="/invoices/:id" element={<InvoicePage />} />
             <Route path="/job-check-list-report/:id" element={<JobCheckListReportPage />} />

@@ -3,10 +3,14 @@ import RouteEndpoints = appCommonTypes.RouteEndpoints;
 import {
   createAccountHandler,
   createBeneficiary,
+  disableAccount,
+  enableAccount,
   getAccountBalance,
   getAccountTransactions,
+  getAccounts,
   getKycAccountRequest,
   getMainAccountTransactions,
+  getVirAccountTransactionsFiltered,
   initiateAccountTransfer,
   performAccountActivation,
   performAccountActivationRejection,
@@ -23,7 +27,6 @@ const cbaEndpoint: RouteEndpoints = [
     path: "/account/create",
     handler: createAccountHandler,
   },
-
   {
     name: "get-account-balance",
     method: "get",
@@ -31,10 +34,34 @@ const cbaEndpoint: RouteEndpoints = [
     handler: getAccountBalance,
   },
   {
+    name: "get-virtual-accounts",
+    method: "get",
+    path: "/virtual/accounts",
+    handler: getAccounts,
+  },
+  {
+    name: "disable-virtual-accounts",
+    method: "get",
+    path: "/disable/account/:refNum",
+    handler: disableAccount,
+  },
+  {
+    name: "enable-virtual-accounts",
+    method: "get",
+    path: "/enable/account/:refNum",
+    handler: enableAccount,
+  },
+  {
     name: "get-account-transactions",
     method: "get",
     path: "/account/transactions",
     handler: getAccountTransactions,
+  },
+  {
+    name: "get-account-transactions-filtered",
+    method: "post",
+    path: "/account/transactions/filtered",
+    handler: getVirAccountTransactionsFiltered,
   },
   {
     name: "get-main-account-transactions",
@@ -84,19 +111,17 @@ const cbaEndpoint: RouteEndpoints = [
     path: "/kyc/requests",
     handler: getKycAccountRequest,
   },
-
   {
     name: "perform-account-pin-update",
     method: "post",
     path: "/cba/account/pin/update",
     handler: performAccountPinUpdate,
   },
-
   {
     name: "perform-account-update",
-    method: "post",
+    method: "put",
     path: "/cba/account/update",
     handler: performAccountUpdate,
-  },
+  }
 ];
 export default cbaEndpoint;

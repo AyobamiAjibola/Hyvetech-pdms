@@ -3,8 +3,11 @@ import { IThunkAPIStatus } from "@app-types";
 import {
   getAccountBalanceAction,
   getAccountTransactionsAction,
+  getAccountTransactionsFilteredAction,
   getAllBankAction,
   getKycRequestAction,
+  getMainAccountTransactionLogsAction,
+  getVirtualAccountsAction,
   initiateAccountTranfer,
   performAccountActivatioRejection,
   performAccountActivation,
@@ -19,6 +22,7 @@ import {
   AccountTransactionsResponseDTO,
   AccountTransferResponseDTO,
   IBank,
+  VirtualAccountsDTO,
 } from "@app-models";
 
 interface IAutoHyveStatus {
@@ -54,6 +58,18 @@ interface IAutoHyveStatus {
   getAllAccountTransactionSuccess: string;
   getAllAccountTransactionError?: string;
 
+  getMainAccountTransactionStatus: IThunkAPIStatus;
+  getMainAccountTransactionSuccess: string;
+  getMainAccountTransactionError?: string;
+
+  getAccountTransactionFilteredStatus: IThunkAPIStatus;
+  getAccountTransactionFilteredSuccess: string;
+  getAccountTransactionFilteredError?: string;
+
+  getVirtualAccountsStatus: IThunkAPIStatus;
+  getVirtualAccountsSuccess: string;
+  getVirtualAccountsError?: string;
+
   performAccountActivationRejectionStatus: IThunkAPIStatus;
   performAccountActivationRejectionSuccess: string;
   performAccountActivationRejectionError?: string;
@@ -67,6 +83,10 @@ interface IAutoHyveStatus {
   banks: IBank[];
 
   transaction: AccountTransactionsResponseDTO;
+  transactionLogsMain: AccountTransactionsResponseDTO;
+  transactionFiltered: AccountTransactionsResponseDTO;
+
+  accounts: VirtualAccountsDTO;
 
   accountHolder: AccountHolder;
 
@@ -124,6 +144,18 @@ const initialState: IAutoHyveStatus = {
   getAllAccountTransactionStatus: "idle",
   getAllAccountTransactionSuccess: "",
 
+  getMainAccountTransactionError: "",
+  getMainAccountTransactionStatus: "idle",
+  getMainAccountTransactionSuccess: "",
+
+  getAccountTransactionFilteredError: "",
+  getAccountTransactionFilteredStatus: "idle",
+  getAccountTransactionFilteredSuccess: "",
+  
+  getVirtualAccountsError: "",
+  getVirtualAccountsStatus: "idle",
+  getVirtualAccountsSuccess: "",
+
   transaction: {
     totalCredit: 0,
     totalDebit: 0,
@@ -131,6 +163,29 @@ const initialState: IAutoHyveStatus = {
     statusCode: "N/A",
     postingsHistory: [],
     message: "N/A",
+  },
+
+  transactionLogsMain: {
+    totalCredit: 0,
+    totalDebit: 0,
+    totalRecordInStore: 0,
+    statusCode: "N/A",
+    postingsHistory: [],
+    message: "N/A",
+  },
+
+  transactionFiltered: {
+    totalCredit: 0,
+    totalDebit: 0,
+    totalRecordInStore: 0,
+    statusCode: "N/A",
+    postingsHistory: [],
+    message: "N/A",
+  },
+
+  accounts: {
+    totalCounts: 0,
+    accounts: []
   },
 
   banks: [],
@@ -198,6 +253,29 @@ const autoHyvePay = createSlice({
       state.performCBAUpdateSuccess = "";
       state.performCBAUpdateStatus = "idle";
     },
+    clearMainTransactionLogsStatus(state: IAutoHyveStatus) {
+      state.getMainAccountTransactionError = "";
+      state.getMainAccountTransactionSuccess = "";
+      state.getMainAccountTransactionStatus = "idle";
+    },
+    clearVirtualAccountsStatus(state: IAutoHyveStatus) {
+      state.getVirtualAccountsError = "";
+      state.getVirtualAccountsSuccess = "";
+      state.getVirtualAccountsStatus = "idle";
+    },
+    clearTransactionFilteredAndStatus(state: IAutoHyveStatus) {
+      state.getAccountTransactionFilteredError = "";
+      state.getAccountTransactionFilteredSuccess = "";
+      state.getAccountTransactionFilteredStatus = "idle";
+      state.transactionFiltered = {
+        totalCredit: 0,
+        totalDebit: 0,
+        totalRecordInStore: 0,
+        statusCode: "N/A",
+        postingsHistory: [],
+        message: "N/A",
+      }
+    },
 
     clearAccountActivationError(state: IAutoHyveStatus) {
       state.activateAccountError = "";
@@ -247,6 +325,54 @@ const autoHyvePay = createSlice({
       .addCase(getAccountTransactionsAction.rejected, (state, action) => {
         state.getAllAccountTransactionStatus = "failed";
         state.getAllAccountTransactionError =
+          action.payload?.message || action.error.message;
+      });
+    
+    builder
+      .addCase(getMainAccountTransactionLogsAction.pending, (state) => {
+        state.getMainAccountTransactionStatus = "loading";
+      })
+      .addCase(getMainAccountTransactionLogsAction.fulfilled, (state, action) => {
+        state.getMainAccountTransactionStatus = "completed";
+        state.transactionLogsMain = action.payload.result
+          ? action.payload.result
+          : state.transactionLogsMain;
+      })
+      .addCase(getMainAccountTransactionLogsAction.rejected, (state, action) => {
+        state.getMainAccountTransactionStatus = "failed";
+        state.getMainAccountTransactionError =
+          action.payload?.message || action.error.message;
+      });
+
+    builder
+      .addCase(getAccountTransactionsFilteredAction.pending, (state) => {
+        state.getAccountTransactionFilteredStatus = "loading";
+      })
+      .addCase(getAccountTransactionsFilteredAction.fulfilled, (state, action) => {
+        state.getAccountTransactionFilteredStatus = "completed";
+        state.transactionFiltered = action.payload.result
+          ? action.payload.result
+          : state.transactionFiltered;
+      })
+      .addCase(getAccountTransactionsFilteredAction.rejected, (state, action) => {
+        state.getAccountTransactionFilteredStatus = "failed";
+        state.getAccountTransactionFilteredError =
+          action.payload?.message || action.error.message;
+      });
+
+    builder
+      .addCase(getVirtualAccountsAction.pending, (state) => {
+        state.getVirtualAccountsStatus = "loading";
+      })
+      .addCase(getVirtualAccountsAction.fulfilled, (state, action) => {
+        state.getVirtualAccountsStatus = "completed";
+        state.accounts = action.payload.result
+          ? action.payload.result
+          : state.accounts;
+      })
+      .addCase(getVirtualAccountsAction.rejected, (state, action) => {
+        state.getVirtualAccountsStatus = "failed";
+        state.getVirtualAccountsError =
           action.payload?.message || action.error.message;
       });
 
@@ -361,6 +487,9 @@ export const {
   clearAccountHolderDetail,
   clearTransferStatus,
   clearCBAUpdateStatus,
+  clearVirtualAccountsStatus,
+  clearTransactionFilteredAndStatus,
+  clearMainTransactionLogsStatus
 } = autoHyvePay.actions;
 
 export default autoHyvePay.reducer;

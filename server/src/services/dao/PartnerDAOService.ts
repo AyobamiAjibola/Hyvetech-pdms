@@ -48,7 +48,7 @@ export default class PartnerDAOService implements ICrudDAO<Partner> {
   update(
     partner: Partner,
     values: InferAttributes<Partner>,
-    options: UpdateOptions<Attributes<Partner>>,
+    options?: UpdateOptions<Attributes<Partner>>,
   ): Promise<Partner> {
     return this.partnerRepository.updateOne(partner, values, options);
   }

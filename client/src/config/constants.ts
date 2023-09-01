@@ -40,6 +40,8 @@ export const MESSAGES = {
   If you agree to do this, the reminder will be deleted.`,
   reset_reminder: `Are you sure you want to carry out this action? 
   If you agree to do this, the reminder last service date will reset.`,
+  disable_kuda_account: `Are you sure you want carry out this action?
+  If you click yes, the account will be either disabled or enabled, depending on its current status.`
 };
 
 export const MOBILE_PLAN = 'Mobile';

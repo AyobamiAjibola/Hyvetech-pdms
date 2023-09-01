@@ -101,6 +101,20 @@ class KudaService implements BankService {
   }
 
   @TryCatch
+  async getAccountTransactionLogFiltered(
+      payload: appModelTypes.AccountTransactionLogDTO
+    ): Promise<appModelTypes.AccountTransactionsResponseDTO> {
+    const response = await this.network.post("", {
+      ServiceType: "ADMIN_VIRTUAL_ACCOUNT_FILTERED_TRANSACTIONS",
+      Data: {
+        ...payload,
+      },
+    });
+
+    return response.data.data as any;
+  }
+
+  @TryCatch
   async getBanks(): Promise<appModelTypes.Bank[]> {
     const response = await this.network.post("", {
       ServiceType: "BANK_LIST",
@@ -124,7 +138,38 @@ class KudaService implements BankService {
 
   @TryCatch
   async getAllAccount(payload: appModelTypes.PaginationDTO) {
-    return Promise.resolve([]);
+    const response = await this.network.post("", {
+      ServiceType: "ADMIN_VIRTUAL_ACCOUNTS",
+      Data: {
+        ...payload,
+      },
+    });
+
+    return response.data.data as any;
+  }
+
+  @TryCatch
+  async disableAccount(accountId: string) {
+    const response = await this.network.post("", {
+      ServiceType: "ADMIN_DISABLE_VIRTUAL_ACCOUNT",
+      data: {
+        trackingReference: accountId
+      }
+    })
+
+    return response.data.data as any
+  }
+
+  @TryCatch
+  async enableAccount(accountId: string) {
+    const response = await this.network.post("", {
+      ServiceType: "ADMIN_ENABLE_VIRTUAL_ACCOUNT",
+      data: {
+        trackingReference: accountId
+      }
+    })
+
+    return response.data.data as any
   }
 
   @TryCatch
@@ -151,15 +196,15 @@ class KudaService implements BankService {
       delete rest.startDate;
       delete rest.endDate;
     }
-    console.log("values> ", {
-      ServiceType: "ADMIN_MAIN_ACCOUNT_FILTERED_TRANSACTIONS",
-      RequestRef: ReferenceGenerator.generate(),
-      data: {
-        ...rest,
-        pageNumber: payload.page?.pageNumber || 1,
-        pageSize: payload.page?.pageSize || 1000,
-      },
-    });
+    // console.log("values> ", {
+    //   ServiceType: "ADMIN_MAIN_ACCOUNT_FILTERED_TRANSACTIONS",
+    //   RequestRef: ReferenceGenerator.generate(),
+    //   data: {
+    //     ...rest,
+    //     pageNumber: payload.page?.pageNumber || 1,
+    //     pageSize: payload.page?.pageSize || 1000,
+    //   },
+    // });
 
     const response = await this.network.post("", {
       ServiceType: "ADMIN_MAIN_ACCOUNT_FILTERED_TRANSACTIONS",
@@ -168,6 +213,7 @@ class KudaService implements BankService {
         ...rest,
         pageSize: payload.page?.pageSize || 1,
         pageNumber: payload.page?.pageNumber || 1000,
+        // ...payload
       },
     });
     return response.data.data as appModelTypes.AccountTransactionsResponseDTO;
