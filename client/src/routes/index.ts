@@ -19,6 +19,7 @@ import {
   HomeRepairService,
   PostAdd,
   DateRange,
+  AccountBalance,
 } from '@mui/icons-material';
 import React from 'react';
 
@@ -54,7 +55,7 @@ export const sideNavs: ISideNav[] = [
     tag: 'super',
     name: 'Virtual Accounts',
     path: '/virtual/accounts',
-    Icon: HyvePayIconWrapper,
+    Icon: AccountBalance,
   },
   {
     tag: 'super',
