@@ -765,7 +765,6 @@ class CBAController {
 
     // const startDate = req.query.startDate as string;
     // const endDate = req.query.endDate as string;
-
     return this.bankService.getMainAccountTransactionLog({
       startDate: value?.startDate,
       endDate: value?.endDate,

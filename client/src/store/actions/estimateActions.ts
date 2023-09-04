@@ -33,6 +33,7 @@ export const saveEstimateAction = asyncThunkWrapper<ApiResponseSuccess<IEstimate
 export const updateEstimateAction = asyncThunkWrapper<ApiResponseSuccess<IEstimate>, any>(
   UPDATE_ESTIMATE,
   async args => {
+    console.log('patch')
     const response = await axiosClient.patch(`${API_ROOT}/estimate/${args.id}`, args);
     return response.data;
   },
@@ -41,6 +42,7 @@ export const updateEstimateAction = asyncThunkWrapper<ApiResponseSuccess<IEstima
 export const sendDraftEstimateAction = asyncThunkWrapper<ApiResponseSuccess<IEstimate>, any>(
   SEND_DRAFT_ESTIMATE,
   async args => {
+    console.log('put')
     const response = await axiosClient.put(`${API_ROOT}/estimate/${args.id}`, args);
     return response.data;
   },

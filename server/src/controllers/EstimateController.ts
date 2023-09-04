@@ -248,7 +248,14 @@ export default class EstimateController {
 
     if (vin) await vin.update({ plateNumber: value.plateNumber });
 
-    await vehicle.update({ plateNumber: value.plateNumber });
+    await vehicle.update({
+      plateNumber: value.plateNumber,
+      mileageValue: value.mileageValue,
+      mileageUnit: value.mileageUnit,
+      modelYear: value.modelYear,
+      make: value.make,
+      model: value.model
+    });
 
     await estimate.update({
       status: ESTIMATE_STATUS.sent,

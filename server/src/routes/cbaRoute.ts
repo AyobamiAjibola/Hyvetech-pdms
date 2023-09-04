@@ -55,6 +55,7 @@ export const getAccountTransactions = authenticateRouteWrapper(
 
 export const getVirAccountTransactionsFiltered = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
+    console.log
     const result = await cbaController.getVirAccountTransactionsFiltered(req);
 
     res.status(result.code).json(result);
