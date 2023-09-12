@@ -29,6 +29,10 @@ export default interface BankService {
   intiateTransfer: (
     payload: AccountTransferDTO
   ) => Promise<AccountTransferResponseDTO>;
+
+  initiateBulkTransfer: (
+    payload: BulkAccountTransferDTO
+  ) => Promise<AccountTransferResponseDTO>;
 }
 
 export interface Bank {
@@ -160,6 +164,34 @@ export interface AccountTransferDTO {
   pin: string;
 }
 
+interface BeneficiaryPaymentData {
+  accountNumber: string;
+  AmountInKobo: number;
+  FeeAmountInKobo: number;
+  DestinationAccountName: string;
+  bankCode: string;
+  Narration?: string;
+  nameEnquirySessionId: string;
+  amount: number;
+  bank: {
+    label: string;
+    value: string;
+  };
+  accountName?: string;
+  saveAsBeneficiary?: boolean;
+  narration?: string;
+}
+
+export interface BulkAccountTransferDTO {
+  ClientAccountNumber: string;
+  TrackingReference: string;
+  TotalAmount?: string;
+  NotificationEmail?: string;
+  narration?: string;
+  BeneficiaryPaymentData: BeneficiaryPaymentData[];
+  pin: string;
+}
+
 export interface AccountTransferResponseDTO {
   requestReference: string;
   transactionReference: string;
@@ -167,4 +199,5 @@ export interface AccountTransferResponseDTO {
   status: boolean;
   message: string;
   data: any;
+  instrumentNumber?: any;
 }

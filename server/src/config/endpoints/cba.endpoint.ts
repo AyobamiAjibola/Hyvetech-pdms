@@ -12,6 +12,7 @@ import {
   getMainAccountTransactions,
   getVirAccountTransactionsFiltered,
   initiateAccountTransfer,
+  initiateBulkAccountTransfer,
   performAccountActivation,
   performAccountActivationRejection,
   performAccountActivationRequest,
@@ -98,6 +99,12 @@ const cbaEndpoint: RouteEndpoints = [
     method: "post",
     path: "/account/transfer",
     handler: initiateAccountTransfer,
+  },
+  {
+    name: "perform-bulk-account-transfer",
+    method: "post",
+    path: "/bulk/account/transfer",
+    handler: initiateBulkAccountTransfer,
   },
   {
     name: "add-beneficiary",

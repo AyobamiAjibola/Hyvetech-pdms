@@ -28,7 +28,7 @@ import PasswordEncoder from "../utils/PasswordEncoder";
 import { appModelTypes } from "../@types/app-model";
 import MailgunMessageData = appModelTypes.MailgunMessageData;
 import QueueManager from "../services/QueueManager";
-import { MAIL_QUEUE_EVENTS } from "../config/constants";
+import { CLIENT_ACCOUNT_NUMBER, MAIL_QUEUE_EVENTS } from "../config/constants";
 
 const NO_ACCOUNT_PROVISIONED = "No account is provisioned for user";
 const PARTNER_NOT_FOUND = "Partner account not found";
@@ -45,6 +45,30 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
     nameEnquiryId: Joi.number().required().label("nameEnquiryId"),
     saveAsBeneficiary: Joi.boolean().optional().label("saveAsBeneficiary"),
     bankName: Joi.string().optional().label("bankName"),
+    pin: Joi.string().required().label("pin"),
+  };
+
+export const bulkAccountTransferSchema: Joi.SchemaMap<appModels.BulkAccountTransferDTO> =
+  {
+    TrackingReference: Joi.string().optional().label("trackingReference"),
+    narration: Joi.string().optional().label("narration"),
+    BeneficiaryPaymentData: Joi.array().items(
+      Joi.object({
+        accountNumber: Joi.string().optional().label("accountNumber"),
+        amountInKobo: Joi.string().optional().label("amountInKobo"),
+        feeAmountInKobo: Joi.string().optional().label("feeAmountInKobo"),
+        destinationAccountName: Joi.string().optional().label("destinationAccountName"),
+        bankCode: Joi.string().optional().label("bankCode"),
+        nameEnquirySessionId: Joi.string().optional().label("nameEnquirySessionId"),
+        bank: Joi.object().optional().label("bank"),
+        beneficiary: Joi.object().optional().label("beneficiary"),
+        accountName: Joi.string().optional().label("accountName"),
+        amount: Joi.string().optional().label("amount"),
+        Narration: Joi.string().optional().allow('').label("Narration"),
+        narration: Joi.string().optional().allow('').label("narration"),
+        saveAsBeneficiary: Joi.boolean().optional().label("saveAsBeneficiary"),
+      })
+    ).required().label("BeneficiaryPaymentData"),
     pin: Joi.string().required().label("pin"),
   };
 
@@ -325,6 +349,20 @@ class CBAController {
   @HasPermission([MANAGE_TECHNICIAN])
   public async initiateAccountTranfer(req: Request) {
     const account = await this.doInitiateTransfer(req);
+
+    const response: HttpResponse<typeof account> = {
+      code: HttpStatus.OK.code,
+      message: "Transaction successful",
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
+  public async initiateBulkAccountTransfer(req: Request) {
+    const account = await this.doInitiateBulkTransfer(req);
 
     const response: HttpResponse<typeof account> = {
       code: HttpStatus.OK.code,
@@ -729,7 +767,7 @@ class CBAController {
         accountNumber: value.beneficiaryAccount,
       },
     });
-
+    
     value.trackingReference = partnerAccount?.accountRef;
     value.clientFeeCharge = +settings.kuda.transferChargeFee;
     const response = await this.bankService.intiateTransfer(value);
@@ -749,6 +787,110 @@ class CBAController {
 
     return response;
   }
+
+  private async doInitiateBulkTransfer(req: Request) {
+
+      const { error, value } = Joi.object<appModels.BulkAccountTransferDTO>(
+        bulkAccountTransferSchema
+      ).validate(req.body);
+
+      if (error) {
+        throw CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        );
+      }
+  
+      const partnerAccount = await dataSources.partnerAccountDaoService.findByAny({
+        where: {
+          partnerId: req.user.partner.id,
+        },
+      });
+  
+      if (!partnerAccount) {
+        throw CustomAPIError.response(
+          "Account not found",
+          HttpStatus.BAD_REQUEST.code
+        );
+      };
+
+      const isMatch = await this.passwordEncoded.match(
+        value.pin,
+        partnerAccount.pin.trim()
+      );
+  
+      if (!isMatch) {
+        throw CustomAPIError.response("PIN is invalid", HttpStatus.BAD_REQUEST.code);
+      }
+  
+      let totalAmountInKobo = 0;
+      let beneficiaryPaymentData: any = [];
+  
+      for (const data of value.BeneficiaryPaymentData) {
+        const transferChargeFee = +settings.kuda.transferChargeFee;
+        const amountInKobo = data.amount * 100;
+        data.FeeAmountInKobo = transferChargeFee;
+        data.DestinationAccountName = data.accountName as string;
+        data.AmountInKobo = amountInKobo;
+        data.bankCode = data.bank.value;
+        data.Narration = data.narration;
+        data.nameEnquirySessionId = 'NA';
+  
+        if (data.saveAsBeneficiary) {
+          const beneficiary = await dataSources.beneficiaryDAOService.findByAny({
+            where: {
+              accountNumber: data.accountNumber,
+            },
+          });
+  
+          if (!beneficiary) {
+            await dataSources.beneficiaryDAOService.create({
+              name: data.accountName as string,
+              accountName: data.accountName as string,
+              accountNumber: data.accountNumber,
+              bankCode: data.bank.value,
+              partnerId: req.user.partner.id,
+              bankName: data.bank.label as string,
+            });
+          }
+        }
+
+        if(data.accountNumber === partnerAccount.accountNumber) {
+          throw CustomAPIError.response("One of the beneficiary accounts includes the sender's account; kindly remove it.", HttpStatus.BAD_REQUEST.code);
+        }
+  
+        totalAmountInKobo += +data.amount;
+        beneficiaryPaymentData.push({
+          FeeAmountInKobo: data.FeeAmountInKobo,
+          DestinationAccountName: data.DestinationAccountName,
+          AmountInKobo: data.AmountInKobo,
+          bankCode: data.bankCode,
+          Narration: data.Narration,
+          nameEnquirySessionId: data.nameEnquirySessionId,
+          accountNumber: data.accountNumber
+        });
+      }
+      
+      const trackingReference = partnerAccount.accountRef;
+      const clientAccountNumber = CLIENT_ACCOUNT_NUMBER;
+      const totalAmount = (totalAmountInKobo * 100).toString();
+      const notificationEmail = partnerAccount.email;
+  
+      const response = await this.bankService.initiateBulkTransfer({
+        // ...value,
+        BeneficiaryPaymentData: beneficiaryPaymentData,
+        TrackingReference: trackingReference,
+        ClientAccountNumber: clientAccountNumber,
+        TotalAmount: totalAmount,
+        NotificationEmail: notificationEmail,
+        narration: value.narration,
+        pin: value.pin
+      });
+  
+      return response;
+
+  }
+  
 
   private async doGetMainAccountTransactions(req: Request) {
     const { error, value } = Joi.object<appModels.AccountTransactionLogDTO>(
