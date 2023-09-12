@@ -134,6 +134,14 @@ export const initiateAccountTransfer = authenticateRouteWrapper(
   }
 );
 
+export const initiateBulkAccountTransfer = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await cbaController.initiateBulkAccountTransfer(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
 export const createBeneficiary = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
     const result = await cbaController.createBeneficiary(req);

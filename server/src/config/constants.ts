@@ -8,6 +8,8 @@ export const PASSWORD_PATTERN = '^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&
 
 export const UPLOAD_BASE_PATH = 'uploads';
 
+export const CLIENT_ACCOUNT_NUMBER = '2000355517'
+
 export const TAGS = [
   { name: '2/3-Wheeler', icon: 'fa-person-biking' },
   { name: 'Sedan/SUV/CUV', icon: 'fa-car' },

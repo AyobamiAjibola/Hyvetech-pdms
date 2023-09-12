@@ -235,6 +235,23 @@ class KudaService implements BankService {
     }
   }
 
+  async initiateBulkTransfer(payload: appModelTypes.BulkAccountTransferDTO) {
+    try {
+
+      const response = await this.network.post("", {
+        ServiceType: "VIRTUAL_ACCOUNT_BULK_PAYMENT",
+        RequestRef: ReferenceGenerator.generate(),
+        Data: {
+          ...payload
+        }
+      });
+      return response.data as appModelTypes.AccountTransferResponseDTO;
+    } catch (error: any) {
+      console.log(error);
+      return Promise.reject(new Error(error));
+    }
+  }
+
   @TryCatch
   async getToken() {
     const response = await axios.post(
