@@ -48,6 +48,16 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
     pin: Joi.string().required().label("pin"),
   };
 
+export const performBulkNameEnquirySchema: Joi.SchemaMap<appModels.BulkNameEnquiryDTO> =
+  {
+    Data: Joi.array().items(
+      Joi.object({
+        AccountNumber: Joi.string().required().label("AccountNumber"),
+        BankCode: Joi.string().optional().label("bankCode")
+      })
+    )
+  }
+
 export const bulkAccountTransferSchema: Joi.SchemaMap<appModels.BulkAccountTransferDTO> =
   {
     TrackingReference: Joi.string().optional().label("trackingReference"),
@@ -375,6 +385,20 @@ class CBAController {
 
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN])
+  public async performBulkNameEnquiry(req: Request) {
+    const account = await this.doPerformBulkNameEnquiry(req);
+
+    const response: HttpResponse<typeof account> = {
+      code: HttpStatus.OK.code,
+      message: "Transaction successful",
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
   public async getAccountTransactions(req: Request) {
     const account = await this.doGetAccountTransactions(req);
 
@@ -689,6 +713,31 @@ class CBAController {
     return response;
   }
 
+  private async doPerformBulkNameEnquiry(req: Request) {
+    const { error, value } = Joi.object<appModels.BulkNameEnquiryDTO>(
+      performBulkNameEnquirySchema
+    ).validate(req.body);
+
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+
+    let payload = [];
+    for(const data of value.Data) {
+      payload.push({
+        AccountNumber: data.AccountNumber,
+        BankCode: data.BankCode
+      })
+    }
+
+    //@ts-ignore
+    return this.bankService.performBulkNameEnquiry(payload);
+  }
+
   private async doPerformNameEnquiry(req: Request) {
     const { error, value } = Joi.object<PerformNameEnquirySchemaType>(
       performNameEnquirySchema
@@ -834,7 +883,7 @@ class CBAController {
         data.AmountInKobo = amountInKobo;
         data.bankCode = data.bank.value;
         data.Narration = data.narration;
-        data.nameEnquirySessionId = 'NA';
+        data.nameEnquirySessionId = data.nameEnquirySessionId;
   
         if (data.saveAsBeneficiary) {
           const beneficiary = await dataSources.beneficiaryDAOService.findByAny({

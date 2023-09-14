@@ -33,6 +33,42 @@ export default interface BankService {
   initiateBulkTransfer: (
     payload: BulkAccountTransferDTO
   ) => Promise<AccountTransferResponseDTO>;
+
+  performBulkNameEnquiry: (
+    payload: BulkNameEnquiryDTO
+  ) => Promise<BulkNameEnquiryResponseDTO>
+}
+
+interface BulkNameEnquiryBeneficiary {
+  transactionStatus: string,
+  isFeeProcessed: boolean,
+  amountInKobo: number,
+  bankCode: string,
+  instrumentNumber: string,
+  referenceNumber: string,
+  accountNumber: string,
+  accountName: string,
+  feeAmount: number
+}
+
+export interface BulkNameEnquiryResponseDTO {
+  narration: string;
+  totalAmount: number;
+  expectedFee: number;
+  paidFee: number;
+  accountNumber: string;
+  accountName: string;
+  transactionStatus: string;
+  beneficiaries: BulkNameEnquiryBeneficiary[]
+}
+
+interface BulkNameEnquiry {
+  AccountNumber: string;
+  BankCode: string;
+}
+
+export interface BulkNameEnquiryDTO {
+  Data: BulkNameEnquiry[]
 }
 
 export interface Bank {
