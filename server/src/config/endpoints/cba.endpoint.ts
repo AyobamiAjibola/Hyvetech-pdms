@@ -18,6 +18,7 @@ import {
   performAccountActivationRequest,
   performAccountPinUpdate,
   performAccountUpdate,
+  performBulkNameEnquiry,
   performNameEnquiry,
 } from "../../routes/cbaRoute";
 
@@ -74,7 +75,13 @@ const cbaEndpoint: RouteEndpoints = [
     name: "perform-name-enquiry",
     method: "post",
     path: "/account/enquiry",
-    handler: performNameEnquiry,
+    handler: performNameEnquiry
+  },
+  {
+    name: "perform-bulk-name-enquiry",
+    method: "post",
+    path: "/bulk/account/enquiry",
+    handler: performBulkNameEnquiry
   },
   {
     name: "perform-account-activation-request",

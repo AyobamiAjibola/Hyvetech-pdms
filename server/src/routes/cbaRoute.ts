@@ -70,6 +70,15 @@ export const performNameEnquiry = authenticateRouteWrapper(
   }
 );
 
+export const performBulkNameEnquiry = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await cbaController.performBulkNameEnquiry(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
+
 /**
  * @swagger
  *  /api/v1/account/request/activation:

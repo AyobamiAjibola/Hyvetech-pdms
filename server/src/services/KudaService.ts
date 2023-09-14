@@ -237,7 +237,6 @@ class KudaService implements BankService {
 
   async initiateBulkTransfer(payload: appModelTypes.BulkAccountTransferDTO) {
     try {
-
       const response = await this.network.post("", {
         ServiceType: "VIRTUAL_ACCOUNT_BULK_PAYMENT",
         RequestRef: ReferenceGenerator.generate(),
@@ -248,6 +247,19 @@ class KudaService implements BankService {
       return response.data as appModelTypes.AccountTransferResponseDTO;
     } catch (error: any) {
       console.log(error);
+      return Promise.reject(new Error(error));
+    }
+  }
+
+  async performBulkNameEnquiry(payload: appModelTypes.BulkNameEnquiryDTO) {
+    try {
+      const response = await this.network.post("", {
+        ServiceType: "BULK_NAME_ENQUIRY",
+        RequestRef: ReferenceGenerator.generate(),
+        Data: payload
+      });
+      return response.data as appModelTypes.BulkNameEnquiryResponseDTO
+    } catch (error: any) {
       return Promise.reject(new Error(error));
     }
   }
