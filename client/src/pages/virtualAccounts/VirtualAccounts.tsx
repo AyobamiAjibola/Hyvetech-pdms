@@ -47,7 +47,7 @@ function VirtualAccount () {
         setAccounts(account);
         navigate(`/account/transactions/${account.trackingReference}`, { state: { account } });
     };
-
+    
     const handleToggleStatus = async (account: any) => {
         setIsLoading(true)
         if(account.isDeleted) {
@@ -186,10 +186,19 @@ function VirtualAccount () {
                 sx={{
                     width: '100%',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'right', mt: 2
+                    flexDirection: {md: 'row', xs: 'column'},
+                    alignItems: {md: 'center', xs: 'left'},
+                    justifyContent: {md: 'space-between', xs: 'left'}, mt: 2
                 }}
             >
+                <Typography
+                    sx={{
+                        fontWeight: 700,
+                        fontSize: '1.5rem'
+                    }}
+                >
+                    Count: {accounts.rows.length}
+                </Typography>
                 <RangePicker onChange={handleDateRangeChange}
                     style={{
                         width: '30%',
