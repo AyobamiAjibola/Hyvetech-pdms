@@ -61,13 +61,19 @@ export const performBulkNameEnquirySchema: Joi.SchemaMap<appModels.BulkNameEnqui
 export const bulkAccountTransferSchema: Joi.SchemaMap<appModels.BulkAccountTransferDTO> =
   {
     TrackingReference: Joi.string().optional().label("trackingReference"),
+    ClientAccountNumber: Joi.string().optional().label("clientAccountNumber"),
     narration: Joi.string().optional().label("narration"),
+    NotificationEmail: Joi.string().optional().label("notificationEmail"),
+    TotalAmount: Joi.string().optional().label("total amount"),
     BeneficiaryPaymentData: Joi.array().items(
       Joi.object({
         accountNumber: Joi.string().optional().label("accountNumber"),
         amountInKobo: Joi.string().optional().label("amountInKobo"),
+        AmountInKobo: Joi.number().optional().label("AmountInKobo"),
         feeAmountInKobo: Joi.string().optional().label("feeAmountInKobo"),
+        FeeAmountInKobo: Joi.number().optional().label("FeeAmountInKobo"),
         destinationAccountName: Joi.string().optional().label("destinationAccountName"),
+        DestinationAccountName: Joi.string().optional().label("DestinationAccountName"),
         bankCode: Joi.string().optional().label("bankCode"),
         nameEnquirySessionId: Joi.string().optional().label("nameEnquirySessionId"),
         bank: Joi.object().optional().label("bank"),
@@ -874,14 +880,14 @@ class CBAController {
   
       let totalAmountInKobo = 0;
       let beneficiaryPaymentData: any = [];
-  
+
       for (const data of value.BeneficiaryPaymentData) {
         const transferChargeFee = +settings.kuda.transferChargeFee;
         const amountInKobo = data.amount * 100;
         data.FeeAmountInKobo = transferChargeFee;
         data.DestinationAccountName = data.accountName as string;
         data.AmountInKobo = amountInKobo;
-        data.bankCode = data.bank.value;
+        data.bankCode = data.bank?.value;
         data.Narration = data.narration;
         data.nameEnquirySessionId = data.nameEnquirySessionId;
   

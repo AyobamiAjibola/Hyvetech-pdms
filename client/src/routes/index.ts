@@ -59,7 +59,7 @@ export const sideNavs: ISideNav[] = [
   },
   {
     tag: 'super',
-    name: 'HyvePay Transactions',
+    name: 'Main Account Transactions',
     path: '/hyvepay/transactions',
     Icon: HyvePayIconWrapper,
   },
@@ -126,7 +126,7 @@ export const sideNavs: ISideNav[] = [
   // },
   // { tag: 'super', name: 'Transactions', path: '/transactions', Icon: Payments },
   { tag: 'super', name: 'Vehicles', path: '/vehicles', Icon: TimeToLeave },
-  { tag: 'super', name: 'Workshops', path: '/workshops', Icon: HomeRepairService },
+  { tag: 'super', name: 'HyveCloud Users', path: '/workshops', Icon: HomeRepairService },
 ];
 
 export const routes = [

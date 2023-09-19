@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import useAccountTransactions from '../../hooks/useAccountTransactions';
 import { Box, Divider, Stack, Typography } from '@mui/material';
@@ -9,6 +9,8 @@ import { Util, postingType } from '../../utils/generic';
 import { GridColDef } from '@mui/x-data-grid';
 import { DatePicker } from 'antd';
 import Card from '../../utils/Card';
+import { AppContext } from '../../context/AppContextProvider';
+import { AppContextProps } from '@app-interfaces';
 
 const { RangePicker } = DatePicker;
 
@@ -16,6 +18,7 @@ function VirtualAccountTransactions () {
     const params = useParams();
 
     const transactions = useAccountTransactions();
+    const { accounts } = useContext(AppContext) as AppContextProps;
     const { isSuperAdmin } = useAdmin();
     
     const handleDateRangeChange = (dates: any) => {
@@ -273,10 +276,19 @@ function VirtualAccountTransactions () {
                 sx={{
                     width: '100%',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'right', mt: 2
+                    flexDirection: {md: 'row', xs: 'column'},
+                    alignItems: {md: 'center', xs: 'left'},
+                    justifyContent: {md: 'space-between', xs: 'left'}, mt: 2
                 }}
             >
+                <Typography
+                    sx={{
+                        fontWeight: 700,
+                        fontSize: '1.5rem'
+                    }}
+                >
+                    {accounts?.accountName.toUpperCase()}
+                </Typography>
                 <RangePicker onChange={handleDateRangeChange}
                     style={{
                         width: '30%',
