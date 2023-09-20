@@ -911,7 +911,7 @@ class CBAController {
         }
 
         if(data.accountNumber === partnerAccount.accountNumber) {
-          throw CustomAPIError.response("One of the beneficiary accounts includes the sender's account; kindly remove it.", HttpStatus.BAD_REQUEST.code);
+          throw CustomAPIError.response("One of the recipient accounts includes the sender's account; please remove it.", HttpStatus.BAD_REQUEST.code);
         }
   
         totalAmountInKobo += +data.amount;
