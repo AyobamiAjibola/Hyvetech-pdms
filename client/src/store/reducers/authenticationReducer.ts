@@ -71,10 +71,10 @@ const authenticationSlice = createSlice({
         state.signingInStatus = 'completed';
         state.signingInSuccess = action.payload.message;
 
-        if (action.payload.result) {
-          state.authToken = action.payload.result;
+        if (action.payload.tokens) {
+          state.authToken = action.payload.tokens.jwt;
           const { permissions } = jwt.decode(state.authToken) as CustomJwtPayload;
-
+          
           state.permissions = permissions;
           sessionStorage.setItem(LOCAL_STORAGE.permissions, JSON.stringify(permissions));
 

@@ -250,6 +250,11 @@ declare module '@app-interfaces' {
     timestamp?: string;
     result?: T;
     results?: T[];
+    tokens?: {
+      jwt: string;
+      accessToken: string;
+      refreshToken: string;
+    }
   }
 
   interface ApiResponseError {

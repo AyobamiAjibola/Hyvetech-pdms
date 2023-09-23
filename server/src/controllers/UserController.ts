@@ -202,7 +202,7 @@ export default class UserController {
 
   private async doUpdateUser(req: Request) {
     const partner = req.user.partner;
-    const { error, value } = Joi.object<UserSchemaType>($updateUserSchema).validate(req.body);
+    const { error, value } = Joi.object<any>($updateUserSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -222,11 +222,46 @@ export default class UserController {
 
     if (!role) return Promise.reject(CustomAPIError.response('Role not found', HttpStatus.BAD_REQUEST.code));
 
+    const user_email = await dataSources.userDAOService.findByAny({
+      where: {email: value.email}
+    });
+
+    if(value.email && user.email !== value.email){
+        if(user_email) {
+          return Promise.reject(CustomAPIError.response('User with this email already exists', HttpStatus.NOT_FOUND.code))
+        }
+    };
+
+    const user_phone = await dataSources.userDAOService.findByAny({
+      where: {phone: value.phone}
+    });
+
+    if(value.phone && user.phone !== value.phone){
+        if(user_phone) {
+          return Promise.reject(CustomAPIError.response('User with this phone number already exists', HttpStatus.NOT_FOUND.code))
+        }
+    };
+
+    const contact = await dataSources.contactDAOService.findByAny({
+      //@ts-ignore
+      where: { partnerId: user.partnerId }
+    })
+
+    if(contact) {
+      return Promise.reject(CustomAPIError.response('Contact not found', HttpStatus.NOT_FOUND.code))
+    }
+
+    const contactValues = {
+      state: value.state,
+      district: value.district
+    }
+
     const userValues: Partial<User> = {
       firstName: value.firstName,
       lastName: value.lastName,
       phone: value.phone,
-
+      email: value.email,
+      address: value.address,
       roleId: role.id,
     };
 

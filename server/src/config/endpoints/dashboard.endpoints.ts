@@ -16,7 +16,7 @@ const dashboardEndpoints: RouteEndpoints = [
 
   {
     name: 'dashboard for tech',
-    method: 'get',
+    method: 'post',
     path: '/dashboard-tech',
     handler: dashboardTechHandler,
   },

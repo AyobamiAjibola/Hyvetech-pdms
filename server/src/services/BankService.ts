@@ -193,7 +193,7 @@ export interface AccountTransferDTO {
   beneficiaryBankCode: string;
   beneficiaryName: string;
   senderName?: string;
-  nameEnquiryId: string;
+  nameEnquirySessionID: string;
   clientFeeCharge?: number;
   saveAsBeneficiary?: boolean;
   bankName?: string;

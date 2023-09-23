@@ -29,8 +29,8 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
     const authorization = headers.authorization;
     const cookies = req.signedCookies;
     const key = settings.jwt.key;
-    const cookieName = settings.cookie.name;
-
+    const cookieName = settings.cookie.accessToken;
+  
     const cookie = cookies[cookieName];
 
     if (cookie) {
@@ -46,6 +46,12 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
 
       req.permissions = payload.permissions;
       req.jwt = jwt;
+
+      if (payload.exp <= Date.now() / 1000) {
+        // Token has expired
+        req.isTokenExpired = true;
+      }
+  
 
       if (payload.rideShareDriverId) {
         const { rideShareDriverId } = payload;

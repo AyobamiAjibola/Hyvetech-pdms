@@ -18,7 +18,7 @@ export default function useLogout() {
     }
     dispatch(clearLogoutStatus());
   }, [authReducer.signOutStatus, dispatch, navigate]);
-
+  console.log(authReducer.signOutStatus, 'status')
   const handleLogout = () => dispatch(signOutAction());
 
   return { handleLogout };

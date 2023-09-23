@@ -9,7 +9,8 @@ const GARAGE_SIGN_UP = 'authentication:GARAGE_SIGN_UP';
 const SIGN_OUT = 'authentication:SIGN_OUT';
 const API_ROOT = settings.api.rest;
 
-export const signInAction = asyncThunkWrapper<ApiResponseSuccess<string>, any>(SIGN_IN, async (args: any) => {
+export const signInAction = asyncThunkWrapper<ApiResponseSuccess<any>, any>(SIGN_IN, async (args: any) => {
+
   const response = await axiosClient.post(`${API_ROOT}/sign-in`, args);
 
   return response.data;
@@ -18,6 +19,7 @@ export const signInAction = asyncThunkWrapper<ApiResponseSuccess<string>, any>(S
 export const garageSignUpAction = asyncThunkWrapper<ApiResponseSuccess<string>, IGarageSignupModel>(
   GARAGE_SIGN_UP,
   async args => {
+    console.log(args, 'args')
     const response = await axiosClient.post(`${API_ROOT}/garage-sign-up`, args);
 
     return response.data;

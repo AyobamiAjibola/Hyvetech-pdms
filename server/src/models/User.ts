@@ -27,6 +27,7 @@ import {
   Attributes,
 } from "sequelize";
 import Partner from "./Partner";
+import UserToken from "./UserToken";
 
 export const $userSchema = {
   companyName: Joi.string().required().label("Company Name"),
@@ -57,6 +58,7 @@ export const $saveUserSchema: Joi.SchemaMap<UserSchemaType> = {
   firstName: Joi.string().required().label("firstName"),
   lastName: Joi.string().required().label("lastName"),
   email: Joi.string().required().label("email"),
+  accountType: Joi.string().required().label("accountType"),
   password: Joi.string()
     .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
     .messages({
@@ -66,19 +68,27 @@ export const $saveUserSchema: Joi.SchemaMap<UserSchemaType> = {
     .label("password"),
   rawPassword: Joi.string().optional().label("rawPassword"),
   phone: Joi.string().required().label("phone"),
+  address: Joi.string().required().label("address"),
   roleId: Joi.number().required().label("roleId"),
 };
 
-export const $updateUserSchema: Joi.SchemaMap<UserSchemaType> = {
-  ...$saveUserSchema,
+export const $updateUserSchema: Joi.SchemaMap<any> = {
   id: Joi.number().required().label("id"),
-  password: Joi.string()
-    .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
-    .messages({
-      "string.pattern.base": `Password does not meet requirement.`,
-    })
-    .optional()
-    .label("password"),
+  firstName: Joi.string().label("firstName"),
+  lastName: Joi.string().label("lastName"),
+  email: Joi.string().label("email"),
+  phone: Joi.string().label("phone"),
+  // password: Joi.string()
+  //   .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+  //   .messages({
+  //     "string.pattern.base": `Password does not meet requirement.`,
+  //   })
+  //   .optional()
+  //   .label("password"),
+    address: Joi.string().label("address"),
+    state: Joi.string().label("state"),
+    district: Joi.string().label("district"),
+    partnerId: Joi.string().label("partnerId")
 };
 
 @Table({
@@ -131,6 +141,12 @@ export default class User extends Model<
   declare gender: string | null;
 
   @Column(DataType.STRING)
+  declare address: string;
+
+  @Column(DataType.STRING)
+  declare accountType: string;
+
+  @Column(DataType.STRING)
   declare profileImageUrl: string | null;
 
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
@@ -158,4 +174,7 @@ export default class User extends Model<
   @ForeignKey(() => Role)
   @Column(DataType.INTEGER)
   declare roleId: NonAttribute<number>;
+
+  // @HasOne(() => UserToken)
+  // declare userToken: NonAttribute<UserToken>;
 }

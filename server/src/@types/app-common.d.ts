@@ -218,7 +218,12 @@ export declare namespace appCommonTypes {
     redis: Record<DatabaseEnv, DatabaseConfig>;
     mongo: Record<DatabaseEnv, DatabaseConfig>;
     queue: Record<DatabaseEnv, DatabaseConfig>;
-    cookie: { name: string; secret: string };
+    cookie: { 
+      accessToken: string;
+      refreshToken: string;
+      name: string;
+      secret: string;
+    };
     vinProviders: VINProvider[];
     roles: Roles[];
     permissions: Permissions[];
@@ -265,6 +270,8 @@ export declare namespace appCommonTypes {
     };
     discounts: ReadonlyArray<any>;
     jwt: { key: string; expiry: string };
+    jwtAccessToken: { key: string; expiry: string };
+    jwtRefreshToken: { key: string; expiry: string };
     client: {
       host: string;
       ip: string;
@@ -285,6 +292,11 @@ export declare namespace appCommonTypes {
     timestamp?: string;
     result?: T | null;
     results?: T[];
+    tokens?: {
+      jwt: string;
+      accessToken: string;
+      refreshToken: string;
+    } 
   }
 
   type AsyncWrapper = (
@@ -433,6 +445,8 @@ declare global {
       user: User;
       form: IncomingForm;
       jwt: string;
+      data: string;
+      isTokenExpired: boolean;
     }
   }
 }

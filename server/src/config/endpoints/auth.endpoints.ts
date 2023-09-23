@@ -1,5 +1,6 @@
 import {
   bootstrapHandler,
+  checkAuthHandler,
   garageSignUpHandler,
   sendPasswordResetToken,
   signInHandler,
@@ -15,6 +16,12 @@ const authEndpoints: RouteEndpoints = [
     method: "post",
     path: "/sign-in",
     handler: signInHandler,
+  },
+  {
+    name: "check auth",
+    method: "get",
+    path: "/check-auth",
+    handler: checkAuthHandler,
   },
   {
     name: "signUp",

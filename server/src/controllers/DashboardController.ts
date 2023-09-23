@@ -24,7 +24,9 @@ export default class DashboardController {
     //
     try {
       const user = req.user;
-      const month = req?.query?.month || new Date().getMonth() + 1;
+      // const month = req?.query?.month || new Date().getMonth() + 1;
+      const { start_date, end_date } = req?.query;
+      const { year } = req?.body;
 
       // fetch raw data
       const estimates = await this.getEstimateRaw(user);
@@ -35,12 +37,12 @@ export default class DashboardController {
       const reminders = await this.getReminderRaw(user);
 
       // get filtered for month
-      const estimatesByMonth = await this.filterByMonth(estimates, month);
-      const invoicesByMonth = await this.filterByMonth(invoices, month);
-      const expensesByMonth = await this.filterByMonthExp(expenses, month);
-      const customersByMonth = await this.filterByMonth(customers, month);
-      const remindersByMonth = await this.filterByMonth(reminders, month);
-      const transactionsByMonth = await this.filterByMonth(transactions, month);
+      const estimatesByMonth = await this.filterByDate(estimates, start_date, end_date);
+      const invoicesByMonth = await this.filterByDate(invoices, start_date, end_date);
+      const expensesByMonth = await this.filterByDate(expenses, start_date, end_date);
+      const customersByMonth = await this.filterByDate(customers, start_date, end_date);
+      const remindersByMonth = await this.filterByDate(reminders, start_date, end_date);
+      const transactionsByMonth = await this.filterByDate(transactions, start_date, end_date);
 
       const mRevenue = this.getRevenue(invoicesByMonth);
       const mReceipt = this.getReceipt(invoicesByMonth);
@@ -109,6 +111,24 @@ export default class DashboardController {
       const __receipt = [];
       const __expenses = [];
 
+      const ___sales = [];
+      const ___receipt = [];
+
+      const _year = year === null ? new Date().getFullYear() : year
+
+      for (let i = 0; i < months.length; i++) {
+        const _month = months[i];
+      
+        // sales
+        const _invoicesByMonth = await this._filterByMonth(invoices, _month.id, _year);
+        ___sales.push(this.getRevenue(_invoicesByMonth));
+      
+        // receipt
+        // const _transactionsByMonth = await this.filterByMonth(transactions, _month.id, year);
+        ___receipt.push(this.getReceipt(_invoicesByMonth));
+      }
+      
+
       for (let i = 0; i < months.length; i++) {
         const _month = months[i];
 
@@ -159,6 +179,18 @@ export default class DashboardController {
               color: 'red',
             },
           ],
+          seriesNew: [
+            {
+              label: 'Total Sales',
+              data: ___sales,
+              backgroundColor: '#FAA21B',
+            },
+            {
+              label: 'Total Receipts',
+              data: ___receipt,
+              backgroundColor: '#FFD89B',
+            },
+          ],
           seriesOne: [
             {
               name: 'Sales',
@@ -184,6 +216,28 @@ export default class DashboardController {
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  public static async filterByDate(collection: any[], start_date: any, end_date: any) {
+    let newCollection: any[] = [];
+
+    if (start_date && end_date) {
+      collection.map(_item => {
+        if (_item != null) {
+          const itemDate = new Date(_item.createdAt);
+          
+            const startDate = new Date(start_date);
+            const endDate = new Date(end_date);
+            if(itemDate >= startDate && itemDate <= endDate) {
+              newCollection.push(_item);
+            }
+          }
+      });
+    } else {
+      return collection
+    }
+
+    return newCollection;
   }
 
   public static getReceivable(invoices: Invoice[]) {
@@ -253,6 +307,21 @@ export default class DashboardController {
 
     return newCollection;
   }
+
+  public static async _filterByMonth(collection: any[], month: number, year: number) {
+    return collection.filter((_item) => {
+      if (_item != null) {
+        const createdAtDate = new Date(_item.createdAt);
+        const itemMonth = createdAtDate.getMonth() + 1; // Months are zero-based
+        const itemYear = createdAtDate.getFullYear();
+  
+        return itemMonth === month && itemYear === year;
+      }
+  
+      return false;
+    });
+  }
+  
 
   //expenses filter by date modified
   public static async filterByMonthExp(collection: any[], month: any) {

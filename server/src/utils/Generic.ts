@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import { Op } from 'sequelize';
 import moment, { Moment } from 'moment';
 import camelcase from 'camelcase';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 
 import settings from '../config/settings';
 import { appCommonTypes } from '../@types/app-common';
@@ -14,6 +14,10 @@ import Appointment from '../models/Appointment';
 import dataStore from '../config/dataStore';
 import CustomJwtPayload = appCommonTypes.CustomJwtPayload;
 import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
+import { NextFunction, Request } from 'express';
+import UserToken from '../models/UserToken';
+import CustomAPIError from '../exceptions/CustomAPIError';
+import HttpStatus from '../helpers/HttpStatus';
 
 const startDate = moment({ hours: 0, minutes: 0, seconds: 0 }).toDate();
 const endDate = moment({ hours: 23, minutes: 59, seconds: 59 }).toDate();
@@ -119,6 +123,81 @@ export default class Generic {
   public static generateJwt(payload: CustomJwtPayload) {
     const key = <string>settings.jwt.key;
     return sign(payload, key);
+  }
+
+  public static async generateJWT (payload: CustomJwtPayload) {
+    try {
+      // Create the access token
+      const accessToken = sign(
+        payload,
+        <string>settings.jwtAccessToken.key,
+        { expiresIn: <string>settings.jwtAccessToken.expiry}
+      );
+
+      // Create the refresh token
+      const refreshToken = sign(
+        payload,
+        <string>settings.jwtRefreshToken.key,
+        { expiresIn: <string>settings.jwtRefreshToken.expiry }
+      );
+  
+      // Delete any existing user tokens
+      await UserToken.destroy({ where: { userId: payload.userId } });
+  
+      // Calculate the refresh token expiration date (e.g., 7 days from now)
+      const refreshTokenExpiry = new Date();
+      refreshTokenExpiry.setHours(refreshTokenExpiry.getHours() + 24);
+  
+      // Create a new user token
+      await UserToken.create({
+        userId: payload.userId,
+        token: refreshToken,
+        expired_at: refreshTokenExpiry,
+      });
+      
+      return { accessToken, refreshToken };
+    } catch (err: any) {
+      return Promise.reject((CustomAPIError.response(err, HttpStatus.BAD_REQUEST.code)));
+    }
+  };
+
+  public static async refreshToken (refreshToken: string, req: Request, next: NextFunction) {
+    try {
+      if (!refreshToken) {
+        return Promise.reject(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code))
+      }
+  
+      // Check if the refresh token exists in the database
+      const userToken = await UserToken.findOne({ where: { token: refreshToken } });
+  
+      if (!userToken) {
+        // throw new AppError('Invalid refresh token', BAD_REQUEST);
+        return Promise.reject(CustomAPIError.response('Invalid refresh token', HttpStatus.BAD_REQUEST.code))
+      }
+  
+      // Verify the refresh token and get the payload
+      const data: any = verify(refreshToken, settings.jwtRefreshToken.key as string);
+  
+      // Check if there is a valid user token in the database
+      const dbToken = await UserToken.findOne({
+        where: {
+          userId: data.userId,
+          expired_at: { [Op.gte]: new Date() },
+        },
+      });
+  
+      if (!dbToken) {
+        // throw new AppError('Invalid refresh token', BAD_REQUEST);
+        return Promise.reject(CustomAPIError.response('Invalid refresh token', HttpStatus.BAD_REQUEST.code))
+      }
+  
+      // Attach the payload to the request object
+      req.data = data;
+  
+      next();
+    } catch (error: any) {
+      next(Promise.reject(CustomAPIError.response(error, HttpStatus.BAD_REQUEST.code)));
+    }
   }
 
   public static generateRandomString(limit: number) {

@@ -1,4 +1,4 @@
-import { Request, response } from "express";
+import { Request, Response, response } from "express";
 
 import Joi from "joi";
 
@@ -35,6 +35,7 @@ import capitalize from "capitalize";
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import ResetPasswordTokenEmail from "../resources/templates/email/reset_password_token_email";
+import UserToken from "../models/UserToken";
 
 export interface IGarageSignupModel {
   firstName: string;
@@ -44,9 +45,11 @@ export interface IGarageSignupModel {
   phone: string;
   dialCode: string;
   state: string;
+  district: string;
   isRegistered: boolean;
   address?: string;
   password?: string;
+  confirm_password?: string;
 }
 
 export default class AuthenticationController {
@@ -255,7 +258,7 @@ export default class AuthenticationController {
         signature: process.env.SMTP_EMAIL_SIGNATURE,
       });
 
-      //todo: Send email with credentials
+      // todo: Send email with credentials
       await QueueManager.publish({
         queue: MAIL_QUEUE_EVENTS.name,
         data: {
@@ -366,6 +369,12 @@ export default class AuthenticationController {
         permissions,
       });
 
+      const { accessToken, refreshToken }: any = await Generic.generateJWT({
+        userId: user.id,
+        partnerId: user.partnerId,
+        permissions,
+      });
+      
       //update user authentication date and authentication token
       const updateValues = {
         loginDate: new Date(),
@@ -377,10 +386,10 @@ export default class AuthenticationController {
         <InferAttributes<User>>updateValues
       );
 
-      const response: HttpResponse<string> = {
+      const response: HttpResponse<any> = {
         code: HttpStatus.OK.code,
         message: "Login successful",
-        result: jwt,
+        tokens: {jwt, accessToken, refreshToken},
       };
 
       return Promise.resolve(response);
@@ -514,13 +523,19 @@ export default class AuthenticationController {
    * @param req
    */
 
-  public async signOut(req: Request) {
+  public async signOut(req: Request, res: Response) {
     try {
       await req.user.update({ loginToken: "" });
+      // const cookies = req.signedCookies;
+      // const cookieName = settings.cookie.refreshToken;
+  
+      // const cookie = cookies[cookieName];
+
+      // await UserToken.destroy({ where: {token: cookie }});
 
       const response: HttpResponse<null> = {
         code: HttpStatus.OK.code,
-        message: HttpStatus.OK.value,
+        message: "Signed out successfully",
       };
 
       return Promise.resolve(response);
@@ -530,17 +545,50 @@ export default class AuthenticationController {
   }
 
   @TryCatch
+  public async checkAuth(req: Request, res: Response) {
+ 
+    if (req.isTokenExpired) {
+      // res.redirect('/session-expired');
+      console.log('expired')
+      const response: HttpResponse<boolean> = {
+        code: HttpStatus.OK.code,
+        message: "Protected route",
+        result: false
+      };
+  
+      return Promise.resolve(response);
+    } else {
+      const response: HttpResponse<boolean> = {
+        code: HttpStatus.OK.code,
+        message: "Protected route",
+        result: true
+      };
+  
+      return Promise.resolve(response);
+    }
+    
+  }
+
+  @TryCatch
   public async garageSignup(req: Request) {
     const { error, value } = Joi.object<IGarageSignupModel>({
       firstName: Joi.string().max(80).label("First Name").required(),
       lastName: Joi.string().max(80).label("Last Name").required(),
-      name: Joi.string().required().label("Workshop/Business Name"),
+      name: Joi.string().optional().label("Workshop/Business Name"),
       email: Joi.string().email().label("Email Address").required(),
-      address: Joi.string().optional(),
+      address: Joi.string().required().label('Address'),
       phone: Joi.string().required().label("Phone Number"),
       dialCode: Joi.string().optional().label("Dial Code"),
       state: Joi.string().label("State").required(),
-      password: Joi.string().min(8).optional(),
+      district: Joi.string().label("District").required(),
+      password: Joi.string()
+      .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+      .messages({
+        "string.pattern.base": `Password does not meet requirement.`,
+      })
+      .required()
+      .label("password"),
+      confirm_password: Joi.ref("password"),
       isRegistered: Joi.boolean()
         .truthy()
         .label("Legally Registered")
@@ -630,6 +678,7 @@ export default class AuthenticationController {
     const contactValues: Partial<Contact> = {
       state: state.name,
       country: "Nigeria",
+      district: value.district
     };
 
     //find garage category

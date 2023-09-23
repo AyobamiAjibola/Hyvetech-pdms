@@ -108,8 +108,10 @@ const settings: AppSettings = {
     apiKey: <string>process.env.SENDGRID_API_KEY,
   },
   cookie: {
+    accessToken: process.env.ACCESS_TOKEN as string,
+    refreshToken: process.env.REFRESH_TOKEN as string,
     name: process.env.COOKIE_AUTH as string,
-    secret: process.env.COOKIE_AUTH as string,
+    secret: process.env.COOKIE_AUTH_SECRET as string,
   },
   permissions: [
     MANAGE_ALL,
@@ -298,6 +300,14 @@ const settings: AppSettings = {
   jwt: {
     key: <string>process.env.JWT_KEY,
     expiry: <string>process.env.JWT_EXPIRY,
+  },
+  jwtAccessToken: {
+    key: <string>process.env.JWT_ACCESS_KEY,
+    expiry: <string>process.env.JWT_ACCESS_EXPIRY,
+  },
+  jwtRefreshToken: {
+    key: <string>process.env.JWT_REFRESH_KEY,
+    expiry: <string>process.env.JWT_REFRESH_EXPIRY,
   },
   service: {
     env: <string>process.env.NODE_ENV,
