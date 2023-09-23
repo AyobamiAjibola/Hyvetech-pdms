@@ -42,7 +42,7 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
     beneficiaryBankCode: Joi.string().required().label("beneficiaryBankCode"),
     beneficiaryName: Joi.string().optional().label("beneficiaryName"),
     senderName: Joi.string().optional().label("senderName"),
-    nameEnquirySessionID: Joi.number().required().label("nameEnquirySessionID"),
+    NameEnquirySessionID: Joi.string().required().label("NameEnquirySessionID"),
     saveAsBeneficiary: Joi.boolean().optional().label("saveAsBeneficiary"),
     bankName: Joi.string().optional().label("bankName"),
     pin: Joi.string().required().label("pin"),
