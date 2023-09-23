@@ -71,8 +71,11 @@ const authenticationSlice = createSlice({
         state.signingInStatus = 'completed';
         state.signingInSuccess = action.payload.message;
 
-        if (action.payload.tokens) {
-          state.authToken = action.payload.tokens.jwt;
+        //if (action.payload.tokens)
+        if (action.payload.result) {
+          // state.authToken = action.payload.tokens.jwt;
+          state.authToken = action.payload.result;
+          console.log(action.payload, 'payload')
           const { permissions } = jwt.decode(state.authToken) as CustomJwtPayload;
           
           state.permissions = permissions;

@@ -78,33 +78,33 @@ export const signupHandler = async (req: Request, res: Response) => {
 export const signInHandler = async (req: Request, res: Response) => {
   const response = await authenticationController.signIn(req);
 
-  res.cookie(settings.cookie.refreshToken, response.tokens?.refreshToken, {
-    // sameSite: "none",
-    // secure: false,
-    // signed: true,
-    // httpOnly: true,
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-    path: '/',
-    signed: true,
-    domain: 'localhost',
-    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Set expiration to 24 hours from now
-    sameSite: 'none'
-  });
+  // res.cookie(settings.cookie.refreshToken, response.tokens?.refreshToken, {
+  //   // sameSite: "none",
+  //   // secure: false,
+  //   // signed: true,
+  //   // httpOnly: true,
+  //   httpOnly: true,
+  //   maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+  //   path: '/',
+  //   signed: true,
+  //   domain: 'localhost',
+  //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Set expiration to 24 hours from now
+  //   sameSite: 'none'
+  // });
 
-  res.cookie(settings.cookie.accessToken, response.tokens?.accessToken, {
-    // sameSite: "none",
-    // secure: false,
-    // signed: true,
-    // httpOnly: true,
-    httpOnly: true,
-    maxAge: 20 * 60 * 1000, // 20 minutes in milliseconds
-    path: '/',
-    signed: true,
-    domain: 'localhost',
-    expires: new Date(Date.now() + 20 * 60 * 1000), // Set expiration to 20 minutes from now
-    sameSite: 'none'
-  });
+  // res.cookie(settings.cookie.accessToken, response.tokens?.accessToken, {
+  //   // sameSite: "none",
+  //   // secure: false,
+  //   // signed: true,
+  //   // httpOnly: true,
+  //   httpOnly: true,
+  //   maxAge: 20 * 60 * 1000, // 20 minutes in milliseconds
+  //   path: '/',
+  //   signed: true,
+  //   domain: 'localhost',
+  //   expires: new Date(Date.now() + 20 * 60 * 1000), // Set expiration to 20 minutes from now
+  //   sameSite: 'none'
+  // });
 
   res.status(response.code).json(response);
 };

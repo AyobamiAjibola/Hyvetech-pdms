@@ -369,11 +369,11 @@ export default class AuthenticationController {
         permissions,
       });
 
-      const { accessToken, refreshToken }: any = await Generic.generateJWT({
-        userId: user.id,
-        partnerId: user.partnerId,
-        permissions,
-      });
+      // const { accessToken, refreshToken }: any = await Generic.generateJWT({
+      //   userId: user.id,
+      //   partnerId: user.partnerId,
+      //   permissions,
+      // });
       
       //update user authentication date and authentication token
       const updateValues = {
@@ -389,7 +389,8 @@ export default class AuthenticationController {
       const response: HttpResponse<any> = {
         code: HttpStatus.OK.code,
         message: "Login successful",
-        tokens: {jwt, accessToken, refreshToken},
+        result: jwt
+        // tokens: {jwt, accessToken, refreshToken},
       };
 
       return Promise.resolve(response);
