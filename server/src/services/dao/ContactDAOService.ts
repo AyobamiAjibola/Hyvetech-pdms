@@ -43,7 +43,7 @@ export default class ContactDAOService implements ICrudDAO<Contact> {
   update(
     contact: Contact,
     values: InferAttributes<Contact>,
-    options: UpdateOptions<Attributes<Contact>>,
+    options?: UpdateOptions<Attributes<Contact>>,
   ): Promise<Contact> {
     return this.contactRepository.updateOne(contact, values, options);
   }

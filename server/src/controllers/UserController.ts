@@ -5,7 +5,7 @@ import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
 import Partner from '../models/Partner';
 import { appCommonTypes } from '../@types/app-common';
-
+import formidable, { File } from 'formidable';
 import User, { $saveUserSchema, $updateUserSchema, UserSchemaType } from '../models/User';
 
 import Contact from '../models/Contact';
@@ -26,6 +26,10 @@ import Permission from '../models/Permission';
 
 import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
+import { ALLOWED_FILE_TYPES, MAX_SIZE_IN_BYTE, MESSAGES, UPLOAD_BASE_PATH } from '../config/constants';
+import Generic from '../utils/Generic';
+
+const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 
 export default class UserController {
   private declare readonly passwordEncoder: BcryptPasswordEncoder;
@@ -124,7 +128,7 @@ export default class UserController {
   public async updateUser(req: Request) {
     const user = await this.doUpdateUser(req);
 
-    const response: HttpResponse<User> = {
+    const response: HttpResponse<any> = {
       code: HttpStatus.OK.code,
       message: HttpStatus.OK.value,
       result: user,
@@ -200,79 +204,220 @@ export default class UserController {
     } as InferAttributes<User>);
   }
 
-  private async doUpdateUser(req: Request) {
-    const partner = req.user.partner;
-    const { error, value } = Joi.object<any>($updateUserSchema).validate(req.body);
+  private async doUpdateUser(req: Request): Promise<HttpResponse<any>> {
+    return new Promise ((resolve, reject) => {
+      form.parse(req, async (err, fields, files) => {
+        try {
+          const { error, value } = Joi.object<any>($updateUserSchema).validate(fields);
+          if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+          const user = await dataSources.userDAOService.findById(+value.id, { include: [{ model: Role }] });
 
-    const role = await dataSources.roleDAOService.findById(value.roleId);
+          if (!user) return reject(CustomAPIError.response('User not found', HttpStatus.BAD_REQUEST.code));
 
-    const user = await dataSources.userDAOService.findById(value.id, { include: [{ model: Role }] });
+          const role = await dataSources.roleDAOService.findByAny({
+            where: {id: user.roleId}
+          });
 
-    if (!user) return Promise.reject(CustomAPIError.response('User not found', HttpStatus.BAD_REQUEST.code));
+          if (
+            user.roles[0]?.slug === MANAGE_TECHNICIAN &&
+            !req.permissions.map(item => item.name).includes(MANAGE_TECHNICIAN)
+          )
+            return reject(
+              CustomAPIError.response('Unauthorized access. Please contact system admin', HttpStatus.UNAUTHORIZED.code),
+            );
 
-    if (
-      user.roles[0]?.slug === MANAGE_TECHNICIAN &&
-      !req.permissions.map(item => item.name).includes(MANAGE_TECHNICIAN)
-    )
-      return Promise.reject(
-        CustomAPIError.response('Unauthorized access. Please contact system admin', HttpStatus.UNAUTHORIZED.code),
-      );
+          if (!role) return reject(CustomAPIError.response('Role not found', HttpStatus.BAD_REQUEST.code));
 
-    if (!role) return Promise.reject(CustomAPIError.response('Role not found', HttpStatus.BAD_REQUEST.code));
+          // const user_email = await dataSources.userDAOService.findByAny({
+          //   where: {email: value.email}
+          // });
 
-    const user_email = await dataSources.userDAOService.findByAny({
-      where: {email: value.email}
-    });
+          // if(value.email && user.email !== value.email){
+          //     if(user_email) {
+          //       return reject(CustomAPIError.response('User with this email already exists', HttpStatus.NOT_FOUND.code))
+          //     }
+          // };
 
-    if(value.email && user.email !== value.email){
-        if(user_email) {
-          return Promise.reject(CustomAPIError.response('User with this email already exists', HttpStatus.NOT_FOUND.code))
+          const user_phone = await dataSources.userDAOService.findByAny({
+            where: {phone: value.phone}
+          });
+
+          if(value.phone && user.phone !== value.phone){
+              if(user_phone) {
+                return reject(CustomAPIError.response('User with this phone number already exists', HttpStatus.NOT_FOUND.code))
+              }
+          };
+
+          const contact = await dataSources.contactDAOService.findByAny({
+            //@ts-ignore
+            where: { partnerId: user.partnerId }
+          })
+
+          if(!contact) {
+            return reject(CustomAPIError.response('Contact not found', HttpStatus.NOT_FOUND.code))
+          }
+
+          const contactValues = {
+            state: value.state,
+            district: value.district
+          }
+
+          const profile_image = files.profileImageUrl as File;
+          const basePath = `${UPLOAD_BASE_PATH}/user`;
+          
+          let _profileImageUrl = ''
+          if(profile_image) {
+              // File size validation
+              const maxSizeInBytes = MAX_SIZE_IN_BYTE
+              if (profile_image.size > maxSizeInBytes) {
+                  return reject(CustomAPIError.response(MESSAGES.image_size_error, HttpStatus.BAD_REQUEST.code));
+              }
+      
+              // File type validation
+              const allowedFileTypes = ALLOWED_FILE_TYPES;
+              if (!allowedFileTypes.includes(profile_image.mimetype as string)) {
+                  return reject(CustomAPIError.response(MESSAGES.image_type_error, HttpStatus.BAD_REQUEST.code));
+              }
+      
+              _profileImageUrl = await Generic.getImagePath({
+                  tempPath: profile_image.filepath,
+                  filename: profile_image.originalFilename as string,
+                  basePath,
+              });
+          };
+
+          const userValues: Partial<User> = {
+            firstName: value.firstName,
+            lastName: value.lastName,
+            phone: value.phone,
+            // email: value.email,
+            address: value.address,
+            // roleId: role.id,
+            profileImageUrl: _profileImageUrl ? _profileImageUrl : user.profileImageUrl
+          };
+
+          // if (value.password && value.password.trim() !== '') userValues.password = value.password;
+          await dataSources.contactDAOService.update(contact, contactValues as InferAttributes<Contact>)
+          await dataSources.userDAOService.update(user, userValues as InferAttributes<User>);
+
+          await role.$add('users', [user]);
+          await user.$set('roles', [role]);
+          
+          //@ts-ignore
+          return resolve(user);
+          
+        } catch (e) {
+          return reject(e);
         }
-    };
-
-    const user_phone = await dataSources.userDAOService.findByAny({
-      where: {phone: value.phone}
-    });
-
-    if(value.phone && user.phone !== value.phone){
-        if(user_phone) {
-          return Promise.reject(CustomAPIError.response('User with this phone number already exists', HttpStatus.NOT_FOUND.code))
-        }
-    };
-
-    const contact = await dataSources.contactDAOService.findByAny({
-      //@ts-ignore
-      where: { partnerId: user.partnerId }
+        
+      })
     })
-
-    if(contact) {
-      return Promise.reject(CustomAPIError.response('Contact not found', HttpStatus.NOT_FOUND.code))
-    }
-
-    const contactValues = {
-      state: value.state,
-      district: value.district
-    }
-
-    const userValues: Partial<User> = {
-      firstName: value.firstName,
-      lastName: value.lastName,
-      phone: value.phone,
-      email: value.email,
-      address: value.address,
-      roleId: role.id,
-    };
-
-    if (value.password && value.password.trim() !== '') userValues.password = value.password;
-
-    await dataSources.userDAOService.update(user, userValues as InferAttributes<User>);
-
-    await role.$add('users', [user]);
-    await user.$set('roles', [role]);
-    return user;
   }
+
+  // private async doUpdateUser(req: Request) {
+  //   const partner = req.user.partner;
+
+  //   const { error, value } = Joi.object<any>($updateUserSchema).validate(req.body);
+
+  //   if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+  //   const user = await dataSources.userDAOService.findById(value.id, { include: [{ model: Role }] });
+
+  //   if (!user) return Promise.reject(CustomAPIError.response('User not found', HttpStatus.BAD_REQUEST.code));
+
+  //   const role = await dataSources.roleDAOService.findByAny({
+  //     where: {id: user.roleId}
+  //   });
+
+  //   if (
+  //     user.roles[0]?.slug === MANAGE_TECHNICIAN &&
+  //     !req.permissions.map(item => item.name).includes(MANAGE_TECHNICIAN)
+  //   )
+  //     return Promise.reject(
+  //       CustomAPIError.response('Unauthorized access. Please contact system admin', HttpStatus.UNAUTHORIZED.code),
+  //     );
+
+  //   if (!role) return Promise.reject(CustomAPIError.response('Role not found', HttpStatus.BAD_REQUEST.code));
+
+  //   // const user_email = await dataSources.userDAOService.findByAny({
+  //   //   where: {email: value.email}
+  //   // });
+
+  //   // if(value.email && user.email !== value.email){
+  //   //     if(user_email) {
+  //   //       return reject(CustomAPIError.response('User with this email already exists', HttpStatus.NOT_FOUND.code))
+  //   //     }
+  //   // };
+
+  //   const user_phone = await dataSources.userDAOService.findByAny({
+  //     where: {phone: value.phone}
+  //   });
+
+  //   if(value.phone && user.phone !== value.phone){
+  //       if(user_phone) {
+  //         return Promise.reject(CustomAPIError.response('User with this phone number already exists', HttpStatus.NOT_FOUND.code))
+  //       }
+  //   };
+
+  //   const contact = await dataSources.contactDAOService.findByAny({
+  //     //@ts-ignore
+  //     where: { partnerId: user.partnerId }
+  //   })
+
+  //   if(!contact) {
+  //     return Promise.reject(CustomAPIError.response('Contact not found', HttpStatus.NOT_FOUND.code))
+  //   }
+
+  //   const contactValues = {
+  //     state: value.state,
+  //     district: value.district
+  //   }
+
+  //   // const profile_image = files.profileImageUrl as File;
+  //   // const basePath = `${UPLOAD_BASE_PATH}/user`;
+
+  //   // let _profileImageUrl = ''
+  //   // if(profile_image) {
+  //   //     // File size validation
+  //   //     const maxSizeInBytes = MAX_SIZE_IN_BYTE
+  //   //     if (profile_image.size > maxSizeInBytes) {
+  //   //         return reject(CustomAPIError.response(MESSAGES.image_size_error, HttpStatus.BAD_REQUEST.code));
+  //   //     }
+
+  //   //     // File type validation
+  //   //     const allowedFileTypes = ALLOWED_FILE_TYPES;
+  //   //     if (!allowedFileTypes.includes(profile_image.mimetype as string)) {
+  //   //         return reject(CustomAPIError.response(MESSAGES.image_type_error, HttpStatus.BAD_REQUEST.code));
+  //   //     }
+
+  //   //     _profileImageUrl = await Generic.getImagePath({
+  //   //         tempPath: profile_image.filepath,
+  //   //         filename: profile_image.originalFilename as string,
+  //   //         basePath,
+  //   //     });
+  //   // };
+
+  //   const userValues: Partial<User> = {
+  //     firstName: value.firstName,
+  //     lastName: value.lastName,
+  //     phone: value.phone,
+  //     // email: value.email,
+  //     address: value.address,
+  //     // roleId: role.id,
+  //     profileImageUrl: value.profileImageUrl
+  //   };
+
+  //   // if (value.password && value.password.trim() !== '') userValues.password = value.password;
+  //   await dataSources.contactDAOService.update(contact, contactValues as InferAttributes<Contact>)
+  //   await dataSources.userDAOService.update(user, userValues as InferAttributes<User>);
+
+  //   await role.$add('users', [user]);
+  //   await user.$set('roles', [role]);
+    
+  //   //@ts-ignore
+  //   return user;
+  // }
 
   private async doDeleteUser(req: Request) {
     const partner = req.user.partner;

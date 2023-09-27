@@ -18,7 +18,9 @@ import email_content from "../resources/templates/email/email_content";
 import create_customer_success_email from "../resources/templates/email/create_customer_success_email";
 import {
   CATEGORIES,
+  COOPERATE_ACCOUNT_TYPE,
   GARAGE_ADMIN_ROLE,
+  INDIVIDUAL_ACCOUNT_TYPE,
   MAIL_QUEUE_EVENTS,
   QUEUE_EVENTS,
 } from "../config/constants";
@@ -46,6 +48,7 @@ export interface IGarageSignupModel {
   dialCode: string;
   state: string;
   district: string;
+  accountType: string;
   isRegistered: boolean;
   address?: string;
   password?: string;
@@ -577,6 +580,7 @@ export default class AuthenticationController {
       lastName: Joi.string().max(80).label("Last Name").required(),
       name: Joi.string().optional().label("Workshop/Business Name"),
       email: Joi.string().email().label("Email Address").required(),
+      accountType: Joi.string().label("Account Type").required(),
       address: Joi.string().required().label('Address'),
       phone: Joi.string().required().label("Phone Number"),
       dialCode: Joi.string().optional().label("Dial Code"),
@@ -611,21 +615,49 @@ export default class AuthenticationController {
         )
       );
 
+    // const userExist = await dataSources.userDAOService.findByAny({
+    //   where: {email: value.email }
+    // });
+
+    // if (userExist)
+    //   return Promise.reject(
+    //     CustomAPIError.response(
+    //       `User with email already exist`,
+    //       HttpStatus.BAD_REQUEST.code
+    //     )
+    //   );
+
     //check if partner with email or name already exist
-    const partnerExist = await dataSources.partnerDAOService.findByAny({
-      where: {
-        [Op.or]: [{ name: value.name }, { email: value.email }],
-      },
-    });
+    if(value.accountType === COOPERATE_ACCOUNT_TYPE) {
+      const partnerExist = await dataSources.partnerDAOService.findByAny({
+        where: {
+          [Op.or]: [{ name: value.name }, { email: value.email }],
+        },
+      });
+  
+      if (partnerExist)
+        return Promise.reject(
+          CustomAPIError.response(
+            `Partner with name or email already exist`,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+    }
 
-    if (partnerExist)
-      return Promise.reject(
-        CustomAPIError.response(
-          `Partner with name or email already exist`,
-          HttpStatus.BAD_REQUEST.code
-        )
-      );
-
+    if(value.accountType === INDIVIDUAL_ACCOUNT_TYPE) {
+      const partnerExist = await dataSources.partnerDAOService.findByAny({
+        where: { email: value.email }
+      });
+  
+      if (partnerExist)
+        return Promise.reject(
+          CustomAPIError.response(
+            `User with email already exist`,
+            HttpStatus.BAD_REQUEST.code
+          )
+        );
+    }
+    
     const state = await dataSources.stateDAOService.findByAny({
       where: {
         name: value.state,
@@ -642,16 +674,6 @@ export default class AuthenticationController {
 
     const password = value.password || <string>process.env.PARTNER_PASS;
 
-    const partnerValues: Partial<Partner> = {
-      email: value.email,
-      name: value.name,
-      phone: value.phone,
-      slug: Generic.generateSlug(value.name),
-      totalStaff: 0,
-      totalTechnicians: 0,
-      yearOfIncorporation: 0,
-    };
-
     //find garage admin role
     const role = await dataSources.roleDAOService.findByAny({
       where: { slug: settings.roles[4] },
@@ -665,6 +687,16 @@ export default class AuthenticationController {
         )
       );
 
+    const partnerValues: Partial<Partner> = {
+      email: value.email,
+      name: value.name || value.email,
+      phone: value.phone,
+      slug: Generic.generateSlug(value.name || value.email),
+      totalStaff: 0,
+      totalTechnicians: 0,
+      yearOfIncorporation: 0,
+    };
+
     const userValues: Partial<User> = {
       username: value.email,
       email: value.email,
@@ -672,8 +704,11 @@ export default class AuthenticationController {
       lastName: value.lastName,
       active: true,
       password,
+      accountType: value.accountType,
       rawPassword: password,
       roleId: role.id,
+      phone: value.phone,
+      address: value.address
     };
 
     const contactValues: Partial<Contact> = {
@@ -697,6 +732,59 @@ export default class AuthenticationController {
         )
       );
 
+    // if(value.accountType === COOPERATE_ACCOUNT_TYPE) {
+    //   const partnerValues: Partial<Partner> = {
+    //     email: value.email,
+    //     name: value.name,
+    //     phone: value.phone,
+    //     slug: Generic.generateSlug(value.name),
+    //     totalStaff: 0,
+    //     totalTechnicians: 0,
+    //     yearOfIncorporation: 0,
+    //   };
+
+    //   const contact = await dataSources.contactDAOService.create(
+    //     <CreationAttributes<Contact>>contactValues
+    //   );
+
+    //   const partner = await dataSources.partnerDAOService.create(
+    //     <CreationAttributes<Partner>>partnerValues
+    //   );
+
+    //   await partner.$add("categories", [category]);
+    //   await partner.$set("contact", contact);
+    //   await partner.$set("users", user);
+
+    //   result = PartnerController.formatPartner(partner);
+
+    //   const mailSubject = `Welcome to AutoHyve!`;
+  
+    //   const mailText = garage_partner_welcome_email({
+    //     partnerName: capitalize(partnerValues.name as string),
+    //     password: userValues.rawPassword as string,
+    //     appUrl: <string>process.env.CLIENT_HOST,
+    //   });
+  
+    //   await QueueManager.publish({
+    //     queue: MAIL_QUEUE_EVENTS.name,
+    //     data: {
+    //       to: user.email,
+    //       from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+    //       subject: mailSubject,
+    //       html: mailText,
+    //       bcc: [
+    //         <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+    //         <string>process.env.SMTP_EMAIL_FROM,
+    //       ],
+    //     },
+    //   });
+    // }
+
+    const contact = await dataSources.contactDAOService.create(
+      <CreationAttributes<Contact>>contactValues
+    );
+
+
     //create partner
     const partner = await dataSources.partnerDAOService.create(
       <CreationAttributes<Partner>>partnerValues
@@ -706,46 +794,42 @@ export default class AuthenticationController {
     const user = await dataSources.userDAOService.create(
       <CreationAttributes<User>>userValues
     );
-
-    const contact = await dataSources.contactDAOService.create(
-      <CreationAttributes<Contact>>contactValues
-    );
+    
+    await user.$set("roles", [role]);
 
     await partner.$add("categories", [category]);
     await partner.$set("contact", contact);
     await partner.$set("users", user);
-    await user.$set("roles", [role]);
-
     await role.$add("users", [user]);
 
     const result = PartnerController.formatPartner(partner);
 
-    const mailSubject = `Welcome to AutoHyve!`;
+    // const mailSubject = `Welcome to AutoHyve!`;
+  
+    //   const mailText = garage_partner_welcome_email({
+    //     partnerName: capitalize(partnerValues.name as string),
+    //     password: userValues.rawPassword as string,
+    //     appUrl: <string>process.env.CLIENT_HOST,
+    //   });
+  
+    //   await QueueManager.publish({
+    //     queue: MAIL_QUEUE_EVENTS.name,
+    //     data: {
+    //       to: user.email,
+    //       from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+    //       subject: mailSubject,
+    //       html: mailText,
+    //       bcc: [
+    //         <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+    //         <string>process.env.SMTP_EMAIL_FROM,
+    //       ],
+    //     },
+    //   });
 
-    const mailText = garage_partner_welcome_email({
-      partnerName: capitalize(partnerValues.name as string),
-      password: userValues.rawPassword as string,
-      appUrl: <string>process.env.CLIENT_HOST,
-    });
-
-    await QueueManager.publish({
-      queue: MAIL_QUEUE_EVENTS.name,
-      data: {
-        to: user.email,
-        from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
-        subject: mailSubject,
-        html: mailText,
-        bcc: [
-          <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-          <string>process.env.SMTP_EMAIL_FROM,
-        ],
-      },
-    });
-
-    const response: HttpResponse<Partner> = {
+    const response: HttpResponse<Partner | User> = {
       message: `Account successfully created.`,
       code: HttpStatus.OK.code,
-      result,
+      result
     };
 
     return Promise.resolve(response);

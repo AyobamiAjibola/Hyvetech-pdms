@@ -227,6 +227,7 @@ const KycRequestPage = () => {
       },
     ] as GridColDef<AccountActivateRequest>[];
   }, []);
+
   return (
     <div>
       <Typography variant="h4" gutterBottom>

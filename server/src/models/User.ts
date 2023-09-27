@@ -76,7 +76,6 @@ export const $updateUserSchema: Joi.SchemaMap<any> = {
   id: Joi.number().required().label("id"),
   firstName: Joi.string().label("firstName"),
   lastName: Joi.string().label("lastName"),
-  email: Joi.string().label("email"),
   phone: Joi.string().label("phone"),
   // password: Joi.string()
   //   .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
@@ -88,7 +87,8 @@ export const $updateUserSchema: Joi.SchemaMap<any> = {
     address: Joi.string().label("address"),
     state: Joi.string().label("state"),
     district: Joi.string().label("district"),
-    partnerId: Joi.string().label("partnerId")
+    partnerId: Joi.string().label("partnerId"),
+    profileImageUrl: Joi.string().label("profile image")
 };
 
 @Table({

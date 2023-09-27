@@ -7,8 +7,12 @@ import CheckListSectionType = appCommonTypes.CheckListSectionType;
 export const PASSWORD_PATTERN = '^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=])(?=\\S+$).{8,20}$';
 
 export const UPLOAD_BASE_PATH = 'uploads';
+export const MAX_SIZE_IN_BYTE = 1000 * 1024; // 1MB
+export const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
 
 export const CLIENT_ACCOUNT_NUMBER = '2000355517'
+export const INDIVIDUAL_ACCOUNT_TYPE = 'individual'
+export const COOPERATE_ACCOUNT_TYPE = 'cooperate'
 
 export const TAGS = [
   { name: '2/3-Wheeler', icon: 'fa-person-biking' },
@@ -396,6 +400,8 @@ export const MESSAGES = {
     404: 'Not Found. Please Contact Support.',
     500: 'Something Went Wrong. Please Contact Support.',
   },
+  image_size_error: 'Image size exceeds the allowed limit',
+  image_type_error: 'Invalid image format. Only JPEG, PNG, and JPG images are allowed'
 };
 
 export const QUEUE_EVENTS: QueueEvents = {
