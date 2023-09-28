@@ -20,12 +20,32 @@ export const getAnalyticsAction = createAsyncThunk<any, void>(
   })
 );
 
-export const getTechAnalyticsAction = createAsyncThunk<any, void>(
+// export const getTechAnalyticsAction = createAsyncThunk<any, void>(
+//   GET_TECH_ANALYTICS,
+//   asyncThunkErrorWrapper(async (month: any) => {
+//     const response = await axiosClient.get(
+//       `${API_ROOT}/dashboard-tech?month=${month}`
+//     );
+//     return response.data;
+//   })
+// );
+
+export const getTechAnalyticsAction = createAsyncThunk<any, any>(
   GET_TECH_ANALYTICS,
-  asyncThunkErrorWrapper(async (month: any) => {
-    const response = await axiosClient.get(
-      `${API_ROOT}/dashboard-tech?month=${month}`
-    );
+  asyncThunkErrorWrapper(async (args: any) => {
+
+    let response;
+    if(args.start_date === undefined || args.end_date === undefined ) {
+      
+      response = await axiosClient.post(
+        `${API_ROOT}/dashboard-tech`, { year: args.year }
+      );
+    } else {
+      response = await axiosClient.post(
+        `${API_ROOT}/dashboard-tech?start_date=${args.start_date}&end_date=${args.end_date}`, { year: args.year }
+      );
+    }
+
     return response.data;
   })
 );

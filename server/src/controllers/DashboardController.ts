@@ -36,7 +36,7 @@ export default class DashboardController {
       const transactions = await this.getTransactionsRaw(user);
       const reminders = await this.getReminderRaw(user);
 
-      // get filtered for month
+      // get filtered for date
       const estimatesByMonth = await this.filterByDate(estimates, start_date, end_date);
       const invoicesByMonth = await this.filterByDate(invoices, start_date, end_date);
       const expensesByMonth = await this.filterByDate(expenses, start_date, end_date);

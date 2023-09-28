@@ -150,7 +150,7 @@ export default class VINDecoderProviderDAOService implements ICrudDAO<VINDecoder
           return VIN_FILTER_CONSTRAINTS.includes(detail.label);
         });
     }
-
+    
     const data = {};
 
     result.forEach(detail => {

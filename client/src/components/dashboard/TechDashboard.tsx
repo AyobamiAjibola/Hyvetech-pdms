@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Divider,
     Grid,
-    Select,
+    // Select,
     // Paper,
     Stack, 
     Typography} from '@mui/material';
@@ -12,26 +12,62 @@ import { cyan, green, lime, orange, purple, teal } from '@mui/material/colors';
 import AppStackedColumnChart from '../charts/AppStackedColumnChart';
 import { MONTHS } from '../../config/constants';
 import DataCard from '../data/DataCard';
-import { useDispatch } from 'react-redux';
-import { getTechAnalyticsAction } from '../../store/actions/dashboardActions';
 import useAppSelector from '../../hooks/useAppSelector';
 import { formatNumberToIntl } from '../../utils/generic';
 import AppLoader from '../loader/AppLoader';
 import useAdmin from '../../hooks/useAdmin';
 import capitalize from 'capitalize';
+import { DatePicker } from 'antd';
+import moment from 'moment';
+import useAppDispatch from '../../hooks/useAppDispatch';
+import { getTechAnalyticsAction } from '../../store/actions/dashboardActions';
+
+const { RangePicker } = DatePicker;
 
 function TechDashboard() {
 
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const {user} = useAdmin()
     const techDashboardReducer = useAppSelector( _ => _.dashboardReducer.techAnalytics)
     const techDashboardReducerMain = useAppSelector( _ => _.dashboardReducer)
-    const [_month, _setMonth] = useState<any>( ( (new Date()).getMonth() + 1 )  )
+    const [_month, _setMonth] = useState<any>( ( (new Date()).getMonth() + 1 )  );
+    const [start_date, setStartDate] = useState("");
+    const [end_date, setEndDate] = useState("");
+    const [reload, setReload] = useState<boolean>(false);
+    const [selectedYear, setSelectedYear] = useState<any>(new Date().getFullYear());
 
-    useEffect(()=>{
-        // @ts-ignore
-        dispatch(getTechAnalyticsAction(_month))
-    }, [_month])
+    const handleDateRangeChange = (dates: any) => {
+      if(dates) {
+          setStartDate(moment(dates[0].$d).format('YYYY/MM/DD'))
+          setEndDate(moment(dates[1].$d).format('YYYY/MM/DD'))
+      } else {
+        setReload(true)
+      }
+    };
+
+    useEffect(() => {
+      if(techDashboardReducerMain.getTechAnalyticsStatus === 'idle' || start_date || end_date || selectedYear || reload) {
+        dispatch(getTechAnalyticsAction({
+          start_date, end_date, year: selectedYear
+        }))
+      }
+    },[
+      techDashboardReducerMain.getTechAnalyticsStatus,
+      start_date, end_date, selectedYear, reload
+    ])
+
+    useEffect(() => {
+      if(techDashboardReducerMain.getTechAnalyticsStatus === 'completed') {
+        setStartDate("");
+        setEndDate("");
+        setSelectedYear(null);
+        setReload(false)
+      }
+    },[techDashboardReducerMain.getTechAnalyticsStatus])
+    // useEffect(()=>{
+    //     // @ts-ignore
+    //     dispatch(getTechAnalyticsAction(_month))
+    // }, [_month])
   return (
     <React.Fragment>
       {/* <Typography variant="h6" component="h6" sx={{ m: { xs: 1, sm: 1, md: 2 } }}>
@@ -41,7 +77,7 @@ function TechDashboard() {
       <Box component='div'
         sx={{
           display: 'flex',
-          width: {sm: '100%', xs: document.documentElement.clientWidth},
+          width: {sm: '80%', xs: document.documentElement.clientWidth},
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
@@ -49,21 +85,18 @@ function TechDashboard() {
         <Typography sx={{ fontWeight: 600, fontSize: {sm: 30, xs: 25} }}>
           Welcome {user && capitalize.words(user?.firstName) || ""}
         </Typography>
-        <div>
-          <Select value={_month} onChange={(e: any) => _setMonth(e.target.value)} native={true}>
-              <option value={"1"}>January</option>
-              <option value={"2"}>February</option>
-              <option value={"3"}>March</option>
-              <option value={"4"}>April</option>
-              <option value={"5"}>May</option>
-              <option value={"6"}>June</option>
-              <option value={"7"}>July</option>
-              <option value={"8"}>August</option>
-              <option value={"9"}>Sepetember</option>
-              <option value={"10"}>October</option>
-              <option value={"11"}>November</option>
-              <option value={"12"}>December</option>
-          </Select>
+        <div
+          style={{
+            justifyContent: 'right',
+            alignItems: 'right'
+          }}
+          >
+          <RangePicker onChange={handleDateRangeChange}
+            style={{
+                width: '100%',
+                height: '2rem'
+            }}
+          />
         </div>
       </Box>
       <br />
