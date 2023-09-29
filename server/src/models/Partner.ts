@@ -228,4 +228,11 @@ export default class Partner extends Model<
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare businessRegStatus: string | null;
+
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare state: string | null;
+
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare district: string | null;
+  
 }

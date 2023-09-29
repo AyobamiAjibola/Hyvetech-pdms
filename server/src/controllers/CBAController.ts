@@ -29,6 +29,9 @@ import { appModelTypes } from "../@types/app-model";
 import MailgunMessageData = appModelTypes.MailgunMessageData;
 import QueueManager from "../services/QueueManager";
 import { MAIL_QUEUE_EVENTS } from "../config/constants";
+import User from "../models/User";
+import Partner from "../models/Partner";
+import { InferAttributes } from "sequelize";
 
 const NO_ACCOUNT_PROVISIONED = "No account is provisioned for user";
 const PARTNER_NOT_FOUND = "Partner account not found";
@@ -205,105 +208,81 @@ class CBAController {
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN])
   public async updateAccount(req: Request) {
-    const account = await this.doUpdateAccount(req);
+    await this.doUpdateAccount(req);
   
     const response: HttpResponse<PartnerAccount> = {
       code: HttpStatus.OK.code,
-      message: "Account updated successfully",
-      result: account,
+      message: "Email updated successfully"
     };
 
     return Promise.resolve(response);
   }
 
   private async doUpdateAccount(req: Request) {
-    const { error, value } = Joi.object<CBAAccountUpdateType>(
-      $updateCBAAccountDetail
-    ).validate(req.body);
 
-    if (error)
+    const userId = req.user.id;
+
+    const { error, value } = Joi.object({
+      email: Joi.string().email().required().label('email'),
+      password: Joi.string()
+        .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+        .messages({
+          "string.pattern.base": `Password does not meet requirement.`,
+        })
+        .required()
+        .label("password"),
+    }).validate(req.body);
+  
+    if (error) {
       return Promise.reject(
         CustomAPIError.response(
           error.details[0].message,
           HttpStatus.BAD_REQUEST.code
         )
       );
+    }
+  
+    // Verify password first
+    const findUser = await dataSources.userDAOService.findById(userId)
 
-    const account = await dataSources.partnerAccountDaoService.findByAny({
-      where: { partnerId: req.user.partnerId },
-      // where: { accountRef: req.params.ref }
-    });
+    if(!findUser)
+      return Promise.reject(CustomAPIError.response("User not found", HttpStatus.NOT_FOUND.code));
+  
+    const hash = findUser.password;
+    const password = value.password;
 
-    if (!account)
+    const isMatch = await this.passwordEncoded.match(
+      password.trim(),
+      hash.trim()
+    );
+  
+    if (!isMatch) {
       return Promise.reject(
         CustomAPIError.response(
-          "Account not yet provisioned",
+          "Password is incorrect",
           HttpStatus.BAD_REQUEST.code
         )
       );
-
-    // Check if email is changing
-    if (account.email !== value.email) {
-      const user = await dataSources.userDAOService.findByAny({
-        where: { email: account.email },
-      });
-      const partner = await dataSources.partnerDAOService.findById(
-        account.partnerId
-      );
-
-      if (!partner) {
-        return Promise.reject(
-          CustomAPIError.response(
-            'Partner not found',
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
-      }
-
-      if (!user) {
-        return Promise.reject(
-          CustomAPIError.response(
-            'User not found',
-            HttpStatus.BAD_REQUEST.code
-          )
-        );
-      }
-
-       //verify password
-       const hash = user.password;
-       const password = value.password;
- 
-       const isMatch = await this.passwordEncoded.match(
-         password.trim(),
-         hash.trim()
-       );
- 
-       if (!isMatch)
-         return Promise.reject(
-           CustomAPIError.response(
-            "Password is incorrect",
-            HttpStatus.BAD_REQUEST.code
-           )
-         );
-
-      // Perform updates concurrently
-      await Promise.all([
-        dataSources.userDAOService.update(user, {
-          email: value.email,
-          username: value.email,
-        } as any),
-        dataSources.partnerDAOService.update(partner, { email: value.email } as any),
-      ]);
     }
 
-    return await dataSources.partnerAccountDaoService.update(account, {
-      firstName: value.firstName,
-      lastName: value.lastName,
-      email: value.email,
-      businessName: value.businessName,
-    } as any);
+    const user_email = await dataSources.userDAOService.findByAny({
+      where: {email: value.email}
+    });
+
+    if(value.email && findUser.email !== value.email){
+        if(user_email) {
+          return Promise.reject(CustomAPIError.response('User with this email already exists', HttpStatus.NOT_FOUND.code))
+        }
+    };
+
+    const userEmail: Partial<User> = {
+      email: value.email
+    }
+
+    await dataSources.userDAOService.update(findUser, userEmail as InferAttributes<User>);
 
   }
+  
 
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN])
