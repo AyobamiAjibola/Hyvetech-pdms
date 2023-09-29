@@ -28,7 +28,7 @@ import PasswordEncoder from "../utils/PasswordEncoder";
 import { appModelTypes } from "../@types/app-model";
 import MailgunMessageData = appModelTypes.MailgunMessageData;
 import QueueManager from "../services/QueueManager";
-import { CLIENT_ACCOUNT_NUMBER, MAIL_QUEUE_EVENTS } from "../config/constants";
+import { MAIL_QUEUE_EVENTS } from "../config/constants";
 
 const NO_ACCOUNT_PROVISIONED = "No account is provisioned for user";
 const PARTNER_NOT_FOUND = "Partner account not found";
@@ -927,7 +927,7 @@ class CBAController {
       }
       
       const trackingReference = partnerAccount.accountRef;
-      const clientAccountNumber = CLIENT_ACCOUNT_NUMBER;
+      const clientAccountNumber = settings.client_account_number;
       const totalAmount = (totalAmountInKobo * 100).toString();
       const notificationEmail = partnerAccount.email;
   

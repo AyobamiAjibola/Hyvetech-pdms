@@ -33,6 +33,7 @@ export const corsOptions = {
     "https://netlify.app",
     "https://hyvepay.netlify.app",
     "http://3.136.11.154:8085",
+    "http://3.136.11.154:8086",
     "http://52.15.79.230",
     <string>process.env.CLIENT_HOST,
     <string>process.env.CLIENT_HOST_WWW,

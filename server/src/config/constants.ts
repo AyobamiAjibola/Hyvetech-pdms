@@ -10,7 +10,6 @@ export const UPLOAD_BASE_PATH = 'uploads';
 export const MAX_SIZE_IN_BYTE = 1000 * 1024; // 1MB
 export const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
 
-export const CLIENT_ACCOUNT_NUMBER = '2000355517'
 export const INDIVIDUAL_ACCOUNT_TYPE = 'individual'
 export const COOPERATE_ACCOUNT_TYPE = 'cooperate'
 

@@ -343,6 +343,7 @@ const settings: AppSettings = {
     transferChargeFee: <string>process.env.KUDA_TRANSFER_CHARGE_FEE,
   },
   transferFee: process.env.TRANSFER_FEE as unknown as number,
+  client_account_number: <string>process.env.CLIENT_ACCOUNT_NUMBER,
   redis: {
     development: {
       database: <string>process.env.REDIS_DEV_DB_NAME,

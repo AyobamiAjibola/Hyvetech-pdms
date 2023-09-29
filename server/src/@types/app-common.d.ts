@@ -244,6 +244,7 @@ export declare namespace appCommonTypes {
       };
     };
     transferFee: number;
+    client_account_number: string;
     email: {
       name?: string;
       host?: string;
