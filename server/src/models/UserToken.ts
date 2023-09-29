@@ -22,7 +22,7 @@ export default class UserToken extends Model<InferAttributes<UserToken>, InferCr
     declare id: CreationOptional<number>;
 
     @Column({type: DataType.TEXT, allowNull: false})
-    declare token: string;
+    declare token: string | null;
 
     @Column(DataType.DATE)
     declare expired_at: Date;

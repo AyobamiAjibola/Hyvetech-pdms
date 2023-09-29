@@ -925,7 +925,7 @@ class CBAController {
           accountNumber: data.accountNumber
         });
       }
-      
+  
       const trackingReference = partnerAccount.accountRef;
       const clientAccountNumber = settings.client_account_number;
       const totalAmount = (totalAmountInKobo * 100).toString();

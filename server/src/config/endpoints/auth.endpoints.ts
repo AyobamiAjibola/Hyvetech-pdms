@@ -1,7 +1,9 @@
 import {
   bootstrapHandler,
+  changePasswordHandler,
   checkAuthHandler,
   garageSignUpHandler,
+  resetPasswordWithToken,
   sendPasswordResetToken,
   signInHandler,
   signOutHandler,
@@ -35,12 +37,18 @@ const authEndpoints: RouteEndpoints = [
     path: "/garage-sign-up",
     handler: garageSignUpHandler,
   },
-  // {
-  //   name: "Reset Password",
-  //   method: "post",
-  //   path: "/send-password-reset-token",
-  //   handler: sendPasswordResetToken,
-  // },
+  {
+    name: "Reset Password",
+    method: "post",
+    path: "/send-password-reset-token",
+    handler: sendPasswordResetToken,
+  },
+  {
+    name: "Enter Password After Reset",
+    method: "post",
+    path: "/reset-password-with-token",
+    handler: resetPasswordWithToken,
+  },
   {
     name: "signOut",
     method: "get",
@@ -52,6 +60,12 @@ const authEndpoints: RouteEndpoints = [
     method: "get",
     path: "/bootstrap",
     handler: bootstrapHandler,
+  },
+  {
+    name: "change password",
+    method: "put",
+    path: "/change/password",
+    handler: changePasswordHandler,
   },
 ];
 

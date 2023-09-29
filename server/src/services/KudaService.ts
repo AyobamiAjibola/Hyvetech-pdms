@@ -238,6 +238,7 @@ class KudaService implements BankService {
 
   async initiateBulkTransfer(payload: appModelTypes.BulkAccountTransferDTO) {
     try {
+      console.log(payload, 'payload')
       const response = await this.network.post("", {
         ServiceType: "VIRTUAL_ACCOUNT_BULK_PAYMENT",
         RequestRef: ReferenceGenerator.generate(),

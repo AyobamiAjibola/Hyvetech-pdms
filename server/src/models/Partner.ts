@@ -222,4 +222,10 @@ export default class Partner extends Model<
 
   @Column({ type: DataType.STRING, defaultValue: "NOT_REQUESTED" })
   declare accountProvisionStatus: CreationOptional<string>;
+
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare businessCategory: string | null;
+
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare businessRegStatus: string | null;
 }
