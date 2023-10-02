@@ -14,6 +14,7 @@ import {
   getPlansHandler,
   getPreferencesHandler,
   partnerJobsHandler,
+  partnerLogoUploadHandler,
   requestPdfHandler,
   togglePartnerHandler,
   updatePartnerProfileHandler,
@@ -46,6 +47,12 @@ const partnerEndpoints: RouteEndpoints = [
     method: "patch",
     path: "/partners/:partnerId/settings",
     handler: createPartnerSettingsHandler,
+  },
+  {
+    name: "partner logo",
+    method: "patch",
+    path: "/partner-logo/:partnerId",
+    handler: partnerLogoUploadHandler,
   },
   {
     name: "partners",

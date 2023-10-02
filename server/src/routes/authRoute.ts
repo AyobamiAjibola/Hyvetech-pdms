@@ -157,3 +157,14 @@ export const changePasswordHandler = authenticateRouteWrapper( async (req: Reque
   res.status(response.code).json(response);
 });
 
+export const preSignUpHandler = async (req: Request, res: Response) => {
+  const response = await authenticationController.preSignUp(req);
+  res.status(response.code).json(response);
+};
+
+export const verifyTokenHandler = async (req: Request, res: Response) => {
+  const response = await authenticationController.verifyToken(req);
+  res.status(response.code).json(response);
+};
+
+

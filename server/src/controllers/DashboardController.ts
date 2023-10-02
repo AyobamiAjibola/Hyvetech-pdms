@@ -19,7 +19,7 @@ import { Op } from 'sequelize';
 import ItemStock from '../models/ItemStock';
 
 export default class DashboardController {
-  @HasPermission([MANAGE_ALL, VIEW_ANALYTICS, MANAGE_TECHNICIAN])
+  // @HasPermission([MANAGE_ALL, VIEW_ANALYTICS, MANAGE_TECHNICIAN])
   public static async getTechData(req: Request) {
     //
     try {

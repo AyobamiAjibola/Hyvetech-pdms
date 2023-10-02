@@ -31,7 +31,6 @@ export default class UserDAOService implements ICrudDAO<User> {
     options?: UpdateOptions<InferAttributes<User>>,
   ): Promise<User> {
     if (values.password) {
-      console.log(values.password, 'values password')
       values.password = await this.passwordEncoder.encode(values.password);
     }
     return this.userRepository.updateOne(user, values, options);

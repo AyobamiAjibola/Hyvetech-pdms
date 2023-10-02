@@ -217,7 +217,7 @@ const UserRoleManagement = () => {
     setEditMode(true);
     setUserId(user.id);
   };
-
+  
   const roleColumns = useMemo(() => {
     return [
       {
@@ -424,7 +424,7 @@ const UserRoleManagement = () => {
 
     dispatch(updateUserAction(payload));
   };
-
+ 
   return (
     <div>
       <Grid container>

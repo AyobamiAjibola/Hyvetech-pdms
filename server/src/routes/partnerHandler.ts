@@ -59,6 +59,14 @@ export const createPartnerSettingsHandler = authenticateRouteWrapper(
   }
 );
 
+export const partnerLogoUploadHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await partnerController.uploadCompanyLogo(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
 export const getPartnersHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
     const result = await partnerController.getPartners(req);

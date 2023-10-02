@@ -3,11 +3,13 @@ import {
   changePasswordHandler,
   checkAuthHandler,
   garageSignUpHandler,
+  preSignUpHandler,
   resetPasswordWithToken,
   sendPasswordResetToken,
   signInHandler,
   signOutHandler,
   signupHandler,
+  verifyTokenHandler,
 } from "../../routes/authRoute";
 import { appCommonTypes } from "../../@types/app-common";
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -66,6 +68,18 @@ const authEndpoints: RouteEndpoints = [
     method: "put",
     path: "/change/password",
     handler: changePasswordHandler,
+  },
+  {
+    name: "pre sign up",
+    method: "post",
+    path: "/pre-sign-up",
+    handler: preSignUpHandler,
+  },
+  {
+    name: "verify token",
+    method: "post",
+    path: "/verify-token",
+    handler: verifyTokenHandler,
   },
 ];
 

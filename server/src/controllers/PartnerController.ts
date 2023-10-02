@@ -531,7 +531,7 @@ export default class PartnerController {
     const partnerId = req.params.partnerId as string;
 
     try {
-      const { error, value } = Joi.object<CreatePartnerType>(
+      const { error, value } = Joi.object<any>(
         $createPartnerKyc
       ).validate(req.body);
 
@@ -563,16 +563,30 @@ export default class PartnerController {
         }
       }
 
+      //PLEASE MERGE THESE TWO FUNCTIONS WHEN FINALLY STOP USING THE OLD AUTOHYVE
       if (value.workshopAddress.length) {
         const contact = await partner.$get("contact");
         if (contact) {
-          await contact.update({ address: value.workshopAddress });
+          await contact.update({ 
+            address: value.workshopAddress,
+          });
           await partner.$set("contact", contact);
         }
       }
 
+      if (value.state.length || value.district.length) {
+        const contact = await partner.$get("contact");
+        if (contact) {
+          await contact.update({
+            state: value.state,
+            district: value.district
+          });
+          await partner.$set("contact", contact);
+        }
+      }
+      /////// END////
+
       const result = PartnerController.formatPartner(partner);
-      console.log(result, "result");
 
       const response: HttpResponse<Partner> = {
         code: HttpStatus.OK.code,
@@ -634,12 +648,14 @@ export default class PartnerController {
               )
             );
 
+          console.log(value.brands, 'before')
           //@ts-ignore
           value.brands = JSON.parse(value.brands);
           //@ts-ignore
           value.workingHours = JSON.parse(value.workingHours);
-
+          console.log(value.brands, 'after')
           for (const valueKey in value) {
+            
             //@ts-ignore
             if (valueKey !== "logo" && value[valueKey].length) {
               //@ts-ignore
@@ -663,6 +679,92 @@ export default class PartnerController {
           const response: HttpResponse<InferAttributes<Partner>> = {
             code: HttpStatus.OK.code,
             message: `Updated Settings Successfully`,
+            result: partner,
+          };
+
+          resolve(response);
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    });
+  }
+
+  @HasPermission([
+    MANAGE_ALL,
+    MANAGE_TECHNICIAN,
+    CREATE_WORKSHOP_PROFILE,
+    UPDATE_WORKSHOP_PROFILEY,
+  ])
+  public async uploadCompanyLogo(
+    req: Request
+  ): Promise<HttpResponse<InferAttributes<Partner>>> {
+    const partnerId = req.params.partnerId as string;
+
+    return new Promise((resolve, reject) => {
+      form.parse(req, async (err, fields, files) => {
+        const logo = files.logo as File;
+        const basePath = `${UPLOAD_BASE_PATH}/partners`;
+
+        try {
+          const { error, value } = Joi.object<CreatePartnerType>({
+            logo: Joi.binary().allow().label("Company Logo"),
+          }).validate(fields);
+
+          if (error)
+            return reject(
+              CustomAPIError.response(
+                error.details[0].message,
+                HttpStatus.BAD_REQUEST.code
+              )
+            );
+
+          const partner = await dataSources.partnerDAOService.findById(
+            +partnerId,
+            {
+              include: [Contact, Category, User],
+            }
+          );
+
+          if (!partner)
+            return reject(
+              CustomAPIError.response(
+                `Partner with id ${partnerId} does not exist`,
+                HttpStatus.BAD_REQUEST.code
+              )
+            );
+
+          // console.log(value.brands, 'before')
+          // //@ts-ignore
+          // value.brands = JSON.parse(value.brands);
+          // //@ts-ignore
+          // value.workingHours = JSON.parse(value.workingHours);
+          // console.log(value.brands, 'after')
+          // for (const valueKey in value) {
+            
+          //   //@ts-ignore
+          //   if (valueKey !== "logo" && value[valueKey].length) {
+          //     //@ts-ignore
+          //     await partner.update({ [valueKey]: value[valueKey] });
+          //   }
+          // }
+
+          if (logo) {
+            partner.set({
+              logo: await Generic.getImagePath({
+                tempPath: logo.filepath,
+                filename: <string>logo.originalFilename,
+                basePath,
+              }),
+            });
+
+            await partner.save();
+          }
+
+          // const partnerJson = partner.toJSON();
+          const response: HttpResponse<InferAttributes<Partner>> = {
+            code: HttpStatus.OK.code,
+            message: `Company Logo Uploaded Successfully`,
             result: partner,
           };
 

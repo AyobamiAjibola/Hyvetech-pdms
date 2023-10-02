@@ -58,6 +58,23 @@ export const $saveUserSchema: Joi.SchemaMap<UserSchemaType> = {
   firstName: Joi.string().required().label("firstName"),
   lastName: Joi.string().required().label("lastName"),
   email: Joi.string().required().label("email"),
+  password: Joi.string()
+    .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+    .messages({
+      "string.pattern.base": `Password does not meet requirement.`,
+    })
+    .required()
+    .label("password"),
+  rawPassword: Joi.string().optional().label("rawPassword"),
+  phone: Joi.string().required().label("phone"),
+  address: Joi.string().label("address"),
+  roleId: Joi.number().required().label("roleId"),
+};
+
+export const $signUpSchema: Joi.SchemaMap<UserSchemaType> = {
+  firstName: Joi.string().required().label("firstName"),
+  lastName: Joi.string().required().label("lastName"),
+  email: Joi.string().required().label("email"),
   accountType: Joi.string().required().label("accountType"),
   password: Joi.string()
     .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
@@ -77,18 +94,12 @@ export const $updateUserSchema: Joi.SchemaMap<any> = {
   firstName: Joi.string().label("firstName"),
   lastName: Joi.string().label("lastName"),
   phone: Joi.string().label("phone"),
-  // password: Joi.string()
-  //   .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
-  //   .messages({
-  //     "string.pattern.base": `Password does not meet requirement.`,
-  //   })
-  //   .optional()
-  //   .label("password"),
-    address: Joi.string().label("address"),
-    state: Joi.string().label("state"),
-    district: Joi.string().label("district"),
-    partnerId: Joi.string().label("partnerId"),
-    profileImageUrl: Joi.string().label("profile image")
+  email: Joi.string().allow("").label("email"),
+  address: Joi.string().label("address"),
+  state: Joi.string().label("state"),
+  district: Joi.string().label("district"),
+  partnerId: Joi.string().label("partnerId"),
+  profileImageUrl: Joi.string().label("profile image")
 };
 
 @Table({

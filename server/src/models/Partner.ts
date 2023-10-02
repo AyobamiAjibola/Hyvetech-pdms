@@ -47,13 +47,19 @@ export type UpdatePartnerProfile = {
   address?: string;
   phone?: string;
 };
-export const $createPartnerKyc: Joi.SchemaMap<CreatePartnerType> = {
+
+export const $createPartnerKyc: Joi.SchemaMap<any> = {
   cac: Joi.string().allow("").label("CAC"),
   name: Joi.string().label("Company Full Name"),
   nameOfDirector: Joi.string().allow("").label("Name of Director"),
   nameOfManager: Joi.string().allow("").label("Name of Manager"),
   vatNumber: Joi.string().allow("").label("VAT Number"),
   workshopAddress: Joi.string().allow("").label("Workshop Address"),
+  tin: Joi.string().allow("").label("TIN"),
+  state: Joi.string().allow("").label("state"),
+  district: Joi.string().allow("").label("district"),
+  businessCategory: Joi.string().allow("").label("Business Category"),
+  businessRegStatus: Joi.string().allow("").label("Business Status"),
 };
 
 export const $updatePartnerProfile: Joi.SchemaMap<UpdatePartnerProfile> = {
@@ -75,7 +81,7 @@ export const $createPartnerSettings: Joi.SchemaMap<CreatePartnerType> = {
   phone: Joi.string().allow("").label("Phone"),
   totalStaff: Joi.string().allow("").label("Total Staff"),
   totalTechnicians: Joi.string().allow("").label("Total Technicians"),
-  brands: Joi.string().allow("").label("Company Brands"),
+  brands: Joi.any().allow(null).label("Company Brands"),
   workingHours: Joi.string().allow("").label("Working Hours"),
 };
 
@@ -230,9 +236,6 @@ export default class Partner extends Model<
   declare businessRegStatus: string | null;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  declare state: string | null;
-
-  @Column({ type: DataType.STRING, allowNull: true })
-  declare district: string | null;
+  declare tin: string | null;
   
 }

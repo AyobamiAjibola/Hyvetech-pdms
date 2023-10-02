@@ -40,3 +40,15 @@ export const updateUserStatusHandler = authenticateRouteWrapper(async (req, res)
 
   res.status(response.code).json(response);
 });
+
+export const createPartnerUserHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await userController.createUserByPartner(req);
+
+  res.status(response.code).json(response);
+});
+
+export const updateUserCreatedByPartnerHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await userController.updateUserByPartner(req);
+
+  res.status(response.code).json(response);
+});

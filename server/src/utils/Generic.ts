@@ -114,6 +114,16 @@ export default class Generic {
     return newPath;
   }
 
+  public static parsePhone (phone: string) {
+    if (!phone) {
+      return "";
+    }
+
+    if (phone.startsWith("0")) return phone.replace("0", "234");
+
+    return phone;
+  };
+
   /**
    * @name generateJwt
    * @param payload

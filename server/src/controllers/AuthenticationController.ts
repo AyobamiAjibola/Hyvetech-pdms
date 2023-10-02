@@ -38,6 +38,7 @@ import HttpResponse = appCommonTypes.HttpResponse;
 import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import ResetPasswordTokenEmail from "../resources/templates/email/reset_password_token_email";
 import UserToken from "../models/UserToken";
+import RedisService from "../services/RedisService";
 
 export interface IGarageSignupModel {
   firstName: string;
@@ -53,6 +54,12 @@ export interface IGarageSignupModel {
   address?: string;
   password?: string;
   confirm_password?: string;
+}
+
+const redisService = new RedisService();
+
+interface RedisData {
+  token: string;
 }
 
 export default class AuthenticationController {
@@ -178,6 +185,129 @@ export default class AuthenticationController {
       return response;
     } catch (error) {
       return Promise.reject(error);
+    }
+  }
+
+  @TryCatch
+  public async preSignUp(req: Request) {
+    const { error, value } = Joi.object<any>({
+      phone: Joi.string().required().label("phone"),
+      email: Joi.string().email().required().label("email"),
+    }).validate(req.body);
+
+    if(error) return Promise.reject(
+      CustomAPIError.response(
+        error.details[0].message, 
+        HttpStatus.BAD_REQUEST.code));
+
+    const email = await dataSources.userDAOService.findByAny({
+      where: { email: value.email } 
+    })
+
+    if(email) 
+      return Promise.reject(
+        CustomAPIError.response(
+          "User with email already exist",
+          HttpStatus.BAD_REQUEST.code))
+
+    const phone = await dataSources.userDAOService.findByAny({
+      where: { phone: Generic.parsePhone(value.phone) }
+    })
+
+    if(phone) 
+      return Promise.reject(
+        CustomAPIError.response(
+          "User with phone number already exist",
+          HttpStatus.BAD_REQUEST.code));
+
+    const token = redisService.generateToken();
+
+    const data = {
+      token: token,
+    };
+    const actualData = JSON.stringify(data);
+
+    redisService.saveToken("jiffix_sign_up_token", actualData, 180);
+
+    const mailText = ResetPasswordTokenEmail({
+      firstName: value.firstName,
+      code: token,
+    });
+
+    await QueueManager.publish({
+      queue: MAIL_QUEUE_EVENTS.name,
+      data: {
+        to: value.email,
+        from: {
+          name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+          address: <string>process.env.SMTP_EMAIL_FROM,
+        },
+        subject: `Reset Password`,
+        html: mailText,
+        bcc: [
+          <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+          <string>process.env.SMTP_EMAIL_FROM,
+        ],
+      },
+    });
+
+    await dataSources.termiiService
+      .sendMessage({
+        to: value.phone,
+        sms: `Your password reset code is ${token}`,
+        channel: "generic",
+        type: "plain",
+      })
+      .then(() => {
+        console.log("message sent successfully>");
+        return -1;
+      })
+      .catch((error) => {
+        console.log("Failed to send message? ", error);
+      });
+
+      const response: HttpResponse<User> = {
+        message: `Token sent successfully ${token}`,
+        code: HttpStatus.OK.code,
+      };
+
+      return Promise.resolve(response);
+  }
+
+  @TryCatch
+  public async verifyToken (req: Request) {
+    const { error, value } = Joi.object<any>({
+      token: Joi.string().required().label("token")
+    }).validate(req.body);
+
+    if(error) return Promise.reject(
+      CustomAPIError.response(
+        error.details[0].message, 
+        HttpStatus.BAD_REQUEST.code));
+
+    const redisData = await redisService.getToken("jiffix_sign_up_token");
+
+    if(redisData) {
+      const { token }: any = redisData;
+
+      if(token !== value.token) 
+        return Promise.reject(
+          CustomAPIError.response(
+            'Token is incorrect', 
+            HttpStatus.BAD_REQUEST.code));
+
+      const response: HttpResponse<string> = {
+        code: HttpStatus.OK.code,
+        message: HttpStatus.OK.value
+      };
+      
+      redisService.deleteRedisKey("jiffix_sign_up_token")
+      return Promise.resolve(response);
+    
+    } else {
+      return Promise.reject(
+        CustomAPIError.response('Token has expired, please try signing up again.', 
+        HttpStatus.BAD_REQUEST.code))
     }
   }
 
@@ -635,7 +765,7 @@ export default class AuthenticationController {
     const { error, value } = Joi.object<IGarageSignupModel>({
       firstName: Joi.string().max(80).label("First Name").required(),
       lastName: Joi.string().max(80).label("Last Name").required(),
-      name: Joi.string().optional().label("Workshop/Business Name"),
+      name: Joi.string().optional().allow("").label("Workshop/Business Name"),
       email: Joi.string().email().label("Email Address").required(),
       accountType: Joi.string().label("Account Type").required(),
       address: Joi.string().required().label('Address'),
@@ -683,7 +813,7 @@ export default class AuthenticationController {
     //       HttpStatus.BAD_REQUEST.code
     //     )
     //   );
-
+          console.log(value.name, 'name')
     //check if partner with email or name already exist
     if(value.accountType === COOPERATE_ACCOUNT_TYPE) {
       const partnerExist = await dataSources.partnerDAOService.findByAny({

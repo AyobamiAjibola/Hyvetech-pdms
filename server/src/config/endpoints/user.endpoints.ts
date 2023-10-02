@@ -1,8 +1,10 @@
 import {
+  createPartnerUserHandler,
   createUserHandler,
   deleteUserHandler,
   getUserHandler,
   getUsersHandler,
+  updateUserCreatedByPartnerHandler,
   updateUsersHandler,
   updateUserStatusHandler,
 } from '../../routes/userRoute';
@@ -46,6 +48,24 @@ const userEndpoints: RouteEndpoints = [
     name: 'users',
     method: 'delete',
     path: '/user/:id',
+    handler: deleteUserHandler,
+  },
+  {
+    name: 'create user by partner',
+    method: 'post',
+    path: '/create-user-by-partner',
+    handler: createPartnerUserHandler,
+  },
+  {
+    name: 'update user by partner',
+    method: 'put',
+    path: '/update-user-by-partner',
+    handler: updateUserCreatedByPartnerHandler,
+  },
+  {
+    name: 'delete user',
+    method: 'delete',
+    path: '/delete-user/:id',
     handler: deleteUserHandler,
   },
 ];
