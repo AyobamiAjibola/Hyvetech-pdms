@@ -115,10 +115,10 @@ export default class AuthenticationController {
 
   public async sendPasswordResetToken(req: Request) {
     try {
-      const response: HttpResponse<any> = {
-        message: `Password reset link sent successfully`,
-        code: HttpStatus.OK.code,
-      };
+      // const response: HttpResponse<any> = {
+      //   message: `Password reset link sent successfully`,
+      //   code: HttpStatus.OK.code,
+      // };
       const { error, value } = Joi.object($passwordResetSchema).validate(
         req.body
       );
@@ -137,7 +137,12 @@ export default class AuthenticationController {
         },
       });
 
-      if (!user) return response;
+      if (!user) 
+        return Promise.reject(
+        CustomAPIError.response(
+          "Email not found",
+          HttpStatus.NOT_FOUND.code
+        ));
 
       const resetCode = "" + Math.floor(Math.random() * 10000);
 
@@ -182,7 +187,13 @@ export default class AuthenticationController {
           console.log("Failed to send message? ", error);
         });
 
-      return response;
+      // return response;
+      const response: HttpResponse<User> = {
+        message: `Token sent successfully ${resetCode}`,
+        code: HttpStatus.OK.code,
+      };
+
+      return Promise.resolve(response);
     } catch (error) {
       return Promise.reject(error);
     }
@@ -556,6 +567,7 @@ export default class AuthenticationController {
       const jwt = Generic.generateJwt({
         userId: user.id,
         partnerId: user.partnerId,
+        accountType: user.accountType,
         permissions,
       });
 
@@ -768,7 +780,7 @@ export default class AuthenticationController {
       name: Joi.string().optional().allow("").label("Workshop/Business Name"),
       email: Joi.string().email().label("Email Address").required(),
       accountType: Joi.string().label("Account Type").required(),
-      address: Joi.string().required().label('Address'),
+      address: Joi.string().optional().label('Address'),
       phone: Joi.string().required().label("Phone Number"),
       dialCode: Joi.string().optional().label("Dial Code"),
       state: Joi.string().label("State").required(),
@@ -813,7 +825,7 @@ export default class AuthenticationController {
     //       HttpStatus.BAD_REQUEST.code
     //     )
     //   );
-          console.log(value.name, 'name')
+
     //check if partner with email or name already exist
     if(value.accountType === COOPERATE_ACCOUNT_TYPE) {
       const partnerExist = await dataSources.partnerDAOService.findByAny({
