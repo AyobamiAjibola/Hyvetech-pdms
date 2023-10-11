@@ -130,35 +130,35 @@ Should I send you an estimate and schedule you in?`
     }
 
     const handleChange = (event: any) => {
-        const value = event.target.value as string;
-        setSelectedValue(value);
-        if (value === "Share Reminder") {
-          handleShare()
-          setTimeout(() => {
-            setSelectedValue('')
-          }, 3000)
-        }
-        if(value === "Delete Reminder") {
-          confirm_delete()
-          setTimeout(() => {
-            setSelectedValue('')
-          }, 3000)
-        }
+      const value = event.target.value as string;
+      setSelectedValue(value);
+      if (value === "Share Reminder") {
+        handleShare()
+        setTimeout(() => {
+          setSelectedValue('')
+        }, 3000)
+      }
+      if(value === "Delete Reminder") {
+        confirm_delete()
+        setTimeout(() => {
+          setSelectedValue('')
+        }, 3000)
+      }
 
-        if(value === "Generate Estimate") {
-          navigate('/estimates');
-          Object.entries(data).forEach(([key, value]) => {
-            //@ts-ignore
-            sessionStorage.setItem(key, value);
-          });
-        }
+      if(value === "Generate Estimate") {
+        navigate('/estimates');
+        Object.entries(data).forEach(([key, value]) => {
+          //@ts-ignore
+          sessionStorage.setItem(key, value);
+        });
+      }
 
-        if(value === "Service Status"){
-          setResetServiceDate(true)
-          setTimeout(() => {
-            setSelectedValue('')
-          }, 3000)
-        }
+      if(value === "Service Status"){
+        setResetServiceDate(true)
+        setTimeout(() => {
+          setSelectedValue('')
+        }, 3000)
+      }
     };
 
     useEffect(() => {

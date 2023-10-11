@@ -140,7 +140,10 @@ export default class Customer extends Model<InferAttributes<Customer>, InferCrea
   declare partnerId: number;
 
   @Column(DataType.STRING)
-  declare creditRating: string;
+  declare creditRating: string | null;
+
+  @Column(DataType.STRING)
+  declare customerType: string | null;
 
   @HasOne(() => BillingInformation)
   declare billingInformation: NonAttribute<BillingInformation>;

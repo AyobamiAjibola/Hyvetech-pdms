@@ -269,13 +269,13 @@ function EstimatesPage() {
         width: 100,
         sortable: true,
         renderCell: params => {
-          return params.row.status === ESTIMATE_STATUS.sent ? (
-            <Chip label={ESTIMATE_STATUS.sent} size="small" color="info" />
-          ) : params.row.status === ESTIMATE_STATUS.draft ? (
-            <Chip label={ESTIMATE_STATUS.draft} size="small" color="warning" />
-          ) : params.row.status === ESTIMATE_STATUS.invoiced ? (
-            <Chip label={ESTIMATE_STATUS.invoiced} size="small" color="success" />
-          ) : null;
+          return params.row.status === ESTIMATE_STATUS.sent 
+          ? (<Chip label={ESTIMATE_STATUS.sent} size="small" color="info" />) 
+          : params.row.status === ESTIMATE_STATUS.draft 
+            ? (<Chip label={ESTIMATE_STATUS.draft} size="small" color="warning" />) 
+            : params.row.status === ESTIMATE_STATUS.invoiced 
+              ? (<Chip label={ESTIMATE_STATUS.invoiced} size="small" color="success" />) 
+              : null;
         },
       },
       // {
@@ -503,7 +503,7 @@ function EstimatesPage() {
                   estimateReducer.sendDraftEstimateStatus === 'loading'
                 }
                 setSave={estimate.setSave}
-              />
+              /> 
             </Formik>
           }
           // onClose={() => estimate.setShowEdit(false)}

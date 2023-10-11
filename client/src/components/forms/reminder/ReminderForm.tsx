@@ -275,7 +275,7 @@ function ReminderForm(props: IProps) {
         setFieldValue('nextServiceDate', next)
       }
     }, [values.serviceIntervalUnit, values.serviceInterval])
-
+ 
     useEffect(() => {
       if(_nextServiceDate && values.lastServiceDate && values.serviceIntervalUnit){
         const status: any = reminderStatus(values.lastServiceDate, _nextServiceDate, values.serviceIntervalUnit, values.serviceInterval);
@@ -335,6 +335,7 @@ function ReminderForm(props: IProps) {
       const invoiceId = _invoiceId && parseInt(_invoiceId) || -1
       dispatch(getSingleInvoice(invoiceId))
     }, [dispatch, sessionStorage]);
+    console.log(values, 'values')
 
     return (
       <React.Fragment>

@@ -107,6 +107,7 @@ export default class CustomerController {
       creditRating: Joi.string().optional().label('Credit Rating'),
       companyName: Joi.any().allow().label('Company Name'),
       accountType: Joi.string().optional().label('Account Type'),
+      customerType: Joi.string().optional().label('Customer Type'),
       isEditing: Joi.any().optional().label('Is Editing'),
     }).validate(req.body);
 
@@ -184,6 +185,7 @@ export default class CustomerController {
     }
 
     const payload = {
+      ...value,
       rawPassword: value.phone,
       password: await passwordEncoder.encode(value.phone),
       enabled: true,
@@ -215,7 +217,7 @@ export default class CustomerController {
 
     const response: HttpResponse<Customer> = {
       code: HttpStatus.OK.code,
-      message: HttpStatus.OK.value,
+      message: "Customer created successfully",
     };
 
     return Promise.resolve(response);
@@ -245,6 +247,9 @@ export default class CustomerController {
         companyName: Joi.any().allow().label('Company Name'),
         state: Joi.string().optional().label('State'),
         district: Joi.string().optional().label('District'),
+        title: Joi.string().optional().label('Title'),
+        address: Joi.string().optional().label('Address'),
+        customerType: Joi.string().optional().label('Customer type'),
       }).validate(value);
       if (error2) {
         console.log(error2.message, value);
@@ -252,27 +257,30 @@ export default class CustomerController {
       }
 
       // validate phone
-      const firstChar = (value?.phone || '')[0];
-      if (firstChar != '0') {
-        // logic to function on phone
-        if (firstChar == '+') {
-          //
-          value.phone = value.phone.replaceAll('+234', '0');
-        } else if (firstChar == '2') {
-          //
-          value.phone = value.phone.replaceAll('234', '0');
-        } else {
-          //
-          value.phone = '0' + value.phone;
-        }
-      }
+      // const firstChar = (value?.phone || '')[0];
+      // if (firstChar != '0') {
+      //   // logic to function on phone
+      //   if (firstChar == '+') {
+      //     //
+      //     value.phone = value.phone.replaceAll('+234', '0');
+      //   } else if (firstChar == '2') {
+      //     //
+      //     value.phone = value.phone.replaceAll('234', '0');
+      //   } else {
+      //     //
+      //     value.phone = '0' + value.phone;
+      //   }
+      // }
 
-      if ((value?.phone || '').length != 11) {
+      // const firstChar = (value?.phone || '')[0];
+      // if (firstChar == '0') {
+      //   // logic to function on phone
+      //   value.phone = value.phone.replaceAll('0', '234')
+      // }
+      if ((value?.phone || '').length != 13) {
         continue;
       }
-
-      console.log('reac-code-2');
-
+      
       value.email = value.email.toLowerCase();
 
       // check if user exist
@@ -284,10 +292,7 @@ export default class CustomerController {
 
       if (customer) {
         continue;
-        // return Promise.reject(CustomAPIError.response("Customer already exist", HttpStatus.NOT_FOUND.code));
       }
-
-      console.log('reac-code-3');
 
       //find role by name
       const role = await dataSources.roleDAOService.findByAny({
@@ -298,26 +303,22 @@ export default class CustomerController {
         continue;
       }
 
-      console.log('reac-code-4');
-      // return Promise.reject(
-      //   CustomAPIError.response(`Role ${settings.roles[1]} does not exist`, HttpStatus.NOT_FOUND.code),
-      // );
-
       const passwordEncoder = new PasswordEncoder();
 
       const payload = {
+        ...value,
         rawPassword: value.phone,
         password: await passwordEncoder.encode(value.phone),
         enabled: true,
         active: true,
-        companyName: value.companyName,
+        companyName: value.companyName || null,
         firstName: value.firstName,
         lastName: value.lastName,
         email: value.email,
         phone: value.phone,
         partnerId: req?.user.partner?.id || null,
       };
-
+      
       const contactValues: any = {
         label: 'Home',
         state: value.state,
@@ -337,7 +338,7 @@ export default class CustomerController {
 
     const response: HttpResponse<Customer> = {
       code: HttpStatus.OK.code,
-      message: HttpStatus.OK.value,
+      message: "Customers created successfully",
     };
 
     return Promise.resolve(response);
@@ -347,7 +348,7 @@ export default class CustomerController {
   @TryCatch
   @HasPermission([MANAGE_ALL, MANAGE_TECHNICIAN, UPDATE_CUSTOMER])
   public static async updateCustomers(req: Request) {
-    console.log(req.body);
+
     const { error, value } = Joi.object({
       id: Joi.any().required().label('Customer Id'),
       firstName: Joi.string().optional().label('First Name'),
@@ -359,6 +360,8 @@ export default class CustomerController {
       address: Joi.string().optional().label('Address'),
       state: Joi.string().optional().label('State'),
       district: Joi.string().optional().label('District'),
+      customerType: Joi.string().optional().label('Customer type'),
+      title: Joi.string().optional().label('Title'),
     }).validate(req.body);
 
     if (error) {
@@ -395,9 +398,11 @@ export default class CustomerController {
     customer.phone = value.phone;
     customer.email = value.email;
     customer.firstName = value.firstName;
-    customer.companyName = value.companyName;
+    customer.companyName = value.customerType === 'individual' ? '' : value.companyName;
     customer.lastName = value.lastName;
     customer.creditRating = value.creditRating;
+    customer.customerType = value.customerType;
+    customer.title = value.title;
     await customer.save();
 
     await Contact.update(

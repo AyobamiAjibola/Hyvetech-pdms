@@ -211,7 +211,7 @@ const fieldReminderType = {
         },
     }
 }
-
+ 
 const initialValues: IReminderValues = {
     reminderType: '',
     email: '',

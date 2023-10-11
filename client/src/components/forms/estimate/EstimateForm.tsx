@@ -261,7 +261,7 @@ function EstimateForm(props: IProps) {
     partnerReducer.ownersFilterData,
     partnerReducer.getOwnersFilterDataStatus,
     fetch,
-  ]);
+  ]); 
 
   useEffect(() => {
     if (!showCreate || !showEdit) {
@@ -321,35 +321,6 @@ function EstimateForm(props: IProps) {
   useLayoutEffect(() => {
     calculateTaxLabour();
   }, [calculateTaxLabour]);
-
-  // useEffect(() => {
-  //   let gT = 0;
-  //   console.log('discount> ', discount);
-  //   const totalSub = partTotal + labourTotal;
-  //   setSubTotal(totalSub);
-  //   setGrandTotal(totalSub);
-
-  //   if (!enableTaxLabor) {
-  //     gT = vatPart + subTotal;
-  //     setVatTotal(vatPart);
-  //   }
-
-  //   if (!enableTaxPart) {
-  //     gT = vat + totalSub;
-  //     setVatTotal(vat);
-  //   }
-
-  //   if (enableTaxPart && enableTaxLabor) {
-  //     gT = vat + vatPart + totalSub;
-  //     setVatTotal(vatPart + vat);
-  //   } else if (!enableTaxPart && !enableTaxLabor) {
-  //     gT = totalSub;
-
-  //     setVatTotal(0);
-  //   }
-
-  //  setGrandTotal(gT - discount);
-  // }, [vat, partTotal, vatPart, labourTotal, setGrandTotal, enableTaxLabor, enableTaxPart]);
 
   useEffect(() => {
     if (vehicleReducer.getVehicleVINStatus === "completed") {
@@ -925,7 +896,7 @@ function EstimateForm(props: IProps) {
                   display: "flex",
                   alignItems: { xs: "left", md: "none", cursor: "pointer" },
                 }}
-              >
+              > 
                 <Box onClick={toggleFetch}>
                   {fetch ? (
                     <Box
@@ -995,107 +966,6 @@ function EstimateForm(props: IProps) {
                 New Customer
               </Typography>
             </Grid>
-            {/*
-            <Grid item xs={4}>
-              <TextInputField
-                onChange={handleChange}
-                label={fields.email.label}
-                // @ts-ignore
-                value={values.email}
-                name={fields.email.name}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              {
-                (customerReducer.getCustomerStatus === "completed") ?
-                  <TextInputField
-                    onChange={handleChange}
-                    label={fields.state.label}
-                    // @ts-ignore
-                    value={values.state}
-                    name={fields.state.name}
-                  />
-                  :
-                  <SelectField
-                    onChange={e => {
-                      console.log(e)
-                    }}
-                    value={values.state}
-                    name={fields.state.name}
-                    label={fields.state.label}
-                    data={states}
-                    fullWidth
-                  />
-
-              }
-
-
-            </Grid>
-
-            <Grid item xs={3}>
-              <TextInputField
-                onChange={handleChange}
-                label={fields.firstName.label}
-                value={values.firstName}
-                name={fields.firstName.name}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextInputField
-                onChange={handleChange}
-                label={fields.lastName.label}
-                value={values.lastName}
-                name={fields.lastName.name}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextInputField
-                type="tel"
-                onChange={(e) => {
-                  console.log(e, "logger")
-                  const _val = filterPhoneNumber(e.target.value);
-
-                  if (_val.error) {
-                    setError({ message: _val?.message || "" })
-                  }
-
-                  handleChange({
-                    target: {
-                      name: e.target.name,
-                      value: _val.phone,
-                    }
-                  })
-
-                }}
-                label={fields.phone.label}
-                value={values.phone}
-                name={fields.phone.name}
-                placeholder='Phone e.g 080...'
-              />
-            </Grid>
-            <Grid item container xs spacing={0.2}>
-              <Grid item xs={3}>
-                <SelectField
-                  data={[
-                    { label: 'Home', value: 'Home' },
-                    { label: 'Office', value: 'Office' },
-                  ]}
-                  onChange={handleChange}
-                  value={values.addressType}
-                  name={fields.addressType.name}
-                  label={fields.addressType.label}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={9}>
-                <TextInputField
-                  onChange={handleChange}
-                  value={values.address}
-                  name={fields.address.name}
-                  label={fields.address.label}
-                />
-              </Grid>
-            </Grid> */}
 
             {userInfo.firstName.length != 0 && (
               <Grid style={{ padding: 20 }} xs={12} container>
