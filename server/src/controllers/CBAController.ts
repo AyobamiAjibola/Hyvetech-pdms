@@ -45,7 +45,7 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
     beneficiaryBankCode: Joi.string().required().label("beneficiaryBankCode"),
     beneficiaryName: Joi.string().optional().label("beneficiaryName"),
     senderName: Joi.string().optional().label("senderName"),
-    NameEnquirySessionID: Joi.string().required().label("NameEnquirySessionID"),
+    nameEnquirySessionID: Joi.string().optional().label("NameEnquirySessionID"),
     saveAsBeneficiary: Joi.boolean().optional().label("saveAsBeneficiary"),
     bankName: Joi.string().optional().label("bankName"),
     pin: Joi.string().required().label("pin"),
@@ -758,6 +758,7 @@ class CBAController {
   }
 
   private async doInitiateTransfer(req: Request) {
+    console.log(req.body, 'transfer body')
     const { error, value } = Joi.object<appModels.AccountTransferDTO>(
       accountTransferSchema
     ).validate(req.body);

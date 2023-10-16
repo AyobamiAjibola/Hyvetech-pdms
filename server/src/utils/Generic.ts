@@ -18,6 +18,7 @@ import { NextFunction, Request } from 'express';
 import UserToken from '../models/UserToken';
 import CustomAPIError from '../exceptions/CustomAPIError';
 import HttpStatus from '../helpers/HttpStatus';
+const crypto = require('crypto');
 
 const startDate = moment({ hours: 0, minutes: 0, seconds: 0 }).toDate();
 const endDate = moment({ hours: 23, minutes: 59, seconds: 59 }).toDate();
@@ -222,17 +223,26 @@ export default class Generic {
   }
 
   // THIS HAS LESS CHANCE OF DUPLICATE VALUE
-  // public static generateRandomStringCrypto(limit: number) {
-  //   const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz@#!$%^&+=';
-  //   const letterCount = letters.length;
-  //   const randomBytes = crypto.randomBytes(limit);
-  //   let randomString = '';
-  //   for (let i = 0; i < limit; i++) {
-  //     const randomNum = randomBytes[i] % letterCount;
-  //     randomString += letters[randomNum];
-  //   }
-  //   return randomString;
-  // }
+  public static generateRandomStringCrypto(limit: number) {
+    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz@#!$%^&+=';
+    const letterCount = letters.length;
+    const randomBytes = crypto.randomBytes(limit);
+    let randomString = '';
+    for (let i = 0; i < limit; i++) {
+      const randomNum = randomBytes[i] % letterCount;
+      randomString += letters[randomNum];
+    }
+    return randomString;
+  }
+
+  public static generateSixDigitCode() {
+    const randomBytes = crypto.randomBytes(3); // 3 bytes = 6 characters (digits)
+  
+    // Convert the random bytes to a hexadecimal string and extract the first 6 characters
+    const randomCode = randomBytes.toString('hex').slice(0, 6);
+  
+    return randomCode;
+  }
 
   /**
    * @name randomize
