@@ -758,7 +758,6 @@ class CBAController {
   }
 
   private async doInitiateTransfer(req: Request) {
-    console.log(req.body, 'transfer body')
     const { error, value } = Joi.object<appModels.AccountTransferDTO>(
       accountTransferSchema
     ).validate(req.body);

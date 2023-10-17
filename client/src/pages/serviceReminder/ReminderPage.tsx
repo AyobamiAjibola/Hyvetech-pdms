@@ -224,12 +224,18 @@ Should I send you an estimate and schedule you in?`
                   <MenuItem value="">
                   ...
                   </MenuItem>
-                  <MenuItem value={'Generate Estimate'} className={classes.select}>Generate Estimate</MenuItem>
-                  <MenuItem value={'Share Reminder'} className={classes.select}>Share Reminder</MenuItem>
-                  <MenuItem value={'Delete Reminder'} className={classes.select}>Delete Reminder</MenuItem>
+                  <MenuItem value={'Generate Estimate'} className={classes.select}
+                  >Generate Estimate</MenuItem>
+                  <MenuItem value={'Share Reminder'} className={classes.select}
+                  >Share Reminder</MenuItem>
+                  <MenuItem value={'Delete Reminder'} className={classes.select}
+                  >Delete Reminder</MenuItem>
                   <Divider orientation='horizontal'/>
-                  <ListSubheader>Service Status</ListSubheader>
-                  <MenuItem value={'Service Status'} className={classes.select}>Mark as done</MenuItem>
+                  <ListSubheader
+                    sx={{fontFamily: "montserrat"}}
+                  >Service Status</ListSubheader>
+                  <MenuItem value={'Service Status'} className={classes.select}
+                  >Mark as done</MenuItem>
                   <Box
                     sx={{
                       display: 'flex',

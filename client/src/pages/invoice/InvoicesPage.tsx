@@ -503,9 +503,10 @@ function InvoicesPage() {
         sortable: true,
         type: "string",
         renderCell: (params) => {
-          return params.row.status === INVOICE_STATUS.paid ? (
-            <Chip label={"Fully Paid"} size="small" color="success" />
-          ) : params.row.status === INVOICE_STATUS.deposit &&
+          return params.row.status === INVOICE_STATUS.paid
+          ? (
+              <Chip label={"Fully Paid"} size="small" color="success" />
+            ) : params.row.status === INVOICE_STATUS.deposit &&
             params.row.depositAmount != 0 ? (
             <Chip
               label={params.row.depositAmount != 0 ? "Partially Paid" : ""}

@@ -240,7 +240,7 @@ function InvoicePage() {
       setErrorMessage("");
     };
   }, []);
-  console.log(recordData.amount, "record data amount");
+
   const handlePaymentRecord = async () => {
     setRecording(true);
     try {

@@ -26,6 +26,12 @@ export default class Transaction extends Model<InferAttributes<Transaction>, Inf
   @Column(DataType.DOUBLE)
   declare amount: number;
 
+  @Column(DataType.ARRAY(DataType.JSONB))
+  declare items: (string[] | null);
+
+  @Column(DataType.STRING)
+  declare note: string;
+
   @Column(DataType.STRING)
   declare status: string;
 

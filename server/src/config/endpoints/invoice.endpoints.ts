@@ -9,6 +9,7 @@ import {
   updateCompletedInvoicePaymentManuallyHandler,
   getSingleInvoiceHandler,
   deleteInvoiceHandler,
+  updateItemPaymentManuallyHandler,
 } from '../../routes/invoiceRoute';
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoints = appCommonTypes.RouteEndpoints;
@@ -43,6 +44,12 @@ const invoiceEndpoints: RouteEndpoints = [
     method: 'post',
     path: '/transactions/update-invoice-payment-manually',
     handler: updateCompletedInvoicePaymentManuallyHandler,
+  },
+  {
+    name: 'update completed item payment manually',
+    method: 'post',
+    path: '/transactions/update-item-payment-manually',
+    handler: updateItemPaymentManuallyHandler,
   },
   {
     name: 'get invoices',

@@ -30,6 +30,12 @@ export const updateCompletedInvoicePaymentManuallyHandler = authenticateRouteWra
   res.status(response.code).json(response);
 });
 
+export const updateItemPaymentManuallyHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await InvoiceController.updateItemPaymentManually(req);
+
+  res.status(response.code).json(response);
+});
+
 export const getInvoicesHandler = authenticateRouteWrapper(async (req, res) => {
   const response = await InvoiceController.invoices(req);
 

@@ -492,7 +492,8 @@ const ExpenseCreate = () => {
                 console.log(values, formikHelpers);
               }}
               enableReinitialize
-              validateOnChange>
+              validateOnChange
+            >
               <div style={{ marginTop: 20, marginBottom: 20 }}>
                 <Typography
                   style={{

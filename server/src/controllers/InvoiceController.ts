@@ -807,6 +807,87 @@ export default class InvoiceController {
 
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN, CREATE_PAYMENT])
+  public static async updateItemPaymentManually(req: Request) {
+    try {
+      const { customerId, type, items, note, partnerId } = req.body;
+
+      const promises = items.map(async (item: any) => {
+        const stock = await dataSources.itemStockDAOService.findByAny({ where: { partNumber: item.partNumber } });
+
+        if(!customerId)
+          throw CustomAPIError.response('Please select a customer.', HttpStatus.NOT_FOUND.code);
+  
+        if (!stock) {
+          throw CustomAPIError.response('Item not found.', HttpStatus.NOT_FOUND.code);
+        }
+  
+        if (stock.quantity < 0) {
+          throw CustomAPIError.response(`${item.name} is low on stock.`, HttpStatus.BAD_REQUEST.code);
+        }
+  
+        if (stock.quantity < item.quantity) {
+          throw CustomAPIError.response(`${item.name} quantity is lower than the quantity entered.`, HttpStatus.BAD_REQUEST.code);
+        }
+  
+        await stock.update({ quantity: stock.quantity - item.quantity });
+  
+        return item.amountPaid;
+      });
+  
+      const itemAmounts = await Promise.all(promises);
+      const _amount = itemAmounts.reduce((acc, amount) => acc + amount, 0);
+  
+      // Create the transaction
+      const transferTransactionValues: Partial<Attributes<Transaction>> = {
+        amount: _amount,
+        type: type,
+        reference: 'PTRG-' + Generic.generateRandomString(5),
+        status: 'success',
+        bank: 'JIFFIX',
+        purpose: `PARTNER: PARMENT-FOR-ITEMS`,
+        channel: 'bank',
+        currency: 'NGN',
+        paidAt: new Date(),
+        cardType: 'none',
+        last4: 'none',
+        expMonth: 'none',
+        expYear: 'none',
+        countryCode: 'none',
+        brand: 'none',
+        items: items.map((value: any) => JSON.stringify(value)),
+        note: note
+      };
+  
+      const transferTransaction = await dataSources.transactionDAOService.create(
+        transferTransactionValues as CreationAttributes<Transaction>
+      );
+  
+      const customer = await dataSources.customerDAOService.findById(customerId);
+      if (customer) {
+        await customer.$add('transactions', [transferTransaction]);
+      }
+
+      const partner = await dataSources.partnerDAOService.findById(partnerId);
+      if (partner) {
+        await partner.$add('transactions', [transferTransaction]);
+      }
+  
+      return {
+        code: HttpStatus.OK.code,
+        message: 'Record Updated',
+      } as HttpResponse<void>;
+    } catch (e: any) {
+      console.log(e.message)
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR.code,
+        message: e.message,
+      } as HttpResponse<void>;
+    }
+  }
+  
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN, CREATE_PAYMENT])
   public static async updateCompletedInvoicePaymentManually(req: Request) {
     try {
       const { invoiceId, customerId, amount: _amount, type } = req.body;
@@ -870,7 +951,6 @@ export default class InvoiceController {
           if(draftInvoice) {
             const amount = +_amount + draftInvoice.depositAmount;
             const newDueAmount = draftInvoice.grandTotal - amount;
-            console.log(amount, draftInvoice.depositAmount, 'paid amount new')
 
             await draftInvoice.update({
               paidAmount: amount,

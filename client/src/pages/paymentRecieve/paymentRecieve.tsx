@@ -12,7 +12,6 @@ import useAppSelector from '../../hooks/useAppSelector';
 import { getInvoicesAction } from '../../store/actions/invoiceActions';
 import { deleteSingleTransactionAction, getpaymentRecievedAction } from '../../store/actions/transactionActions';
 // import useInvoice from '../../hooks/useInvoice';
-
 import { resetDeletePaymentRecieveStatus, resetPaymentRecieveStatus } from '../../store/reducers/transactionReducer';
 import { formatNumberToIntl } from '../../utils/generic';
 import { 
@@ -254,32 +253,32 @@ export default function PaymentRecieve() {
           },
           
         ];
-      }, [dispatch, transactionReducer, isTechAdmin, navigate]);
+    }, [dispatch, transactionReducer, isTechAdmin, navigate]);
 
-      const _generateDownload = async () => {
-        const rName = `${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id}`)}` + '.pdf';
+    const _generateDownload = async () => {
+      const rName = `${partnerName[0]}RC-${hashString(`${partnerName[0]}C${receiptData?.id}`)}` + '.pdf';
 
-        // @ts-ignore
-        const payload = {
-          type: 'RECEIPT',
-          id: receiptId || -1,
-          rName,
-        };
-        _setDownloading(true);
-
-        try {
-          const response = await axiosClient.post(`${settings.api.rest}/request-pdf`, payload);
-          console.log(response.data);
-        } catch (e) {
-          console.log(e);
-        }
-
-        setTimeout(() => {
-          _setDownloading(false);
-          window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
-          setShowReceipt(false);
-        }, 3000);
+      // @ts-ignore
+      const payload = {
+        type: 'RECEIPT',
+        id: receiptId || -1,
+        rName,
       };
+      _setDownloading(true);
+
+      try {
+        const response = await axiosClient.post(`${settings.api.rest}/request-pdf`, payload);
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+
+      setTimeout(() => {
+        _setDownloading(false);
+        window.open(`${settings.api.baseURL}/uploads/pdf/${rName}`);
+        setShowReceipt(false);
+      }, 3000);
+    };
 
       //share pdf logic --- start
     const generateDownload = async () => {

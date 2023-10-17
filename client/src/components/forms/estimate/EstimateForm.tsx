@@ -822,6 +822,7 @@ function EstimateForm(props: IProps) {
                     option.fullName === value.fullName
                   }
                   onChange={(_: any, newValue: IDriversFilterData | null) => {
+                    console.log(newValue, 'new value')
                     setValue(newValue);
                     handleGetDriverInfo(newValue?.id);
                   }}
@@ -1343,14 +1344,6 @@ function EstimateForm(props: IProps) {
                                 <React.Fragment key={`${value}`}>
                                   {value === "title" && (
                                     <Grid item xs={8}>
-                                      {/* <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        name={`labours.${index}.${value}`}
-                                        label={value}
-                                        value={labour[value]}
-                                        onChange={handleChange}
-                                      /> */}
                                       <Autocomplete
                                         options={serviceOnly}
                                         filterOptions={filterOptionsLabour}
