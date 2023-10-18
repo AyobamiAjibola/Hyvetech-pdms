@@ -831,7 +831,7 @@ export default class InvoiceController {
   
         await stock.update({ quantity: stock.quantity - item.quantity });
   
-        return item.amountPaid;
+        return +item.amountPaid;
       });
   
       const itemAmounts = await Promise.all(promises);
