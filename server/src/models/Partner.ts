@@ -49,6 +49,7 @@ export type UpdatePartnerProfile = {
 };
 
 export const $createPartnerKyc: Joi.SchemaMap<any> = {
+  phone: Joi.string().allow("").label("Phone"),
   cac: Joi.string().allow("").label("CAC"),
   name: Joi.string().label("Company Full Name"),
   nameOfDirector: Joi.string().allow("").label("Name of Director"),

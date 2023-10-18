@@ -54,6 +54,7 @@ export interface IGarageSignupModel {
   address?: string;
   password?: string;
   confirm_password?: string;
+  confirmPassword?: string;
 }
 
 const redisService = new RedisService();
@@ -793,6 +794,7 @@ export default class AuthenticationController {
       .required()
       .label("password"),
       confirm_password: Joi.ref("password"),
+      confirmPassword: Joi.ref("password"),
       isRegistered: Joi.boolean()
         .truthy()
         .label("Legally Registered")
