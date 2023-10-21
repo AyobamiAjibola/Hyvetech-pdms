@@ -1001,7 +1001,6 @@ class CBAController {
     //       HttpStatus.BAD_REQUEST.code
     //     )
     //   );
-    
     const startDate = req.query.startDate as string;
     const endDate = req.query.endDate as string;
 
