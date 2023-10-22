@@ -48,6 +48,12 @@ export const $updatePartnerAccountSchema: Joi.SchemaMap<PartnerAccountSchemaType
   currentPin: Joi.string().optional().label('currentPin'),
 };
 
+export const $resetPartnerAccountPinSchema: Joi.SchemaMap<PartnerAccountSchemaType & { resetCode: string }> = {
+  businessName: Joi.string().optional().label('businessName'),
+  pin: Joi.string().optional().label('pin'),
+  resetCode: Joi.string().optional().label('resetCode'),
+};
+
 export const $updateCBAAccountDetail: Joi.SchemaMap<CBAAccountUpdateType> = {
   businessName: Joi.string().optional().label('businessName'),
   firstName: Joi.string().optional().label('firstName'),

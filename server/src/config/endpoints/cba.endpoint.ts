@@ -16,6 +16,7 @@ import {
   performAccountActivation,
   performAccountActivationRejection,
   performAccountActivationRequest,
+  performAccountPinReset,
   performAccountPinUpdate,
   performAccountUpdate,
   performBulkNameEnquiry,
@@ -130,6 +131,12 @@ const cbaEndpoint: RouteEndpoints = [
     method: "post",
     path: "/cba/account/pin/update",
     handler: performAccountPinUpdate,
+  },
+  {
+    name: "perform-account-pin-reset",
+    method: "post",
+    path: "/cba/account/pin/reset",
+    handler: performAccountPinReset,
   },
   {
     name: "perform-account-update",

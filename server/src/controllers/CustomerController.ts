@@ -122,6 +122,7 @@ export default class CustomerController {
     const customer = await dataSources.customerDAOService.findByAny({
       where: {
         [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
+        [Op.and]: [{ partnerId: req.user.partnerId }]
       },
     });
 
@@ -174,19 +175,19 @@ export default class CustomerController {
 
     const passwordEncoder = new PasswordEncoder();
 
-    const customer_check = await dataSources.customerDAOService.findByAny({
-      where: {
-        [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
-      },
-    });
+    // const customer_check = await dataSources.customerDAOService.findByAny({
+    //   where: {
+    //     [Op.or]: [{ email: value.email.toLowerCase() }, { phone: value.phone }],
+    //   },
+    // });
 
-    if(customer_check) {
-      return Promise.reject(CustomAPIError.response('Customer with this phone number or email already exists', HttpStatus.NOT_FOUND.code));
-    }
+    // if(customer_check) {
+    //   return Promise.reject(CustomAPIError.response('Customer with this phone number or email already exists', HttpStatus.NOT_FOUND.code));
+    // }
 
     const payload = {
       ...value,
-      rawPassword: value.phone,
+      rawPassword: value.phone.replace('234', '0'),
       password: await passwordEncoder.encode(value.phone),
       enabled: true,
       active: true,

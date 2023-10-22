@@ -7,6 +7,7 @@ import { Request } from "express";
 import CBAService from "../services/CBAService";
 import Joi = require("joi");
 import PartnerAccount, {
+  $resetPartnerAccountPinSchema,
   $savePartnerAccountSchema,
   $updateCBAAccountDetail,
   $updatePartnerAccountSchema,
@@ -199,6 +200,20 @@ class CBAController {
     const response: HttpResponse<PartnerAccount> = {
       code: HttpStatus.OK.code,
       message: "Account updated successfully",
+      result: account,
+    };
+
+    return Promise.resolve(response);
+  }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])
+  public async resetAccountPin(req: Request) {
+    const account = await this.doAccountPinReset(req);
+
+    const response: HttpResponse<PartnerAccount> = {
+      code: HttpStatus.OK.code,
+      message: "Pin changed successfully",
       result: account,
     };
 
@@ -1219,6 +1234,50 @@ class CBAController {
 
     account.pin = await this.passwordEncoded.encode(value.pin);
 
+    await account.save();
+
+    return null;
+  }
+
+  private async doAccountPinReset(req: Request) {
+    const { error, value } = Joi.object<
+      PartnerAccountSchemaType & { resetCode: string }
+    >($resetPartnerAccountPinSchema).validate(req.body);
+
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+
+    const account = await dataSources.partnerAccountDaoService.findByAny({
+      where: { partnerId: req.user.partnerId },
+    });
+
+    if (!account)
+      return Promise.reject(
+        CustomAPIError.response(
+          "Account not yet provisioned",
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+    
+    const user = await dataSources.userDAOService.findByAny({
+      where: { email: account.email }
+    })
+
+    if(user?.resetCode !== value.resetCode) {
+      return Promise.reject(CustomAPIError.response(
+        "Reset code is not correct", HttpStatus.BAD_REQUEST.code
+      ))
+    }
+
+    user.resetCode = "";
+    await user.save();
+
+    account.pin = await this.passwordEncoded.encode(value.pin);
     await account.save();
 
     return null;
