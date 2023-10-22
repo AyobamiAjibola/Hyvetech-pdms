@@ -113,6 +113,7 @@ export default class DashboardController {
 
       const ___sales = [];
       const ___receipt = [];
+      const ___expenses = [];
 
       const _year = year === null ? new Date().getFullYear() : year
 
@@ -126,6 +127,10 @@ export default class DashboardController {
         // receipt
         // const _transactionsByMonth = await this.filterByMonth(transactions, _month.id, year);
         ___receipt.push(this.getReceipt(_invoicesByMonth));
+
+        //expenses
+        const _expensesByMonth = await this._filterByMonth(expenses, _month.id, _year);
+        ___expenses.push(this.getExpenses(_expensesByMonth));
       }
       
 
@@ -189,6 +194,11 @@ export default class DashboardController {
               label: 'Total Receipts',
               data: ___receipt,
               backgroundColor: '#FFD89B',
+            },
+            {
+              label: 'Total Expenses',
+              data: ___expenses,
+              backgroundColor: '#B2976C',
             },
           ],
           seriesOne: [
