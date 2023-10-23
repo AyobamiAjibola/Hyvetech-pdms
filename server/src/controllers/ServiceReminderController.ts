@@ -194,12 +194,12 @@ export default class ServiceReminderController {
 
     if (!reminder) return Promise.reject(CustomAPIError.response(`Reminder not found`, HttpStatus.NOT_FOUND.code));
 
-    const { error, value } = Joi.object<CreateServiceReminderType>($updateReminderSchema).validate(req.body);
-    if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-    if (!value)
-      return Promise.reject(
-        CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
-      );
+    // const { error, value } = Joi.object<CreateServiceReminderType>($updateReminderSchema).validate(req.body);
+    // if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    // if (!value)
+    //   return Promise.reject(
+    //     CustomAPIError.response(HttpStatus.INTERNAL_SERVER_ERROR.value, HttpStatus.INTERNAL_SERVER_ERROR.code),
+    //   );
 
     if(reminder.recurring === 'yes') {
       if(reminder.serviceStatus === 'not_done' || reminder.serviceStatus || 'active') {

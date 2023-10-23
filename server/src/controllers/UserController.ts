@@ -186,11 +186,23 @@ export default class UserController {
   }
 
   private async doUpdateUserStatus(req: Request) {
-    const partner = req.user.partner;
+    const currentUser = req.user.id;
+    const partner = req.user.partnerId
 
     const user = await dataSources.userDAOService.findById(+req.params.userId, { include: [{ model: Role }] });
-
     if (!user) return Promise.reject(CustomAPIError.response('User not found', HttpStatus.BAD_REQUEST.code));
+
+    const _partner = await dataSources.partnerDAOService.findById(partner)
+
+    if(_partner?.email === user.email)
+      return Promise.reject(
+        CustomAPIError.response('Disabling a partner account is not allowed.', HttpStatus.BAD_REQUEST.code),
+      );
+
+    if(currentUser === user.id)
+      return Promise.reject(
+        CustomAPIError.response('Disabling a logged in account is not allowed.', HttpStatus.BAD_REQUEST.code),
+      );
 
     if (
       user.roles[0]?.slug === MANAGE_TECHNICIAN &&
@@ -209,6 +221,7 @@ export default class UserController {
     return new Promise ((resolve, reject) => {
       form.parse(req, async (err, fields, files) => {
         try {
+          const partner = req.user.partnerId;
           const { error, value } = Joi.object<any>($updateUserSchema).validate(fields);
           if (error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -218,6 +231,13 @@ export default class UserController {
               'User not found', 
               HttpStatus.BAD_REQUEST.code
             ));
+
+          if(partner !== user.partnerId)
+            return reject(
+              CustomAPIError.response(
+                'You are not authorized.', 
+                HttpStatus.BAD_REQUEST.code
+              )); 
 
           const role = await dataSources.roleDAOService.findByAny({
             where: {id: user.roleId}
@@ -422,6 +442,7 @@ export default class UserController {
       companyName: partner.name,
       roleId: role.id,
       partnerId: partner.id,
+      accountType: 'cooperate'
     };
 
     const newUser = await dataSources.userDAOService.create(

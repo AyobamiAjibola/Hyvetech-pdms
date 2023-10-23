@@ -151,9 +151,14 @@ export default class RoleController {
 
     const permissions = [];
 
+    const readUser = await datasources.permissionDAOService.findByAny({ where: { name: 'read_user' } });
+    if (readUser) permissions.push(readUser);
+
     for (const selectedPermission of value.permissions) {
-      const permission = await datasources.permissionDAOService.findByAny({ where: { name: selectedPermission } });
-      if (permission) permissions.push(permission);
+      if (selectedPermission !== 'read_user') {
+        const permission = await datasources.permissionDAOService.findByAny({ where: { name: selectedPermission } });
+        if (permission) permissions.push(permission);
+      }
     }
 
     if (permissions.length === 0)
@@ -186,12 +191,17 @@ export default class RoleController {
         ),
       );
 
-    const permissions = [];
+      const permissions = [];
 
-    for (const selectedPermission of value.permissions) {
-      const permission = await datasources.permissionDAOService.findByAny({ where: { name: selectedPermission } });
-      if (permission) permissions.push(permission);
-    }
+      const readUser = await datasources.permissionDAOService.findByAny({ where: { name: 'read_user' } });
+      if (readUser) permissions.push(readUser);
+  
+      for (const selectedPermission of value.permissions) {
+        if (selectedPermission !== 'read_user') {
+          const permission = await datasources.permissionDAOService.findByAny({ where: { name: selectedPermission } });
+          if (permission) permissions.push(permission);
+        }
+      }
 
     if (permissions.length === 0)
       return Promise.reject(CustomAPIError.response('Invalid permissions selected', HttpStatus.BAD_REQUEST.code));
