@@ -46,7 +46,7 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
     beneficiaryBankCode: Joi.string().required().label("beneficiaryBankCode"),
     beneficiaryName: Joi.string().optional().label("beneficiaryName"),
     senderName: Joi.string().optional().label("senderName"),
-    nameEnquirySessionID: Joi.string().optional().label("NameEnquirySessionID"),
+    NameEnquirySessionID: Joi.string().optional().label("NameEnquirySessionID"),
     saveAsBeneficiary: Joi.boolean().optional().label("saveAsBeneficiary"),
     bankName: Joi.string().optional().label("bankName"),
     pin: Joi.string().required().label("pin"),
@@ -658,6 +658,7 @@ class CBAController {
   }
 
   private async doAccountActivationRequest(req: Request) {
+
     const { error, value } = Joi.object<AccountActivationRequestSchemaType>(
       $saveAccountActivationRequestSchema
     ).validate(req.body);
@@ -708,7 +709,21 @@ class CBAController {
       }),
     };
 
-    QueueManager.dispatch({ queue: MAIL_QUEUE_EVENTS.name, data: mailData });
+    // eslint-disable-next-line promise/catch-or-return
+    const mailDataIndividual: MailgunMessageData = {
+      to: settings.mailer.customerSupport,
+      from: settings.mailer.from,
+      subject: "Account activation requested",
+      template: "partner_account_activation_request",
+      "h:X-Mailgun-Variables": JSON.stringify({
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        phone: req.user.phone,
+        email: req.user.email,
+      }),
+    };
+
+    QueueManager.dispatch({ queue: MAIL_QUEUE_EVENTS.name, data: req.user.accountType === 'individual' ? mailDataIndividual : mailData });
 
     return response;
   }

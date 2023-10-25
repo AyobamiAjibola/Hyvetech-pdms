@@ -80,7 +80,6 @@ class KudaService implements BankService {
       requestref: ReferenceGenerator.generate(),
       data: { ...payload },
     });
-    console.log(response.data.data, 'name enquiry')
     return response.data.data as appModelTypes.AccountHolder;
   }
 
@@ -222,7 +221,6 @@ class KudaService implements BankService {
 
   async intiateTransfer(payload: appModelTypes.AccountTransferDTO) {
     try {
-      console.log(payload, 'payload')
       const response = await this.network.post("", {
         ServiceType: "VIRTUAL_ACCOUNT_FUND_TRANSFER",
         RequestRef: ReferenceGenerator.generate(),

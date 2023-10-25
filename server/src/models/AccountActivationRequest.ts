@@ -23,12 +23,12 @@ export type AccountActivationRequestSchemaType =
 
 export const $saveAccountActivationRequestSchema: Joi.SchemaMap<AccountActivationRequestSchemaType> =
   {
-    businessName: Joi.string().required().label("businessName"),
+    businessName: Joi.string().optional().label("businessName"),
     cacUrl: Joi.string().optional().allow(null, "").label("cacUrl"),
     validIdBackUrl: Joi.string().optional().label("validIdBackUrl"),
     validIdFrontUrl: Joi.string().optional().label("validIdFrontUrl"),
     pin: Joi.string().optional().label("pin"),
-    nin: Joi.string().required().label("nin"),
+    nin: Joi.string().optional().label("nin"),
     bvn: Joi.string().required().label("bvn"),
   };
 

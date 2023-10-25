@@ -126,6 +126,15 @@ export default class Partner extends Model<
   @Column(DataType.STRING)
   declare accountNumber: string;
 
+  @Column({type: DataType.STRING, allowNull: true})
+  declare secondaryBankName: string | null;
+
+  @Column({type: DataType.STRING, allowNull: true})
+  declare secondaryAccountName: string | null;
+
+  @Column({type: DataType.STRING, allowNull: true})
+  declare secondaryAccountNumber: string | null;
+
   @Column(DataType.INTEGER)
   declare totalStaff: number;
 

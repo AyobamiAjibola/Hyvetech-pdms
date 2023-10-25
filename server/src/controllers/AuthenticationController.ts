@@ -190,7 +190,7 @@ export default class AuthenticationController {
 
       // return response;
       const response: HttpResponse<User> = {
-        message: `Token sent successfully ${resetCode}`,
+        message: `Token sent successfully.`,
         code: HttpStatus.OK.code,
       };
 
@@ -241,27 +241,27 @@ export default class AuthenticationController {
 
     redisService.saveToken("jiffix_sign_up_token", actualData, 180);
 
-    const mailText = ResetPasswordTokenEmail({
-      firstName: value.firstName,
-      code: token,
-    });
+    // const mailText = ResetPasswordTokenEmail({
+    //   firstName: value.firstName,
+    //   code: token,
+    // });
 
-    await QueueManager.publish({
-      queue: MAIL_QUEUE_EVENTS.name,
-      data: {
-        to: value.email,
-        from: {
-          name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-          address: <string>process.env.SMTP_EMAIL_FROM,
-        },
-        subject: `Reset Password`,
-        html: mailText,
-        bcc: [
-          <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-          <string>process.env.SMTP_EMAIL_FROM,
-        ],
-      },
-    });
+    // await QueueManager.publish({
+    //   queue: MAIL_QUEUE_EVENTS.name,
+    //   data: {
+    //     to: value.email,
+    //     from: {
+    //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+    //       address: <string>process.env.SMTP_EMAIL_FROM,
+    //     },
+    //     subject: `Reset Password`,
+    //     html: mailText,
+    //     bcc: [
+    //       <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+    //       <string>process.env.SMTP_EMAIL_FROM,
+    //     ],
+    //   },
+    // });
 
     await dataSources.termiiService
       .sendMessage({

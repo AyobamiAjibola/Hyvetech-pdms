@@ -51,6 +51,14 @@ export const updatePartnerProfileHandler = authenticateRouteWrapper(
   }
 );
 
+export const updatePartnerSecondaryBankHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await partnerController.updateSecondaryAccount(req);
+
+    res.status(result.code).json(result);
+  }
+);
+
 export const createPartnerSettingsHandler = authenticateRouteWrapper(
   async (req: Request, res: Response) => {
     const result = await partnerController.createSettings(req);

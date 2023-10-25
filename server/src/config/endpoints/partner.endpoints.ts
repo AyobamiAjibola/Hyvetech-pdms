@@ -18,6 +18,7 @@ import {
   requestPdfHandler,
   togglePartnerHandler,
   updatePartnerProfileHandler,
+  updatePartnerSecondaryBankHandler,
   updatePreferencesHandler,
 } from "../../routes/partnerHandler";
 import { appCommonTypes } from "../../@types/app-common";
@@ -41,6 +42,12 @@ const partnerEndpoints: RouteEndpoints = [
     method: "patch",
     path: "/partner/profile/update",
     handler: updatePartnerProfileHandler,
+  },
+  {
+    name: "partner-secondary-bank-update",
+    method: "put",
+    path: "/partner/secondary/bank",
+    handler: updatePartnerSecondaryBankHandler,
   },
   {
     name: "partners",

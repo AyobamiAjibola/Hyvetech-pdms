@@ -517,6 +517,44 @@ export default class PartnerController {
     return response;
   }
 
+  @HasPermission([MANAGE_TECHNICIAN])
+  public async updateSecondaryAccount(req: Request) {
+    const partnerId = req.user.partnerId;
+
+    const { error, value } = Joi.object({
+      bank: Joi.string().required().label("Bank Name"),
+      accountName: Joi.string().required().label("Account Name"),
+      accountNumber: Joi.string().required().label("Account Number")
+    }).validate(req.body);
+
+    if (error)
+      return Promise.reject(
+        CustomAPIError.response(
+          error.details[0].message,
+          HttpStatus.BAD_REQUEST.code
+        )
+      );
+
+    const partner = await dataSources.partnerDAOService.findById(partnerId);
+    if(!partner) 
+      return Promise.reject(CustomAPIError.response("Partner not found.", HttpStatus.NOT_FOUND.code));
+
+    const updateValue = {
+      secondaryBankName: value.bank,
+      secondaryAccountName: value.accountName,
+      secondaryAccountNumber: value.accountNumber
+    }
+
+    await dataSources.partnerDAOService.update(partner, updateValue as any);
+
+    const response: HttpResponse<Partner> = {
+      code: HttpStatus.OK.code,
+      message: `Bank detail updated successfully`
+    };
+
+    return Promise.resolve(response);
+  }
+
   /**
    * @name createKyc
    * @param req
