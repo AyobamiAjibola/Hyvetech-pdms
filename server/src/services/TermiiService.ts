@@ -61,18 +61,15 @@ class TermiiService {
 
   async sendMessage(payload: SendMessageRequest) {
     try {
-      console.log(payload, 'befor')
       payload.to =
         payload.to.charAt(0) == "0"
           ? `234${payload.to.substring(1, payload.to.length)}`
           : payload.to;
-      console.log(payload, 'after')
-      const response = await this.Axios.post("/api/sms/number/send", {
+      const response = await this.Axios.post("/api/sms/send", {
         ...payload,
         from: settings.termii.from,
         api_key: settings.termii.key,
       });
-      console.log(response, 'response')
       return response.data;
     } catch (error: any) {
       throw new Error(error);
