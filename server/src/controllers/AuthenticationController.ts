@@ -178,7 +178,7 @@ export default class AuthenticationController {
       dataSources.termiiService
         .sendMessage({
           to: user.phone,
-          sms: `Your password reset code is ${resetCode}`,
+          sms: `${settings.termii.message} ${resetCode}`,
           channel: "generic",
           type: "plain",
         })

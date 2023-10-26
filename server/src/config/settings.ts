@@ -226,6 +226,7 @@ const settings: AppSettings = {
     host: <string>process.env.TERMII_HOST,
     key: <string>process.env.TERMII_SECRET,
     from: <string>process.env.TERMII_FROM,
+    message: <string>process.env.TERMII_MESSAGE
   },
   vinProviders: [
     {

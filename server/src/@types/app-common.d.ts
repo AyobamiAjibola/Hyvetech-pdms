@@ -206,6 +206,7 @@ export declare namespace appCommonTypes {
       host: string;
       key: string;
       from: string;
+      message: string;
     };
     mailer: {
       from: string;
