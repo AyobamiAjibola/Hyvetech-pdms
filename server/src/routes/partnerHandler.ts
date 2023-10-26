@@ -193,3 +193,11 @@ export const getPreferencesHandler = authenticateRouteWrapper(
     res.status(result.code).json(result);
   }
 );
+
+export const getPartnerAccountHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await partnerController.getPartnerAccount(req);
+
+    res.status(result.code).json(result);
+  }
+);

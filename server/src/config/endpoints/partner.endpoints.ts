@@ -8,6 +8,7 @@ import {
   deletePlanHandler,
   driversFilterDataHandler,
   filterDriversHandler,
+  getPartnerAccountHandler,
   getPartnerHandler,
   getPartnersHandler,
   getPaymentPlansHandler,
@@ -72,6 +73,12 @@ const partnerEndpoints: RouteEndpoints = [
     method: "get",
     path: "/partners/:partnerId",
     handler: getPartnerHandler,
+  },
+  {
+    name: "partner account",
+    method: "get",
+    path: "/partner-account/:partnerId",
+    handler: getPartnerAccountHandler,
   },
   {
     name: "partners",

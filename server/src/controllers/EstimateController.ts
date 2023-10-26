@@ -51,6 +51,7 @@ import {
 } from '../config/settings';
 import email_content from '../resources/templates/email/email_content';
 import QueueManager from '../services/QueueManager';
+import PartnerAccount from '../models/PartnerAccount';
 
 export default class EstimateController {
   @TryCatch

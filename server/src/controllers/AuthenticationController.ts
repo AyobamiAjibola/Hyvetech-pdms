@@ -173,9 +173,11 @@ export default class AuthenticationController {
 
       await user.save();
 
+      const phone = user.phone.startsWith('0') ? user.phone.replace('0', '234') : user.phone
+
       dataSources.termiiService
         .sendMessage({
-          to: user.phone,
+          to: phone,
           sms: `Your password reset code is ${resetCode}`,
           channel: "generic",
           type: "plain",

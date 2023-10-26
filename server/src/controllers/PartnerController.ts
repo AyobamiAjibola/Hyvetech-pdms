@@ -540,9 +540,9 @@ export default class PartnerController {
       return Promise.reject(CustomAPIError.response("Partner not found.", HttpStatus.NOT_FOUND.code));
 
     const updateValue = {
-      secondaryBankName: value.bank,
-      secondaryAccountName: value.accountName,
-      secondaryAccountNumber: value.accountNumber
+      bankName: value.bank,
+      accountName: value.accountName,
+      accountNumber: value.accountNumber
     }
 
     await dataSources.partnerDAOService.update(partner, updateValue as any);
@@ -1619,5 +1619,24 @@ export default class PartnerController {
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  public async getPartnerAccount(req: Request) {
+    const partnerId = req.params.partnerId;
+
+    const partnerAccount = await dataSources.partnerAccountDaoService.findByAny(
+      {where: {partnerId: partnerId}}
+    );
+
+    if(!partnerAccount)
+      return Promise.reject(CustomAPIError.response("Partner account not found", HttpStatus.NOT_FOUND.code))
+
+    const response: HttpResponse<any> = {
+      code: HttpStatus.OK.code,
+      message: `Successful.`,
+      result: partnerAccount,
+    };
+
+    return Promise.resolve(response);
   }
 }

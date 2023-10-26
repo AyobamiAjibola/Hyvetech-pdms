@@ -1119,7 +1119,7 @@ class CBAController {
       lastName: req.user.lastName,
       phoneNumber: req.user.phone,
       email: req.user.email,
-      businessName: value.businessName,
+      businessName: req.user.accountType === 'individual' ? `${req.user.firstName} ${req.user.lastName}` : value.businessName,
       partnerId: req.user.partnerId,
       pin: value.pin,
       nin: value.nin,
