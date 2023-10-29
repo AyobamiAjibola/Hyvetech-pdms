@@ -159,7 +159,7 @@ function SignIn () {
                         We have moved to a new site! Please log in by
                     </span>
                     <span style={{fontSize: '15px'}}>
-                    clicking this link: <a href='https://auto.hyvetech.co' style={{fontWeight: 600, color: "#FBA91A", backgroundColor: 'white' }}>auto.hyvetech.co</a>
+                    clicking this link: <a href='https://auto.hyvetech.co' style={{fontWeight: 600, color: "#FBA91A" }}>auto.hyvetech.co</a>
                     </span>
                     {/* <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose} >
                         <GridCloseIcon fontSize="small" />

@@ -645,23 +645,6 @@ export const estimatePdfTemplate = async (estimate: Estimate, accountDetail: Par
                     </div>
                 </div>
 
-                <div class="parerntWrapper">
-                    <div style="font-size: 12px; font-weight: 600; margin-top: 12px;">Method 2</div>
-
-                    <div style="font-size: 11px; display: flex; flex: 1; margin-left: 10px; flex-direction: column;">
-                        <p style="font-size: 12px;">A more secure & faster way to pay</p>
-                        <ol>
-                            <li>Open the <a href="https://onelink.to/fh7uc5">AutoHyve mobile app</a> or visit/click <a
-                            href="http://app.myautohyve.com/">app.myautohyve.com</a> </li>
-
-                            <li>Sign in with your Email address (username), and Phone number (as password)</li>
-                            <li>Open <span>Estimate #${
-                              estimate.code
-                            }</span>, and click on <span>“Approve and Pay Deposit”</span></li>
-                        </ol>
-                        <p style="font-size: 12px;">PS: you can pay using your bank card, transfer, or USSD. once successful, your invoice and receipt is created automatically.</p>
-                    </div>
-                </div>
             </div>
     </body>
     </html>
