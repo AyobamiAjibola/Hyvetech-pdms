@@ -147,33 +147,31 @@ export default class AuthenticationController {
 
       const resetCode = "" + Math.floor(Math.random() * 10000);
 
-      const mailText = ResetPasswordTokenEmail({
-        firstName: user.firstName,
-        code: resetCode,
-      });
+      // const mailText = ResetPasswordTokenEmail({
+      //   firstName: user.firstName,
+      //   code: resetCode,
+      // });
 
-      await QueueManager.publish({
-        queue: MAIL_QUEUE_EVENTS.name,
-        data: {
-          to: user.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
-          subject: `Reset Password`,
-          html: mailText,
-          bcc: [
-            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-            <string>process.env.SMTP_EMAIL_FROM,
-          ],
-        },
-      });
+      // await QueueManager.publish({
+      //   queue: MAIL_QUEUE_EVENTS.name,
+      //   data: {
+      //     to: user.email,
+      //     from: {
+      //       name: <string>process.env.SMTP_EMAIL_FROM_NAME,
+      //       address: <string>process.env.SMTP_EMAIL_FROM,
+      //     },
+      //     subject: `Reset Password`,
+      //     html: mailText,
+      //     bcc: [
+      //       <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
+      //       <string>process.env.SMTP_EMAIL_FROM,
+      //     ],
+      //   },
+      // });
 
       user.resetCode = `${resetCode}`;
 
       await user.save();
-
-      // const phone = user.phone.startsWith('0') ? user.phone.replace('0', '234') : user.phone
 
       dataSources.termiiService
         .sendMessage({

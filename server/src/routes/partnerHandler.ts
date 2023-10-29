@@ -201,3 +201,11 @@ export const getPartnerAccountHandler = authenticateRouteWrapper(
     res.status(result.code).json(result);
   }
 );
+
+export const upVoteHandler = authenticateRouteWrapper(
+  async (req: Request, res: Response) => {
+    const result = await partnerController.upVote(req);
+
+    res.status(result.code).json(result);
+  }
+);

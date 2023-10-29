@@ -145,6 +145,9 @@ export default class Partner extends Model<
   declare cac: string;
 
   @Column(DataType.STRING)
+  declare upVote: string; //remove this when voting is over
+
+  @Column(DataType.STRING)
   declare vatNumber: string;
 
   @Column(DataType.STRING)

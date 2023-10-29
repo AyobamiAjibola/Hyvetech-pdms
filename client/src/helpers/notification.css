@@ -1,0 +1,5 @@
+/* notification.css */
+.ant-notification {
+    z-index: 9999; /* Set a high z-index value */
+  }
+  

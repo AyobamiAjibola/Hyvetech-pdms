@@ -1639,4 +1639,25 @@ export default class PartnerController {
 
     return Promise.resolve(response);
   }
+
+  @TryCatch
+  @HasPermission([MANAGE_TECHNICIAN])  
+  public async upVote(req: Request) {
+    const partnerId = req.user.partnerId;
+
+    const user = await dataSources.partnerDAOService.findById(partnerId);
+    if(!user)
+      return Promise.reject(CustomAPIError.response("User not found", HttpStatus.BAD_REQUEST.code))
+
+    const vote = req.body.vote;
+
+    await dataSources.partnerDAOService.update(user, { upVote: vote } as any)
+
+    const response: HttpResponse<any> = {
+      code: HttpStatus.OK.code,
+      message: `Successful, thank you.`
+    };
+
+    return Promise.resolve(response);
+  }
 }

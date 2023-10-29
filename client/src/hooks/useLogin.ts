@@ -16,11 +16,11 @@ export default function useLogin() {
   const authReducer = useAppSelector(state => state.authenticationReducer);
   const dispatch = useAppDispatch();
 
+  // const isLoggedIn = sessionStorage.getItem(settings.auth.admin);
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem(settings.auth.admin);
-
     if (!isLoggedIn) {
-      navigate('/');
+      navigate('/admin');
     } else navigate('/dashboard');
   }, [navigate]);
 

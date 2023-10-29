@@ -81,7 +81,8 @@ function SignInForm() {
               size="large"
               fullWidth
               variant="contained"
-              color="primary">
+              color="primary"
+              >
               Login
             </LoadingButton>
           </Grid>

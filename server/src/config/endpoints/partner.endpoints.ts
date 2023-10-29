@@ -18,6 +18,7 @@ import {
   partnerLogoUploadHandler,
   requestPdfHandler,
   togglePartnerHandler,
+  upVoteHandler,
   updatePartnerProfileHandler,
   updatePartnerSecondaryBankHandler,
   updatePreferencesHandler,
@@ -176,6 +177,12 @@ const partnerEndpoints: RouteEndpoints = [
     method: "post",
     path: "/request-pdf",
     handler: requestPdfHandler,
+  },
+  {
+    name: "upVote",
+    method: "post",
+    path: "/vote",
+    handler: upVoteHandler,
   },
 ];
 

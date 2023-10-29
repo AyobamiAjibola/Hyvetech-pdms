@@ -13,6 +13,7 @@ import {
 import {
   amber,
   blueGrey,
+  brown,
   cyan,
   deepPurple,
   green,
@@ -21,6 +22,7 @@ import {
   orange,
   pink,
   purple,
+  red,
 } from "@mui/material/colors";
 import AppPieChart from "../charts/AppPieChart";
 import moment from "moment";
@@ -76,7 +78,7 @@ function AdminDashboard() {
   const customers = useNewCustomer();
   const rideShareReducer = useAppSelector((state) => state.rideShareReducer);
   const technicianReducer = useAppSelector((state) => state.technicianReducer);
-  // const partnerReducer = useAppSelector(state => state.partnerReducer);
+  const partnerReducer = useAppSelector(state => state.partnerReducer);
 
   const handleChange = () => {
     setToggle(!toggle);
@@ -158,6 +160,11 @@ function AdminDashboard() {
       _setEndDate(endOfDay(new Date()));
     }
   }, [toggle]);
+
+  //@ts-ignore
+  const yes = partnerReducer.partners.filter(partner => partner.upVote === 'yes')
+  //@ts-ignore
+  const no = partnerReducer.partners.filter(partner => partner.upVote === 'no')
 
   return (
     <React.Fragment>
@@ -304,6 +311,25 @@ function AdminDashboard() {
           </Box>
         )}
       </Box>
+        
+        <Box
+          sx={{
+            width: '50%',
+            display: 'flex',
+            ml: 12, gap: 3, my: 4
+          }}
+        >
+          <DataCard
+            title="YES"
+            data={yes.length || 0}
+            bgColor={green[500]}
+          />
+          <DataCard
+            title="NO"
+            data={no.length || 0}
+            bgColor={red[500]}
+          />
+        </Box>
 
       <Grid
         container
@@ -327,7 +353,7 @@ function AdminDashboard() {
               <DataCard
                 title="Total Partners"
                 data={dashboardReducer.superAnalytics?.mAllPartner || 0}
-                bgColor={green[600]}
+                bgColor={brown[400]}
               />
             </Grid>
             <Grid
