@@ -10,7 +10,7 @@ import { LoadingButton } from '@mui/lab';
 import { Lock, VerifiedUser, Visibility, VisibilityOff } from '@mui/icons-material';
 
 function SlideTransition(props: SlideProps) {
-    return <Slide {...props} direction="up" />;
+    return <Slide {...props} direction="down" />;
 }
 
 function SignIn () {
@@ -145,7 +145,7 @@ function SignIn () {
 
             <Snackbar
                 sx={{height: '120px'}}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 open={state.open}
                 autoHideDuration={10000}
                 onClose={handleClose}
@@ -154,11 +154,18 @@ function SignIn () {
             >
                 <SnackbarContent
                 message={
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                    <span style={{fontSize: '15px'}}>
+                    <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            alignItems: 'center', 
+                            flexDirection: 'column',
+                            width: '400px'
+                        }}
+                    >
+                    <span style={{fontSize: '18px'}}>
                         We have moved to a new site! Please log in by
                     </span>
-                    <span style={{fontSize: '15px'}}>
+                    <span style={{fontSize: '18px'}}>
                     clicking this link: <a href='https://auto.hyvetech.co' style={{fontWeight: 600, color: "#FBA91A" }}>auto.hyvetech.co</a>
                     </span>
                     {/* <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose} >
