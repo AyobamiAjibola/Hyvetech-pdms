@@ -20,7 +20,7 @@ export default function useLogin() {
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem(settings.auth.admin);
     if (!isLoggedIn) {
-      navigate('/admin');
+      navigate('/');
     } else navigate('/dashboard');
   }, [navigate]);
 
