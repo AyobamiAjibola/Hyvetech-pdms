@@ -33,7 +33,7 @@ export interface ISideNav {
 }
 
 const SignInPage = React.lazy(() => import('../pages/authentication/SignInPage'));
-const SignIn = React.lazy(() => import('../pages/authentication/SignIn'));
+// const SignIn = React.lazy(() => import('../pages/authentication/SignIn'));
 const SignInPageAdmin = React.lazy(() => import('../pages/authentication/SignInPageAdmin'));
 // const GarageSignInPage = React.lazy(() => import('../pages/authentication/GarageSignInPage'));
 const GarageSignUpPage = React.lazy(() => import('../pages/authentication/GarageSignUpPage'));
@@ -132,8 +132,8 @@ export const sideNavs: ISideNav[] = [
 ];
 
 export const routes = [
-  { name: 'Sign in', path: '/', Element: SignIn, isPublic: true },
-  { name: 'Sign in admin', path: '/admin', Element: SignInPageAdmin, isPublic: true },
+  { name: 'Sign in', path: '/', Element: SignInPageAdmin, isPublic: true },
+  // { name: 'Sign in admin', path: '/admin', Element: SignInPageAdmin, isPublic: true },
   // { name: 'Workshop Login', path: '/garage/login', Element: SignInPage, isPublic: true },
   { name: 'Workshop Register', path: '/garage/register', Element: GarageSignUpPage, isPublic: true },
   {

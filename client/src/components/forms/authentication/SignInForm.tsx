@@ -9,7 +9,7 @@ import signInModel from '../models/signInModel';
 import { LoadingButton } from '@mui/lab';
 import useAppSelector from '../../../hooks/useAppSelector';
 import './signInForms.css';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 function SignInForm() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -70,9 +70,9 @@ function SignInForm() {
 
         <Grid item container xs spacing={2} my={3} justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
-            <Link style={{ color: '#FBA91A' }} to="/garage/register">
+            {/* <Link style={{ color: '#FBA91A' }} to="/garage/register">
               Create Account
-            </Link>
+            </Link> */}
           </Grid>
           <Grid item>
             <LoadingButton

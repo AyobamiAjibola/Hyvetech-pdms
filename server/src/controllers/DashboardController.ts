@@ -127,7 +127,6 @@ export default class DashboardController {
         // receipt
         // const _transactionsByMonth = await this.filterByMonth(transactions, _month.id, year);
         ___receipt.push(this.getReceipt(_invoicesByMonth));
-
         //expenses
         const _expensesByMonth = await this._filterByMonth(expenses, _month.id, _year);
         ___expenses.push(this.getExpenses(_expensesByMonth));
