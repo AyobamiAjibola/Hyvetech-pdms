@@ -10,12 +10,15 @@ import dataSources from '../services/dao';
 import { estimatePdfTemplate } from './estimatePdf';
 // import pdf from 'pdf-node'
 import path from 'path';
-import fs from 'fs';
+// import fs from 'fs';
 import Invoice from '../models/Invoice';
 import { invoicePdfTemplate } from './invoicePdf';
 import DraftInvoice from '../models/DraftInvoice';
 import Transaction from '../models/Transaction';
 import { receiptPdfTemplate } from './receiptPdf';
+
+const puppeteer = require('puppeteer');
+const fs = require('fs/promises');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pdf = require('pdf-creator-node');
@@ -145,54 +148,82 @@ export const generateReceiptHtml = async (id: any, partnerId: any, rName: any) =
   return receiptPdfTemplate(receipt, rName);
 };
 
+// export const generatePdf = async (html: string | null, rName?: string) => {
+//   rName = rName || Math.ceil(Math.random() * 999 + 1100) + '.pdf';
+//   await fs.mkdir(path.join(__dirname, '../../uploads/', 'pdf'), { recursive: true }, (e: any) => {
+//     console.log(e);
+//   });
+
+//   // await fs.writeFileSync(path.join(__dirname, "../../uploads/", "pdf", '000.html'), `${html}`);
+
+//   // const options = {
+//   //     format: "Tabloid",
+//   //     orientation: "portrait",
+//   //     // border: "10mm",
+//   // };
+
+//   // const document = {
+//   //     html,
+//   //     data: {
+//   //     //   users: users,
+//   //     },
+//   //     path: path.join(__dirname, "../../uploads/", "pdf", '000'+rName),
+//   //     type: "pdf",
+//   // };
+
+//   // const pdfGenerated = await pdf.create(document);
+
+//   const html5ToPDF = new HTML5ToPDF({
+//     inputBody: html,
+//     outputPath: path.join(__dirname, '../../uploads/', 'pdf', rName),
+//     // templatePath: path.join(__dirname, "templates", "basic"),
+//     include: [
+//       //   path.join(__dirname, "../assets/pdf/pdf"),
+//       //   path.join(__dirname, "assets", "custom-margin.css"),
+//     ],
+//     renderDelay: 4000,
+//     launchOptions: {
+//       args: ['--no-sandbox'],
+//       headless: true,
+//     },
+//     options: {
+//       printBackground: true,
+//     },
+//   });
+
+//   await html5ToPDF.start();
+//   await html5ToPDF.build();
+//   await html5ToPDF.close();
+
+//   return rName;
+
+//   // console.log(pdfGenerated)
+// };
+
 export const generatePdf = async (html: string | null, rName?: string) => {
-  rName = rName || Math.ceil(Math.random() * 999 + 1100) + '.pdf';
-  await fs.mkdir(path.join(__dirname, '../../uploads/', 'pdf'), { recursive: true }, e => {
-    console.log(e);
-  });
+  rName = rName || `${Math.ceil(Math.random() * 999 + 1100)}.pdf`;
+  const outputDir = path.join(__dirname, '../../uploads/pdf');
+  const outputFile = path.join(outputDir, rName);
 
-  // await fs.writeFileSync(path.join(__dirname, "../../uploads/", "pdf", '000.html'), `${html}`);
+  try {
+    await fs.mkdir(outputDir, { recursive: true });
+    const browser = await puppeteer.launch({ 
+      // args: ['--no-sandbox'],
+      headless: 'new'
+    });
+    const page = await browser.newPage();
 
-  // const options = {
-  //     format: "Tabloid",
-  //     orientation: "portrait",
-  //     // border: "10mm",
-  // };
+    await page.setContent(html);
+    await page.pdf({ path: outputFile, format: 'A4', printBackground: true });
 
-  // const document = {
-  //     html,
-  //     data: {
-  //     //   users: users,
-  //     },
-  //     path: path.join(__dirname, "../../uploads/", "pdf", '000'+rName),
-  //     type: "pdf",
-  // };
-
-  // const pdfGenerated = await pdf.create(document);
-
-  const html5ToPDF = new HTML5ToPDF({
-    inputBody: html,
-    outputPath: path.join(__dirname, '../../uploads/', 'pdf', rName),
-    // templatePath: path.join(__dirname, "templates", "basic"),
-    include: [
-      //   path.join(__dirname, "../assets/pdf/pdf"),
-      //   path.join(__dirname, "assets", "custom-margin.css"),
-    ],
-    renderDelay: 4000,
-    launchOptions: {
-      args: ['--no-sandbox'],
-      headless: true,
-    },
-    options: {
-      printBackground: true,
-    },
-  });
-
-  await html5ToPDF.start();
-  await html5ToPDF.build();
-  await html5ToPDF.close();
-
-  return rName;
-
-  // console.log(pdfGenerated)
+    await browser.close();
+    return rName;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 };
+
+
+
+

@@ -427,7 +427,7 @@ export const estimatePdfTemplate = async (estimate: Estimate, accountDetail: Par
                 </div>
     
                 <div class="header-section">
-                    <img src="${mainUrl}" alt="" class="image">
+                    <img src="${mainUrl}" alt="" class="image" crossOrigin="anonymous">
                     <br />
                 </div>
     
