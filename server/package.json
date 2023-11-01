@@ -78,6 +78,7 @@
     "pdf-node": "^1.0.1",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
+    "puppeteer": "^21.4.1",
     "rabbitmq-email-manager": "^1.0.23",
     "redis": "^4.6.6",
     "reflect-metadata": "^0.1.13",
