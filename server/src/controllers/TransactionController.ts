@@ -354,6 +354,7 @@ export default class TransactionController {
             ],
           },
         ],
+        order: [['createdAt', 'ASC']],
       });
 
       return Promise.resolve({
