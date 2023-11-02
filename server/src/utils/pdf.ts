@@ -10,15 +10,15 @@ import dataSources from '../services/dao';
 import { estimatePdfTemplate } from './estimatePdf';
 // import pdf from 'pdf-node'
 import path from 'path';
-import fs from 'fs';
+// import fs from 'fs';
 import Invoice from '../models/Invoice';
 import { invoicePdfTemplate } from './invoicePdf';
 import DraftInvoice from '../models/DraftInvoice';
 import Transaction from '../models/Transaction';
 import { receiptPdfTemplate } from './receiptPdf';
 
-// const puppeteer = require('puppeteer');
-// const fs = require('fs/promises');
+const puppeteer = require('puppeteer');
+const fs = require('fs/promises');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pdf = require('pdf-creator-node');
@@ -176,6 +176,7 @@ export const generatePdf = async (html: string | null, rName?: string) => {
   const html5ToPDF = new HTML5ToPDF({
     inputBody: html,
     outputPath: path.join(__dirname, '../../uploads/', 'pdf', rName),
+    browser: 'chromium',
     // templatePath: path.join(__dirname, "templates", "basic"),
     include: [
       //   path.join(__dirname, "../assets/pdf/pdf"),

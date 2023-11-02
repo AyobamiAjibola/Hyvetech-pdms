@@ -277,7 +277,7 @@ export const $createEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
   note: Joi.string().allow('').label('note'),
-  internalNote: Joi.string().optional().allow('').label('note'),
+  internalNote: Joi.string().allow('').label('internal note'),
 };
 
 export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
@@ -313,7 +313,7 @@ export const $saveEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
   discountType: Joi.string().label('discountType'),
   count: Joi.number().optional().label('count'),
   note: Joi.string().allow('').label('note'),
-  internalNote: Joi.string().optional().label('internalNote'),
+  internalNote: Joi.string().allow('').label('internal note'),
 };
 
 export const $updateEstimateSchema: Joi.SchemaMap<CreateEstimateType> = {
