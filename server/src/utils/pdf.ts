@@ -17,7 +17,6 @@ import DraftInvoice from '../models/DraftInvoice';
 import Transaction from '../models/Transaction';
 import { receiptPdfTemplate } from './receiptPdf';
 
-const puppeteer = require('puppeteer');
 const fs = require('fs/promises');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
