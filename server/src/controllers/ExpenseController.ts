@@ -367,17 +367,16 @@ export default class ExpenseController {
       where: { accountNumber: value.accountNumber, partnerId: partner.id },
     });
 
-    // const beneficiaryAccountName = await dao.beneficiaryDAOService.findByAny({
-    //   where: { accountName: value.accountName, partnerId: partner.id },
-    // });
+    if (beneficiaryAccountNumber)
+      return Promise.reject(CustomAPIError.response('Beneficiary account number already exists.', HttpStatus.BAD_REQUEST.code));
 
-    // if (beneficiaryAccountNumber)
-    //   return Promise.reject(CustomAPIError.response('Beneficiary account number already exists.', HttpStatus.BAD_REQUEST.code));
-
-    // if (beneficiaryAccountName)
-    //   return Promise.reject(CustomAPIError.response('Beneficiary account name already exists.', HttpStatus.BAD_REQUEST.code));
-
-    return dao.beneficiaryDAOService.create({ ...value, partnerId: partner.id });
+    const payload = {
+      ...value,
+      bankName: value.bankName,
+      bankCode: value.bankCode,
+      partnerId: partner.id
+    }
+    return dao.beneficiaryDAOService.create(payload);
   }
 
   private async doCreateExpenseType(req: Request) {

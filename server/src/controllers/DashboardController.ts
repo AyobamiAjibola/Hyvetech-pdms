@@ -121,12 +121,13 @@ export default class DashboardController {
         const _month = months[i];
       
         // sales
+        const __invoicesByMonth = await this.__filterByMonth(transactions, _month.id, _year);
         const _invoicesByMonth = await this._filterByMonth(invoices, _month.id, _year);
         ___sales.push(this.getRevenue(_invoicesByMonth));
       
         // receipt
-        // const _transactionsByMonth = await this.filterByMonth(transactions, _month.id, year);
-        ___receipt.push(this.getReceipt(_invoicesByMonth));
+        //  ___receipt.push(this.getReceipt(_invoicesByMonth));
+        ___receipt.push(this.getTransaction(__invoicesByMonth));
         //expenses
         const _expensesByMonth = await this._filterByMonth(expenses, _month.id, _year);
         ___expenses.push(this.getExpenses(_expensesByMonth));
@@ -317,6 +318,21 @@ export default class DashboardController {
     return newCollection;
   }
 
+  public static async __filterByMonth(collection: any[], month: number, year: number) {
+
+    return collection.filter((_item) => {
+      if (_item != null) {
+        const paymentDate = new Date(_item.paymentDate);
+        const itemMonth = paymentDate.getMonth() + 1; // Months are zero-based
+        const itemYear = paymentDate.getFullYear();
+  
+        return itemMonth === month && itemYear === year;
+      }
+  
+      return false;
+    });
+  }
+
   public static async _filterByMonth(collection: any[], month: number, year: number) {
     return collection.filter((_item) => {
       if (_item != null) {
@@ -331,7 +347,6 @@ export default class DashboardController {
     });
   }
   
-
   //expenses filter by date modified
   public static async filterByMonthExp(collection: any[], month: any) {
     const newCollection: any[] = [];
@@ -509,7 +524,6 @@ export default class DashboardController {
       .map((array: any) => array.filter((item: any) => item instanceof Invoice))
       .map((array: any) => array.map((invoice: any) => invoice.dataValues))
       .flat();
-
 
     return result;
   }

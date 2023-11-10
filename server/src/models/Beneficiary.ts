@@ -44,9 +44,10 @@ export const beneficiaryFields = {
 
 export const $saveBeneficiarySchema: Joi.SchemaMap<beneficiarySchemaType> = {
   name: Joi.string().required().label(beneficiaryFields.name.label),
-  accountName: Joi.string().allow('').label(beneficiaryFields.accountName.label),
-  bankName: Joi.string().allow('').optional().label(beneficiaryFields.bankName.label),
-  accountNumber: Joi.string().allow('').optional().label(beneficiaryFields.accountNumber.label),
+  accountName: Joi.string().required().label(beneficiaryFields.accountName.label),
+  bankName: Joi.string().required().label('Bank name'),
+  bankCode: Joi.string().required().label('Bank code'),
+  accountNumber: Joi.string().required().label(beneficiaryFields.accountNumber.label),
 };
 
 @Table({
@@ -64,10 +65,13 @@ export default class Beneficiary extends Model<InferAttributes<Beneficiary>, Inf
 
   @Column(DataType.STRING)
   declare name: string;
+
   @Column(DataType.STRING)
   declare accountNumber: string;
+
   @Column(DataType.STRING)
   declare bankName: string;
+
   @Column(DataType.STRING)
   declare accountName: string;
 

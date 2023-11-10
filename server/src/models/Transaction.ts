@@ -32,6 +32,9 @@ export default class Transaction extends Model<InferAttributes<Transaction>, Inf
   @Column(DataType.STRING)
   declare note: string;
 
+  @Column(DataType.DATE)
+  declare paymentDate: Date;
+
   @Column(DataType.STRING)
   declare status: string;
 

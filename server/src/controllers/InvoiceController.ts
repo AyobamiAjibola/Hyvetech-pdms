@@ -809,7 +809,7 @@ export default class InvoiceController {
   @HasPermission([MANAGE_TECHNICIAN, CREATE_PAYMENT])
   public static async updateItemPaymentManually(req: Request) {
     try {
-      const { customerId, type, items, note, partnerId } = req.body;
+      const { customerId, type, items, note, partnerId, date } = req.body;
 
       const promises = items.map(async (item: any) => {
         const stock = await dataSources.itemStockDAOService.findByAny({ where: { partNumber: item.partNumber } });
@@ -855,7 +855,8 @@ export default class InvoiceController {
         countryCode: 'none',
         brand: 'none',
         items: items.map((value: any) => JSON.stringify(value)),
-        note: note
+        note: note,
+        paymentDate: date
       };
   
       const transferTransaction = await dataSources.transactionDAOService.create(
@@ -890,7 +891,7 @@ export default class InvoiceController {
   @HasPermission([MANAGE_TECHNICIAN, CREATE_PAYMENT])
   public static async updateCompletedInvoicePaymentManually(req: Request) {
     try {
-      const { invoiceId, customerId, amount: _amount, type } = req.body;
+      const { invoiceId, customerId, amount: _amount, type, paymentDate } = req.body;
 
       // get customer
       // const customer = await dataSources.customerDAOService.findById(customerId);
@@ -920,6 +921,7 @@ export default class InvoiceController {
         expYear: 'none',
         countryCode: 'none',
         brand: 'none',
+        paymentDate
       };
 
       const transferTransaction = await dataSources.transactionDAOService.create(
@@ -957,7 +959,7 @@ export default class InvoiceController {
               dueAmount: newDueAmount,
               depositAmount: amount,
               refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : draftInvoice.refundable,
-              status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
+              status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit
             })
           }
         }
@@ -977,7 +979,7 @@ export default class InvoiceController {
         paidAmount: amount,
         depositAmount: amount,
         refundable: Math.sign(newDueAmount) === -1 ? Math.abs(newDueAmount) : invoice.refundable,
-        status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit,
+        status: newDueAmount === 0 ? INVOICE_STATUS.paid : INVOICE_STATUS.deposit
       };
 
       await invoice.update(payload);

@@ -365,6 +365,7 @@ export declare namespace appCommonTypes {
     loginUrl?: string;
     whatsappUrl?: string;
     estimate?: any;
+    link?: string;
   }
 
   interface BcryptPasswordEncoder {

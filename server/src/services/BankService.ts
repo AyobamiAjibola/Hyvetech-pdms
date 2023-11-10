@@ -198,6 +198,7 @@ export interface AccountTransferDTO {
   saveAsBeneficiary?: boolean;
   bankName?: string;
   pin: string;
+  expenseId?: number; 
 }
 
 interface BeneficiaryPaymentData {

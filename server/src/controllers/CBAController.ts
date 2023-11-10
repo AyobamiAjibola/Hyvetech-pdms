@@ -33,6 +33,7 @@ import { MAIL_QUEUE_EVENTS } from "../config/constants";
 import User from "../models/User";
 import Partner from "../models/Partner";
 import { InferAttributes } from "sequelize";
+import Expense from "../models/Expense";
 
 const NO_ACCOUNT_PROVISIONED = "No account is provisioned for user";
 const PARTNER_NOT_FOUND = "Partner account not found";
@@ -50,6 +51,7 @@ export const accountTransferSchema: Joi.SchemaMap<appModels.AccountTransferDTO> 
     saveAsBeneficiary: Joi.boolean().optional().label("saveAsBeneficiary"),
     bankName: Joi.string().optional().label("bankName"),
     pin: Joi.string().required().label("pin"),
+    expenseId: Joi.number().optional().label("expense id"),
   };
 
 export const performBulkNameEnquirySchema: Joi.SchemaMap<appModels.BulkNameEnquiryDTO> =
@@ -788,6 +790,7 @@ class CBAController {
   }
 
   private async doInitiateTransfer(req: Request) {
+    
     const { error, value } = Joi.object<appModels.AccountTransferDTO>(
       accountTransferSchema
     ).validate(req.body);
@@ -836,6 +839,10 @@ class CBAController {
     value.clientFeeCharge = +settings.kuda.transferChargeFee;
     const response = await this.bankService.intiateTransfer(value);
 
+    const expense = await dataSources.expenseDAOService.findById(value.expenseId as number);
+    if(expense) {
+      await dataSources.expenseDAOService.update(expense, { status: 'PAID', reference: response.requestReference } as any)
+    }
     if (!value.saveAsBeneficiary) return response;
 
     if (beneficiary) return response;
