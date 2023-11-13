@@ -935,6 +935,7 @@ export default class EstimateController {
       discount: value.discount,
       discountType: value.discountType,
       note: value.note,
+      internalNote: value.internalNote
     };
 
     await estimate.update(estimateValues);
