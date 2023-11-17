@@ -274,6 +274,7 @@ export default class DashboardController {
     let amount = 0;
 
     expenses.map(_expense => {
+
       amount = amount + _expense.amount;
     });
 

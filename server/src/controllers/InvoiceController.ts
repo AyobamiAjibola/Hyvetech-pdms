@@ -999,7 +999,7 @@ export default class InvoiceController {
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async saveInvoice(req: Request) {
-    const { error, value } = Joi.object<InvoiceSchemaType>($saveInvoiceSchema).validate(req.body);
+    const { error, value } = Joi.object<any>($saveInvoiceSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -1057,6 +1057,16 @@ export default class InvoiceController {
       }
     }
     //------END------//
+
+    if (value.vin) {
+      const findVehicle = await dataSources.vehicleDAOService.findByVIN(value.vin);
+      if(findVehicle) {
+        await findVehicle.update({
+          mileageValue: value.mileageValue.length ? value.mileageValue : findVehicle.mileageValue,
+          mileageUnit: value.mileageUnit.length ? value.mileageUnit : findVehicle.mileageUnit
+        });
+      }
+    }
 
     await invoice.update({
       updateStatus: INVOICE_STATUS.update.draft,
@@ -1157,7 +1167,7 @@ export default class InvoiceController {
   @TryCatch
   @HasPermission([MANAGE_TECHNICIAN, CREATE_INVOICE])
   public static async sendInvoice(req: Request) {
-    const { error, value } = Joi.object<InvoiceSchemaType>($sendInvoiceSchema).validate(req.body);
+    const { error, value } = Joi.object<any>($sendInvoiceSchema).validate(req.body);
 
     if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -1215,6 +1225,16 @@ export default class InvoiceController {
       }
     }
     //------END------//
+
+    if (value.vin) {
+      const findVehicle = await dataSources.vehicleDAOService.findByVIN(value.vin);
+      if(findVehicle) {
+        await findVehicle.update({
+          mileageValue: value.mileageValue.length ? value.mileageValue : findVehicle.mileageValue,
+          mileageUnit: value.mileageUnit.length ? value.mileageUnit : findVehicle.mileageUnit
+        });
+      }
+    }
 
     await invoice.update({
       parts: value.parts.map((value: string) => JSON.stringify(value)),

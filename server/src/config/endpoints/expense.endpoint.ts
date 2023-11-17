@@ -6,6 +6,7 @@ import {
   createExpense,
   createExpenseCategoryHandler,
   createExpenseTypeHandler,
+  deleteBeneficiaryHandler,
   deleteExpenseHandler,
   getAllBeneficiaries,
   getAllExpenseCategories,
@@ -46,6 +47,12 @@ const expenseEndpoints: RouteEndpoints = [
     method: 'delete',
     path: '/expense/:id',
     handler: deleteExpenseHandler,
+  },
+  {
+    name: 'beneficiary',
+    method: 'delete',
+    path: '/beneficiary/:beneficiaryId',
+    handler: deleteBeneficiaryHandler,
   },
   {
     name: 'expense',

@@ -24,6 +24,7 @@ import {
   CREATE_BENEFICIARY,
   CREATE_EXPENSE,
   CREATE_EXPENSE_TYPE,
+  DELETE_BENEFICIARY,
   DELETE_EXPENSE,
   MANAGE_TECHNICIAN,
   READ_BENEFICIARY,
@@ -46,6 +47,24 @@ export default class ExpenseController {
       code: HttpStatus.OK.code,
       message: HttpStatus.OK.value,
       results: beneficiaries,
+    };
+
+    return response;
+  }
+
+  @TryCatch
+  public async deleteBeneficiary(req: Request) {
+    const beneficiaryId = req.params.beneficiaryId;
+
+    const beneficiary = await dao.beneficiaryDAOService.findById(+beneficiaryId);
+    if(!beneficiary)
+      return Promise.reject(CustomAPIError.response("Beneficiary not found.", HttpStatus.NOT_FOUND.code));
+
+    await dao.beneficiaryDAOService.deleteById(beneficiary.id);
+
+    const response: HttpResponse<Beneficiary> = {
+      code: HttpStatus.OK.code,
+      message: "Beneficiary successfully deleted."
     };
 
     return response;

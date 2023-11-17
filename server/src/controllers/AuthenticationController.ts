@@ -173,7 +173,7 @@ export default class AuthenticationController {
 
       await user.save();
 
-      dataSources.termiiService
+      await dataSources.termiiService
         .sendMessage({
           to: user.phone,
           sms: `${settings.termii.message} ${resetCode}`,

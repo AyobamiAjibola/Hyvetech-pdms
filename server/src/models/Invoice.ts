@@ -20,7 +20,7 @@ import Expense from './Expense';
 
 export type InvoiceSchemaType = Attributes<Invoice>;
 
-export const $sendInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
+export const $sendInvoiceSchema: Joi.SchemaMap<any> = {
   id: Joi.number().required().label('Invoice Id'),
   address: Joi.string().required().label(estimateFields.address.label),
   addressType: Joi.string().required().label(estimateFields.addressType.label),
@@ -42,9 +42,12 @@ export const $sendInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   discountType: Joi.string().label('discountType'),
   note: Joi.string().allow('').label('note'),
   internalNote: Joi.string().optional().allow('').label('note'),
+  mileageValue: Joi.string().optional().label(estimateFields.mileageValue.label),
+  mileageUnit: Joi.string().optional().label(estimateFields.mileageUnit.label),
+  vin: Joi.string().optional().label(estimateFields.vin.label)
 };
 
-export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
+export const $saveInvoiceSchema: Joi.SchemaMap<any> = {
   id: Joi.number().required().label('Invoice Id'),
   address: Joi.string().allow('').label(estimateFields.address.label),
   addressType: Joi.string().allow('').label(estimateFields.addressType.label),
@@ -65,7 +68,10 @@ export const $saveInvoiceSchema: Joi.SchemaMap<InvoiceSchemaType> = {
   discount: Joi.number().label('discount'),
   discountType: Joi.string().label('discountType'),
   note: Joi.string().allow('').label('note'),
-  internalNote: Joi.string().optional().label('internalNote'),
+  internalNote: Joi.string().optional().allow('').label('internalNote'),
+  mileageValue: Joi.string().optional().label(estimateFields.mileageValue.label),
+  mileageUnit: Joi.string().optional().label(estimateFields.mileageUnit.label),
+  vin: Joi.string().optional().label(estimateFields.vin.label)
 };
 
 @Table({ tableName: 'invoices', timestamps: true, paranoid: true })

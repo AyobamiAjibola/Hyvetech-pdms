@@ -67,3 +67,8 @@ export const deleteExpenseHandler = authenticateRouteWrapper(async (req, res) =>
   const response = await expenseController.deleteExpenseById(req);
   res.status(response.code).json(response);
 });
+
+export const deleteBeneficiaryHandler = authenticateRouteWrapper(async (req, res) => {
+  const response = await expenseController.deleteBeneficiary(req);
+  res.status(response.code).json(response);
+});
