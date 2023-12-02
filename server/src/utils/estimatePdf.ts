@@ -627,17 +627,17 @@ export const estimatePdfTemplate = async (estimate: Estimate, accountDetail: Par
                         <div style="width: 300px">
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Name</span>
-                                <span class="bold">${accountDetail?.businessName || ''}</span>
+                                <span class="bold">${estimate?.partner?.isAccountProvisioned === 'true' ? accountDetail?.businessName : estimate?.partner?.accountName}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Bank Name</span>
-                                <span class="bold">${accountDetail?.accountProvider || ''}</span>
+                                <span class="bold">${estimate?.partner?.isAccountProvisioned === 'true' ? accountDetail?.accountProvider : estimate?.partner?.bankName}</span>
                             </div>
 
                             <div style="display: flex; justify-content: space-between;">
                                 <span>Account Number</span>
-                                <span class="bold">${accountDetail?.accountNumber || ''}</span>
+                                <span class="bold">${estimate?.partner?.isAccountProvisioned === 'true' ? accountDetail?.accountNumber : estimate?.partner?.accountNumber}</span>
                             </div>
                         </div>
 

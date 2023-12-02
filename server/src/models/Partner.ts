@@ -228,7 +228,7 @@ export default class Partner extends Model<
   declare itemStocks: NonAttribute<Array<ItemStock>>;
 
   @Column({ type: DataType.STRING, defaultValue: false })
-  declare isAccountProvisioned: CreationOptional<boolean>;
+  declare isAccountProvisioned: CreationOptional<string>;
 
   @Column({ type: DataType.STRING, defaultValue: "NOT_REQUESTED" })
   declare accountProvisionStatus: CreationOptional<string>;

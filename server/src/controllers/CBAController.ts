@@ -555,7 +555,7 @@ class CBAController {
 
     partner.accountProvisionStatus = "NOT_REQUESTED";
 
-    partner.isAccountProvisioned = false;
+    partner.isAccountProvisioned = "false";
 
     await partner.save();
 
@@ -638,7 +638,7 @@ class CBAController {
 
     partner.accountProvisionStatus = "APPROVED";
 
-    partner.isAccountProvisioned = true;
+    partner.isAccountProvisioned = "true";
 
     await partner.save();
 
@@ -1132,7 +1132,7 @@ class CBAController {
       nin: value.nin,
     });
 
-    partner.isAccountProvisioned = true;
+    partner.isAccountProvisioned = "true";
 
     await partner.save();
 
