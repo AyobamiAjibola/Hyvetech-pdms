@@ -39,6 +39,7 @@ import BcryptPasswordEncoder = appCommonTypes.BcryptPasswordEncoder;
 import ResetPasswordTokenEmail from "../resources/templates/email/reset_password_token_email";
 import UserToken from "../models/UserToken";
 import RedisService from "../services/RedisService";
+import { sendMail } from "../utils/sendMail";
 
 export interface IGarageSignupModel {
   firstName: string;
@@ -116,10 +117,6 @@ export default class AuthenticationController {
 
   public async sendPasswordResetToken(req: Request) {
     try {
-      // const response: HttpResponse<any> = {
-      //   message: `Password reset link sent successfully`,
-      //   code: HttpStatus.OK.code,
-      // };
       const { error, value } = Joi.object($passwordResetSchema).validate(
         req.body
       );
@@ -152,21 +149,18 @@ export default class AuthenticationController {
         code: resetCode,
       });
 
-      await QueueManager.publish({
-        queue: MAIL_QUEUE_EVENTS.name,
-        data: {
-          to: user.email,
-          from: {
-            name: <string>process.env.SMTP_EMAIL_FROM_NAME,
-            address: <string>process.env.SMTP_EMAIL_FROM,
-          },
-          subject: `Reset Password`,
-          html: mailText,
-          bcc: [
-            <string>process.env.SMTP_CUSTOMER_CARE_EMAIL,
-            <string>process.env.SMTP_EMAIL_FROM,
-          ],
+      await sendMail({
+        to: user.email,
+        replyTo: "no-reply@auto.hyvetech.co",
+        // @ts-ignore
+        'reply-to': "no-reply@auto.hyvetech.co",
+        from: {
+          name: 'AutoHyve',
+          address: <string>process.env.SMTP_EMAIL_FROM2,
         },
+        subject: `Reset Password.`,
+        html: mailText,
+        bcc: [<string>process.env.SMTP_BCC]
       });
 
       user.resetCode = `${resetCode}`;

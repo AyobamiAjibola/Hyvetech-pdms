@@ -640,62 +640,62 @@ export default class EstimateController {
     });
 
     //todo: Send email with credentials
-    // try {
-    //   // create pdf before sending
-    //   const html = await generateEstimateHtml(estimate.id);
-    //   const rName = estimate.code + '.pdf';
-    //   await generatePdf(html, rName);
+    try {
+      // create pdf before sending
+      const html = await generateEstimateHtml(estimate.id);
+      const rName = estimate.code + '.pdf';
+      await generatePdf(html, rName);
 
-    //   // set seperate listener to send mail after 6 seconds
-    //   // await QueueManager.dispatch({
-    //   //   queue: MAIL_QUEUE_EVENTS.name,
-    //   //   data: {
-    //   //     to: user.email,
-    //   //     from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
-    //   //     subject: `${partner.name} has sent you an estimate on AutoHyve`,
-    //   //     html: mail,
-    //   //     bcc: [<string>process.env.SMTP_EMAIL_FROM],
-    //   //     attachments: [
-    //   //       {
-    //   //         filename: rName,
-    //   //         path: path.join(__dirname, '../../uploads/', 'pdf', rName),
-    //   //         cid: rName,
-    //   //       },
-    //   //     ],
-    //   //   },
-    //   // });
+      // set seperate listener to send mail after 6 seconds
+      // await QueueManager.dispatch({
+      //   queue: MAIL_QUEUE_EVENTS.name,
+      //   data: {
+      //     to: user.email,
+      //     from: `${process.env.SMTP_EMAIL_FROM_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+      //     subject: `${partner.name} has sent you an estimate on AutoHyve`,
+      //     html: mail,
+      //     bcc: [<string>process.env.SMTP_EMAIL_FROM],
+      //     attachments: [
+      //       {
+      //         filename: rName,
+      //         path: path.join(__dirname, '../../uploads/', 'pdf', rName),
+      //         cid: rName,
+      //       },
+      //     ],
+      //   },
+      // });
       
-    //   setTimeout(() => {
-    //     (async () => {
-    //       try {
-    //         await sendMail({
-    //           to: user.email,
-    //           replyTo: partner.email,
-    //           // @ts-ignore
-    //           'reply-to': partner.email,
-    //           from: {
-    //             name: 'AutoHyve',
-    //             address: <string>process.env.SMTP_EMAIL_FROM2,
-    //           },
-    //           subject: `${partner.name} has sent you an estimate on AutoHyve`,
-    //           html: mail,
-    //           bcc: [<string>process.env.SMTP_BCC],
-    //           attachments: [
-    //             {
-    //               filename: rName,
-    //               path: path.join(__dirname, '../../uploads/', 'pdf', rName),
-    //               cid: rName,
-    //             },
-    //           ],
-    //         });
-    //       } catch (err) {
-    //         console.log(err);
-    //       }
-    //     })();
-    //   }, 5000);
-    // } catch (e) {
-    //   console.log(e);
-    // }
+      // setTimeout(() => {
+      //   (async () => {
+      //     try {
+            await sendMail({
+              to: user.email,
+              replyTo: partner.email,
+              // @ts-ignore
+              'reply-to': partner.email,
+              from: {
+                name: 'AutoHyve',
+                address: <string>process.env.SMTP_EMAIL_FROM2,
+              },
+              subject: `${partner.name} has sent you an estimate on AutoHyve`,
+              html: mail,
+              bcc: [<string>process.env.SMTP_BCC],
+              attachments: [
+                {
+                  filename: rName,
+                  path: path.join(__dirname, '../../uploads/', 'pdf', rName),
+                  cid: rName,
+                },
+              ],
+            });
+      //     } catch (err) {
+      //       console.log(err);
+      //     }
+      //   })();
+      // }, 5000);
+    } catch (e) {
+      console.log(e);
+    }
 
     // await QueueManager.publish({
     //   queue: QUEUE_EVENTS.name,
