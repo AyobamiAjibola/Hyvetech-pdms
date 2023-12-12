@@ -65,7 +65,7 @@ import Preference, {
 import { promisify } from "util";
 import ItemStock from "../models/ItemStock";
 import ServiceReminder from "../models/ServiceReminder";
-// import { IncomingForm, File } from 'formidable';
+import fs from 'fs';
 
 interface IPaymentPlanModelDescription {
   value: string;
@@ -1581,10 +1581,14 @@ export default class PartnerController {
   }
 
   public async requestPdf(req: Request) {
-    // ..
+
     try {
       const { type, id } = req.body;
       const rName = req.body.rName;
+      
+      if(rName) {
+        fs.unlink(`${UPLOAD_BASE_PATH}/pdf/${rName}`, () => {})
+      }
 
       let html: string | null = "";
       let partner = null;
