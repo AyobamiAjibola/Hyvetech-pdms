@@ -5,6 +5,7 @@ import {
   garageSignUpHandler,
   preSignUpHandler,
   resetPasswordWithToken,
+  resetToken,
   sendPasswordResetToken,
   signInHandler,
   signOutHandler,
@@ -47,9 +48,15 @@ const authEndpoints: RouteEndpoints = [
   },
   {
     name: "Enter Password After Reset",
-    method: "post",
+    method: "put",
     path: "/reset-password-with-token",
     handler: resetPasswordWithToken,
+  },
+  {
+    name: "Enter Reset Token",
+    method: "put",
+    path: "/reset-token",
+    handler: resetToken,
   },
   {
     name: "signOut",

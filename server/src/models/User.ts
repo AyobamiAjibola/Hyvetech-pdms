@@ -48,8 +48,9 @@ export const $passwordResetSchema = {
 };
 
 export const $resetPasswordWithTokenSchema = {
-  token: Joi.string().required().label("token"),
-  password: Joi.string().required().label("password"),
+  token: Joi.string().label("token"),
+  password: Joi.string().label("password"),
+  email: Joi.string().required().label("email")
 };
 
 export type UserSchemaType = Attributes<User> & { roleId: number };

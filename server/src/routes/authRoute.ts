@@ -152,6 +152,12 @@ export const resetPasswordWithToken = async (req: Request, res: Response) => {
   res.status(response.code).json(response);
 };
 
+export const resetToken = async (req: Request, res: Response) => {
+  const response = await authenticationController.resetTOken(req);
+  res.status(response.code).json(response);
+};
+
+
 export const changePasswordHandler = authenticateRouteWrapper( async (req: Request, res: Response) => {
   const response = await authenticationController.changePassword(req);
   res.status(response.code).json(response);

@@ -73,13 +73,17 @@ export default class AuthenticationController {
 
   public async resetPasswordWithTOken(req: Request) {
     try {
-      const response: HttpResponse<any> = {
-        message: `Operation successful. Please login with new password`,
-        code: HttpStatus.OK.code,
-      };
-      const { error, value } = Joi.object(
-        $resetPasswordWithTokenSchema
-      ).validate(req.body);
+      const { error, value } = Joi.object({
+        password: Joi.string()
+          .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+          .messages({
+            "string.pattern.base": `Password does not meet requirement.`,
+          })
+          .required()
+          .label("password"),
+        confirmPassword: Joi.ref("password"),
+        email: Joi.string().required().label("email")
+      }).validate(req.body);
 
       if (error)
         return Promise.reject(
@@ -91,23 +95,80 @@ export default class AuthenticationController {
 
       const user = await dataSources.userDAOService.findByAny({
         where: {
-          resetCode: value.token,
+          email: value.email,
         },
       });
 
       if (!user)
         return Promise.reject(
           CustomAPIError.response(
-            "Invalid authentication code",
+            "User not found",
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+
+      await dataSources.userDAOService.update(
+        user,
+        <InferAttributes<User>>{password: value.password}
+      );
+
+      const response: HttpResponse<any> = {
+        message: `Operation successful. Please login with new password`,
+        code: HttpStatus.OK.code,
+      };
+
+      return response;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  public async resetTOken(req: Request) {
+    try {
+      const { error, value } = Joi.object({
+        token: Joi.string().required().label("token"),
+        email: Joi.string().required().label("email")
+      }).validate(req.body);
+
+      if (error)
+        return Promise.reject(
+          CustomAPIError.response(
+            error.details[0].message,
             HttpStatus.BAD_REQUEST.code
           )
         );
 
-      user.password = await this.passwordEncoder.encode(value.password);
+      const user = await dataSources.userDAOService.findByAny({
+        where: {
+          email: value.email,
+        },
+      });
 
-      user.resetCode = "";
+      if (!user)
+        return Promise.reject(
+          CustomAPIError.response(
+            "User not found",
+            HttpStatus.NOT_FOUND.code
+          )
+        );
+            console.log(value.token, user.resetCode, 'token')
+        if(value.token !== user.resetCode) {
+          return Promise.reject(
+            CustomAPIError.response(
+              "Token is invalid",
+              HttpStatus.BAD_REQUEST.code
+            )
+          )
+        }
+        await dataSources.userDAOService.update(
+          user,
+          <InferAttributes<User>>{resetCode: ''}
+        )
 
-      await user.save();
+      const response: HttpResponse<any> = {
+        message: `Successfull`,
+        code: HttpStatus.OK.code,
+      };
 
       return response;
     } catch (error) {
